@@ -1,31 +1,31 @@
 package vcsreader;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 
 import static java.nio.charset.Charset.defaultCharset;
 
 public class Command {
+    private static final File CURRENT_DIRECTORY = null;
+
     private final String[] command;
 
     private String stdout = "";
     private String stderr = "";
     private int exitValue;
 
-    private boolean finished;
-    private Exception exception;
-
     Command(String... command) {
         this.command = command;
     }
 
     public Command execute() {
+        return execute(CURRENT_DIRECTORY);
+    }
+
+    public Command execute(File directory) {
         BufferedReader stdoutReader = null;
         BufferedReader stderrReader = null;
         try {
-            Process process = new ProcessBuilder(command).start();
+            Process process = new ProcessBuilder(command).directory(directory).start();
             stdoutReader = new BufferedReader(new InputStreamReader(process.getInputStream(), defaultCharset()));
             stderrReader = new BufferedReader(new InputStreamReader(process.getErrorStream(), defaultCharset()));
 
@@ -43,12 +43,11 @@ public class Command {
 
             process.destroy();
             exitValue = process.exitValue();
-            finished = true;
 
         } catch (IOException e) {
-            exception = e;
+            throw new RuntimeException(e);
         } catch (InterruptedException e) {
-            exception = e;
+            throw new RuntimeException(e);
         } finally {
             close(stdoutReader);
             close(stderrReader);
@@ -63,14 +62,6 @@ public class Command {
             reader.close();
         } catch (IOException ignored) {
         }
-    }
-
-    public boolean finished() {
-        return finished;
-    }
-
-    public Exception exception() {
-        return exception;
     }
 
     public String stdout() {
