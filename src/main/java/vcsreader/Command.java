@@ -31,10 +31,10 @@ public class Command {
 
             String s;
             while ((s = stdoutReader.readLine()) != null) {
-                stdout += s;
+                stdout += s + "\n";
             }
             while ((s = stderrReader.readLine()) != null) {
-                stderr += s;
+                stderr += s + "\n";
             }
 
             process.waitFor();

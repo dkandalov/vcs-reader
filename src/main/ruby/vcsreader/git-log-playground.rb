@@ -21,21 +21,21 @@ def log_format
   "--pretty=format:" + committed_changelist_format
 end
 
-def git_show_file_content
-  folder = "/tmp/junit-test"
-  revision = "d1b8c04e54f0b9e4807fa88a2ff36ad9ba177107"
-  file = "pom.xml"
-  Dir.chdir(folder) do
-    puts `git show #{revision}:#{file}`
-  end
-end
-
 def git_log
   folder = "/tmp/junit-test"
   Dir.chdir(folder) do
     dates_range = "--after={2014-04-01} --before={2014-04-24}"
     show_file_status = "--name-status" # see --diff-filter at https://www.kernel.org/pub/software/scm/git/docs/git-log.html
     puts `git log #{log_format} #{dates_range} #{show_file_status}`
+  end
+end
+
+def git_show_file_content
+  folder = "/tmp/junit-test"
+  revision = "d1b8c04e54f0b9e4807fa88a2ff36ad9ba177107"
+  file = "pom.xml"
+  Dir.chdir(folder) do
+    puts `git show #{revision}:#{file}`
   end
 end
 
