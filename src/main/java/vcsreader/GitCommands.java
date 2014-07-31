@@ -5,6 +5,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class GitCommands {
+    public static Command gitLogFile(String folder, String filePath, String revision) {
+        return new Command("/usr/bin/git", "show", revision + ":" + filePath).execute(new File(folder));
+    }
+
     public static Command gitLog(String folder, Date fromDate, Date toDate) {
         String showFileStatus = "--name-status"; // see --diff-filter at https://www.kernel.org/pub/software/scm/git/docs/git-log.html
         return new Command("/usr/bin/git", "log", logFormat(), dateRange(fromDate, toDate), showFileStatus).execute(new File(folder));
