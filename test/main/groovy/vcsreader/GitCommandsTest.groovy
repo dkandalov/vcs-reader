@@ -3,8 +3,8 @@ package vcsreader
 import org.junit.Before
 import org.junit.Test
 
-import static vcsreader.DateTimeUtil.date
-import static vcsreader.GitCommands.*
+import static vcsreader.lang.DateTimeUtil.date
+import static vcsreader.vcs.GitCommands.*
 
 class GitCommandsTest {
     @Test void "git log file content"() {

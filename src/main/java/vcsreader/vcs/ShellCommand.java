@@ -1,10 +1,10 @@
-package vcsreader;
+package vcsreader.vcs;
 
 import java.io.*;
 
 import static java.nio.charset.Charset.defaultCharset;
 
-public class Command {
+public class ShellCommand {
     private static final File CURRENT_DIRECTORY = null;
 
     private final String[] command;
@@ -13,15 +13,15 @@ public class Command {
     private String stderr = "";
     private int exitValue;
 
-    Command(String... command) {
+    public ShellCommand(String... command) {
         this.command = command;
     }
 
-    public Command execute() {
+    public ShellCommand execute() {
         return execute(CURRENT_DIRECTORY);
     }
 
-    public Command execute(File directory) {
+    public ShellCommand execute(File directory) {
         BufferedReader stdoutReader = null;
         BufferedReader stderrReader = null;
         try {
