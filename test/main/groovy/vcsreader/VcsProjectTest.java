@@ -22,10 +22,10 @@ public class VcsProjectTest {
         VcsProject project = new VcsProject(vcsRoots, commandExecutor);
 
         InitResult initResult = project.init();
-        assertThat(initResult.isReady, equalTo(false));
+        assertThat(initResult.isReady(), equalTo(false));
         verify(commandExecutor).execute(new GitClone("git://some/url", "/local/path"));
 
         gitCloneResult.succeed();
-        assertThat(initResult.isReady, equalTo(true));
+        assertThat(initResult.isReady(), equalTo(true));
     }
 }

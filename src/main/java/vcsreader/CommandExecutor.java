@@ -8,5 +8,7 @@ public class CommandExecutor {
 
     public interface Command {}
 
-    public interface AsyncResult {}
+    public interface AsyncResult {
+        void whenReady(Runnable runnable);
+    }
 }
