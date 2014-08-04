@@ -4,11 +4,16 @@ import vcsreader.CommandExecutor;
 
 public class GitClone implements CommandExecutor.Command {
     private final String repositoryUrl;
-    private final String pathToProject;
+    private final String localPath;
 
-    public GitClone(String repositoryUrl, String pathToProject) {
+    public GitClone(String repositoryUrl, String localPath) {
         this.repositoryUrl = repositoryUrl;
-        this.pathToProject = pathToProject;
+        this.localPath = localPath;
+    }
+
+    @Override public CommandExecutor.Result execute() {
+        ShellCommand shellCommand = new ShellCommand("/usr/bin/git", "clone", "-v", repositoryUrl, localPath).execute();
+        return new CommandExecutor.Result(shellCommand.stdout(), shellCommand.stderr(), shellCommand.exitValue());
     }
 
     @SuppressWarnings("RedundantIfStatement")
@@ -18,7 +23,7 @@ public class GitClone implements CommandExecutor.Command {
 
         GitClone gitClone = (GitClone) o;
 
-        if (pathToProject != null ? !pathToProject.equals(gitClone.pathToProject) : gitClone.pathToProject != null)
+        if (localPath != null ? !localPath.equals(gitClone.localPath) : gitClone.localPath != null)
             return false;
         if (repositoryUrl != null ? !repositoryUrl.equals(gitClone.repositoryUrl) : gitClone.repositoryUrl != null)
             return false;
@@ -28,26 +33,14 @@ public class GitClone implements CommandExecutor.Command {
 
     @Override public int hashCode() {
         int result = repositoryUrl != null ? repositoryUrl.hashCode() : 0;
-        result = 31 * result + (pathToProject != null ? pathToProject.hashCode() : 0);
+        result = 31 * result + (localPath != null ? localPath.hashCode() : 0);
         return result;
     }
 
     @Override public String toString() {
         return "GitClone{" +
                 "repositoryUrl='" + repositoryUrl + '\'' +
-                ", pathToProject='" + pathToProject + '\'' +
+                ", localPath='" + localPath + '\'' +
                 '}';
-    }
-
-    public static class Result implements CommandExecutor.AsyncResult {
-        private Runnable whenReadyCallback;
-
-        @Override public void whenReady(Runnable runnable) {
-            this.whenReadyCallback = runnable;
-        }
-
-        public void succeed() {
-            whenReadyCallback.run();
-        }
     }
 }

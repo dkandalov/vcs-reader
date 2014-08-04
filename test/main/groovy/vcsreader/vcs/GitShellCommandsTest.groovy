@@ -1,12 +1,12 @@
-package vcsreader
-
+package vcsreader.vcs
 import org.junit.Before
 import org.junit.Test
 
 import static vcsreader.lang.DateTimeUtil.date
-import static vcsreader.vcs.GitCommands.*
+import static vcsreader.vcs.GitShellCommands.gitLog
+import static vcsreader.vcs.GitShellCommands.gitLogFile
 
-class GitCommandsTest {
+class GitShellCommandsTest {
     @Test void "git log file content"() {
         def command = gitLogFile(prePreparedProject, "file1.txt", firstRevisionIn(prePreparedProject))
         assert command.stdout().trim() == "abc"
@@ -33,19 +33,19 @@ class GitCommandsTest {
     }
 
     @Test void "clone repository"() {
-        def command = gitClone("file://" + prePreparedProject, projectFolder)
-        assert command.stdout() == ""
-        assert command.stderr().trim() == "Cloning into '/tmp/git-commands-test/git-repo'..."
-        assert command.exitValue() == 0
+        def result = new GitClone("file://" + prePreparedProject, projectFolder).execute()
+        assert result.stdout == ""
+        assert result.stderr.trim() == "Cloning into '/tmp/git-commands-test/git-repo'..."
+        assert result.exitValue == 0
     }
 
     @Test void "failed clone of non-existent repository"() {
-        def command = gitClone("file://" + nonExistentPath, projectFolder)
-        assert command.stdout() == ""
-        assert command.stderr().startsWith(
+        def result = new GitClone("file://" + nonExistentPath, projectFolder).execute()
+        assert result.stdout == ""
+        assert result.stderr.startsWith(
                 "Cloning into '/tmp/git-commands-test/git-repo'...\n" +
                 "fatal: '/tmp/non-existent-path' does not appear to be a git repository")
-        assert command.exitValue() == 128
+        assert result.exitValue == 128
     }
 
     @Before void setup() {

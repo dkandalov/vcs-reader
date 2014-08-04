@@ -1,12 +1,10 @@
 package vcsreader.vcs;
 
-import vcsreader.vcs.ShellCommand;
-
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class GitCommands {
+public class GitShellCommands {
     public static ShellCommand gitLogFile(String folder, String filePath, String revision) {
         return new ShellCommand("/usr/bin/git", "show", revision + ":" + filePath).execute(new File(folder));
     }
@@ -40,7 +38,4 @@ public class GitCommands {
         return "--pretty=format:" + committedChangelistFormat;
     }
 
-    public static ShellCommand gitClone(String fromUrl, String toFolder) {
-        return new ShellCommand("/usr/bin/git", "clone", "-v", fromUrl, toFolder).execute();
-    }
 }
