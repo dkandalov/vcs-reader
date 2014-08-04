@@ -3,6 +3,7 @@ import org.junit.Before
 import org.junit.Test
 
 import static vcsreader.lang.DateTimeUtil.date
+import static vcsreader.vcs.GitClone.gitClone
 import static vcsreader.vcs.GitShellCommands.gitLog
 import static vcsreader.vcs.GitShellCommands.gitLogFile
 
@@ -33,14 +34,14 @@ class GitShellCommands_IntegrationTest {
     }
 
     @Test void "clone repository"() {
-        def command = GitClone.gitClone("/usr/bin/git", "file://" + prePreparedProject, projectFolder)
+        def command = gitClone("/usr/bin/git", "file://" + prePreparedProject, projectFolder)
         assert command.stdout() == ""
         assert command.stderr().trim() == "Cloning into '/tmp/git-commands-test/git-repo'..."
         assert command.exitValue() == 0
     }
 
     @Test void "failed clone of non-existent repository"() {
-        def command = GitClone.gitClone("/usr/bin/git", "file://" + nonExistentPath, projectFolder)
+        def command = gitClone("/usr/bin/git", "file://" + nonExistentPath, projectFolder)
         assert command.stdout() == ""
         assert command.stderr().startsWith(
                 "Cloning into '/tmp/git-commands-test/git-repo'...\n" +
