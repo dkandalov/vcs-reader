@@ -1,10 +1,12 @@
 package vcsreader;
 
+import vcsreader.lang.NamedThreadFactory;
+
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class CommandExecutor {
-    private final Executor executor = Executors.newFixedThreadPool(10);
+    private final Executor executor = Executors.newFixedThreadPool(10, new NamedThreadFactory());
 
     public AsyncResult execute(final Command command) {
         final AsyncResult asyncResult = new AsyncResult();
@@ -12,11 +14,7 @@ public class CommandExecutor {
             @Override public void run() {
 
                 Result result = command.execute();
-                if (result.exitValue == 0) {
-                    asyncResult.succeed(result);
-                } else {
-                    asyncResult.fail(result);
-                }
+                asyncResult.completeWith(result);
 
             }
         });
@@ -28,31 +26,27 @@ public class CommandExecutor {
     }
 
     public static class Result {
-        public final String stdout;
-        public final String stderr;
-        public final int exitValue;
+        public final boolean successful;
 
-        public Result(String stdout, String stderr, int exitValue) {
-            this.stdout = stdout;
-            this.stderr = stderr;
-            this.exitValue = exitValue;
+        public Result(boolean successful) {
+            this.successful = successful;
         }
     }
 
     public static class AsyncResult {
-        private Runnable whenReadyCallback;
+        private AsyncResultListener whenReadyCallback;
 
-        public void whenReady(Runnable runnable) {
-            this.whenReadyCallback = runnable;
+        public void whenCompleted(AsyncResultListener listener) {
+            this.whenReadyCallback = listener;
         }
 
-        public void succeed(Result result) {
-            whenReadyCallback.run();
-        }
-
-        public void fail(Result result) {
-            // TODO implement
-
+        public void completeWith(Result result) {
+            whenReadyCallback.onComplete(result);
         }
     }
+
+    public static interface AsyncResultListener {
+        void onComplete(Result result);
+    }
+
 }

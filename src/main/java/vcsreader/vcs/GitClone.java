@@ -12,8 +12,17 @@ public class GitClone implements CommandExecutor.Command {
     }
 
     @Override public CommandExecutor.Result execute() {
-        ShellCommand shellCommand = new ShellCommand("/usr/bin/git", "clone", "-v", repositoryUrl, localPath).execute();
-        return new CommandExecutor.Result(shellCommand.stdout(), shellCommand.stderr(), shellCommand.exitValue());
+        ShellCommand shellCommand = gitClone("/usr/bin/git", repositoryUrl, localPath);
+        boolean successful = (shellCommand.exitValue() == 0);
+        if (successful) {
+            return new SuccessfulResult();
+        } else {
+            return new FailedResult(shellCommand.stderr());
+        }
+    }
+
+    static ShellCommand gitClone(String pathToGit, String repositoryUrl, String localPath) {
+        return new ShellCommand(pathToGit, "clone", "-v", repositoryUrl, localPath).execute();
     }
 
     @SuppressWarnings("RedundantIfStatement")
@@ -42,5 +51,20 @@ public class GitClone implements CommandExecutor.Command {
                 "repositoryUrl='" + repositoryUrl + '\'' +
                 ", localPath='" + localPath + '\'' +
                 '}';
+    }
+
+    public static class SuccessfulResult extends CommandExecutor.Result {
+        public SuccessfulResult() {
+            super(true);
+        }
+    }
+
+    public static class FailedResult extends CommandExecutor.Result {
+        public final String stderr;
+
+        public FailedResult(String stderr) {
+            super(false);
+            this.stderr = stderr;
+        }
     }
 }

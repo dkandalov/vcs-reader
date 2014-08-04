@@ -1,6 +1,14 @@
 package vcsreader;
 
+import vcsreader.vcs.GitClone;
+
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
+
+import static vcsreader.CommandExecutor.AsyncResult;
+import static vcsreader.CommandExecutor.AsyncResultListener;
+import static vcsreader.CommandExecutor.Result;
 
 public class VcsProject {
     private final List<VcsRoot> vcsRoots;
@@ -14,33 +22,50 @@ public class VcsProject {
     public InitResult init() {
         final InitResult initResult = new InitResult(vcsRoots.size());
         for (VcsRoot vcsRoot : vcsRoots) {
-            CommandExecutor.AsyncResult asyncResult = vcsRoot.init(commandExecutor);
-            asyncResult.whenReady(new Runnable() {
-                @Override public void run() {
-                    initResult.update();
+            AsyncResult asyncResult = vcsRoot.init(commandExecutor);
+            asyncResult.whenCompleted(new AsyncResultListener() {
+                @Override public void onComplete(Result result) {
+                    initResult.update(result);
                 }
             });
         }
         return initResult;
     }
 
+
     public static class InitResult {
-        private int expected;
-        private boolean ready;
+        private final CountDownLatch expectedUpdates;
+        private final CopyOnWriteArrayList<String> errors = new CopyOnWriteArrayList<String>();
 
-        public InitResult(int expected) {
-            this.expected = expected;
+        public InitResult(int expectedUpdates) {
+            this.expectedUpdates = new CountDownLatch(expectedUpdates);
         }
 
-        public synchronized void update() {
-            expected--;
-            if (expected == 0) {
-                ready = true;
+        private void update(Result result) {
+            if (!result.successful) {
+                errors.add(((GitClone.FailedResult) result).stderr);
             }
+            expectedUpdates.countDown();
         }
 
-        public synchronized boolean isReady() {
-            return ready;
+        public boolean isComplete() {
+            return expectedUpdates.getCount() == 0;
+        }
+
+        public InitResult awaitCompletion() {
+            try {
+                expectedUpdates.await();
+            } catch (InterruptedException ignored) {
+            }
+            return this;
+        }
+
+        public boolean isSuccessful() {
+            return errors.isEmpty();
+        }
+
+        public List<String> errors() {
+            return errors;
         }
     }
 }

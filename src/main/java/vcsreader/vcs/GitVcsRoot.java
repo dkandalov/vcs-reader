@@ -3,6 +3,8 @@ package vcsreader.vcs;
 import vcsreader.CommandExecutor;
 import vcsreader.VcsRoot;
 
+import static vcsreader.CommandExecutor.AsyncResult;
+
 public class GitVcsRoot implements VcsRoot {
     private final String pathToProject;
     private final String repositoryUrl;
@@ -12,7 +14,7 @@ public class GitVcsRoot implements VcsRoot {
         this.repositoryUrl = repositoryUrl;
     }
 
-    @Override public CommandExecutor.AsyncResult init(CommandExecutor commandExecutor) {
+    @Override public AsyncResult init(CommandExecutor commandExecutor) {
         return commandExecutor.execute(new GitClone(repositoryUrl, pathToProject));
     }
 }

@@ -6,7 +6,7 @@ import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.vcs.GitShellCommands.gitLog
 import static vcsreader.vcs.GitShellCommands.gitLogFile
 
-class GitShellCommandsTest {
+class GitShellCommands_IntegrationTest {
     @Test void "git log file content"() {
         def command = gitLogFile(prePreparedProject, "file1.txt", firstRevisionIn(prePreparedProject))
         assert command.stdout().trim() == "abc"
@@ -33,19 +33,19 @@ class GitShellCommandsTest {
     }
 
     @Test void "clone repository"() {
-        def result = new GitClone("file://" + prePreparedProject, projectFolder).execute()
-        assert result.stdout == ""
-        assert result.stderr.trim() == "Cloning into '/tmp/git-commands-test/git-repo'..."
-        assert result.exitValue == 0
+        def command = GitClone.gitClone("/usr/bin/git", "file://" + prePreparedProject, projectFolder)
+        assert command.stdout() == ""
+        assert command.stderr().trim() == "Cloning into '/tmp/git-commands-test/git-repo'..."
+        assert command.exitValue() == 0
     }
 
     @Test void "failed clone of non-existent repository"() {
-        def result = new GitClone("file://" + nonExistentPath, projectFolder).execute()
-        assert result.stdout == ""
-        assert result.stderr.startsWith(
+        def command = GitClone.gitClone("/usr/bin/git", "file://" + nonExistentPath, projectFolder)
+        assert command.stdout() == ""
+        assert command.stderr().startsWith(
                 "Cloning into '/tmp/git-commands-test/git-repo'...\n" +
                 "fatal: '/tmp/non-existent-path' does not appear to be a git repository")
-        assert result.exitValue == 128
+        assert command.exitValue() == 128
     }
 
     @Before void setup() {
@@ -59,7 +59,7 @@ class GitShellCommandsTest {
     }
 
 
-    private final String projectFolder = "/tmp/git-commands-test/git-repo/"
-    private final String prePreparedProject = "/tmp/test-repos/git-repo"
-    private final String nonExistentPath = "/tmp/non-existent-path"
+    static final String projectFolder = "/tmp/git-commands-test/git-repo/"
+    static final String prePreparedProject = "/tmp/test-repos/git-repo"
+    static final String nonExistentPath = "/tmp/non-existent-path"
 }
