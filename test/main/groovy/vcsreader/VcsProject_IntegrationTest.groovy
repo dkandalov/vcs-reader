@@ -4,6 +4,7 @@ import org.junit.Test
 import vcsreader.vcs.GitVcsRoot
 
 import static vcsreader.lang.DateTimeUtil.date
+import static vcsreader.lang.DateTimeUtil.dateTime
 import static vcsreader.vcs.GitShellCommands_IntegrationTest.getPrePreparedProject
 import static vcsreader.vcs.GitShellCommands_IntegrationTest.getProjectFolder
 
@@ -25,6 +26,16 @@ class VcsProject_IntegrationTest {
         def logResult = project.log(date("01/01/2013"), date("01/01/2023")).awaitCompletion()
         assert logResult.errors() == []
         assert logResult.isSuccessful()
+
+        assert logResult.commits == [
+                new Commit(
+                        "84456ff5744d19a62c4440356a0f23ef8d391272",
+                        dateTime("12:19:02 31/07/2014"),
+                        "Dmitry Kandalov",
+                        "initial commit",
+                        [new Change()]
+                )
+        ]
     }
 
     @Before void setup() {

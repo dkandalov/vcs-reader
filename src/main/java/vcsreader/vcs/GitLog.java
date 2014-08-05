@@ -1,8 +1,14 @@
 package vcsreader.vcs;
 
+import vcsreader.Change;
 import vcsreader.CommandExecutor;
+import vcsreader.Commit;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import static vcsreader.lang.StringUtil.split;
 
 public class GitLog implements CommandExecutor.Command {
     private final String folder;
@@ -18,10 +24,35 @@ public class GitLog implements CommandExecutor.Command {
     @Override public CommandExecutor.Result execute() {
         ShellCommand shellCommand = GitShellCommands.gitLog(folder, fromDate, toDate);
         if (shellCommand.exitValue() == 0) {
-            return new SuccessfulResult();
+            return new SuccessfulResult(parseAsCommits(shellCommand.stdout()));
         } else {
             return new FailedResult(shellCommand.stderr());
         }
+    }
+
+    private static List<Commit> parseAsCommits(String stdout) {
+        System.out.println(stdout); // TODO remove
+        List<Commit> commits = new ArrayList<Commit>();
+
+        String logStart = "\u0011\u0012\u0013\n";
+        String logSeparator = "\u0010\u0011\u0012\n";
+
+        List<String> commitsAsString = split(stdout, logStart);
+        for (String s : commitsAsString) {
+            List<String> values = split(s, logSeparator);
+            commits.add(new Commit(
+                    values.get(0),
+                    parseDate(values.get(1)),
+                    values.get(2),
+                    values.get(3),
+                    new ArrayList<Change>()
+            ));
+        }
+        return commits;
+    }
+
+    private static Date parseDate(String s) {
+        return new Date(Long.parseLong(s) * 1000);
     }
 
     @SuppressWarnings("RedundantIfStatement")
@@ -56,8 +87,11 @@ public class GitLog implements CommandExecutor.Command {
     }
 
     public static class SuccessfulResult extends CommandExecutor.Result {
-        public SuccessfulResult() {
+        public final List<Commit> commits;
+
+        public SuccessfulResult(List<Commit> commits) {
             super(true);
+            this.commits = commits;
         }
     }
 

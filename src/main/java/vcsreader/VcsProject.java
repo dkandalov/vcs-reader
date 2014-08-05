@@ -3,8 +3,7 @@ package vcsreader;
 import vcsreader.vcs.GitClone;
 import vcsreader.vcs.GitLog;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 
@@ -49,13 +48,16 @@ public class VcsProject {
     public static class LogResult {
         private final CountDownLatch expectedUpdates;
         private final CopyOnWriteArrayList<String> errors = new CopyOnWriteArrayList<String>();
+        private final List<Commit> allCommits = new CopyOnWriteArrayList<Commit>();
 
         public LogResult(int expectedUpdates) {
             this.expectedUpdates = new CountDownLatch(expectedUpdates);
         }
 
         public void update(Result result) {
-            if (!result.successful) {
+            if (result.successful) {
+                allCommits.addAll(((GitLog.SuccessfulResult) result).commits);
+            } else {
                 errors.add(((GitLog.FailedResult) result).stderr);
             }
             expectedUpdates.countDown();
@@ -79,6 +81,16 @@ public class VcsProject {
 
         public List<String> errors() {
             return errors;
+        }
+
+        public List<Commit> getCommits() {
+            List<Commit> commits = new ArrayList<Commit>(allCommits);
+            Collections.sort(commits, new Comparator<Commit>() {
+                @Override public int compare(Commit o1, Commit o2) {
+                    return new Long(o1.commitDate.getTime()).compareTo(o2.commitDate.getTime());
+                }
+            });
+            return commits;
         }
     }
 
