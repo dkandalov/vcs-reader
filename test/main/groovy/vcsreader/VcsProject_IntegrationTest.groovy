@@ -3,6 +3,8 @@ import org.junit.Before
 import org.junit.Test
 import vcsreader.vcs.GitVcsRoot
 
+import static vcsreader.Change.Type.NEW
+import static vcsreader.Change.noRevision
 import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.lang.DateTimeUtil.dateTime
 import static vcsreader.vcs.GitShellCommands_IntegrationTest.getPrePreparedProject
@@ -18,7 +20,7 @@ class VcsProject_IntegrationTest {
         assert initResult.isSuccessful()
     }
 
-    @Test void "log project history"() {
+    @Test void "log project history single commit"() {
         def vcsRoots = [new GitVcsRoot(projectFolder, prePreparedProject)]
         def project = new VcsProject(vcsRoots, new CommandExecutor())
         project.init().awaitCompletion()
@@ -33,7 +35,9 @@ class VcsProject_IntegrationTest {
                         dateTime("12:19:02 31/07/2014"),
                         "Dmitry Kandalov",
                         "initial commit",
-                        [new Change()]
+                        [
+                            new Change(NEW, "file1.txt", "84456ff5744d19a62c4440356a0f23ef8d391272", noRevision)
+                        ]
                 )
         ]
     }

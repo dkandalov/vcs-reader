@@ -27,21 +27,21 @@ public class GitShellCommands {
     private static String logFormat() {
         // see "PRETTY FORMATS" at https://www.kernel.org/pub/software/scm/git/docs/git-log.html
         String commitHash = "%H";
+        String parentHashes = "%P";
         String commitDate = "%ct";
         String authorName = "%an"; // see http://stackoverflow.com/questions/18750808/difference-between-author-and-committer-in-git
         String subject = "%s";
-        String body = "%b";
 
-        String logStart = "%x11%x12%x13%n";
-        String logSeparator = "%x10%x11%x12%n";
+        String commitStartSeparator = "%x11%x12%x13%n";
+        String fieldSeparator = "%x10%x11%x12%n";
 
         return "--pretty=format:" +
-                logStart +
-                commitHash + logSeparator +
-                commitDate + logSeparator +
-                authorName + logSeparator +
-                subject + logSeparator +
-                body;
+                commitStartSeparator +
+                commitHash + fieldSeparator +
+                parentHashes + fieldSeparator +
+                commitDate + fieldSeparator +
+                authorName + fieldSeparator +
+                subject + fieldSeparator;
     }
 
 }

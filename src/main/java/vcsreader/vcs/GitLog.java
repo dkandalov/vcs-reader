@@ -24,31 +24,91 @@ public class GitLog implements CommandExecutor.Command {
     @Override public CommandExecutor.Result execute() {
         ShellCommand shellCommand = GitShellCommands.gitLog(folder, fromDate, toDate);
         if (shellCommand.exitValue() == 0) {
-            return new SuccessfulResult(parseAsCommits(shellCommand.stdout()));
+            return new SuccessfulResult(parseListOfCommits(shellCommand.stdout()));
         } else {
             return new FailedResult(shellCommand.stderr());
         }
     }
 
-    private static List<Commit> parseAsCommits(String stdout) {
-        System.out.println(stdout); // TODO remove
+    private static List<Commit> parseListOfCommits(String stdout) {
         List<Commit> commits = new ArrayList<Commit>();
 
-        String logStart = "\u0011\u0012\u0013\n";
-        String logSeparator = "\u0010\u0011\u0012\n";
+        String commitStartSeparator = "\u0011\u0012\u0013\n";
+        String commitFieldsSeparator = "\u0010\u0011\u0012\n";
 
-        List<String> commitsAsString = split(stdout, logStart);
+        List<String> commitsAsString = split(stdout, commitStartSeparator);
+
         for (String s : commitsAsString) {
-            List<String> values = split(s, logSeparator);
-            commits.add(new Commit(
-                    values.get(0),
-                    parseDate(values.get(1)),
-                    values.get(2),
-                    values.get(3),
-                    new ArrayList<Change>()
-            ));
+            Commit commit = parseCommit(s, commitFieldsSeparator);
+            if (commit != null) {
+                commits.add(commit);
+            }
         }
         return commits;
+    }
+
+    private static Commit parseCommit(String s, String commitFieldsSeparator) {
+        List<String> values = split(s, commitFieldsSeparator);
+
+        List<String> previousRevision = split(values.get(1), " ");
+        boolean isFirstCommit = previousRevision.size() == 0;
+        boolean isMergeCommit = previousRevision.size() > 1;
+        if (isMergeCommit) return null;
+
+        String revision = values.get(0);
+        String revisionBefore = (isFirstCommit ? Change.noRevision : previousRevision.get(0));
+        Date commitDate = parseDate(values.get(2));
+        String authorName = values.get(3);
+        String comment = values.get(4);
+        List<Change> changes = parseListOfChanges(values.get(5), revision, revisionBefore);
+
+        return new Commit(revision, commitDate, authorName, comment, changes);
+    }
+
+    private static List<Change> parseListOfChanges(String changesAsString, String revision, String revisionBefore) {
+        List<Change> changes = new ArrayList<Change>();
+
+        for (String s : split(changesAsString, "\n")) {
+            Change change = parseChange(s, revision, revisionBefore);
+            changes.add(change);
+        }
+
+        return changes;
+    }
+
+    private static Change parseChange(String s, String revision, String revisionBefore) {
+        List<String> values = split(s, "\t");
+        Change.Type changeType = parseChangeType(values.get(0));
+        String fileName = values.get(1);
+        return new Change(changeType, fileName, revision, revisionBefore);
+    }
+
+    private static Change.Type parseChangeType(String s) {
+        if (s.length() != 1)
+            throw new IllegalArgumentException("Git change type expected to be a char but was: '" + s + "'");
+
+        // see "--diff-filter" at https://www.kernel.org/pub/software/scm/git/docs/git-log.html
+        char added = 'A';
+        char copied = 'C';
+        char modified = 'M';
+        char typeChanged = 'T';
+        char unmerged = 'U';
+        char unknown = 'X';
+        char deleted = 'D';
+        char renamed = 'R';
+
+        char c = s.charAt(0);
+        if (c == added || c == copied) {
+            return Change.Type.NEW;
+        } else if (c == modified || c == typeChanged || c == unmerged || c == unknown) {
+            return Change.Type.MODIFICATION;
+        } else if (c == deleted) {
+            return Change.Type.DELETED;
+        } else if (c == renamed) {
+            return Change.Type.MOVED;
+        } else {
+            throw new IllegalStateException("Unknown git change type: " + s);
+        }
     }
 
     private static Date parseDate(String s) {
