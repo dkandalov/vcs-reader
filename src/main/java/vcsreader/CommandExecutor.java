@@ -13,10 +13,14 @@ public class CommandExecutor {
         final Async<Result> asyncResult = new Async<Result>();
         executor.execute(new Runnable() {
             @Override public void run() {
+                try {
 
-                Result result = command.execute();
-                asyncResult.completeWith(result);
+                    Result result = command.execute();
+                    asyncResult.completeWith(result);
 
+                } catch (Exception e) {
+                    e.printStackTrace(); // TODO
+                }
             }
         });
         return asyncResult;

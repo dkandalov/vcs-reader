@@ -70,13 +70,17 @@ public class GitLog implements CommandExecutor.Command {
 
         for (String s : split(changesAsString, "\n")) {
             Change change = parseChange(s, revision, revisionBefore);
-            changes.add(change);
+            if (change != null) {
+                changes.add(change);
+            }
         }
 
         return changes;
     }
 
     private static Change parseChange(String s, String revision, String revisionBefore) {
+        if (s.trim().isEmpty()) return null;
+
         List<String> values = split(s, "\t");
         Change.Type changeType = parseChangeType(values.get(0));
         String fileName = values.get(1);
