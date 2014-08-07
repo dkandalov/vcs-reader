@@ -5,9 +5,6 @@ import vcsreader.CommandExecutor;
 import vcsreader.VcsProject;
 import vcsreader.VcsRoot;
 import vcsreader.lang.Async;
-import vcsreader.vcs.GitClone;
-import vcsreader.vcs.GitLog;
-import vcsreader.vcs.GitVcsRoot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,12 +19,14 @@ import static vcsreader.VcsProject.LogResult;
 import static vcsreader.lang.DateTimeUtil.date;
 
 public class VcsProjectTest {
+    private final GitSettings settings = GitSettings.defaults();
+
     @Test public void successfulProjectInitialization() {
         // given
         FakeCommandExecutor fakeExecutor = new FakeCommandExecutor();
         List<VcsRoot> vcsRoots = Arrays.<VcsRoot>asList(
-                new GitVcsRoot("/local/path", "git://some/url"),
-                new GitVcsRoot("/local/path2", "git://some/url")
+                new GitVcsRoot("/local/path", "git://some/url", settings),
+                new GitVcsRoot("/local/path2", "git://some/url", settings)
         );
         VcsProject project = new VcsProject(vcsRoots, fakeExecutor);
 
@@ -36,8 +35,8 @@ public class VcsProjectTest {
 
         // then
         assertThat(fakeExecutor.commands, equalTo(Arrays.<Command>asList(
-                new GitClone("git://some/url", "/local/path"),
-                new GitClone("git://some/url", "/local/path2")
+                new GitClone("/usr/bin/git", "git://some/url", "/local/path"),
+                new GitClone("/usr/bin/git", "git://some/url", "/local/path2")
         )));
         assertThat(initResult.isComplete(), equalTo(false));
 
@@ -50,8 +49,8 @@ public class VcsProjectTest {
         // given
         FakeCommandExecutor fakeExecutor = new FakeCommandExecutor();
         List<VcsRoot> vcsRoots = Arrays.<VcsRoot>asList(
-                new GitVcsRoot("/local/path", "git://some/url"),
-                new GitVcsRoot("/local/path2", "git://some/url")
+                new GitVcsRoot("/local/path", "git://some/url", settings),
+                new GitVcsRoot("/local/path2", "git://some/url", settings)
         );
         VcsProject project = new VcsProject(vcsRoots, fakeExecutor);
 
@@ -60,8 +59,8 @@ public class VcsProjectTest {
 
         // then
         assertThat(fakeExecutor.commands, equalTo(Arrays.<Command>asList(
-                new GitLog("/local/path", date("01/07/2014"), date("08/07/2014")),
-                new GitLog("/local/path2", date("01/07/2014"), date("08/07/2014"))
+                new GitLog("/usr/bin/git", "/local/path", date("01/07/2014"), date("08/07/2014")),
+                new GitLog("/usr/bin/git", "/local/path2", date("01/07/2014"), date("08/07/2014"))
         )));
         assertThat(logResult.isComplete(), equalTo(false));
 

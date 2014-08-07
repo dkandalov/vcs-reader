@@ -4,7 +4,7 @@ import java.io.*;
 
 import static java.nio.charset.Charset.defaultCharset;
 
-public class ShellCommand {
+class ShellCommand {
     private static final File CURRENT_DIRECTORY = null;
 
     private final String[] command;

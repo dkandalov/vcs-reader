@@ -14,26 +14,27 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static vcsreader.lang.StringUtil.split;
 
-public class GitLog implements CommandExecutor.Command {
+class GitLog implements CommandExecutor.Command {
     private final String folder;
     private final Date fromDate;
     private final Date toDate;
+    private final String gitPath;
 
-    public GitLog(String folder, Date fromDate, Date toDate) {
+    public GitLog(String gitPath, String folder, Date fromDate, Date toDate) {
         this.folder = folder;
         this.fromDate = fromDate;
         this.toDate = toDate;
+        this.gitPath = gitPath;
     }
 
     @Override public CommandExecutor.Result execute() {
-        ShellCommand shellCommand = gitLog(folder, fromDate, toDate);
+        ShellCommand shellCommand = gitLog(gitPath, folder, fromDate, toDate);
         List<Commit> commits = parseListOfCommits(shellCommand.stdout());
         List<String> errors = (shellCommand.stderr().trim().isEmpty() ? new ArrayList<String>() : asList(shellCommand.stderr()));
         return new VcsProject.LogResult(commits, errors);
     }
 
-    static ShellCommand gitLog(String folder, Date fromDate, Date toDate) {
-        String gitPath = "/usr/bin/git";
+    static ShellCommand gitLog(String gitPath, String folder, Date fromDate, Date toDate) {
         String dateRange = dateRange(fromDate, toDate);
         String showFileStatus = "--name-status"; // see --diff-filter at https://www.kernel.org/pub/software/scm/git/docs/git-log.html
         ShellCommand shellCommand = new ShellCommand(gitPath, "log", logFormat(), dateRange, showFileStatus);

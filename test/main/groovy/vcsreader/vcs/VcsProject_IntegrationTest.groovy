@@ -16,7 +16,7 @@ import static vcsreader.vcs.GitShellCommands_IntegrationTest.getProjectFolder
 
 class VcsProject_IntegrationTest {
     @Test void "initialize git project"() {
-        def vcsRoots = [new GitVcsRoot(projectFolder, prePreparedProject)]
+        def vcsRoots = [new GitVcsRoot(projectFolder, prePreparedProject, GitSettings.defaults())]
         def project = new VcsProject(vcsRoots, new CommandExecutor())
 
         def initResult = project.init().awaitCompletion()
@@ -25,7 +25,7 @@ class VcsProject_IntegrationTest {
     }
 
     @Test void "log project history single commit"() {
-        def vcsRoots = [new GitVcsRoot(projectFolder, prePreparedProject)]
+        def vcsRoots = [new GitVcsRoot(projectFolder, prePreparedProject, GitSettings.defaults())]
         def project = new VcsProject(vcsRoots, new CommandExecutor())
         project.init().awaitCompletion()
 
