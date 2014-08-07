@@ -22,9 +22,10 @@ public class VcsProject {
 
     public Async<InitResult> init() {
         final Accumulator<InitResult> accumulator = new Accumulator<InitResult>(vcsRoots.size());
-
         for (VcsRoot vcsRoot : vcsRoots) {
+
             Async<Result> asyncResult = vcsRoot.init(commandExecutor);
+
             asyncResult.whenCompleted(new AsyncResultListener<Result>() {
                 @Override public void onComplete(Result result) {
                     accumulator.update((InitResult) result);
@@ -36,9 +37,10 @@ public class VcsProject {
 
     public Async<LogResult> log(Date from, Date to) {
         final Accumulator<LogResult> accumulator = new Accumulator<LogResult>(vcsRoots.size());
-
         for (VcsRoot vcsRoot : vcsRoots) {
+
             Async<Result> asyncResult = vcsRoot.log(commandExecutor, from, to);
+
             asyncResult.whenCompleted(new AsyncResultListener<Result>() {
                 @Override public void onComplete(Result result) {
                     accumulator.update((LogResult) result);
