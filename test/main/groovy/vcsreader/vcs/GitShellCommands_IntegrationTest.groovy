@@ -4,7 +4,7 @@ import org.junit.Test
 
 import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.vcs.GitClone.gitClone
-import static vcsreader.vcs.GitShellCommands.gitLog
+import static vcsreader.vcs.GitLog.gitLog
 import static vcsreader.vcs.GitShellCommands.gitLogFile
 
 class GitShellCommands_IntegrationTest {
