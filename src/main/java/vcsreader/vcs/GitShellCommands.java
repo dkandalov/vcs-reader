@@ -17,13 +17,6 @@ public class GitShellCommands {
         return shellCommand.execute(new File(folder));
     }
 
-    private static String dateRange(Date fromDate, Date toDate) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String from = dateFormat.format(fromDate);
-        String to = dateFormat.format(toDate);
-        return "--after={" + from + "} --before={ " + to + "}";
-    }
-
     private static String logFormat() {
         // see "PRETTY FORMATS" at https://www.kernel.org/pub/software/scm/git/docs/git-log.html
         String commitHash = "%H";
@@ -42,6 +35,13 @@ public class GitShellCommands {
                 commitDate + fieldSeparator +
                 authorName + fieldSeparator +
                 subject + fieldSeparator;
+    }
+
+    private static String dateRange(Date fromDate, Date toDate) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String from = dateFormat.format(fromDate);
+        String to = dateFormat.format(toDate);
+        return "--after={" + from + "} --before={ " + to + "}";
     }
 
 }

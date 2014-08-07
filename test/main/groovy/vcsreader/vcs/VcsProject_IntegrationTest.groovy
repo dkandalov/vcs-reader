@@ -1,7 +1,11 @@
-package vcsreader
+package vcsreader.vcs
+
 import org.junit.Before
 import org.junit.Test
-import vcsreader.vcs.GitVcsRoot
+import vcsreader.Change
+import vcsreader.CommandExecutor
+import vcsreader.Commit
+import vcsreader.VcsProject
 
 import static vcsreader.Change.Type.NEW
 import static vcsreader.Change.noRevision

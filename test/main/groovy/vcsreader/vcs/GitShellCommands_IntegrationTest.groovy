@@ -56,7 +56,7 @@ class GitShellCommands_IntegrationTest {
 
     private static String firstRevisionIn(String projectPath) {
         def command = gitLog(projectPath, date("01/01/2013"), date("01/01/2023"))
-        command.stdout().split("\n")[1]
+        command.stdout().split("\n")[0]
     }
 
 

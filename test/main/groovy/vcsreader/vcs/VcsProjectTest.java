@@ -1,6 +1,10 @@
-package vcsreader;
+package vcsreader.vcs;
 
 import org.junit.Test;
+import vcsreader.CommandExecutor;
+import vcsreader.VcsProject;
+import vcsreader.VcsRoot;
+import vcsreader.lang.Async;
 import vcsreader.vcs.GitClone;
 import vcsreader.vcs.GitLog;
 import vcsreader.vcs.GitVcsRoot;
@@ -11,15 +15,13 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static vcsreader.CommandExecutor.Command;
-import static vcsreader.CommandExecutor.Result;
+import static org.mockito.Mockito.mock;
+import static vcsreader.CommandExecutor.*;
 import static vcsreader.VcsProject.InitResult;
 import static vcsreader.VcsProject.LogResult;
 import static vcsreader.lang.DateTimeUtil.date;
 
 public class VcsProjectTest {
-    private final Result successfulResult = new Result(true);
-
     @Test public void successfulProjectInitialization() {
         // given
         FakeCommandExecutor fakeExecutor = new FakeCommandExecutor();
@@ -30,7 +32,7 @@ public class VcsProjectTest {
         VcsProject project = new VcsProject(vcsRoots, fakeExecutor);
 
         // when
-        InitResult initResult = project.init();
+        Async<InitResult> initResult = project.init();
 
         // then
         assertThat(fakeExecutor.commands, equalTo(Arrays.<Command>asList(
@@ -40,7 +42,7 @@ public class VcsProjectTest {
         assertThat(initResult.isComplete(), equalTo(false));
 
         // then
-        fakeExecutor.completeAllCallsWith(successfulResult);
+        fakeExecutor.completeAllCallsWith(mock(InitResult.class));
         assertThat(initResult.isComplete(), equalTo(true));
     }
 
@@ -54,7 +56,7 @@ public class VcsProjectTest {
         VcsProject project = new VcsProject(vcsRoots, fakeExecutor);
 
         // when
-        LogResult logResult = project.log(date("01/07/2014"), date("08/07/2014"));
+        Async<LogResult> logResult = project.log(date("01/07/2014"), date("08/07/2014"));
 
         // then
         assertThat(fakeExecutor.commands, equalTo(Arrays.<Command>asList(
@@ -64,25 +66,25 @@ public class VcsProjectTest {
         assertThat(logResult.isComplete(), equalTo(false));
 
         // then
-        fakeExecutor.completeAllCallsWith(successfulResult);
+        fakeExecutor.completeAllCallsWith(mock(LogResult.class));
         assertThat(logResult.isComplete(), equalTo(true));
     }
 
 
     private static class FakeCommandExecutor extends CommandExecutor {
-        private final List<AsyncResult> asyncResults = new ArrayList<AsyncResult>();
+        private final List<Async<Result>> asyncResults = new ArrayList<Async<Result>>();
         public final List<Command> commands = new ArrayList<Command>();
 
-        @Override public AsyncResult execute(Command command) {
+        @Override public Async<Result> execute(Command command) {
             commands.add(command);
 
-            AsyncResult asyncResult = new AsyncResult();
+            Async<Result> asyncResult = new Async<Result>();
             asyncResults.add(asyncResult);
             return asyncResult;
         }
 
         public void completeAllCallsWith(Result result) {
-            for (AsyncResult asyncResult : asyncResults) {
+            for (Async<Result> asyncResult : asyncResults) {
                 asyncResult.completeWith(result);
             }
         }

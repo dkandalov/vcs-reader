@@ -1,11 +1,11 @@
 package vcsreader;
 
+import vcsreader.lang.Async;
+
 import java.util.Date;
 
-import static vcsreader.CommandExecutor.AsyncResult;
-
 public interface VcsRoot {
-    AsyncResult init(CommandExecutor commandExecutor);
+    Async<CommandExecutor.Result> init(CommandExecutor commandExecutor);
 
-    AsyncResult log(CommandExecutor commandExecutor, Date from, Date to);
+    Async<CommandExecutor.Result> log(CommandExecutor commandExecutor, Date from, Date to);
 }

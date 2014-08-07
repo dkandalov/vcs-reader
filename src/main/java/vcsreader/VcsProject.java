@@ -1,12 +1,14 @@
 package vcsreader;
 
-import vcsreader.vcs.GitClone;
-import vcsreader.vcs.GitLog;
+import vcsreader.lang.Async;
+import vcsreader.lang.AsyncResultListener;
 
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CountDownLatch;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 
+import static java.util.Collections.sort;
 import static vcsreader.CommandExecutor.*;
 
 public class VcsProject {
@@ -18,61 +20,71 @@ public class VcsProject {
         this.commandExecutor = commandExecutor;
     }
 
-    public InitResult init() {
-        final InitResult initResult = new InitResult(vcsRoots.size());
+    public Async<InitResult> init() {
+        final Accumulator<InitResult> accumulator = new Accumulator<InitResult>(vcsRoots.size());
+
         for (VcsRoot vcsRoot : vcsRoots) {
-            AsyncResult asyncResult = vcsRoot.init(commandExecutor);
-            asyncResult.whenCompleted(new AsyncResultListener() {
+            Async<Result> asyncResult = vcsRoot.init(commandExecutor);
+            asyncResult.whenCompleted(new AsyncResultListener<Result>() {
                 @Override public void onComplete(Result result) {
-                    initResult.update(result);
+                    accumulator.update((InitResult) result);
                 }
             });
         }
-        return initResult;
+        return accumulator.asyncResult;
     }
 
-    public LogResult log(Date from, Date to) {
-        final LogResult logResult = new LogResult(vcsRoots.size());
+    public Async<LogResult> log(Date from, Date to) {
+        final Accumulator<LogResult> accumulator = new Accumulator<LogResult>(vcsRoots.size());
+
         for (VcsRoot vcsRoot : vcsRoots) {
-            AsyncResult asyncResult = vcsRoot.log(commandExecutor, from, to);
-            asyncResult.whenCompleted(new AsyncResultListener() {
+            Async<Result> asyncResult = vcsRoot.log(commandExecutor, from, to);
+            asyncResult.whenCompleted(new AsyncResultListener<Result>() {
                 @Override public void onComplete(Result result) {
-                    logResult.update(result);
+                    accumulator.update((LogResult) result);
                 }
             });
         }
-        return logResult;
+        return accumulator.asyncResult;
     }
 
 
-    public static class LogResult {
-        private final CountDownLatch expectedUpdates;
-        private final CopyOnWriteArrayList<String> errors = new CopyOnWriteArrayList<String>();
-        private final List<Commit> allCommits = new CopyOnWriteArrayList<Commit>();
+    private static class Accumulator<T extends Result> {
+        private final Async<T> asyncResult;
+        private Result mergedResult;
 
-        public LogResult(int expectedUpdates) {
-            this.expectedUpdates = new CountDownLatch(expectedUpdates);
+        public Accumulator(int expectedResults) {
+            this.asyncResult = new Async<T>(expectedResults);
         }
 
-        public void update(Result result) {
-            if (result.successful) {
-                allCommits.addAll(((GitLog.SuccessfulResult) result).commits);
+        public synchronized void update(T result) {
+            if (mergedResult == null) {
+                mergedResult = result;
             } else {
-                errors.add(((GitLog.FailedResult) result).stderr);
+                mergedResult = mergedResult.mergeWith(result);
             }
-            expectedUpdates.countDown();
+
+            //noinspection unchecked
+            asyncResult.completeWith((T) mergedResult);
+        }
+    }
+
+    public static class LogResult implements Result {
+        private final List<Commit> commits;
+        private final List<String> errors;
+
+        public LogResult(List<Commit> commits, List<String> errors) {
+            this.commits = commits;
+            this.errors = errors;
         }
 
-        public boolean isComplete() {
-            return expectedUpdates.getCount() == 0;
-        }
-
-        public LogResult awaitCompletion() {
-            try {
-                expectedUpdates.await();
-            } catch (InterruptedException ignored) {
-            }
-            return this;
+        public LogResult mergeWith(Result result) {
+            LogResult logResult = (LogResult) result;
+            List<Commit> newCommits = new ArrayList<Commit>(commits);
+            List<String> newErrors = new ArrayList<String>(errors);
+            newCommits.addAll(logResult.commits);
+            newErrors.addAll(logResult.errors);
+            return new LogResult(newCommits, newErrors);
         }
 
         public boolean isSuccessful() {
@@ -84,8 +96,8 @@ public class VcsProject {
         }
 
         public List<Commit> getCommits() {
-            List<Commit> commits = new ArrayList<Commit>(allCommits);
-            Collections.sort(commits, new Comparator<Commit>() {
+            List<Commit> commits = new ArrayList<Commit>(this.commits);
+            sort(commits, new Comparator<Commit>() {
                 @Override public int compare(Commit o1, Commit o2) {
                     return new Long(o1.commitDate.getTime()).compareTo(o2.commitDate.getTime());
                 }
@@ -94,39 +106,29 @@ public class VcsProject {
         }
     }
 
-    public static class InitResult {
-        private final CountDownLatch expectedUpdates;
-        private final CopyOnWriteArrayList<String> errors = new CopyOnWriteArrayList<String>();
+    public static class InitResult implements Result {
+        private final List<String> errors;
 
-        public InitResult(int expectedUpdates) {
-            this.expectedUpdates = new CountDownLatch(expectedUpdates);
+        public InitResult() {
+            this(new ArrayList<String>());
         }
 
-        private void update(Result result) {
-            if (!result.successful) {
-                errors.add(((GitClone.FailedResult) result).stderr);
-            }
-            expectedUpdates.countDown();
+        public InitResult(List<String> errors) {
+            this.errors = errors;
         }
 
-        public boolean isComplete() {
-            return expectedUpdates.getCount() == 0;
-        }
-
-        public InitResult awaitCompletion() {
-            try {
-                expectedUpdates.await();
-            } catch (InterruptedException ignored) {
-            }
-            return this;
-        }
-
-        public boolean isSuccessful() {
-            return errors.isEmpty();
+        @Override public Result mergeWith(Result result) {
+            List<String> newErrors = new ArrayList<String>(errors);
+            newErrors.addAll(((InitResult) result).errors);
+            return new InitResult(newErrors);
         }
 
         public List<String> errors() {
             return errors;
+        }
+
+        public boolean isSuccessful() {
+            return errors.isEmpty();
         }
     }
 }

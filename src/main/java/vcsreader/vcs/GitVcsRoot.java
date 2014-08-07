@@ -2,10 +2,11 @@ package vcsreader.vcs;
 
 import vcsreader.CommandExecutor;
 import vcsreader.VcsRoot;
+import vcsreader.lang.Async;
 
 import java.util.Date;
 
-import static vcsreader.CommandExecutor.AsyncResult;
+import static vcsreader.CommandExecutor.Result;
 
 public class GitVcsRoot implements VcsRoot {
     private final String pathToProject;
@@ -16,11 +17,11 @@ public class GitVcsRoot implements VcsRoot {
         this.repositoryUrl = repositoryUrl;
     }
 
-    @Override public AsyncResult init(CommandExecutor commandExecutor) {
+    @Override public Async<Result> init(CommandExecutor commandExecutor) {
         return commandExecutor.execute(new GitClone(repositoryUrl, pathToProject));
     }
 
-    @Override public AsyncResult log(CommandExecutor commandExecutor, Date from, Date to) {
+    @Override public Async<Result> log(CommandExecutor commandExecutor, Date from, Date to) {
         return commandExecutor.execute(new GitLog(pathToProject, from, to));
     }
 }

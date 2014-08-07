@@ -1,6 +1,9 @@
 package vcsreader.vcs;
 
 import vcsreader.CommandExecutor;
+import vcsreader.VcsProject;
+
+import static java.util.Arrays.asList;
 
 public class GitClone implements CommandExecutor.Command {
     private final String repositoryUrl;
@@ -15,9 +18,9 @@ public class GitClone implements CommandExecutor.Command {
         ShellCommand shellCommand = gitClone("/usr/bin/git", repositoryUrl, localPath);
         boolean successful = (shellCommand.exitValue() == 0);
         if (successful) {
-            return new SuccessfulResult();
+            return new VcsProject.InitResult();
         } else {
-            return new FailedResult(shellCommand.stderr());
+            return new VcsProject.InitResult(asList(shellCommand.stderr()));
         }
     }
 
@@ -51,20 +54,5 @@ public class GitClone implements CommandExecutor.Command {
                 "repositoryUrl='" + repositoryUrl + '\'' +
                 ", localPath='" + localPath + '\'' +
                 '}';
-    }
-
-    public static class SuccessfulResult extends CommandExecutor.Result {
-        public SuccessfulResult() {
-            super(true);
-        }
-    }
-
-    public static class FailedResult extends CommandExecutor.Result {
-        public final String stderr;
-
-        public FailedResult(String stderr) {
-            super(false);
-            this.stderr = stderr;
-        }
     }
 }

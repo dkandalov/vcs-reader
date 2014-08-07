@@ -3,11 +3,13 @@ package vcsreader.vcs;
 import vcsreader.Change;
 import vcsreader.CommandExecutor;
 import vcsreader.Commit;
+import vcsreader.VcsProject;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static vcsreader.lang.StringUtil.split;
 
 public class GitLog implements CommandExecutor.Command {
@@ -23,11 +25,9 @@ public class GitLog implements CommandExecutor.Command {
 
     @Override public CommandExecutor.Result execute() {
         ShellCommand shellCommand = GitShellCommands.gitLog(folder, fromDate, toDate);
-        if (shellCommand.exitValue() == 0) {
-            return new SuccessfulResult(parseListOfCommits(shellCommand.stdout()));
-        } else {
-            return new FailedResult(shellCommand.stderr());
-        }
+        List<Commit> commits = parseListOfCommits(shellCommand.stdout());
+        List<String> errors = (shellCommand.stderr().trim().isEmpty() ? new ArrayList<String>() : asList(shellCommand.stderr()));
+        return new VcsProject.LogResult(commits, errors);
     }
 
     private static List<Commit> parseListOfCommits(String stdout) {
@@ -144,23 +144,5 @@ public class GitLog implements CommandExecutor.Command {
                 ", fromDate=" + fromDate +
                 ", toDate=" + toDate +
                 '}';
-    }
-
-    public static class SuccessfulResult extends CommandExecutor.Result {
-        public final List<Commit> commits;
-
-        public SuccessfulResult(List<Commit> commits) {
-            super(true);
-            this.commits = commits;
-        }
-    }
-
-    public static class FailedResult extends CommandExecutor.Result {
-        public final String stderr;
-
-        public FailedResult(String stderr) {
-            super(false);
-            this.stderr = stderr;
-        }
     }
 }
