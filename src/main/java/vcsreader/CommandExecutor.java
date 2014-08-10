@@ -7,7 +7,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class CommandExecutor {
-    private final Executor executor = Executors.newFixedThreadPool(10, new NamedThreadFactory());
+    private final Executor executor = Executors.newFixedThreadPool(10, new NamedThreadFactory("CommandExecutor-"));
 
     public Async<Result> execute(final Command command) {
         final Async<Result> asyncResult = new Async<Result>();

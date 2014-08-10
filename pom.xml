@@ -6,7 +6,7 @@
     <groupId>vcs-reader</groupId>
     <artifactId>vcs-reader</artifactId>
     <name>vcs-reader</name>
-    <version>0.0-SNAPSHOT</version>
+    <version>0.1</version>
 
     <properties>
         <maven.compiler.target>1.6</maven.compiler.target>
@@ -34,6 +34,12 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>annotations</artifactId>
+            <version>5.1</version>
+        </dependency>
+
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
@@ -67,9 +73,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.testinfected.hamcrest-matchers</groupId>
-            <artifactId>core-matchers</artifactId>
-            <version>1.6</version>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+            <version>1.3</version>
             <scope>test</scope>
         </dependency>
 

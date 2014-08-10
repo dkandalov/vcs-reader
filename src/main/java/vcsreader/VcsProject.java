@@ -1,5 +1,6 @@
 package vcsreader;
 
+import org.jetbrains.annotations.NotNull;
 import vcsreader.lang.Async;
 import vcsreader.lang.AsyncResultListener;
 
@@ -100,8 +101,8 @@ public class VcsProject {
         public List<Commit> getCommits() {
             List<Commit> commits = new ArrayList<Commit>(this.commits);
             sort(commits, new Comparator<Commit>() {
-                @Override public int compare(Commit o1, Commit o2) {
-                    return new Long(o1.commitDate.getTime()).compareTo(o2.commitDate.getTime());
+                @Override public int compare(@NotNull Commit commit1, @NotNull Commit commit2) {
+                    return new Long(commit1.commitDate.getTime()).compareTo(commit2.commitDate.getTime());
                 }
             });
             return commits;
