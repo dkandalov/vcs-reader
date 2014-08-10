@@ -30,19 +30,18 @@ class VcsProject_IntegrationTest {
         def project = new VcsProject(vcsRoots, new CommandExecutor())
         project.init().awaitCompletion()
 
-        def logResult = project.log(date("01/01/2013"), date("11/08/2015")).awaitCompletion()
+        def logResult = project.log(date("10/08/2014"), date("11/08/2014")).awaitCompletion()
         assert logResult.errors() == []
         assert logResult.isSuccessful()
 
+        assert logResult.commits.size() == 1
         assert logResult.commits == [
                 new Commit(
                         firstRevision,
                         dateTime("14:00:00 10/08/2014"),
                         "Dmitry Kandalov",
                         "initial commit",
-                        [
-                            new Change(NEW, "file1.txt", firstRevision, noRevision)
-                        ]
+                        [new Change(NEW, "file1.txt", firstRevision, noRevision)]
                 )
         ]
     }

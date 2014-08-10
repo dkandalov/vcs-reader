@@ -6,7 +6,6 @@ import vcsreader.Commit;
 import vcsreader.VcsProject;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,9 +34,10 @@ class GitLog implements CommandExecutor.Command {
     }
 
     static ShellCommand gitLog(String gitPath, String folder, Date fromDate, Date toDate) {
-        String dateRange = dateRange(fromDate, toDate);
+        String from = "--after=" + Long.toString(fromDate.getTime() / 1000);
+        String to = "--before=" + Long.toString(toDate.getTime() / 1000);
         String showFileStatus = "--name-status"; // see --diff-filter at https://www.kernel.org/pub/software/scm/git/docs/git-log.html
-        ShellCommand shellCommand = new ShellCommand(gitPath, "log", logFormat(), dateRange, showFileStatus);
+        ShellCommand shellCommand = new ShellCommand(gitPath, "log", logFormat(), from, to, showFileStatus);
         return shellCommand.execute(new File(folder));
     }
 
@@ -59,13 +59,6 @@ class GitLog implements CommandExecutor.Command {
                 commitDate + fieldSeparator +
                 authorName + fieldSeparator +
                 subject + fieldSeparator;
-    }
-
-    private static String dateRange(Date fromDate, Date toDate) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String from = dateFormat.format(fromDate);
-        String to = dateFormat.format(toDate);
-        return "--after={" + from + "} --before={ " + to + "}";
     }
 
     private static List<Commit> parseListOfCommits(String stdout) {
