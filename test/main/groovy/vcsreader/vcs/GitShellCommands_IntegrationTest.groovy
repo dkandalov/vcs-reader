@@ -55,7 +55,7 @@ class GitShellCommands_IntegrationTest {
         new File(projectFolder).mkdirs()
     }
 
-    private static final String firstRevision = "84456ff5744d19a62c4440356a0f23ef8d391272"
+    static final String firstRevision = "42b7af950b1950db7dce2048428d363e58718168"
     static final String pathToGit = "/usr/bin/git"
     static final String projectFolder = "/tmp/git-commands-test/git-repo/"
     static final String prePreparedProject = "/tmp/test-repos/git-repo"

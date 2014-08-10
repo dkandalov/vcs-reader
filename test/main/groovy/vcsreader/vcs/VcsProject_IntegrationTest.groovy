@@ -11,6 +11,7 @@ import static vcsreader.Change.Type.NEW
 import static vcsreader.Change.noRevision
 import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.lang.DateTimeUtil.dateTime
+import static vcsreader.vcs.GitShellCommands_IntegrationTest.getFirstRevision
 import static vcsreader.vcs.GitShellCommands_IntegrationTest.getPrePreparedProject
 import static vcsreader.vcs.GitShellCommands_IntegrationTest.getProjectFolder
 
@@ -29,18 +30,18 @@ class VcsProject_IntegrationTest {
         def project = new VcsProject(vcsRoots, new CommandExecutor())
         project.init().awaitCompletion()
 
-        def logResult = project.log(date("01/01/2013"), date("01/01/2023")).awaitCompletion()
+        def logResult = project.log(date("01/01/2013"), date("11/08/2015")).awaitCompletion()
         assert logResult.errors() == []
         assert logResult.isSuccessful()
 
         assert logResult.commits == [
                 new Commit(
-                        "84456ff5744d19a62c4440356a0f23ef8d391272",
-                        dateTime("12:19:02 31/07/2014"),
+                        firstRevision,
+                        dateTime("14:00:00 10/08/2014"),
                         "Dmitry Kandalov",
                         "initial commit",
                         [
-                            new Change(NEW, "file1.txt", "84456ff5744d19a62c4440356a0f23ef8d391272", noRevision)
+                            new Change(NEW, "file1.txt", firstRevision, noRevision)
                         ]
                 )
         ]
