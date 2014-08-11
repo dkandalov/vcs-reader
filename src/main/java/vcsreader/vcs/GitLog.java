@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static vcsreader.CommandExecutor.Result;
 import static vcsreader.lang.StringUtil.split;
 
 class GitLog implements CommandExecutor.Command {
@@ -26,7 +27,7 @@ class GitLog implements CommandExecutor.Command {
         this.gitPath = gitPath;
     }
 
-    @Override public CommandExecutor.Result execute() {
+    @Override public Result execute() {
         ShellCommand shellCommand = gitLog(gitPath, folder, fromDate, toDate);
         List<Commit> commits = parseListOfCommits(shellCommand.stdout());
         List<String> errors = (shellCommand.stderr().trim().isEmpty() ? new ArrayList<String>() : asList(shellCommand.stderr()));

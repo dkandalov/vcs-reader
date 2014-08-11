@@ -36,15 +36,15 @@ public class VcsProject {
         return accumulator.asyncResult;
     }
 
-    public Async<LogResult> log(Date from, Date to) {
+    public Async<LogResult> log(Date fromDate, Date toDate) {
         final Accumulator<LogResult> accumulator = new Accumulator<LogResult>(vcsRoots.size());
-        for (VcsRoot vcsRoot : vcsRoots) {
+        for (final VcsRoot vcsRoot : vcsRoots) {
 
-            Async<Result> asyncResult = vcsRoot.log(commandExecutor, from, to);
+            Async<Result> asyncResult = vcsRoot.log(commandExecutor, fromDate, toDate);
 
             asyncResult.whenCompleted(new AsyncResultListener<Result>() {
                 @Override public void onComplete(Result result) {
-                    accumulator.update((LogResult) result);
+                    accumulator.update(((LogResult) result).setVcsRoot(vcsRoot));
                 }
             });
         }
@@ -69,6 +69,22 @@ public class VcsProject {
 
             //noinspection unchecked
             asyncResult.completeWith((T) mergedResult);
+        }
+    }
+
+    public static class LogContentResult implements Result {
+        private final String text;
+
+        public LogContentResult(String text) {
+            this.text = text;
+        }
+
+        public String text() {
+            return text;
+        }
+
+        @Override public Result mergeWith(Result result) {
+            throw new UnsupportedOperationException(); // TODO
         }
     }
 
@@ -106,6 +122,13 @@ public class VcsProject {
                 }
             });
             return commits;
+        }
+
+        public LogResult setVcsRoot(VcsRoot vcsRoot) {
+            for (Commit commit : commits) {
+                commit.setVcsRoot(vcsRoot);
+            }
+            return this;
         }
     }
 

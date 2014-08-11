@@ -5,13 +5,13 @@ import org.junit.Test
 import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.vcs.GitClone.gitClone
 import static vcsreader.vcs.GitLog.gitLog
-import static vcsreader.vcs.GitShellCommands.gitLogFile
+import static vcsreader.vcs.GitShow.gitLogFile
 
 class GitShellCommands_IntegrationTest {
 
     @Test void "git log file content"() {
         def command = gitLogFile(prePreparedProject, "file1.txt", firstRevision)
-        assert command.stdout().trim() == "abc"
+        assert command.stdout().trim() == "file1 content"
         assert command.stderr() == ""
         assert command.exitValue() == 0
     }
@@ -55,7 +55,7 @@ class GitShellCommands_IntegrationTest {
         new File(projectFolder).mkdirs()
     }
 
-    static final String firstRevision = "42b7af950b1950db7dce2048428d363e58718168"
+    static final String firstRevision = "c61f01f3c7b5fb7a1982dc5203c74c20ea0f6e4a"
     static final String pathToGit = "/usr/bin/git"
     static final String projectFolder = "/tmp/git-commands-test/git-repo/"
     static final String prePreparedProject = "/tmp/test-repos/git-repo"

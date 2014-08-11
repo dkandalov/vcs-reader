@@ -31,10 +31,12 @@ class VcsProject_IntegrationTest {
         project.init().awaitCompletion()
 
         def logResult = project.log(date("10/08/2014"), date("11/08/2014")).awaitCompletion()
+
         assert logResult.errors() == []
         assert logResult.isSuccessful()
 
         assert logResult.commits.size() == 1
+        assert logResult.commits.changes.size() == 1
         assert logResult.commits == [
                 new Commit(
                         firstRevision,
@@ -44,6 +46,20 @@ class VcsProject_IntegrationTest {
                         [new Change(NEW, "file1.txt", firstRevision, noRevision)]
                 )
         ]
+    }
+
+    @Test void "log content of a file"() {
+        def vcsRoots = [new GitVcsRoot(projectFolder, prePreparedProject, GitSettings.defaults())]
+        def project = new VcsProject(vcsRoots, new CommandExecutor())
+        project.init().awaitCompletion()
+
+        def logResult = project.log(date("10/08/2014"), date("11/08/2014")).awaitCompletion()
+
+        assert logResult.errors() == []
+        assert logResult.isSuccessful()
+
+        def change = logResult.commits.first().changes.first()
+        assert change.content() == "file1 content"
     }
 
     @Before void setup() {

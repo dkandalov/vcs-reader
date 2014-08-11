@@ -23,7 +23,11 @@ public class GitVcsRoot implements VcsRoot {
         return commandExecutor.execute(new GitClone(settings.pathToGit, repositoryUrl, pathToProject));
     }
 
-    @Override public Async<Result> log(CommandExecutor commandExecutor, Date from, Date to) {
-        return commandExecutor.execute(new GitLog(settings.pathToGit, pathToProject, from, to));
+    @Override public Async<Result> log(CommandExecutor commandExecutor, Date fromDate, Date toDate) {
+        return commandExecutor.execute(new GitLog(settings.pathToGit, pathToProject, fromDate, toDate));
+    }
+
+    @Override public Async<Result> contentOf(String fileName, String revision) {
+        return null;
     }
 }

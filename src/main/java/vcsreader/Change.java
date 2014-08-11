@@ -1,5 +1,9 @@
 package vcsreader;
 
+import java.util.concurrent.atomic.AtomicReference;
+
+import static vcsreader.CommandExecutor.Result;
+
 public class Change {
     public static final String noRevision = null;
 
@@ -7,12 +11,22 @@ public class Change {
     private final String fileName;
     private final String revision;
     private final String revisionBefore;
+    private final AtomicReference<VcsRoot> vcsRoot = new AtomicReference<VcsRoot>();
 
     public Change(Type changeType, String fileName, String revision, String revisionBefore) {
         this.changeType = changeType;
         this.fileName = fileName;
         this.revision = revision;
         this.revisionBefore = revisionBefore;
+    }
+
+    public String content() {
+        Result result = vcsRoot.get().contentOf(fileName, revision).awaitCompletion();
+        return ((VcsProject.LogContentResult)result).text();
+    }
+
+    public void setVcsRoot(VcsRoot vcsRoot) {
+        this.vcsRoot.set(vcsRoot);
     }
 
     public enum Type {

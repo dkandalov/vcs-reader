@@ -18,6 +18,12 @@ public class Commit {
         this.changes = changes;
     }
 
+    public void setVcsRoot(VcsRoot vcsRoot) {
+        for (Change change : changes) {
+            change.setVcsRoot(vcsRoot);
+        }
+    }
+
     @Override public String toString() {
         return "Commit{" +
                 revision + ',' +
