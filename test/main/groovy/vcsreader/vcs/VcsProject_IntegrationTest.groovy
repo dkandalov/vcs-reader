@@ -16,24 +16,19 @@ import static vcsreader.vcs.GitShellCommands_IntegrationTest.getPrePreparedProje
 import static vcsreader.vcs.GitShellCommands_IntegrationTest.getProjectFolder
 
 class VcsProject_IntegrationTest {
-    @Test void "initialize git project"() {
-        def vcsRoots = [new GitVcsRoot(projectFolder, prePreparedProject, GitSettings.defaults())]
-        def project = new VcsProject(vcsRoots, new CommandExecutor())
+    private final vcsRoots = [new GitVcsRoot(projectFolder, prePreparedProject, GitSettings.defaults())]
+    private final project = new VcsProject(vcsRoots, new CommandExecutor())
 
+    @Test void "initialize git project"() {
         def initResult = project.init().awaitCompletion()
         assert initResult.errors() == []
         assert initResult.isSuccessful()
     }
 
     @Test void "log project history single commit"() {
-        def vcsRoots = [new GitVcsRoot(projectFolder, prePreparedProject, GitSettings.defaults())]
-        def project = new VcsProject(vcsRoots, new CommandExecutor())
         project.init().awaitCompletion()
 
         def logResult = project.log(date("10/08/2014"), date("11/08/2014")).awaitCompletion()
-
-        assert logResult.errors() == []
-        assert logResult.isSuccessful()
 
         assert logResult.commits.size() == 1
         assert logResult.commits.changes.size() == 1
@@ -46,20 +41,19 @@ class VcsProject_IntegrationTest {
                         [new Change(NEW, "file1.txt", firstRevision, noRevision)]
                 )
         ]
+        assert logResult.errors() == []
+        assert logResult.isSuccessful()
     }
 
     @Test void "log content of a file"() {
-        def vcsRoots = [new GitVcsRoot(projectFolder, prePreparedProject, GitSettings.defaults())]
-        def project = new VcsProject(vcsRoots, new CommandExecutor())
         project.init().awaitCompletion()
 
         def logResult = project.log(date("10/08/2014"), date("11/08/2014")).awaitCompletion()
 
-        assert logResult.errors() == []
-        assert logResult.isSuccessful()
-
         def change = logResult.commits.first().changes.first()
         assert change.content() == "file1 content"
+        assert logResult.errors() == []
+        assert logResult.isSuccessful()
     }
 
     @Before void setup() {
