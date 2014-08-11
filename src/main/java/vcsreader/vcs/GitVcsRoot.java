@@ -12,6 +12,7 @@ public class GitVcsRoot implements VcsRoot {
     private final String pathToProject;
     private final String repositoryUrl;
     private final GitSettings settings;
+    private CommandExecutor commandExecutor;
 
     public GitVcsRoot(String pathToProject, String repositoryUrl, GitSettings settings) {
         this.pathToProject = pathToProject;
@@ -19,15 +20,19 @@ public class GitVcsRoot implements VcsRoot {
         this.settings = settings;
     }
 
-    @Override public Async<Result> init(CommandExecutor commandExecutor) {
+    @Override public Async<Result> init() {
         return commandExecutor.execute(new GitClone(settings.pathToGit, repositoryUrl, pathToProject));
     }
 
-    @Override public Async<Result> log(CommandExecutor commandExecutor, Date fromDate, Date toDate) {
+    @Override public Async<Result> log(Date fromDate, Date toDate) {
         return commandExecutor.execute(new GitLog(settings.pathToGit, pathToProject, fromDate, toDate));
     }
 
-    @Override public Async<Result> contentOf(String fileName, String revision) {
-        return null;
+    @Override public Async<Result> contentOf(String filePath, String revision) {
+        return commandExecutor.execute(new GitShow(pathToProject, filePath, revision));
+    }
+
+    @Override public void setCommandExecutor(CommandExecutor commandExecutor) {
+        this.commandExecutor = commandExecutor;
     }
 }

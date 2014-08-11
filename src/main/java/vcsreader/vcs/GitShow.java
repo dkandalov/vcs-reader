@@ -1,6 +1,7 @@
 package vcsreader.vcs;
 
 import vcsreader.CommandExecutor;
+import vcsreader.VcsProject;
 
 import java.io.File;
 
@@ -18,8 +19,12 @@ class GitShow implements CommandExecutor.Command {
     }
 
     @Override public Result execute() {
-        // TODO
-        return null;
+        ShellCommand shellCommand = gitLogFile(folder, filePath, revision);
+        return new VcsProject.LogContentResult(trimLastNewLine(shellCommand.stdout()), shellCommand.stderr());
+    }
+
+    private static String trimLastNewLine(String s) {
+        return s.endsWith("\n") ? s.substring(0, s.length() - 1) : s;
     }
 
     static ShellCommand gitLogFile(String folder, String filePath, String revision) {

@@ -14,18 +14,19 @@ import static vcsreader.CommandExecutor.*;
 
 public class VcsProject {
     private final List<VcsRoot> vcsRoots;
-    private final CommandExecutor commandExecutor;
 
     public VcsProject(List<VcsRoot> vcsRoots, CommandExecutor commandExecutor) {
         this.vcsRoots = vcsRoots;
-        this.commandExecutor = commandExecutor;
+        for (VcsRoot vcsRoot : vcsRoots) {
+            vcsRoot.setCommandExecutor(commandExecutor);
+        }
     }
 
     public Async<InitResult> init() {
         final Accumulator<InitResult> accumulator = new Accumulator<InitResult>(vcsRoots.size());
         for (VcsRoot vcsRoot : vcsRoots) {
 
-            Async<Result> asyncResult = vcsRoot.init(commandExecutor);
+            Async<Result> asyncResult = vcsRoot.init();
 
             asyncResult.whenCompleted(new AsyncResultListener<Result>() {
                 @Override public void onComplete(Result result) {
@@ -40,7 +41,7 @@ public class VcsProject {
         final Accumulator<LogResult> accumulator = new Accumulator<LogResult>(vcsRoots.size());
         for (final VcsRoot vcsRoot : vcsRoots) {
 
-            Async<Result> asyncResult = vcsRoot.log(commandExecutor, fromDate, toDate);
+            Async<Result> asyncResult = vcsRoot.log(fromDate, toDate);
 
             asyncResult.whenCompleted(new AsyncResultListener<Result>() {
                 @Override public void onComplete(Result result) {
@@ -74,17 +75,23 @@ public class VcsProject {
 
     public static class LogContentResult implements Result {
         private final String text;
+        private final String stderr;
 
-        public LogContentResult(String text) {
+        public LogContentResult(String text, String stderr) {
             this.text = text;
+            this.stderr = stderr;
         }
 
         public String text() {
             return text;
         }
 
+        public boolean isSuccessful() {
+            return stderr.isEmpty();
+        }
+
         @Override public Result mergeWith(Result result) {
-            throw new UnsupportedOperationException(); // TODO
+            throw new UnsupportedOperationException();
         }
     }
 

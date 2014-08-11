@@ -2,7 +2,7 @@ package vcsreader;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import static vcsreader.CommandExecutor.Result;
+import static vcsreader.VcsProject.LogContentResult;
 
 public class Change {
     public static final String noRevision = null;
@@ -21,8 +21,8 @@ public class Change {
     }
 
     public String content() {
-        Result result = vcsRoot.get().contentOf(fileName, revision).awaitCompletion();
-        return ((VcsProject.LogContentResult)result).text();
+        LogContentResult result = (LogContentResult) vcsRoot.get().contentOf(fileName, revision).awaitCompletion();
+        return result.isSuccessful() ? result.text() : null;
     }
 
     public void setVcsRoot(VcsRoot vcsRoot) {
