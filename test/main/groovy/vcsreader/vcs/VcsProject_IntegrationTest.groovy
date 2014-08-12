@@ -61,8 +61,8 @@ class VcsProject_IntegrationTest {
                         author,
                         "added file2, file3",
                         [
-                                new Change(NEW, "file2.txt", secondRevision, firstRevision),
-                                new Change(NEW, "file3.txt", secondRevision, firstRevision)
+                            new Change(NEW, "file2.txt", secondRevision, firstRevision),
+                            new Change(NEW, "file3.txt", secondRevision, firstRevision)
                         ]
                 )
         ])
@@ -81,8 +81,8 @@ class VcsProject_IntegrationTest {
                         author,
                         "modified file2, file3",
                         [
-                                new Change(MODIFICATION, "file2.txt", thirdRevision, secondRevision),
-                                new Change(MODIFICATION, "file3.txt", thirdRevision, secondRevision)
+                            new Change(MODIFICATION, "file2.txt", thirdRevision, secondRevision),
+                            new Change(MODIFICATION, "file3.txt", thirdRevision, secondRevision)
                         ]
                 )
         ])
@@ -100,7 +100,7 @@ class VcsProject_IntegrationTest {
                         dateTime("14:00:00 13/08/2014"),
                         author,
                         "moved file1",
-                        [new Change(MOVED, "file1.txt", revisions[3], revisions[2])]
+                        [new Change(MOVED, "folder1/file1.txt", "file1.txt", revisions[3], revisions[2])]
                 )
         ])
         assert logResult.errors() == []

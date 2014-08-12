@@ -72,6 +72,7 @@ class GitLog implements CommandExecutor.Command {
     }
 
     static ShellCommand gitLogRenames(String gitPath, String folder, String revision) {
+        // based on git4idea.history.GitHistoryUtils#getFirstCommitRenamePath
         ShellCommand shellCommand = new ShellCommand(gitPath, "show", "-M", "--pretty=format:", "--name-status", revision);
         return shellCommand.execute(new File(folder));
     }
@@ -149,8 +150,12 @@ class GitLog implements CommandExecutor.Command {
 
         List<String> values = split(s, "\t");
         Change.Type changeType = parseChangeType(values.get(0));
-        String fileName = values.get(1);
-        return new Change(changeType, fileName, revision, revisionBefore);
+
+        boolean hasRenames = values.size() > 2;
+        String fileName = hasRenames ? values.get(2) : values.get(1);
+        String fileNameBefore = hasRenames ? values.get(1) : Change.noFileName;
+
+        return new Change(changeType, fileName, fileNameBefore, revision, revisionBefore);
     }
 
     private static Change.Type parseChangeType(String s) {
