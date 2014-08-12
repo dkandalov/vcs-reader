@@ -107,6 +107,23 @@ class VcsProject_IntegrationTest {
         assert logResult.isSuccessful()
     }
 
+    @Test void "log moved and renamed file commit"() {
+        project.init().awaitCompletion()
+        def logResult = project.log(date("14/08/2014"), date("15/08/2014")).awaitCompletion()
+
+        assertEqualCommits(logResult.commits, [
+                new Commit(
+                        revisions[4], revisions[3],
+                        dateTime("14:00:00 14/08/2014"),
+                        author,
+                        "moved and renamed file1",
+                        [new Change(MOVED, "folder2/renamed_file1.txt", "folder1/file1.txt", revisions[4], revisions[3])]
+                )
+        ])
+        assert logResult.errors() == []
+        assert logResult.isSuccessful()
+    }
+
     @Test void "log content of a file"() {
         project.init().awaitCompletion()
         def logResult = project.log(date("10/08/2014"), date("11/08/2014")).awaitCompletion()
