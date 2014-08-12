@@ -8,20 +8,17 @@ import vcsreader.VcsProject
 
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
-import static vcsreader.Change.Type.DELETED
-import static vcsreader.Change.Type.MODIFICATION
-import static vcsreader.Change.Type.MOVED
-import static vcsreader.Change.Type.NEW
+import static vcsreader.Change.Type.*
 import static vcsreader.Change.noRevision
 import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.lang.DateTimeUtil.dateTime
-import static GitIntegrationTestConfig.*
+import static vcsreader.vcs.GitIntegrationTestConfig.*
 
 class VcsProject_GitIntegrationTest {
     private final vcsRoots = [new GitVcsRoot(projectFolder, prePreparedProject, GitSettings.defaults())]
     private final project = new VcsProject(vcsRoots, new CommandExecutor())
 
-    @Test void "initialize git project"() {
+    @Test void "initialize new git project"() {
         def initResult = project.init().awaitCompletion()
         assert initResult.errors() == []
         assert initResult.isSuccessful()
@@ -148,6 +145,18 @@ class VcsProject_GitIntegrationTest {
 
         def change = logResult.commits.first().changes.first()
         assert change.content() == "file1 content"
+        assert change.contentBefore() == null
+        assert logResult.errors() == []
+        assert logResult.isSuccessful()
+    }
+
+    @Test void "log previous content of a file"() {
+        project.init().awaitCompletion()
+        def logResult = project.log(date("12/08/2014"), date("13/08/2014")).awaitCompletion()
+
+        def change = logResult.commits.first().changes.first()
+        assert change.content() == "file2 new content"
+        assert change.contentBefore() == "file2 content"
         assert logResult.errors() == []
         assert logResult.isSuccessful()
     }

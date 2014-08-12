@@ -153,7 +153,7 @@ class GitLog implements CommandExecutor.Command {
 
         boolean hasRenames = values.size() > 2;
         String fileName = hasRenames ? values.get(2) : values.get(1);
-        String fileNameBefore = hasRenames ? values.get(1) : Change.noFileName;
+        String fileNameBefore = hasRenames ? values.get(1) : fileName;
 
         return new Change(changeType, fileName, fileNameBefore, revision, revisionBefore);
     }

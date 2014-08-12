@@ -5,8 +5,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static vcsreader.VcsProject.LogContentResult;
 
 public class Change {
-    public static final String noRevision = null;
-    public static final String noFileName = null;
+    public static final String noRevision = "noRevision";
 
     public final Type changeType;
     private final String fileName;
@@ -16,7 +15,7 @@ public class Change {
     private final AtomicReference<VcsRoot> vcsRoot = new AtomicReference<VcsRoot>();
 
     public Change(Type changeType, String fileName, String revision, String revisionBefore) {
-        this(changeType, fileName, noFileName, revision, revisionBefore);
+        this(changeType, fileName, fileName, revision, revisionBefore);
     }
 
     public Change(Type changeType, String fileName, String fileNameBefore, String revision, String revisionBefore) {
@@ -30,6 +29,14 @@ public class Change {
     public String content() {
         // TODO async version
         LogContentResult result = (LogContentResult) vcsRoot.get().contentOf(fileName, revision).awaitCompletion();
+        return result.isSuccessful() ? result.text() : null;
+    }
+
+    public String contentBefore() {
+        // TODO async version
+        if (noRevision.equals(revisionBefore)) return null;
+
+        LogContentResult result = (LogContentResult) vcsRoot.get().contentOf(fileNameBefore, revisionBefore).awaitCompletion();
         return result.isSuccessful() ? result.text() : null;
     }
 
