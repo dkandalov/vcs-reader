@@ -10,13 +10,13 @@ def commit(message, date, author)
   puts `GIT_COMMITTER_DATE="#{date}" git commit --amend --author "#{author}" --date "#{date}" -m "#{message}"`
 end
 
-def replace(pattern, replacement, in_file)
-  text = File.read(in_file)
+def replace(pattern, replacement, file_name)
+  text = File.read(file_name)
   text = text.gsub(pattern, replacement)
-  File.open(in_file, "w") { |file| file.puts text }
+  File.open(file_name, "w") { |file| file.puts text }
 end
 
-def commit_hashes
+def log_commit_hashes
   log = `git log`
   log.split("\n").
       delete_if { |line| not line.include?("commit ") }.
@@ -24,16 +24,17 @@ def commit_hashes
       reverse
 end
 
-def update_test_config
+def update_test_config(commit_hashes)
   hashes_literal = commit_hashes.collect { |hash| '"' + hash + '"' }.join(",")
   replace(
       /def revisions = \[.*\]/,
       "def revisions = [#{hashes_literal}]",
-      "/Users/dima/IdeaProjects/vcs-reader/test/main/groovy/vcsreader/vcs/IntegrationTestConfig.groovy"
+      "./test/main/groovy/vcsreader/vcs/GitIntegrationTestConfig.groovy"
   )
 end
 
 author = "Some Author <some.author@mail.com>"
+commit_hashes = []
 
 Dir.chdir(base_dir) do
   puts `git init`
@@ -57,6 +58,10 @@ Dir.chdir(base_dir) do
   puts `mv folder1/file1.txt folder2/renamed_file1.txt`
   commit "moved and renamed file1", "Aug 14 15:00:00 2014 +0100", author
 
-  update_test_config
+  puts `rm folder2/renamed_file1.txt`
+  commit "deleted file1", "Aug 15 15:00:00 2014 +0100", author
+
+  commit_hashes = log_commit_hashes
 end
 
+update_test_config(commit_hashes)

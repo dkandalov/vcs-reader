@@ -8,15 +8,16 @@ import vcsreader.VcsProject
 
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
+import static vcsreader.Change.Type.DELETED
 import static vcsreader.Change.Type.MODIFICATION
 import static vcsreader.Change.Type.MOVED
 import static vcsreader.Change.Type.NEW
 import static vcsreader.Change.noRevision
 import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.lang.DateTimeUtil.dateTime
-import static vcsreader.vcs.IntegrationTestConfig.*
+import static GitIntegrationTestConfig.*
 
-class VcsProject_IntegrationTest {
+class VcsProject_GitIntegrationTest {
     private final vcsRoots = [new GitVcsRoot(projectFolder, prePreparedProject, GitSettings.defaults())]
     private final project = new VcsProject(vcsRoots, new CommandExecutor())
 
@@ -118,6 +119,23 @@ class VcsProject_IntegrationTest {
                         author,
                         "moved and renamed file1",
                         [new Change(MOVED, "folder2/renamed_file1.txt", "folder1/file1.txt", revisions[4], revisions[3])]
+                )
+        ])
+        assert logResult.errors() == []
+        assert logResult.isSuccessful()
+    }
+
+    @Test void "log deleted file"() {
+        project.init().awaitCompletion()
+        def logResult = project.log(date("15/08/2014"), date("16/08/2014")).awaitCompletion()
+
+        assertEqualCommits(logResult.commits, [
+                new Commit(
+                        revisions[5], revisions[4],
+                        dateTime("14:00:00 15/08/2014"),
+                        author,
+                        "deleted file1",
+                        [new Change(DELETED, "folder2/renamed_file1.txt", revisions[5], revisions[4])]
                 )
         ])
         assert logResult.errors() == []

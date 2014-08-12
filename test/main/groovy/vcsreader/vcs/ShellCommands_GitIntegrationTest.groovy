@@ -7,13 +7,13 @@ import static vcsreader.vcs.GitClone.gitClone
 import static vcsreader.vcs.GitLog.gitLog
 import static vcsreader.vcs.GitLog.gitLogRenames
 import static vcsreader.vcs.GitShow.gitLogFile
-import static vcsreader.vcs.IntegrationTestConfig.firstRevision
-import static vcsreader.vcs.IntegrationTestConfig.pathToGit
-import static vcsreader.vcs.IntegrationTestConfig.prePreparedProject
-import static vcsreader.vcs.IntegrationTestConfig.projectFolder
-import static vcsreader.vcs.IntegrationTestConfig.revisions
+import static GitIntegrationTestConfig.firstRevision
+import static GitIntegrationTestConfig.pathToGit
+import static GitIntegrationTestConfig.prePreparedProject
+import static GitIntegrationTestConfig.projectFolder
+import static GitIntegrationTestConfig.revisions
 
-class GitShellCommands_IntegrationTest {
+class ShellCommands_GitIntegrationTest {
 
     @Test void "git log file content"() {
         def command = gitLogFile(prePreparedProject, "file1.txt", firstRevision)
