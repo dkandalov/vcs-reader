@@ -10,15 +10,31 @@ def commit(message, date, author)
   puts `GIT_COMMITTER_DATE="#{date}" git commit --amend --author "#{author}" --date "#{date}" -m "#{message}"`
 end
 
-def print_commit_hashes
+def replace(pattern, replacement, in_file)
+  text = File.read(in_file)
+  text = text.gsub(pattern, replacement)
+  File.open(in_file, "w") { |file| file.puts text }
+end
+
+def commit_hashes
   log = `git log`
-  commit_hashes = log.split("\n").
+  log.split("\n").
       delete_if { |line| not line.include?("commit ") }.
-      collect { |line| line.gsub(/commit /, "") }
-  puts commit_hashes
+      collect { |line| line.gsub(/commit /, "") }.
+      reverse
+end
+
+def update_test_config
+  hashes_literal = commit_hashes.collect { |hash| '"' + hash + '"' }.join(",")
+  replace(
+      /def revisions = \[.*\]/,
+      "def revisions = [#{hashes_literal}]",
+      "/Users/dima/IdeaProjects/vcs-reader/test/main/groovy/vcsreader/vcs/IntegrationTestConfig.groovy"
+  )
 end
 
 author = "Some Author <some.author@mail.com>"
+
 Dir.chdir(base_dir) do
   puts `git init`
 
@@ -29,6 +45,10 @@ Dir.chdir(base_dir) do
   puts `echo "file3 content" > file3.txt`
   commit("added file2, file3", "Sun Aug 11 15:00:00 2014 +0100", author)
 
-  print_commit_hashes
+  puts `echo "file2 new content" > file2.txt`
+  puts `echo "file3 new content" > file3.txt`
+  commit("modified file2, file3", "Sun Aug 12 15:00:00 2014 +0100", author)
+
+  update_test_config
 end
 

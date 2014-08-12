@@ -21,6 +21,7 @@ public class Change {
     }
 
     public String content() {
+        // TODO async version
         LogContentResult result = (LogContentResult) vcsRoot.get().contentOf(fileName, revision).awaitCompletion();
         return result.isSuccessful() ? result.text() : null;
     }
