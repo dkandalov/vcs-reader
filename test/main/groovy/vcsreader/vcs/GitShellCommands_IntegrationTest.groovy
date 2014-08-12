@@ -6,6 +6,10 @@ import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.vcs.GitClone.gitClone
 import static vcsreader.vcs.GitLog.gitLog
 import static vcsreader.vcs.GitShow.gitLogFile
+import static vcsreader.vcs.IntegrationTestConfig.firstRevision
+import static vcsreader.vcs.IntegrationTestConfig.pathToGit
+import static vcsreader.vcs.IntegrationTestConfig.prePreparedProject
+import static vcsreader.vcs.IntegrationTestConfig.projectFolder
 
 class GitShellCommands_IntegrationTest {
 
@@ -55,9 +59,5 @@ class GitShellCommands_IntegrationTest {
         new File(projectFolder).mkdirs()
     }
 
-    static final String firstRevision = "c61f01f3c7b5fb7a1982dc5203c74c20ea0f6e4a"
-    static final String pathToGit = "/usr/bin/git"
-    static final String projectFolder = "/tmp/git-commands-test/git-repo/"
-    static final String prePreparedProject = "/tmp/test-repos/git-repo"
-    static final String nonExistentPath = "/tmp/non-existent-path"
+    private static final String nonExistentPath = "/tmp/non-existent-path"
 }
