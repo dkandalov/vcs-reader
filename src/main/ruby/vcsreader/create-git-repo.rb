@@ -5,7 +5,7 @@ raise("#{base_dir} already exists") if Dir.exist?(base_dir)
 FileUtils.mkpath(base_dir)
 
 def commit(message, date, author)
-  puts `git add .`
+  puts `git add --all .`
   puts `git commit -m "#{message}"`
   puts `GIT_COMMITTER_DATE="#{date}" git commit --amend --author "#{author}" --date "#{date}" -m "#{message}"`
 end
@@ -39,15 +39,19 @@ Dir.chdir(base_dir) do
   puts `git init`
 
   puts `echo "file1 content" > file1.txt`
-  commit("initial commit", "Sun Aug 10 15:00:00 2014 +0100", author)
+  commit("initial commit", "Aug 10 15:00:00 2014 +0100", author)
 
   puts `echo "file2 content" > file2.txt`
   puts `echo "file3 content" > file3.txt`
-  commit("added file2, file3", "Sun Aug 11 15:00:00 2014 +0100", author)
+  commit("added file2, file3", "Aug 11 15:00:00 2014 +0100", author)
 
   puts `echo "file2 new content" > file2.txt`
   puts `echo "file3 new content" > file3.txt`
-  commit("modified file2, file3", "Sun Aug 12 15:00:00 2014 +0100", author)
+  commit("modified file2, file3", "Aug 12 15:00:00 2014 +0100", author)
+
+  puts `mkdir folder1`
+  puts `mv file1.txt folder1/file1.txt`
+  commit("moved file1", "Aug 13 15:00:00 2014 +0100", author)
 
   update_test_config
 end

@@ -5,11 +5,13 @@ import org.junit.Test
 import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.vcs.GitClone.gitClone
 import static vcsreader.vcs.GitLog.gitLog
+import static vcsreader.vcs.GitLog.gitLogRenames
 import static vcsreader.vcs.GitShow.gitLogFile
 import static vcsreader.vcs.IntegrationTestConfig.firstRevision
 import static vcsreader.vcs.IntegrationTestConfig.pathToGit
 import static vcsreader.vcs.IntegrationTestConfig.prePreparedProject
 import static vcsreader.vcs.IntegrationTestConfig.projectFolder
+import static vcsreader.vcs.IntegrationTestConfig.revisions
 
 class GitShellCommands_IntegrationTest {
 
@@ -34,7 +36,15 @@ class GitShellCommands_IntegrationTest {
         assert command.exitValue() == 0
     }
 
-    @Test(expected = RuntimeException) void "failed git log"() {
+    @Test void "git log renames"() {
+        def command = gitLogRenames(pathToGit, prePreparedProject, revisions[3])
+        assert command.stdout().contains("R100")
+        assert command.stdout().contains("folder1/file1.txt")
+        assert command.stderr() == ""
+        assert command.exitValue() == 0
+    }
+
+    @Test(expected = RuntimeException) void "failed git log"() { // TODO no exception
         gitLog(pathToGit, nonExistentPath, date("01/01/2013"), date("01/01/2023"))
     }
 

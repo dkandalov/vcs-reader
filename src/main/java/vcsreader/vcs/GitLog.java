@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static vcsreader.Change.Type.*;
 import static vcsreader.CommandExecutor.Result;
 import static vcsreader.lang.StringUtil.split;
 
@@ -29,9 +30,37 @@ class GitLog implements CommandExecutor.Command {
 
     @Override public Result execute() {
         ShellCommand shellCommand = gitLog(gitPath, folder, fromDate, toDate);
+
         List<Commit> commits = parseListOfCommits(shellCommand.stdout());
+        commits = handleFileRenamesIn(commits);
+
         List<String> errors = (shellCommand.stderr().trim().isEmpty() ? new ArrayList<String>() : asList(shellCommand.stderr()));
         return new VcsProject.LogResult(commits, errors);
+    }
+
+    private List<Commit> handleFileRenamesIn(List<Commit> commits) {
+        List<Commit> result = new ArrayList<Commit>();
+        for (Commit commit : commits) {
+            if (hasPotentialRenames(commit)) {
+
+                ShellCommand shellCommand = gitLogRenames(gitPath, folder, commit.revision);
+                List<Change> updatedChanges = parseListOfChanges(shellCommand.stdout(), commit.revision, commit.revisionBefore);
+                commit = new Commit(commit.revision, commit.revisionBefore, commit.commitDate, commit.authorName, commit.comment, updatedChanges);
+
+            }
+            result.add(commit);
+        }
+        return result;
+    }
+
+    private static boolean hasPotentialRenames(Commit commit) {
+        boolean hasDeletions = false;
+        boolean hasAdditions = false;
+        for (Change change : commit.changes) {
+            if (change.changeType == DELETED) hasDeletions = true;
+            else if (change.changeType == NEW) hasAdditions = true;
+        }
+        return hasDeletions && hasAdditions;
     }
 
     static ShellCommand gitLog(String gitPath, String folder, Date fromDate, Date toDate) {
@@ -39,6 +68,11 @@ class GitLog implements CommandExecutor.Command {
         String to = "--before=" + Long.toString(toDate.getTime() / 1000);
         String showFileStatus = "--name-status"; // see --diff-filter at https://www.kernel.org/pub/software/scm/git/docs/git-log.html
         ShellCommand shellCommand = new ShellCommand(gitPath, "log", logFormat(), from, to, showFileStatus);
+        return shellCommand.execute(new File(folder));
+    }
+
+    static ShellCommand gitLogRenames(String gitPath, String folder, String revision) {
+        ShellCommand shellCommand = new ShellCommand(gitPath, "show", "-M", "--pretty=format:", "--name-status", revision);
         return shellCommand.execute(new File(folder));
     }
 
@@ -94,7 +128,7 @@ class GitLog implements CommandExecutor.Command {
         String comment = values.get(4);
         List<Change> changes = parseListOfChanges(values.get(5), revision, revisionBefore);
 
-        return new Commit(revision, commitDate, authorName, comment, changes);
+        return new Commit(revision, revisionBefore, commitDate, authorName, comment, changes);
     }
 
     private static List<Change> parseListOfChanges(String changesAsString, String revision, String revisionBefore) {
@@ -120,9 +154,6 @@ class GitLog implements CommandExecutor.Command {
     }
 
     private static Change.Type parseChangeType(String s) {
-        if (s.length() != 1)
-            throw new IllegalArgumentException("Git change type expected to be a char but was: '" + s + "'");
-
         // see "--diff-filter" at https://www.kernel.org/pub/software/scm/git/docs/git-log.html
         char added = 'A';
         char copied = 'C';
@@ -135,13 +166,13 @@ class GitLog implements CommandExecutor.Command {
 
         char c = s.charAt(0);
         if (c == added || c == copied) {
-            return Change.Type.NEW;
+            return NEW;
         } else if (c == modified || c == typeChanged || c == unmerged || c == unknown) {
-            return Change.Type.MODIFICATION;
+            return MODIFICATION;
         } else if (c == deleted) {
-            return Change.Type.DELETED;
+            return DELETED;
         } else if (c == renamed) {
-            return Change.Type.MOVED;
+            return MOVED;
         } else {
             throw new IllegalStateException("Unknown git change type: " + s);
         }

@@ -9,6 +9,7 @@ import vcsreader.VcsProject
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
 import static vcsreader.Change.Type.MODIFICATION
+import static vcsreader.Change.Type.MOVED
 import static vcsreader.Change.Type.NEW
 import static vcsreader.Change.noRevision
 import static vcsreader.lang.DateTimeUtil.date
@@ -31,7 +32,7 @@ class VcsProject_IntegrationTest {
 
         assertEqualCommits(logResult.commits, [
                 new Commit(
-                        firstRevision,
+                        firstRevision, noRevision,
                         dateTime("14:00:00 10/08/2014"),
                         author,
                         "initial commit",
@@ -48,20 +49,20 @@ class VcsProject_IntegrationTest {
 
         assertEqualCommits(logResult.commits, [
                 new Commit(
-                        firstRevision,
+                        firstRevision, noRevision,
                         dateTime("14:00:00 10/08/2014"),
                         author,
                         "initial commit",
                         [new Change(NEW, "file1.txt", firstRevision, noRevision)]
                 ),
                 new Commit(
-                        secondRevision,
+                        secondRevision, firstRevision,
                         dateTime("14:00:00 11/08/2014"),
                         author,
                         "added file2, file3",
                         [
-                            new Change(NEW, "file2.txt", secondRevision, firstRevision),
-                            new Change(NEW, "file3.txt", secondRevision, firstRevision)
+                                new Change(NEW, "file2.txt", secondRevision, firstRevision),
+                                new Change(NEW, "file3.txt", secondRevision, firstRevision)
                         ]
                 )
         ])
@@ -75,14 +76,31 @@ class VcsProject_IntegrationTest {
 
         assertEqualCommits(logResult.commits, [
                 new Commit(
-                        thirdRevision,
+                        thirdRevision, secondRevision,
                         dateTime("14:00:00 12/08/2014"),
                         author,
                         "modified file2, file3",
                         [
-                            new Change(MODIFICATION, "file2.txt", thirdRevision, secondRevision),
-                            new Change(MODIFICATION, "file3.txt", thirdRevision, secondRevision)
+                                new Change(MODIFICATION, "file2.txt", thirdRevision, secondRevision),
+                                new Change(MODIFICATION, "file3.txt", thirdRevision, secondRevision)
                         ]
+                )
+        ])
+        assert logResult.errors() == []
+        assert logResult.isSuccessful()
+    }
+
+    @Test void "log moved file commit"() {
+        project.init().awaitCompletion()
+        def logResult = project.log(date("13/08/2014"), date("14/08/2014")).awaitCompletion()
+
+        assertEqualCommits(logResult.commits, [
+                new Commit(
+                        revisions[3], revisions[2],
+                        dateTime("14:00:00 13/08/2014"),
+                        author,
+                        "moved file1",
+                        [new Change(MOVED, "file1.txt", revisions[3], revisions[2])]
                 )
         ])
         assert logResult.errors() == []

@@ -7,7 +7,7 @@ import static vcsreader.VcsProject.LogContentResult;
 public class Change {
     public static final String noRevision = null;
 
-    private final Type changeType;
+    public final Type changeType;
     private final String fileName;
     private final String revision;
     private final String revisionBefore;
