@@ -11,9 +11,9 @@ class GitClone implements CommandExecutor.Command {
     private final String pathToGit;
 
     public GitClone(String pathToGit, String repositoryUrl, String localPath) {
+        this.pathToGit = pathToGit;
         this.repositoryUrl = repositoryUrl;
         this.localPath = localPath;
-        this.pathToGit = pathToGit;
     }
 
     @Override public CommandExecutor.Result execute() {

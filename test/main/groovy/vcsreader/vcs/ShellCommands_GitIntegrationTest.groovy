@@ -10,8 +10,8 @@ import static GitLogFileContent.gitLogFileContent
 import static GitIntegrationTestConfig.firstRevision
 import static GitIntegrationTestConfig.pathToGit
 import static GitIntegrationTestConfig.prePreparedProject
-import static GitIntegrationTestConfig.projectFolder
 import static GitIntegrationTestConfig.revisions
+import static vcsreader.vcs.GitUpdate.gitUpdate
 
 class ShellCommands_GitIntegrationTest {
 
@@ -44,14 +44,15 @@ class ShellCommands_GitIntegrationTest {
         assert command.exitValue() == 0
     }
 
-    @Test(expected = RuntimeException) void "failed git log"() { // TODO no exception
+    @Test(expected = RuntimeException)
+    void "failed git log"() { // TODO no exception
         gitLog(pathToGit, nonExistentPath, date("01/01/2013"), date("01/01/2023"))
     }
 
     @Test void "clone repository"() {
         def command = gitClone(pathToGit, "file://" + prePreparedProject, projectFolder)
         assert command.stdout() == ""
-        assert command.stderr().trim() == "Cloning into '/tmp/git-commands-test/git-repo'..."
+        assert command.stderr().trim() == "Cloning into '${projectFolder}'..."
         assert command.exitValue() == 0
     }
 
@@ -59,15 +60,43 @@ class ShellCommands_GitIntegrationTest {
         def command = gitClone(pathToGit, "file://" + nonExistentPath, projectFolder)
         assert command.stdout() == ""
         assert command.stderr().startsWith(
-                "Cloning into '/tmp/git-commands-test/git-repo'...\n" +
+                "Cloning into '${projectFolder}'...\n" +
                 "fatal: '/tmp/non-existent-path' does not appear to be a git repository")
         assert command.exitValue() == 128
+    }
+
+    @Test void "update repository"() {
+        gitClone(pathToGit, "file://" + prePreparedProject, projectFolder)
+        def command = gitUpdate(pathToGit, projectFolder)
+        assert command.stdout() == "Already up-to-date.\n"
+        assert command.stderr().trim() == ""
+        assert command.exitValue() == 0
+    }
+
+    @Test(expected = RuntimeException) // TODO
+    void "failed update of non-existing repository"() {
+        gitUpdate(pathToGit, nonExistentPath)
+    }
+
+    @Test void "failed update without upstream repository"() {
+        gitClone(pathToGit, "file://" + prePreparedProject, projectFolder + "")
+        gitClone(pathToGit, "file://" + projectFolder, projectFolder2)
+        new File(projectFolder).deleteDir()
+
+        def command = gitUpdate(pathToGit, projectFolder2)
+        assert command.stdout() == ""
+        assert command.stderr().contains("fatal: Could not read from remote repository.")
+        assert command.exitValue() == 1
     }
 
     @Before void setup() {
         new File(projectFolder).deleteDir()
         new File(projectFolder).mkdirs()
+        new File(projectFolder2).deleteDir()
+        new File(projectFolder2).mkdirs()
     }
 
     private static final String nonExistentPath = "/tmp/non-existent-path"
+    private static final String projectFolder = "/tmp/git-commands-test/git-repo-${ShellCommands_GitIntegrationTest.simpleName}"
+    private static final String projectFolder2 = "/tmp/git-commands-test/git-repo-${ShellCommands_GitIntegrationTest.simpleName}-2"
 }

@@ -68,13 +68,13 @@ class GitLog implements CommandExecutor.Command {
         String to = "--before=" + Long.toString(toDate.getTime() / 1000);
         String showFileStatus = "--name-status"; // see --diff-filter at https://www.kernel.org/pub/software/scm/git/docs/git-log.html
         ShellCommand shellCommand = new ShellCommand(gitPath, "log", logFormat(), from, to, showFileStatus);
-        return shellCommand.execute(new File(folder));
+        return shellCommand.executeIn(new File(folder));
     }
 
     static ShellCommand gitLogRenames(String gitPath, String folder, String revision) {
         // based on git4idea.history.GitHistoryUtils#getFirstCommitRenamePath
         ShellCommand shellCommand = new ShellCommand(gitPath, "show", "-M", "--pretty=format:", "--name-status", revision);
-        return shellCommand.execute(new File(folder));
+        return shellCommand.executeIn(new File(folder));
     }
 
     private static String logFormat() {

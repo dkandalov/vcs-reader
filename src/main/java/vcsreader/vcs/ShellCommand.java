@@ -18,10 +18,10 @@ class ShellCommand {
     }
 
     public ShellCommand execute() {
-        return execute(CURRENT_DIRECTORY);
+        return executeIn(CURRENT_DIRECTORY);
     }
 
-    public ShellCommand execute(File directory) {
+    public ShellCommand executeIn(File directory) {
         BufferedReader stdoutReader = null;
         BufferedReader stderrReader = null;
         try {

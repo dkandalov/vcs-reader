@@ -28,7 +28,7 @@ class GitLogFileContent implements CommandExecutor.Command {
     }
 
     static ShellCommand gitLogFileContent(String folder, String filePath, String revision) {
-        return new ShellCommand("/usr/bin/git", "show", revision + ":" + filePath).execute(new File(folder));
+        return new ShellCommand("/usr/bin/git", "show", revision + ":" + filePath).executeIn(new File(folder));
     }
 
     @SuppressWarnings("RedundantIfStatement")

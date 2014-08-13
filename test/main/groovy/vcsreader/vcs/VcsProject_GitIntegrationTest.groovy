@@ -169,4 +169,6 @@ class VcsProject_GitIntegrationTest {
         new File(projectFolder).deleteDir()
         new File(projectFolder).mkdirs()
     }
+
+    private static final String projectFolder = "/tmp/git-commands-test/git-repo-${VcsProject_GitIntegrationTest.simpleName}/"
 }
