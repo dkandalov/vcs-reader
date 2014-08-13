@@ -1,13 +1,13 @@
 package vcsreader.vcs;
 
 import vcsreader.CommandExecutor;
-import vcsreader.VcsProject;
 
 import java.io.File;
 
 import static java.util.Arrays.asList;
+import static vcsreader.VcsProject.UpdateResult;
 
-public class GitUpdate implements CommandExecutor.Command {
+class GitUpdate implements CommandExecutor.Command<UpdateResult> {
     private final String pathToGit;
     private final String folder;
 
@@ -16,13 +16,13 @@ public class GitUpdate implements CommandExecutor.Command {
         this.folder = folder;
     }
 
-    @Override public CommandExecutor.Result execute() {
+    @Override public UpdateResult execute() {
         ShellCommand shellCommand = gitUpdate(pathToGit, folder);
         boolean successful = (shellCommand.exitValue() == 0);
         if (successful) {
-            return new VcsProject.UpdateResult();
+            return new UpdateResult();
         } else {
-            return new VcsProject.UpdateResult(asList(shellCommand.stderr()));
+            return new UpdateResult(asList(shellCommand.stderr()));
         }
     }
 

@@ -9,13 +9,13 @@ import java.util.concurrent.Executors;
 public class CommandExecutor {
     private final Executor executor = Executors.newFixedThreadPool(10, new NamedThreadFactory("CommandExecutor-"));
 
-    public Async<Result> execute(final Command command) {
-        final Async<Result> asyncResult = new Async<Result>();
+    public <T> Async<T> execute(final Command<T> command) {
+        final Async<T> asyncResult = new Async<T>();
         executor.execute(new Runnable() {
             @Override public void run() {
                 try {
 
-                    Result result = command.execute();
+                    T result = command.execute();
                     asyncResult.completeWith(result);
 
                 } catch (Exception e) {
@@ -26,11 +26,7 @@ public class CommandExecutor {
         return asyncResult;
     }
 
-    public interface Command {
-        Result execute();
-    }
-
-    public static interface Result {
-        Result mergeWith(Result result);
+    public interface Command<T> {
+        T execute();
     }
 }

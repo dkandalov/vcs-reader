@@ -4,14 +4,17 @@ import vcsreader.lang.Async;
 
 import java.util.Date;
 
+import static vcsreader.VcsProject.InitResult;
+import static vcsreader.VcsProject.UpdateResult;
+
 public interface VcsRoot {
-    Async<CommandExecutor.Result> init();
+    Async<InitResult> init();
 
-    Async<CommandExecutor.Result> update();
+    Async<UpdateResult> update();
 
-    Async<CommandExecutor.Result> log(Date fromDate, Date toDate);
+    Async<VcsProject.LogResult> log(Date fromDate, Date toDate);
 
-    Async<CommandExecutor.Result> contentOf(String fileName, String revision);
+    Async<VcsProject.LogContentResult> contentOf(String fileName, String revision);
 
     void setCommandExecutor(CommandExecutor commandExecutor);
 }

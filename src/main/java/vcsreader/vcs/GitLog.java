@@ -3,7 +3,6 @@ package vcsreader.vcs;
 import vcsreader.Change;
 import vcsreader.CommandExecutor;
 import vcsreader.Commit;
-import vcsreader.VcsProject;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,10 +11,10 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static vcsreader.Change.Type.*;
-import static vcsreader.CommandExecutor.Result;
+import static vcsreader.VcsProject.LogResult;
 import static vcsreader.lang.StringUtil.split;
 
-class GitLog implements CommandExecutor.Command {
+class GitLog implements CommandExecutor.Command<LogResult> {
     private final String folder;
     private final Date fromDate;
     private final Date toDate;
@@ -28,14 +27,14 @@ class GitLog implements CommandExecutor.Command {
         this.gitPath = gitPath;
     }
 
-    @Override public Result execute() {
+    @Override public LogResult execute() {
         ShellCommand shellCommand = gitLog(gitPath, folder, fromDate, toDate);
 
         List<Commit> commits = parseListOfCommits(shellCommand.stdout());
         commits = handleFileRenamesIn(commits);
 
         List<String> errors = (shellCommand.stderr().trim().isEmpty() ? new ArrayList<String>() : asList(shellCommand.stderr()));
-        return new VcsProject.LogResult(commits, errors);
+        return new LogResult(commits, errors);
     }
 
     private List<Commit> handleFileRenamesIn(List<Commit> commits) {

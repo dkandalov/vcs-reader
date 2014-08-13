@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.List;
 
 import static java.util.Collections.sort;
-import static vcsreader.CommandExecutor.*;
 
 public class VcsProject {
     private final List<VcsRoot> vcsRoots;
@@ -26,11 +25,11 @@ public class VcsProject {
         final Accumulator<InitResult> accumulator = new Accumulator<InitResult>(vcsRoots.size());
         for (VcsRoot vcsRoot : vcsRoots) {
 
-            Async<Result> asyncResult = vcsRoot.init();
+            Async<InitResult> asyncResult = vcsRoot.init();
 
-            asyncResult.whenCompleted(new AsyncResultListener<Result>() {
-                @Override public void onComplete(Result result) {
-                    accumulator.update((InitResult) result);
+            asyncResult.whenCompleted(new AsyncResultListener<InitResult>() {
+                @Override public void onComplete(InitResult result) {
+                    accumulator.update(result);
                 }
             });
         }
@@ -41,11 +40,11 @@ public class VcsProject {
         final Accumulator<UpdateResult> accumulator = new Accumulator<UpdateResult>(vcsRoots.size());
         for (VcsRoot vcsRoot : vcsRoots) {
 
-            Async<Result> asyncResult = vcsRoot.update();
+            Async<UpdateResult> asyncResult = vcsRoot.update();
 
-            asyncResult.whenCompleted(new AsyncResultListener<Result>() {
-                @Override public void onComplete(Result result) {
-                    accumulator.update((UpdateResult) result);
+            asyncResult.whenCompleted(new AsyncResultListener<UpdateResult>() {
+                @Override public void onComplete(UpdateResult result) {
+                    accumulator.update(result);
                 }
             });
         }
@@ -57,15 +56,20 @@ public class VcsProject {
         final Accumulator<LogResult> accumulator = new Accumulator<LogResult>(vcsRoots.size());
         for (final VcsRoot vcsRoot : vcsRoots) {
 
-            Async<Result> asyncResult = vcsRoot.log(fromDate, toDate);
+            Async<VcsProject.LogResult> asyncResult = vcsRoot.log(fromDate, toDate);
 
-            asyncResult.whenCompleted(new AsyncResultListener<Result>() {
-                @Override public void onComplete(Result result) {
-                    accumulator.update(((LogResult) result).setVcsRoot(vcsRoot));
+            asyncResult.whenCompleted(new AsyncResultListener<VcsProject.LogResult>() {
+                @Override public void onComplete(VcsProject.LogResult result) {
+                    accumulator.update(result.setVcsRoot(vcsRoot));
                 }
             });
         }
         return accumulator.asyncResult;
+    }
+
+
+    public static interface Result {
+        Result mergeWith(Result result);
     }
 
 

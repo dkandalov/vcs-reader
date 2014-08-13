@@ -1,13 +1,12 @@
 package vcsreader.vcs;
 
 import vcsreader.CommandExecutor;
-import vcsreader.VcsProject;
 
 import java.io.File;
 
-import static vcsreader.CommandExecutor.Result;
+import static vcsreader.VcsProject.LogContentResult;
 
-class GitLogFileContent implements CommandExecutor.Command {
+class GitLogFileContent implements CommandExecutor.Command<LogContentResult> {
     private final String folder;
     private final String filePath;
     private final String revision;
@@ -18,9 +17,9 @@ class GitLogFileContent implements CommandExecutor.Command {
         this.revision = revision;
     }
 
-    @Override public Result execute() {
+    @Override public LogContentResult execute() {
         ShellCommand shellCommand = gitLogFileContent(folder, filePath, revision);
-        return new VcsProject.LogContentResult(trimLastNewLine(shellCommand.stdout()), shellCommand.stderr());
+        return new LogContentResult(trimLastNewLine(shellCommand.stdout()), shellCommand.stderr());
     }
 
     private static String trimLastNewLine(String s) {

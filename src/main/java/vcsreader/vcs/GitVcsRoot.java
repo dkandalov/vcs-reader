@@ -1,12 +1,14 @@
 package vcsreader.vcs;
 
 import vcsreader.CommandExecutor;
+import vcsreader.VcsProject;
 import vcsreader.VcsRoot;
 import vcsreader.lang.Async;
 
 import java.util.Date;
 
-import static vcsreader.CommandExecutor.Result;
+import static vcsreader.VcsProject.InitResult;
+import static vcsreader.VcsProject.UpdateResult;
 
 public class GitVcsRoot implements VcsRoot {
     private final String pathToProject;
@@ -20,19 +22,19 @@ public class GitVcsRoot implements VcsRoot {
         this.settings = settings;
     }
 
-    @Override public Async<Result> init() {
+    @Override public Async<InitResult> init() {
         return commandExecutor.execute(new GitClone(settings.pathToGit, repositoryUrl, pathToProject));
     }
 
-    @Override public Async<Result> update() {
+    @Override public Async<UpdateResult> update() {
         return commandExecutor.execute(new GitUpdate(settings.pathToGit, pathToProject));
     }
 
-    @Override public Async<Result> log(Date fromDate, Date toDate) {
+    @Override public Async<VcsProject.LogResult> log(Date fromDate, Date toDate) {
         return commandExecutor.execute(new GitLog(settings.pathToGit, pathToProject, fromDate, toDate));
     }
 
-    @Override public Async<Result> contentOf(String filePath, String revision) {
+    @Override public Async<VcsProject.LogContentResult> contentOf(String filePath, String revision) {
         return commandExecutor.execute(new GitLogFileContent(pathToProject, filePath, revision));
     }
 

@@ -28,7 +28,7 @@ public class Change {
 
     public String content() {
         // TODO async version
-        LogContentResult result = (LogContentResult) vcsRoot.get().contentOf(fileName, revision).awaitCompletion();
+        LogContentResult result = vcsRoot.get().contentOf(fileName, revision).awaitCompletion();
         return result.isSuccessful() ? result.text() : null;
     }
 
@@ -36,7 +36,7 @@ public class Change {
         // TODO async version
         if (noRevision.equals(revisionBefore)) return null;
 
-        LogContentResult result = (LogContentResult) vcsRoot.get().contentOf(fileNameBefore, revisionBefore).awaitCompletion();
+        LogContentResult result = vcsRoot.get().contentOf(fileNameBefore, revisionBefore).awaitCompletion();
         return result.isSuccessful() ? result.text() : null;
     }
 
