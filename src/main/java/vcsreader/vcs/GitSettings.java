@@ -1,6 +1,6 @@
 package vcsreader.vcs;
 
-class GitSettings {
+public class GitSettings {
     public final String pathToGit;
 
     public GitSettings(String pathToGit) {

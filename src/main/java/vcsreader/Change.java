@@ -9,11 +9,18 @@ import static vcsreader.VcsProject.LogContentResult;
 public class Change {
     public static final String noRevision = "noRevision";
 
+    public enum Type {
+        MODIFICATION,
+        NEW,
+        DELETED,
+        MOVED
+    }
+
     public final Type changeType;
-    private final String fileName;
-    private final String fileNameBefore;
-    private final String revision;
-    private final String revisionBefore;
+    public final String fileName;
+    public final String fileNameBefore;
+    public final String revision;
+    public final String revisionBefore;
     private final AtomicReference<VcsRoot> vcsRoot = new AtomicReference<VcsRoot>();
 
     public Change(Type changeType, String fileName, String revision, String revisionBefore) {
@@ -50,13 +57,6 @@ public class Change {
 
     public void setVcsRoot(VcsRoot vcsRoot) {
         this.vcsRoot.set(vcsRoot);
-    }
-
-    public enum Type {
-        MODIFICATION,
-        NEW,
-        DELETED,
-        MOVED
     }
 
     @Override public String toString() {
