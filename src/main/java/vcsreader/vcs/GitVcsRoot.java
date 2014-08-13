@@ -29,7 +29,7 @@ public class GitVcsRoot implements VcsRoot {
     }
 
     @Override public Async<Result> contentOf(String filePath, String revision) {
-        return commandExecutor.execute(new GitShow(pathToProject, filePath, revision));
+        return commandExecutor.execute(new GitLogFileContent(pathToProject, filePath, revision));
     }
 
     @Override public void setCommandExecutor(CommandExecutor commandExecutor) {

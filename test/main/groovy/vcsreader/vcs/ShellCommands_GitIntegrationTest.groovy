@@ -6,7 +6,7 @@ import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.vcs.GitClone.gitClone
 import static vcsreader.vcs.GitLog.gitLog
 import static vcsreader.vcs.GitLog.gitLogRenames
-import static vcsreader.vcs.GitShow.gitLogFile
+import static GitLogFileContent.gitLogFileContent
 import static GitIntegrationTestConfig.firstRevision
 import static GitIntegrationTestConfig.pathToGit
 import static GitIntegrationTestConfig.prePreparedProject
@@ -16,14 +16,14 @@ import static GitIntegrationTestConfig.revisions
 class ShellCommands_GitIntegrationTest {
 
     @Test void "git log file content"() {
-        def command = gitLogFile(prePreparedProject, "file1.txt", firstRevision)
+        def command = gitLogFileContent(prePreparedProject, "file1.txt", firstRevision)
         assert command.stdout().trim() == "file1 content"
         assert command.stderr() == ""
         assert command.exitValue() == 0
     }
 
     @Test void "failed git log file content"() {
-        def command = gitLogFile(prePreparedProject, "non-existent file", firstRevision)
+        def command = gitLogFileContent(prePreparedProject, "non-existent file", firstRevision)
         assert command.stdout() == ""
         assert command.stderr().startsWith("fatal: Path 'non-existent file' does not exist")
         assert command.exitValue() == 128

@@ -7,19 +7,19 @@ import java.io.File;
 
 import static vcsreader.CommandExecutor.Result;
 
-class GitShow implements CommandExecutor.Command {
+class GitLogFileContent implements CommandExecutor.Command {
     private final String folder;
     private final String filePath;
     private final String revision;
 
-    GitShow(String folder, String filePath, String revision) {
+    GitLogFileContent(String folder, String filePath, String revision) {
         this.folder = folder;
         this.filePath = filePath;
         this.revision = revision;
     }
 
     @Override public Result execute() {
-        ShellCommand shellCommand = gitLogFile(folder, filePath, revision);
+        ShellCommand shellCommand = gitLogFileContent(folder, filePath, revision);
         return new VcsProject.LogContentResult(trimLastNewLine(shellCommand.stdout()), shellCommand.stderr());
     }
 
@@ -27,7 +27,7 @@ class GitShow implements CommandExecutor.Command {
         return s.endsWith("\n") ? s.substring(0, s.length() - 1) : s;
     }
 
-    static ShellCommand gitLogFile(String folder, String filePath, String revision) {
+    static ShellCommand gitLogFileContent(String folder, String filePath, String revision) {
         return new ShellCommand("/usr/bin/git", "show", revision + ":" + filePath).execute(new File(folder));
     }
 
@@ -36,11 +36,11 @@ class GitShow implements CommandExecutor.Command {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        GitShow gitShow = (GitShow) o;
+        GitLogFileContent gitLogFileContent = (GitLogFileContent) o;
 
-        if (filePath != null ? !filePath.equals(gitShow.filePath) : gitShow.filePath != null) return false;
-        if (folder != null ? !folder.equals(gitShow.folder) : gitShow.folder != null) return false;
-        if (revision != null ? !revision.equals(gitShow.revision) : gitShow.revision != null) return false;
+        if (filePath != null ? !filePath.equals(gitLogFileContent.filePath) : gitLogFileContent.filePath != null) return false;
+        if (folder != null ? !folder.equals(gitLogFileContent.folder) : gitLogFileContent.folder != null) return false;
+        if (revision != null ? !revision.equals(gitLogFileContent.revision) : gitLogFileContent.revision != null) return false;
 
         return true;
     }
