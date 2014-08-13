@@ -71,20 +71,20 @@ public class VcsProjectTest {
 
 
     private static class FakeCommandExecutor extends CommandExecutor {
-        private final List<Async<VcsProject.Result>> asyncResults = new ArrayList<Async<VcsProject.Result>>();
+        private final List<Async<Object>> asyncResults = new ArrayList<Async<Object>>();
         public final List<Command> commands = new ArrayList<Command>();
 
         @SuppressWarnings("unchecked")
-        @Override public Async<VcsProject.Result> execute(Command command) {
+        @Override public Async<Object> execute(Command command) {
             commands.add(command);
 
-            Async<VcsProject.Result> asyncResult = new Async<VcsProject.Result>();
+            Async<Object> asyncResult = new Async<Object>();
             asyncResults.add(asyncResult);
             return asyncResult;
         }
 
-        public void completeAllCallsWith(VcsProject.Result result) {
-            for (Async<VcsProject.Result> asyncResult : asyncResults) {
+        public void completeAllCallsWith(Object result) {
+            for (Async<Object> asyncResult : asyncResults) {
                 asyncResult.completeWith(result);
             }
         }

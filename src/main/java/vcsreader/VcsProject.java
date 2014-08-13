@@ -68,14 +68,14 @@ public class VcsProject {
     }
 
 
-    public static interface Result {
-        Result mergeWith(Result result);
+    private interface Mergeable {
+        Mergeable mergeWith(Mergeable result);
     }
 
 
-    private static class Accumulator<T extends Result> {
+    private static class Accumulator<T extends Mergeable> {
         private final Async<T> asyncResult;
-        private Result mergedResult;
+        private Mergeable mergedResult;
 
         public Accumulator(int expectedResults) {
             this.asyncResult = new Async<T>(expectedResults);
@@ -93,7 +93,7 @@ public class VcsProject {
         }
     }
 
-    public static class LogContentResult implements Result {
+    public static class LogContentResult {
         private final String text;
         private final String stderr;
 
@@ -109,13 +109,9 @@ public class VcsProject {
         public boolean isSuccessful() {
             return stderr.isEmpty();
         }
-
-        @Override public Result mergeWith(Result result) {
-            throw new UnsupportedOperationException();
-        }
     }
 
-    public static class LogResult implements Result {
+    public static class LogResult implements Mergeable {
         private final List<Commit> commits;
         private final List<String> errors;
 
@@ -124,7 +120,7 @@ public class VcsProject {
             this.errors = errors;
         }
 
-        public LogResult mergeWith(Result result) {
+        public LogResult mergeWith(Mergeable result) {
             LogResult logResult = (LogResult) result;
             List<Commit> newCommits = new ArrayList<Commit>(commits);
             List<String> newErrors = new ArrayList<String>(errors);
@@ -159,7 +155,7 @@ public class VcsProject {
         }
     }
 
-    public static class UpdateResult implements Result {
+    public static class UpdateResult implements Mergeable {
         private final List<String> errors;
 
         public UpdateResult() {
@@ -170,10 +166,10 @@ public class VcsProject {
             this.errors = errors;
         }
 
-        @Override public Result mergeWith(Result result) {
+        @Override public UpdateResult mergeWith(Mergeable result) {
             List<String> newErrors = new ArrayList<String>(errors);
             newErrors.addAll(((UpdateResult) result).errors);
-            return new InitResult(newErrors);
+            return new UpdateResult(newErrors);
         }
 
         public List<String> errors() {
@@ -185,7 +181,7 @@ public class VcsProject {
         }
     }
 
-    public static class InitResult implements Result {
+    public static class InitResult implements Mergeable {
         private final List<String> errors;
 
         public InitResult() {
@@ -196,7 +192,7 @@ public class VcsProject {
             this.errors = errors;
         }
 
-        @Override public Result mergeWith(Result result) {
+        @Override public InitResult mergeWith(Mergeable result) {
             List<String> newErrors = new ArrayList<String>(errors);
             newErrors.addAll(((InitResult) result).errors);
             return new InitResult(newErrors);
