@@ -49,7 +49,6 @@ public class VcsProject {
             });
         }
         return accumulator.asyncResult;
-
     }
 
     public Async<LogResult> log(Date fromDate, Date toDate) {
@@ -93,6 +92,8 @@ public class VcsProject {
     }
 
     public static class LogContentResult {
+        public static LogContentResult none = new LogContentResult(null, null);
+
         private final String text;
         private final String stderr;
 
@@ -106,7 +107,7 @@ public class VcsProject {
         }
 
         public boolean isSuccessful() {
-            return stderr.isEmpty();
+            return stderr != null && stderr.isEmpty();
         }
     }
 

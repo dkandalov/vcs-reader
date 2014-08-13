@@ -46,8 +46,8 @@ class VcsProject_GitIntegrationTest {
         new File(projectFolder).deleteDir()
 
         def updateResult = project.update().awaitCompletion()
-        assert updateResult.errors() == []
-        assert updateResult.isSuccessful()
+        assert !updateResult.isSuccessful()
+        assert updateResult.errors() != []
     }
 
     @Test void "log single commit from project history"() {

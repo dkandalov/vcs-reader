@@ -20,12 +20,13 @@ public class Async<T> {
         this.whenReadyCallback = listener;
     }
 
-    public void completeWith(T result) {
+    public Async<T> completeWith(T result) {
         resultReference.set(result);
         expectedUpdates.countDown();
         if (expectedUpdates.getCount() == 0 && whenReadyCallback != null) {
             whenReadyCallback.onComplete(result);
         }
+        return this;
     }
 
     public T awaitCompletion() {

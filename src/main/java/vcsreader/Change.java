@@ -1,5 +1,7 @@
 package vcsreader;
 
+import vcsreader.lang.Async;
+
 import java.util.concurrent.atomic.AtomicReference;
 
 import static vcsreader.VcsProject.LogContentResult;
@@ -27,17 +29,23 @@ public class Change {
     }
 
     public String content() {
-        // TODO async version
-        LogContentResult result = vcsRoot.get().contentOf(fileName, revision).awaitCompletion();
+        LogContentResult result = contentAsync().awaitCompletion();
         return result.isSuccessful() ? result.text() : null;
     }
 
     public String contentBefore() {
-        // TODO async version
-        if (noRevision.equals(revisionBefore)) return null;
-
-        LogContentResult result = vcsRoot.get().contentOf(fileNameBefore, revisionBefore).awaitCompletion();
+        LogContentResult result = contentBeforeAsync().awaitCompletion();
         return result.isSuccessful() ? result.text() : null;
+    }
+
+    public Async<LogContentResult> contentAsync() {
+        return vcsRoot.get().contentOf(fileName, revision);
+    }
+
+    public Async<LogContentResult> contentBeforeAsync() {
+        if (noRevision.equals(revisionBefore))
+            return new Async<LogContentResult>().completeWith(LogContentResult.none);
+        return vcsRoot.get().contentOf(fileNameBefore, revisionBefore);
     }
 
     public void setVcsRoot(VcsRoot vcsRoot) {
@@ -55,7 +63,7 @@ public class Change {
         return "Change{" + changeType + ',' + fileName + ',' + fileNameBefore + ',' + revision + ',' + revisionBefore + '}';
     }
 
-    @SuppressWarnings("ConstantConditions")
+    @SuppressWarnings({"RedundantIfStatement"})
     @Override public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
