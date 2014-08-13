@@ -37,6 +37,22 @@ public class VcsProject {
         return accumulator.asyncResult;
     }
 
+    public Async<UpdateResult> update() {
+        final Accumulator<UpdateResult> accumulator = new Accumulator<UpdateResult>(vcsRoots.size());
+        for (VcsRoot vcsRoot : vcsRoots) {
+
+            Async<Result> asyncResult = vcsRoot.update();
+
+            asyncResult.whenCompleted(new AsyncResultListener<Result>() {
+                @Override public void onComplete(Result result) {
+                    accumulator.update((UpdateResult) result);
+                }
+            });
+        }
+        return accumulator.asyncResult;
+
+    }
+
     public Async<LogResult> log(Date fromDate, Date toDate) {
         final Accumulator<LogResult> accumulator = new Accumulator<LogResult>(vcsRoots.size());
         for (final VcsRoot vcsRoot : vcsRoots) {
@@ -136,6 +152,32 @@ public class VcsProject {
                 commit.setVcsRoot(vcsRoot);
             }
             return this;
+        }
+    }
+
+    public static class UpdateResult implements Result {
+        private final List<String> errors;
+
+        public UpdateResult() {
+            this(new ArrayList<String>());
+        }
+
+        public UpdateResult(List<String> errors) {
+            this.errors = errors;
+        }
+
+        @Override public Result mergeWith(Result result) {
+            List<String> newErrors = new ArrayList<String>(errors);
+            newErrors.addAll(((UpdateResult) result).errors);
+            return new InitResult(newErrors);
+        }
+
+        public List<String> errors() {
+            return errors;
+        }
+
+        public boolean isSuccessful() {
+            return errors.isEmpty();
         }
     }
 

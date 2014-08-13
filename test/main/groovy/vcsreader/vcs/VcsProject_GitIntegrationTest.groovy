@@ -24,6 +24,13 @@ class VcsProject_GitIntegrationTest {
         assert initResult.isSuccessful()
     }
 
+    @Test void "update git project"() {
+        project.init().awaitCompletion()
+        def updateResult = project.update().awaitCompletion()
+        assert updateResult.errors() == []
+        assert updateResult.isSuccessful()
+    }
+
     @Test void "log single commit from project history"() {
         project.init().awaitCompletion()
         def logResult = project.log(date("10/08/2014"), date("11/08/2014")).awaitCompletion()
