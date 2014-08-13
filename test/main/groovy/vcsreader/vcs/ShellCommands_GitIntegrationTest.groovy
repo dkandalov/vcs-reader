@@ -44,9 +44,11 @@ class ShellCommands_GitIntegrationTest {
         assert command.exitValue() == 0
     }
 
-    @Test(expected = RuntimeException)
-    void "failed git log"() { // TODO no exception
-        gitLog(pathToGit, nonExistentPath, date("01/01/2013"), date("01/01/2023"))
+    @Test void "failed git log"() {
+        def command = gitLog(pathToGit, GitIntegrationTestConfig.nonExistentPath, date("01/01/2013"), date("01/01/2023"))
+        assert command.stdout() == ""
+        assert command.stderr() != ""
+        assert command.exitValue() != 0
     }
 
     @Test void "clone repository"() {
@@ -57,7 +59,7 @@ class ShellCommands_GitIntegrationTest {
     }
 
     @Test void "failed clone of non-existent repository"() {
-        def command = gitClone(pathToGit, "file://" + nonExistentPath, projectFolder)
+        def command = gitClone(pathToGit, "file://" + GitIntegrationTestConfig.nonExistentPath, projectFolder)
         assert command.stdout() == ""
         assert command.stderr().startsWith(
                 "Cloning into '${projectFolder}'...\n" +
@@ -73,9 +75,11 @@ class ShellCommands_GitIntegrationTest {
         assert command.exitValue() == 0
     }
 
-    @Test(expected = RuntimeException) // TODO
-    void "failed update of non-existing repository"() {
-        gitUpdate(pathToGit, nonExistentPath)
+    @Test void "failed update of non-existing repository"() {
+        def command = gitUpdate(pathToGit, GitIntegrationTestConfig.nonExistentPath)
+        assert command.stdout() == ""
+        assert command.stderr() != ""
+        assert command.exitValue() != 0
     }
 
     @Test void "failed update without upstream repository"() {
@@ -96,7 +100,6 @@ class ShellCommands_GitIntegrationTest {
         new File(projectFolder2).mkdirs()
     }
 
-    private static final String nonExistentPath = "/tmp/non-existent-path"
     private static final String projectFolder = "/tmp/git-commands-test/git-repo-${ShellCommands_GitIntegrationTest.simpleName}"
     private static final String projectFolder2 = "/tmp/git-commands-test/git-repo-${ShellCommands_GitIntegrationTest.simpleName}-2"
 }

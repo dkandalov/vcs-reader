@@ -25,6 +25,7 @@ class ShellCommand {
         BufferedReader stdoutReader = null;
         BufferedReader stderrReader = null;
         try {
+
             Process process = new ProcessBuilder(command).directory(directory).start();
             stdoutReader = new BufferedReader(new InputStreamReader(process.getInputStream(), defaultCharset()));
             stderrReader = new BufferedReader(new InputStreamReader(process.getErrorStream(), defaultCharset()));
@@ -45,9 +46,11 @@ class ShellCommand {
             exitValue = process.exitValue();
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            stderr += asString(e);
+            exitValue = -1;
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            stderr += asString(e);
+            exitValue = -1;
         } finally {
             close(stdoutReader);
             close(stderrReader);
@@ -74,5 +77,12 @@ class ShellCommand {
 
     public int exitValue() {
         return exitValue;
+    }
+
+    private static String asString(Exception e) {
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        e.printStackTrace(printWriter);
+        return stringWriter.getBuffer().toString();
     }
 }

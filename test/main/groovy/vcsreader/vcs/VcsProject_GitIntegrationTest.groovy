@@ -18,14 +18,33 @@ class VcsProject_GitIntegrationTest {
     private final vcsRoots = [new GitVcsRoot(projectFolder, prePreparedProject, GitSettings.defaults())]
     private final project = new VcsProject(vcsRoots, new CommandExecutor())
 
-    @Test void "initialize new git project"() {
+    @Test void "init project"() {
         def initResult = project.init().awaitCompletion()
         assert initResult.errors() == []
         assert initResult.isSuccessful()
     }
 
-    @Test void "update git project"() {
+    @Test void "init project failure"() {
+        def vcsRoots = [new GitVcsRoot(projectFolder, nonExistentPath, GitSettings.defaults())]
+        def project = new VcsProject(vcsRoots, new CommandExecutor())
+
+        def initResult = project.init().awaitCompletion()
+
+        assert !initResult.isSuccessful()
+        assert initResult.errors().size() == 1
+    }
+
+    @Test void "update project"() {
         project.init().awaitCompletion()
+        def updateResult = project.update().awaitCompletion()
+        assert updateResult.errors() == []
+        assert updateResult.isSuccessful()
+    }
+
+    @Test void "update project failure"() {
+        project.init().awaitCompletion()
+        new File(projectFolder).deleteDir()
+
         def updateResult = project.update().awaitCompletion()
         assert updateResult.errors() == []
         assert updateResult.isSuccessful()
