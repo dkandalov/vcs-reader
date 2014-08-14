@@ -9,35 +9,35 @@ import static vcsreader.vcs.GitLog.gitLogRenames
 import static GitLogFileContent.gitLogFileContent
 import static GitIntegrationTestConfig.firstRevision
 import static GitIntegrationTestConfig.pathToGit
-import static GitIntegrationTestConfig.prePreparedProject
+import static GitIntegrationTestConfig.referenceProject
 import static GitIntegrationTestConfig.revisions
 import static vcsreader.vcs.GitUpdate.gitUpdate
 
 class ShellCommands_GitIntegrationTest {
 
     @Test void "git log file content"() {
-        def command = gitLogFileContent(prePreparedProject, "file1.txt", firstRevision)
+        def command = gitLogFileContent(referenceProject, "file1.txt", firstRevision)
         assert command.stdout().trim() == "file1 content"
         assert command.stderr() == ""
         assert command.exitValue() == 0
     }
 
     @Test void "failed git log file content"() {
-        def command = gitLogFileContent(prePreparedProject, "non-existent file", firstRevision)
+        def command = gitLogFileContent(referenceProject, "non-existent file", firstRevision)
         assert command.stdout() == ""
         assert command.stderr().startsWith("fatal: Path 'non-existent file' does not exist")
         assert command.exitValue() == 128
     }
 
     @Test void "git log"() {
-        def command = gitLog(pathToGit, prePreparedProject, date("01/01/2013"), date("01/01/2023"))
+        def command = gitLog(pathToGit, referenceProject, date("01/01/2013"), date("01/01/2023"))
         assert command.stdout().contains("initial commit")
         assert command.stderr() == ""
         assert command.exitValue() == 0
     }
 
     @Test void "git log renames"() {
-        def command = gitLogRenames(pathToGit, prePreparedProject, revisions[3])
+        def command = gitLogRenames(pathToGit, referenceProject, revisions[3])
         assert command.stdout().contains("R100")
         assert command.stdout().contains("folder1/file1.txt")
         assert command.stderr() == ""
@@ -52,7 +52,7 @@ class ShellCommands_GitIntegrationTest {
     }
 
     @Test void "clone repository"() {
-        def command = gitClone(pathToGit, "file://" + prePreparedProject, projectFolder)
+        def command = gitClone(pathToGit, "file://" + referenceProject, projectFolder)
         assert command.stdout() == ""
         assert command.stderr().trim() == "Cloning into '${projectFolder}'..."
         assert command.exitValue() == 0
@@ -68,7 +68,7 @@ class ShellCommands_GitIntegrationTest {
     }
 
     @Test void "update repository"() {
-        gitClone(pathToGit, "file://" + prePreparedProject, projectFolder)
+        gitClone(pathToGit, "file://" + referenceProject, projectFolder)
         def command = gitUpdate(pathToGit, projectFolder)
         assert command.stdout() == "Already up-to-date.\n"
         assert command.stderr().trim() == ""
@@ -83,7 +83,7 @@ class ShellCommands_GitIntegrationTest {
     }
 
     @Test void "failed update without upstream repository"() {
-        gitClone(pathToGit, "file://" + prePreparedProject, projectFolder + "")
+        gitClone(pathToGit, "file://" + referenceProject, projectFolder + "")
         gitClone(pathToGit, "file://" + projectFolder, projectFolder2)
         new File(projectFolder).deleteDir()
 

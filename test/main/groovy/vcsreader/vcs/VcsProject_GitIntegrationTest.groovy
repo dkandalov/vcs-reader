@@ -15,7 +15,7 @@ import static vcsreader.lang.DateTimeUtil.dateTime
 import static vcsreader.vcs.GitIntegrationTestConfig.*
 
 class VcsProject_GitIntegrationTest {
-    private final vcsRoots = [new GitVcsRoot(projectFolder, prePreparedProject, GitSettings.defaults())]
+    private final vcsRoots = [new GitVcsRoot(projectFolder, referenceProject, GitSettings.defaults())]
     private final project = new VcsProject(vcsRoots, new CommandExecutor())
 
     @Test void "init project"() {
