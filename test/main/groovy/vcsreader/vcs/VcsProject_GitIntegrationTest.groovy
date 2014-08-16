@@ -2,7 +2,6 @@ package vcsreader.vcs
 import org.junit.Before
 import org.junit.Test
 import vcsreader.Change
-import vcsreader.CommandExecutor
 import vcsreader.Commit
 import vcsreader.VcsProject
 
@@ -16,7 +15,7 @@ import static vcsreader.vcs.GitIntegrationTestConfig.*
 
 class VcsProject_GitIntegrationTest {
     private final vcsRoots = [new GitVcsRoot(projectFolder, referenceProject, GitSettings.defaults())]
-    private final project = new VcsProject(vcsRoots, new CommandExecutor())
+    private final project = new VcsProject(vcsRoots)
 
     @Test void "init project"() {
         def initResult = project.init().awaitCompletion()
@@ -26,7 +25,7 @@ class VcsProject_GitIntegrationTest {
 
     @Test void "init project failure"() {
         def vcsRoots = [new GitVcsRoot(projectFolder, nonExistentPath, GitSettings.defaults())]
-        def project = new VcsProject(vcsRoots, new CommandExecutor())
+        def project = new VcsProject(vcsRoots)
 
         def initResult = project.init().awaitCompletion()
 

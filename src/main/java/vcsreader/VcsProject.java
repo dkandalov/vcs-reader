@@ -14,6 +14,10 @@ import static java.util.Collections.sort;
 public class VcsProject {
     private final List<VcsRoot> vcsRoots;
 
+    public VcsProject(List<VcsRoot> vcsRoots) {
+        this(vcsRoots, new CommandExecutor());
+    }
+
     public VcsProject(List<VcsRoot> vcsRoots, CommandExecutor commandExecutor) {
         this.vcsRoots = vcsRoots;
         for (VcsRoot vcsRoot : vcsRoots) {
