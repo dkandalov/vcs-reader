@@ -1,11 +1,14 @@
 package vcsreader.lang;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Async<T> {
     private final CountDownLatch expectedUpdates;
     private final AtomicReference<T> resultReference = new AtomicReference<T>();
+    private final CopyOnWriteArrayList<Exception> exceptions = new CopyOnWriteArrayList<Exception>();
     private AsyncResultListener<T> whenReadyCallback;
 
     public Async() {
@@ -29,6 +32,15 @@ public class Async<T> {
         return this;
     }
 
+    public Async<T> completeWithFailure(Exception e) {
+        exceptions.add(e);
+        expectedUpdates.countDown();
+        if (expectedUpdates.getCount() == 0 && whenReadyCallback != null) {
+            whenReadyCallback.onComplete(resultReference.get());
+        }
+        return this;
+    }
+
     public T awaitCompletion() {
         try {
             expectedUpdates.await();
@@ -39,5 +51,13 @@ public class Async<T> {
 
     public boolean isComplete() {
         return expectedUpdates.getCount() == 0;
+    }
+
+    public boolean hasException() {
+        return !exceptions.isEmpty();
+    }
+
+    public List<Exception> exceptions() {
+        return exceptions;
     }
 }

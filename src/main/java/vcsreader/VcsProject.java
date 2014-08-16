@@ -62,7 +62,7 @@ public class VcsProject {
             Async<VcsProject.LogResult> asyncResult = vcsRoot.log(fromDate, toDate);
 
             asyncResult.whenCompleted(new AsyncResultListener<VcsProject.LogResult>() {
-                @Override public void onComplete(VcsProject.LogResult result) {
+                @Override public void onComplete(LogResult result) {
                     accumulator.update(result.setVcsRoot(vcsRoot));
                 }
             });

@@ -7,7 +7,15 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class CommandExecutor {
-    private final Executor executor = Executors.newFixedThreadPool(10, new NamedThreadFactory("CommandExecutor-"));
+    private final Executor executor;
+
+    public CommandExecutor() {
+        this("CommandExecutor-");
+    }
+
+    public CommandExecutor(String threadNamePrefix) {
+        executor = Executors.newFixedThreadPool(10, new NamedThreadFactory(threadNamePrefix));
+    }
 
     public <T> Async<T> execute(final Command<T> command) {
         final Async<T> asyncResult = new Async<T>();
@@ -19,7 +27,7 @@ public class CommandExecutor {
                     asyncResult.completeWith(result);
 
                 } catch (Exception e) {
-                    e.printStackTrace(); // TODO
+                    asyncResult.completeWithFailure(e);
                 }
             }
         });
