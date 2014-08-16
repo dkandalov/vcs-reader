@@ -10,12 +10,18 @@ import static java.util.Arrays.asList;
 
 public class CommandExecutor {
     private final Executor executor;
+    private final Listener listener;
 
     public CommandExecutor() {
-        this("CommandExecutor-");
+        this("CommandExecutor-", dummyListener());
     }
 
-    public CommandExecutor(String threadNamePrefix) {
+    public CommandExecutor(Listener listener) {
+        this("CommandExecutor-", listener);
+    }
+
+    public CommandExecutor(String threadNamePrefix, Listener listener) {
+        this.listener = listener;
         executor = Executors.newFixedThreadPool(10, new NamedThreadFactory(threadNamePrefix));
     }
 
@@ -24,6 +30,7 @@ public class CommandExecutor {
         executor.execute(new Runnable() {
             @Override public void run() {
                 try {
+                    listener.onCommand(command);
 
                     T result = command.execute();
                     asyncResult.completeWith(result);
@@ -36,7 +43,17 @@ public class CommandExecutor {
         return asyncResult;
     }
 
+    private static Listener dummyListener() {
+        return new Listener() {
+            @Override public void onCommand(Command command) {}
+        };
+    }
+
     public interface Command<T> {
         T execute();
+    }
+
+    public interface Listener {
+        void onCommand(Command command);
     }
 }
