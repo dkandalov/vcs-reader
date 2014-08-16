@@ -32,8 +32,8 @@ public class VcsProject {
             Async<InitResult> asyncResult = vcsRoot.init();
 
             asyncResult.whenCompleted(new AsyncResultListener<InitResult>() {
-                @Override public void onComplete(InitResult result) {
-                    accumulator.update(result);
+                @Override public void onComplete(InitResult result, List<Exception> exceptions) {
+                    accumulator.update(result, exceptions);
                 }
             });
         }
@@ -47,8 +47,8 @@ public class VcsProject {
             Async<UpdateResult> asyncResult = vcsRoot.update();
 
             asyncResult.whenCompleted(new AsyncResultListener<UpdateResult>() {
-                @Override public void onComplete(UpdateResult result) {
-                    accumulator.update(result);
+                @Override public void onComplete(UpdateResult result, List<Exception> exceptions) {
+                    accumulator.update(result, exceptions);
                 }
             });
         }
@@ -62,8 +62,9 @@ public class VcsProject {
             Async<VcsProject.LogResult> asyncResult = vcsRoot.log(fromDate, toDate);
 
             asyncResult.whenCompleted(new AsyncResultListener<VcsProject.LogResult>() {
-                @Override public void onComplete(LogResult result) {
-                    accumulator.update(result.setVcsRoot(vcsRoot));
+                @Override public void onComplete(LogResult result, List<Exception> exceptions) {
+                    LogResult logResult = (result != null ? result.setVcsRoot(vcsRoot) : null);
+                    accumulator.update(logResult, exceptions);
                 }
             });
         }
@@ -84,14 +85,17 @@ public class VcsProject {
             this.asyncResult = new Async<T>(expectedResults);
         }
 
-        public synchronized void update(T result) {
-            if (mergedResult == null) {
-                mergedResult = result;
+        public synchronized void update(T result, List<Exception> exceptions) {
+            if (!exceptions.isEmpty()) {
+                asyncResult.completeWithFailure(exceptions);
             } else {
-                mergedResult = mergedResult.mergeWith(result);
+                if (mergedResult == null) {
+                    mergedResult = result;
+                } else {
+                    mergedResult = mergedResult.mergeWith(result);
+                }
+                asyncResult.completeWith(mergedResult);
             }
-
-            asyncResult.completeWith(mergedResult);
         }
     }
 

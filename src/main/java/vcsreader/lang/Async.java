@@ -27,16 +27,16 @@ public class Async<T> {
         resultReference.set(result);
         expectedUpdates.countDown();
         if (expectedUpdates.getCount() == 0 && whenReadyCallback != null) {
-            whenReadyCallback.onComplete(result);
+            whenReadyCallback.onComplete(result, exceptions);
         }
         return this;
     }
 
-    public Async<T> completeWithFailure(Exception e) {
-        exceptions.add(e);
+    public Async<T> completeWithFailure(List<Exception> exceptions) {
+        this.exceptions.addAll(exceptions);
         expectedUpdates.countDown();
         if (expectedUpdates.getCount() == 0 && whenReadyCallback != null) {
-            whenReadyCallback.onComplete(resultReference.get());
+            whenReadyCallback.onComplete(resultReference.get(), exceptions);
         }
         return this;
     }

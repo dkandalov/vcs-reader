@@ -6,6 +6,8 @@ import vcsreader.lang.NamedThreadFactory;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import static java.util.Arrays.asList;
+
 public class CommandExecutor {
     private final Executor executor;
 
@@ -27,7 +29,7 @@ public class CommandExecutor {
                     asyncResult.completeWith(result);
 
                 } catch (Exception e) {
-                    asyncResult.completeWithFailure(e);
+                    asyncResult.completeWithFailure(asList(e));
                 }
             }
         });

@@ -10,20 +10,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
-import static vcsreader.CommandExecutor.*;
+import static vcsreader.CommandExecutor.Command;
 import static vcsreader.VcsProject.InitResult;
 import static vcsreader.VcsProject.LogResult;
 import static vcsreader.lang.DateTimeUtil.date;
 
 public class VcsProjectTest {
     private final GitSettings settings = GitSettings.defaults();
+    private final FakeCommandExecutor fakeExecutor = new FakeCommandExecutor();
 
     @Test public void successfulProjectInitialization() {
         // given
-        FakeCommandExecutor fakeExecutor = new FakeCommandExecutor();
         List<VcsRoot> vcsRoots = Arrays.<VcsRoot>asList(
                 new GitVcsRoot("/local/path", "git://some/url", settings),
                 new GitVcsRoot("/local/path2", "git://some/url", settings)
@@ -45,9 +46,8 @@ public class VcsProjectTest {
         assertThat(initResult.isComplete(), equalTo(true));
     }
 
-    @Test public void successfullyLogProjectHistory() {
+    @Test public void successfulLogProjectHistory() {
         // given
-        FakeCommandExecutor fakeExecutor = new FakeCommandExecutor();
         List<VcsRoot> vcsRoots = Arrays.<VcsRoot>asList(
                 new GitVcsRoot("/local/path", "git://some/url", settings),
                 new GitVcsRoot("/local/path2", "git://some/url", settings)
@@ -69,6 +69,23 @@ public class VcsProjectTest {
         assertThat(logResult.isComplete(), equalTo(true));
     }
 
+    @Test public void failedLogProjectHistory() {
+        // given
+        List<VcsRoot> vcsRoots = Arrays.<VcsRoot>asList(
+                new GitVcsRoot("/local/path", "git://some/url", settings),
+                new GitVcsRoot("/local/path2", "git://some/url", settings)
+        );
+        VcsProject project = new VcsProject(vcsRoots, fakeExecutor);
+
+        // when
+        Async<LogResult> logResult = project.log(date("01/07/2014"), date("08/07/2014"));
+
+        // then
+        fakeExecutor.failAllCallsWith(new Exception());
+        assertThat(logResult.isComplete(), equalTo(true));
+        assertThat(logResult.hasException(), equalTo(true));
+    }
+
 
     private static class FakeCommandExecutor extends CommandExecutor {
         private final List<Async<Object>> asyncResults = new ArrayList<Async<Object>>();
@@ -86,6 +103,12 @@ public class VcsProjectTest {
         public void completeAllCallsWith(Object result) {
             for (Async<Object> asyncResult : asyncResults) {
                 asyncResult.completeWith(result);
+            }
+        }
+
+        public void failAllCallsWith(Exception e) {
+            for (Async<Object> asyncResult : asyncResults) {
+                asyncResult.completeWithFailure(asList(e));
             }
         }
     }
