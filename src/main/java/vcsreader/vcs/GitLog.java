@@ -3,6 +3,7 @@ package vcsreader.vcs;
 import vcsreader.Change;
 import vcsreader.CommandExecutor;
 import vcsreader.Commit;
+import vcsreader.lang.Described;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import static vcsreader.Change.Type.*;
 import static vcsreader.VcsProject.LogResult;
 import static vcsreader.lang.StringUtil.split;
 
-class GitLog implements CommandExecutor.Command<LogResult> {
+class GitLog implements CommandExecutor.Command<LogResult>, Described {
     private final String folder;
     private final Date fromDate;
     private final Date toDate;
@@ -63,11 +64,14 @@ class GitLog implements CommandExecutor.Command<LogResult> {
     }
 
     static ShellCommand gitLog(String gitPath, String folder, Date fromDate, Date toDate) {
+        return createCommand(gitPath, fromDate, toDate).executeIn(new File(folder));
+    }
+
+    private static ShellCommand createCommand(String gitPath, Date fromDate, Date toDate) {
         String from = "--after=" + Long.toString(fromDate.getTime() / 1000);
         String to = "--before=" + Long.toString(toDate.getTime() / 1000);
         String showFileStatus = "--name-status"; // see --diff-filter at https://www.kernel.org/pub/software/scm/git/docs/git-log.html
-        ShellCommand shellCommand = new ShellCommand(gitPath, "log", logFormat(), from, to, showFileStatus);
-        return shellCommand.executeIn(new File(folder));
+        return new ShellCommand(gitPath, "log", logFormat(), from, to, showFileStatus);
     }
 
     static ShellCommand gitLogRenames(String gitPath, String folder, String revision) {
@@ -184,6 +188,10 @@ class GitLog implements CommandExecutor.Command<LogResult> {
 
     private static Date parseDate(String s) {
         return new Date(Long.parseLong(s) * 1000);
+    }
+
+    @Override public String describe() {
+        return createCommand(gitPath, fromDate, toDate).describe();
     }
 
     @SuppressWarnings("RedundantIfStatement")

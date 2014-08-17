@@ -1,11 +1,12 @@
 package vcsreader.vcs;
 
 import vcsreader.CommandExecutor;
+import vcsreader.lang.Described;
 
 import static java.util.Arrays.asList;
 import static vcsreader.VcsProject.InitResult;
 
-class GitClone implements CommandExecutor.Command<InitResult> {
+class GitClone implements CommandExecutor.Command<InitResult>, Described {
     private final String repositoryUrl;
     private final String localPath;
     private final String pathToGit;
@@ -27,7 +28,15 @@ class GitClone implements CommandExecutor.Command<InitResult> {
     }
 
     static ShellCommand gitClone(String pathToGit, String repositoryUrl, String localPath) {
-        return new ShellCommand(pathToGit, "clone", "-v", repositoryUrl, localPath).execute();
+        return createCommand(pathToGit, repositoryUrl, localPath).execute();
+    }
+
+    private static ShellCommand createCommand(String pathToGit, String repositoryUrl, String localPath) {
+        return new ShellCommand(pathToGit, "clone", "-v", repositoryUrl, localPath);
+    }
+
+    @Override public String describe() {
+        return createCommand(pathToGit, repositoryUrl, localPath).describe();
     }
 
     @SuppressWarnings("RedundantIfStatement")

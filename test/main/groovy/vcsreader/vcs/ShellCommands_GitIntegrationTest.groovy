@@ -1,16 +1,15 @@
 package vcsreader.vcs
+
 import org.junit.Before
 import org.junit.Test
 
+import static GitIntegrationTestConfig.*
+import static GitLogFileContent.gitLogFileContent
 import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.vcs.GitClone.gitClone
+import static vcsreader.vcs.GitIntegrationTestConfig.getNonExistentPath
 import static vcsreader.vcs.GitLog.gitLog
 import static vcsreader.vcs.GitLog.gitLogRenames
-import static GitLogFileContent.gitLogFileContent
-import static GitIntegrationTestConfig.firstRevision
-import static GitIntegrationTestConfig.pathToGit
-import static GitIntegrationTestConfig.referenceProject
-import static GitIntegrationTestConfig.revisions
 import static vcsreader.vcs.GitUpdate.gitUpdate
 
 class ShellCommands_GitIntegrationTest {
@@ -45,7 +44,7 @@ class ShellCommands_GitIntegrationTest {
     }
 
     @Test void "failed git log"() {
-        def command = gitLog(pathToGit, GitIntegrationTestConfig.nonExistentPath, date("01/01/2013"), date("01/01/2023"))
+        def command = gitLog(pathToGit, nonExistentPath, date("01/01/2013"), date("01/01/2023"))
         assert command.stdout() == ""
         assert command.stderr() != ""
         assert command.exitValue() != 0
@@ -59,7 +58,7 @@ class ShellCommands_GitIntegrationTest {
     }
 
     @Test void "failed clone of non-existent repository"() {
-        def command = gitClone(pathToGit, "file://" + GitIntegrationTestConfig.nonExistentPath, projectFolder)
+        def command = gitClone(pathToGit, "file://" + nonExistentPath, projectFolder)
         assert command.stdout() == ""
         assert command.stderr().startsWith(
                 "Cloning into '${projectFolder}'...\n" +
@@ -76,7 +75,7 @@ class ShellCommands_GitIntegrationTest {
     }
 
     @Test void "failed update of non-existing repository"() {
-        def command = gitUpdate(pathToGit, GitIntegrationTestConfig.nonExistentPath)
+        def command = gitUpdate(pathToGit, nonExistentPath)
         assert command.stdout() == ""
         assert command.stderr() != ""
         assert command.exitValue() != 0

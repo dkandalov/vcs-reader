@@ -1,13 +1,14 @@
 package vcsreader.vcs;
 
 import vcsreader.CommandExecutor;
+import vcsreader.lang.Described;
 
 import java.io.File;
 
 import static java.util.Arrays.asList;
 import static vcsreader.VcsProject.UpdateResult;
 
-class GitUpdate implements CommandExecutor.Command<UpdateResult> {
+class GitUpdate implements CommandExecutor.Command<UpdateResult>, Described {
     private final String pathToGit;
     private final String folder;
 
@@ -27,7 +28,15 @@ class GitUpdate implements CommandExecutor.Command<UpdateResult> {
     }
 
     static ShellCommand gitUpdate(String pathToGit, String folder) {
-        return new ShellCommand(pathToGit, "pull", "origin").executeIn(new File(folder));
+        return createCommand(pathToGit).executeIn(new File(folder));
+    }
+
+    private static ShellCommand createCommand(String pathToGit) {
+        return new ShellCommand(pathToGit, "pull", "origin");
+    }
+
+    @Override public String describe() {
+        return createCommand(pathToGit).describe();
     }
 
     @SuppressWarnings("RedundantIfStatement")
@@ -47,5 +56,12 @@ class GitUpdate implements CommandExecutor.Command<UpdateResult> {
         int result = pathToGit != null ? pathToGit.hashCode() : 0;
         result = 31 * result + (folder != null ? folder.hashCode() : 0);
         return result;
+    }
+
+    @Override public String toString() {
+        return "GitUpdate{" +
+                "pathToGit='" + pathToGit + '\'' +
+                ", folder='" + folder + '\'' +
+                '}';
     }
 }

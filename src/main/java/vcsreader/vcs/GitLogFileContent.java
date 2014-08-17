@@ -1,12 +1,13 @@
 package vcsreader.vcs;
 
 import vcsreader.CommandExecutor;
+import vcsreader.lang.Described;
 
 import java.io.File;
 
 import static vcsreader.VcsProject.LogContentResult;
 
-class GitLogFileContent implements CommandExecutor.Command<LogContentResult> {
+class GitLogFileContent implements CommandExecutor.Command<LogContentResult>, Described {
     private final String folder;
     private final String filePath;
     private final String revision;
@@ -27,7 +28,15 @@ class GitLogFileContent implements CommandExecutor.Command<LogContentResult> {
     }
 
     static ShellCommand gitLogFileContent(String folder, String filePath, String revision) {
-        return new ShellCommand("/usr/bin/git", "show", revision + ":" + filePath).executeIn(new File(folder));
+        return createCommand(filePath, revision).executeIn(new File(folder));
+    }
+
+    private static ShellCommand createCommand(String filePath, String revision) {
+        return new ShellCommand("/usr/bin/git", "show", revision + ":" + filePath);
+    }
+
+    @Override public String describe() {
+        return createCommand(filePath, revision).describe();
     }
 
     @SuppressWarnings("RedundantIfStatement")
@@ -49,5 +58,13 @@ class GitLogFileContent implements CommandExecutor.Command<LogContentResult> {
         result = 31 * result + (filePath != null ? filePath.hashCode() : 0);
         result = 31 * result + (revision != null ? revision.hashCode() : 0);
         return result;
+    }
+
+    @Override public String toString() {
+        return "GitLogFileContent{" +
+                "folder='" + folder + '\'' +
+                ", filePath='" + filePath + '\'' +
+                ", revision='" + revision + '\'' +
+                '}';
     }
 }

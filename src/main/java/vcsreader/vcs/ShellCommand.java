@@ -85,4 +85,12 @@ class ShellCommand {
         e.printStackTrace(printWriter);
         return stringWriter.getBuffer().toString();
     }
+
+    public String describe() {
+        String result = "";
+        for (String s : command) {
+            result += s + " ";
+        }
+        return result;
+    }
 }
