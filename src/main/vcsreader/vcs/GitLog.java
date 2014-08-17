@@ -161,6 +161,7 @@ class GitLog implements CommandExecutor.Command<LogResult>, Described {
 
         if (changeType == NEW) {
             fileNameBefore = Change.noFileName;
+            revisionBefore = Change.noRevision;
         } else if (changeType == DELETED) {
             fileNameBefore = fileName;
             fileName = Change.noFileName;

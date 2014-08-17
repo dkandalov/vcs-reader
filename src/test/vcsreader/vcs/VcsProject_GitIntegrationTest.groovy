@@ -84,8 +84,8 @@ class VcsProject_GitIntegrationTest {
                         author,
                         "added file2, file3",
                         [
-                            new Change(NEW, "file2.txt", "", secondRevision, firstRevision),
-                            new Change(NEW, "file3.txt", "", secondRevision, firstRevision)
+                            new Change(NEW, "file2.txt", "", secondRevision, noRevision),
+                            new Change(NEW, "file3.txt", "", secondRevision, noRevision)
                         ]
                 )
         ])
@@ -170,7 +170,6 @@ class VcsProject_GitIntegrationTest {
 
         def change = logResult.commits.first().changes.first()
         assert change.content() == "file1 content"
-        assert change.contentBefore() == null
         assert logResult.errors() == []
         assert logResult.isSuccessful()
     }
@@ -182,6 +181,17 @@ class VcsProject_GitIntegrationTest {
         def change = logResult.commits.first().changes.first()
         assert change.content() == "file2 new content"
         assert change.contentBefore() == "file2 content"
+        assert logResult.errors() == []
+        assert logResult.isSuccessful()
+    }
+
+    @Test void "log previous non-existing content of a file"() {
+        project.init().awaitCompletion()
+        def logResult = project.log(date("11/08/2014"), date("12/08/2014")).awaitCompletion()
+
+        def change = logResult.commits.first().changes.first()
+        assert change.content() == "file2 content"
+        assert change.contentBefore() == null
         assert logResult.errors() == []
         assert logResult.isSuccessful()
     }
