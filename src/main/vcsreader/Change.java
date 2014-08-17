@@ -4,6 +4,8 @@ import vcsreader.lang.Async;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import static vcsreader.Change.Type.DELETED;
+import static vcsreader.Change.Type.NEW;
 import static vcsreader.VcsProject.LogContentResult;
 
 public class Change {
@@ -47,12 +49,12 @@ public class Change {
     }
 
     public Async<LogContentResult> contentAsync() {
+        if (type == DELETED) return new Async<LogContentResult>().completeWith(LogContentResult.none);
         return vcsRoot.get().contentOf(fileName, revision);
     }
 
     public Async<LogContentResult> contentBeforeAsync() {
-        if (noRevision.equals(revisionBefore))
-            return new Async<LogContentResult>().completeWith(LogContentResult.none);
+        if (type == NEW) return new Async<LogContentResult>().completeWith(LogContentResult.none);
         return vcsRoot.get().contentOf(fileNameBefore, revisionBefore);
     }
 

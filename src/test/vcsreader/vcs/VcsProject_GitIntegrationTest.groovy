@@ -164,34 +164,38 @@ class VcsProject_GitIntegrationTest {
         assert logResult.isSuccessful()
     }
 
-    @Test void "log content of a file"() {
-        project.init().awaitCompletion()
-        def logResult = project.log(date("10/08/2014"), date("11/08/2014")).awaitCompletion()
-
-        def change = logResult.commits.first().changes.first()
-        assert change.content() == "file1 content"
-        assert logResult.errors() == []
-        assert logResult.isSuccessful()
-    }
-
-    @Test void "log previous content of a file"() {
+    @Test void "log content of modified file"() {
         project.init().awaitCompletion()
         def logResult = project.log(date("12/08/2014"), date("13/08/2014")).awaitCompletion()
 
         def change = logResult.commits.first().changes.first()
+        assert change.type == MODIFICATION
         assert change.content() == "file2 new content"
         assert change.contentBefore() == "file2 content"
         assert logResult.errors() == []
         assert logResult.isSuccessful()
     }
 
-    @Test void "log previous non-existing content of a file"() {
+    @Test void "log content of new file"() {
         project.init().awaitCompletion()
         def logResult = project.log(date("11/08/2014"), date("12/08/2014")).awaitCompletion()
 
         def change = logResult.commits.first().changes.first()
+        assert change.type == NEW
         assert change.content() == "file2 content"
         assert change.contentBefore() == null
+        assert logResult.errors() == []
+        assert logResult.isSuccessful()
+    }
+
+    @Test void "log content of deleted file"() {
+        project.init().awaitCompletion()
+        def logResult = project.log(date("15/08/2014"), date("16/08/2014")).awaitCompletion()
+
+        def change = logResult.commits.first().changes.first()
+        assert change.type == DELETED
+        assert change.content() == null
+        assert change.contentBefore() == "file1 content"
         assert logResult.errors() == []
         assert logResult.isSuccessful()
     }
