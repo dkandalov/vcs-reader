@@ -1,6 +1,6 @@
 require 'fileutils.rb'
 
-base_dir = "/tmp/test-repos/git-repo"
+base_dir = "/tmp/reference-repos/git-repo"
 raise("#{base_dir} already exists") if Dir.exist?(base_dir)
 FileUtils.mkpath(base_dir)
 
@@ -29,7 +29,7 @@ def update_test_config(commit_hashes)
   replace(
       /def revisions = \[.*\]/,
       "def revisions = [#{hashes_literal}]",
-      "./test/main/groovy/vcsreader/vcs/GitIntegrationTestConfig.groovy"
+      "./src/test/vcsreader/vcs/GitIntegrationTestConfig.groovy"
   )
 end
 
