@@ -22,4 +22,12 @@ public class StringUtil {
 
         return result;
     }
+
+    public static String trim(String s, String chars) {
+        int start = 0;
+        int end = s.length();
+        while (start < end && chars.indexOf(s.charAt(start)) != -1) start++;
+        while (end > start && chars.indexOf(s.charAt(end - 1)) != -1) end--;
+        return s.substring(start, end);
+    }
 }

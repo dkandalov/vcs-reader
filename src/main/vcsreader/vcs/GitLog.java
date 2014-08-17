@@ -14,6 +14,7 @@ import static java.util.Arrays.asList;
 import static vcsreader.Change.Type.*;
 import static vcsreader.VcsProject.LogResult;
 import static vcsreader.lang.StringUtil.split;
+import static vcsreader.lang.StringUtil.trim;
 
 class GitLog implements CommandExecutor.Command<LogResult>, Described {
     private final String folder;
@@ -86,7 +87,7 @@ class GitLog implements CommandExecutor.Command<LogResult>, Described {
         String parentHashes = "%P";
         String commitDate = "%ct";
         String authorName = "%an"; // see http://stackoverflow.com/questions/18750808/difference-between-author-and-committer-in-git
-        String subject = "%s";
+        String rawBody = "%B";
 
         String commitStartSeparator = "%x11%x12%x13%n";
         String fieldSeparator = "%x10%x11%x12%n";
@@ -97,7 +98,7 @@ class GitLog implements CommandExecutor.Command<LogResult>, Described {
                 parentHashes + fieldSeparator +
                 commitDate + fieldSeparator +
                 authorName + fieldSeparator +
-                subject + fieldSeparator;
+                rawBody + fieldSeparator;
     }
 
     private static List<Commit> parseListOfCommits(String stdout) {
@@ -129,7 +130,7 @@ class GitLog implements CommandExecutor.Command<LogResult>, Described {
         String revisionBefore = (isFirstCommit ? Change.noRevision : previousRevision.get(0));
         Date commitDate = parseDate(values.get(2));
         String authorName = values.get(3);
-        String comment = values.get(4);
+        String comment = trim(values.get(4), " \r\n\t");
         List<Change> changes = parseListOfChanges(values.get(5), revision, revisionBefore);
 
         return new Commit(revision, revisionBefore, commitDate, authorName, comment, changes);

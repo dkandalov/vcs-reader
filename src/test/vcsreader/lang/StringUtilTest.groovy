@@ -2,19 +2,35 @@ package vcsreader.lang
 
 import org.junit.Test
 
+import static vcsreader.lang.StringUtil.split
+import static vcsreader.lang.StringUtil.trim
+
 class StringUtilTest {
     @Test void "splitting strings"() {
-        assert StringUtil.split("", "|") == []
-        assert StringUtil.split("|", "|") == []
-        assert StringUtil.split("||", "|") == [""]
+        assert split("", "|") == []
+        assert split("|", "|") == []
+        assert split("||", "|") == [""]
 
-        assert StringUtil.split("a|", "|") == ["a"]
-        assert StringUtil.split("|a", "|") == ["a"]
-        assert StringUtil.split("|a|", "|") == ["a"]
+        assert split("a|", "|") == ["a"]
+        assert split("|a", "|") == ["a"]
+        assert split("|a|", "|") == ["a"]
 
-        assert StringUtil.split("a|b", "|") == ["a", "b"]
-        assert StringUtil.split("a|b|", "|") == ["a", "b"]
-        assert StringUtil.split("|a|b", "|") == ["a", "b"]
-        assert StringUtil.split("|a|b|", "|") == ["a", "b"]
+        assert split("a|b", "|") == ["a", "b"]
+        assert split("a|b|", "|") == ["a", "b"]
+        assert split("|a|b", "|") == ["a", "b"]
+        assert split("|a|b|", "|") == ["a", "b"]
+    }
+
+    @Test void "trimming strings"() {
+        assert trim("", " ") == ""
+        assert trim(" ", " ") == ""
+        assert trim("  ", " ") == ""
+
+        assert trim("  a", " ") == "a"
+        assert trim("a  ", " ") == "a"
+        assert trim(" a ", " ") == "a"
+        assert trim(" a a ", " ") == "a a"
+
+        assert trim("=-=-=a-=-=-", "-=") == "a"
     }
 }
