@@ -57,8 +57,8 @@ class GitLog implements CommandExecutor.Command<LogResult>, Described {
         boolean hasDeletions = false;
         boolean hasAdditions = false;
         for (Change change : commit.changes) {
-            if (change.changeType == DELETED) hasDeletions = true;
-            else if (change.changeType == NEW) hasAdditions = true;
+            if (change.type == DELETED) hasDeletions = true;
+            else if (change.type == NEW) hasAdditions = true;
         }
         return hasDeletions && hasAdditions;
     }

@@ -16,19 +16,19 @@ public class Change {
         MOVED
     }
 
-    public final Type changeType;
+    public final Type type;
     public final String fileName;
     public final String fileNameBefore;
     public final String revision;
     public final String revisionBefore;
     private final AtomicReference<VcsRoot> vcsRoot = new AtomicReference<VcsRoot>();
 
-    public Change(Type changeType, String fileName, String revision, String revisionBefore) {
-        this(changeType, fileName, fileName, revision, revisionBefore);
+    public Change(Type type, String fileName, String revision, String revisionBefore) {
+        this(type, fileName, fileName, revision, revisionBefore);
     }
 
-    public Change(Type changeType, String fileName, String fileNameBefore, String revision, String revisionBefore) {
-        this.changeType = changeType;
+    public Change(Type type, String fileName, String fileNameBefore, String revision, String revisionBefore) {
+        this.type = type;
         this.fileName = fileName;
         this.fileNameBefore = fileNameBefore;
         this.revision = revision;
@@ -60,7 +60,7 @@ public class Change {
     }
 
     @Override public String toString() {
-        return "Change{" + changeType + ',' + fileName + ',' + fileNameBefore + ',' + revision + ',' + revisionBefore + '}';
+        return "Change{" + type + ',' + fileName + ',' + fileNameBefore + ',' + revision + ',' + revisionBefore + '}';
     }
 
     @SuppressWarnings({"RedundantIfStatement"})
@@ -70,7 +70,7 @@ public class Change {
 
         Change change = (Change) o;
 
-        if (changeType != change.changeType) return false;
+        if (type != change.type) return false;
         if (fileName != null ? !fileName.equals(change.fileName) : change.fileName != null) return false;
         if (fileNameBefore != null ? !fileNameBefore.equals(change.fileNameBefore) : change.fileNameBefore != null)
             return false;
@@ -82,7 +82,7 @@ public class Change {
     }
 
     @Override public int hashCode() {
-        int result = changeType != null ? changeType.hashCode() : 0;
+        int result = type != null ? type.hashCode() : 0;
         result = 31 * result + (fileName != null ? fileName.hashCode() : 0);
         result = 31 * result + (fileNameBefore != null ? fileNameBefore.hashCode() : 0);
         result = 31 * result + (revision != null ? revision.hashCode() : 0);
