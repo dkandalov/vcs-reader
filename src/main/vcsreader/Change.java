@@ -8,6 +8,7 @@ import static vcsreader.VcsProject.LogContentResult;
 
 public class Change {
     public static final String noRevision = "noRevision";
+    public static final String noFileName = "";
 
     public enum Type {
         MODIFICATION,
@@ -23,8 +24,8 @@ public class Change {
     public final String revisionBefore;
     private final AtomicReference<VcsRoot> vcsRoot = new AtomicReference<VcsRoot>();
 
-    public Change(Type type, String fileName, String revision, String revisionBefore) {
-        this(type, fileName, fileName, revision, revisionBefore);
+    public Change(Type type, String fileName, String revision) {
+        this(type, fileName, noFileName, revision, noRevision);
     }
 
     public Change(Type type, String fileName, String fileNameBefore, String revision, String revisionBefore) {

@@ -159,6 +159,13 @@ class GitLog implements CommandExecutor.Command<LogResult>, Described {
         String fileName = hasRenames ? values.get(2) : values.get(1);
         String fileNameBefore = hasRenames ? values.get(1) : fileName;
 
+        if (changeType == NEW) {
+            fileNameBefore = Change.noFileName;
+        } else if (changeType == DELETED) {
+            fileNameBefore = fileName;
+            fileName = Change.noFileName;
+        }
+
         return new Change(changeType, fileName, fileNameBefore, revision, revisionBefore);
     }
 

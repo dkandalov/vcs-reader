@@ -59,7 +59,7 @@ class VcsProject_GitIntegrationTest {
                         dateTime("14:00:00 10/08/2014"),
                         author,
                         "initial commit",
-                        [new Change(NEW, "file1.txt", firstRevision, noRevision)]
+                        [new Change(NEW, "file1.txt", firstRevision)]
                 )
         ])
         assert logResult.errors() == []
@@ -76,7 +76,7 @@ class VcsProject_GitIntegrationTest {
                         dateTime("14:00:00 10/08/2014"),
                         author,
                         "initial commit",
-                        [new Change(NEW, "file1.txt", firstRevision, noRevision)]
+                        [new Change(NEW, "file1.txt", firstRevision)]
                 ),
                 new Commit(
                         secondRevision, firstRevision,
@@ -84,8 +84,8 @@ class VcsProject_GitIntegrationTest {
                         author,
                         "added file2, file3",
                         [
-                            new Change(NEW, "file2.txt", secondRevision, firstRevision),
-                            new Change(NEW, "file3.txt", secondRevision, firstRevision)
+                            new Change(NEW, "file2.txt", "", secondRevision, firstRevision),
+                            new Change(NEW, "file3.txt", "", secondRevision, firstRevision)
                         ]
                 )
         ])
@@ -104,8 +104,8 @@ class VcsProject_GitIntegrationTest {
                         author,
                         "modified file2, file3",
                         [
-                            new Change(MODIFICATION, "file2.txt", thirdRevision, secondRevision),
-                            new Change(MODIFICATION, "file3.txt", thirdRevision, secondRevision)
+                            new Change(MODIFICATION, "file2.txt", "file2.txt", thirdRevision, secondRevision),
+                            new Change(MODIFICATION, "file3.txt", "file3.txt", thirdRevision, secondRevision)
                         ]
                 )
         ])
@@ -157,7 +157,7 @@ class VcsProject_GitIntegrationTest {
                         dateTime("14:00:00 15/08/2014"),
                         author,
                         "deleted file1",
-                        [new Change(DELETED, "folder2/renamed_file1.txt", revisions[5], revisions[4])]
+                        [new Change(DELETED, "", "folder2/renamed_file1.txt", revisions[5], revisions[4])]
                 )
         ])
         assert logResult.errors() == []
