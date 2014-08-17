@@ -3,11 +3,10 @@ package vcsreader.vcs
 import org.junit.Before
 import org.junit.Test
 
-import static GitIntegrationTestConfig.*
 import static GitLogFileContent.gitLogFileContent
 import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.vcs.GitClone.gitClone
-import static vcsreader.vcs.GitIntegrationTestConfig.getNonExistentPath
+import static vcsreader.vcs.GitIntegrationTestConfig.*
 import static vcsreader.vcs.GitLog.gitLog
 import static vcsreader.vcs.GitLog.gitLogRenames
 import static vcsreader.vcs.GitUpdate.gitUpdate
