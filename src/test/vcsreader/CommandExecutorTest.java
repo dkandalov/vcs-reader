@@ -15,18 +15,18 @@ public class CommandExecutorTest {
         CommandExecutor executor = new CommandExecutor();
         Async<String> async = executor.execute(new SuccessfulCommand());
 
-        assertThat(async.awaitCompletion(), equalTo("completed"));
+        assertThat(async.awaitResult(), equalTo("completed"));
         assertThat(async.isComplete(), is(true));
-        assertThat(async.hasException(), is(false));
+        assertThat(async.hasExceptions(), is(false));
     }
 
     @Test public void executeFailedCommand() {
         CommandExecutor executor = new CommandExecutor();
         Async<String> async = executor.execute(new FailedCommand());
 
-        assertThat(async.awaitCompletion(), equalTo(null));
+        async.awaitCompletion();
         assertThat(async.isComplete(), is(true));
-        assertThat(async.hasException(), is(true));
+        assertThat(async.hasExceptions(), is(true));
     }
 
     @Test public void notifyListenerAboutCommands() {

@@ -16,7 +16,7 @@ class GitLog_Playground {
         def vcsRoots = [new GitVcsRoot("/tmp/junit-test", "", GitSettings.defaults())]
         def project = new VcsProject(vcsRoots, commandExecutor)
 
-        def logResult = project.log(date("01/01/2013"), date("01/01/2014")).awaitCompletion()
+        def logResult = project.log(date("01/01/2013"), date("01/01/2014")).awaitResult()
         println(logResult.commits.join("\n"))
     }
 }

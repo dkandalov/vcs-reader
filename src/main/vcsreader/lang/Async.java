@@ -1,5 +1,6 @@
 package vcsreader.lang;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
@@ -41,11 +42,24 @@ public class Async<T> {
         return this;
     }
 
-    public T awaitCompletion() {
+    public Async<T> awaitCompletion() {
         try {
             expectedUpdates.await();
         } catch (InterruptedException ignored) {
         }
+        return this;
+    }
+
+    public T awaitResult() {
+        try {
+            expectedUpdates.await();
+        } catch (InterruptedException ignored) {
+        }
+        if (!exceptions.isEmpty()) throw new Failure(exceptions);
+        return resultReference.get();
+    }
+
+    public T result() {
         return resultReference.get();
     }
 
@@ -53,11 +67,17 @@ public class Async<T> {
         return expectedUpdates.getCount() == 0;
     }
 
-    public boolean hasException() {
+    public boolean hasExceptions() {
         return !exceptions.isEmpty();
     }
 
-    public List<Exception> exceptions() {
-        return exceptions;
+
+    public static class Failure extends RuntimeException {
+        public final List<Exception> exceptions;
+
+        public Failure(List<Exception> exceptions) {
+            super(exceptions.get(0));
+            this.exceptions = new ArrayList<Exception>(exceptions);
+        }
     }
 }

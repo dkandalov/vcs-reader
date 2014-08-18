@@ -83,7 +83,7 @@ public class VcsProjectTest {
         // then
         fakeExecutor.failAllCallsWith(new Exception());
         assertThat(logResult.isComplete(), equalTo(true));
-        assertThat(logResult.hasException(), equalTo(true));
+        assertThat(logResult.hasExceptions(), equalTo(true));
     }
 
 

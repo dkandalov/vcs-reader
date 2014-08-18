@@ -39,12 +39,12 @@ public class Change {
     }
 
     public String content() {
-        LogContentResult result = contentAsync().awaitCompletion();
+        LogContentResult result = contentAsync().awaitResult();
         return result.isSuccessful() ? result.text() : null;
     }
 
     public String contentBefore() {
-        LogContentResult result = contentBeforeAsync().awaitCompletion();
+        LogContentResult result = contentBeforeAsync().awaitResult();
         return result.isSuccessful() ? result.text() : null;
     }
 

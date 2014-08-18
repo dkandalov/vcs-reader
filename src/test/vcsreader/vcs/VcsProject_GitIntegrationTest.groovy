@@ -18,7 +18,7 @@ class VcsProject_GitIntegrationTest {
     private final project = new VcsProject(vcsRoots)
 
     @Test void "init project"() {
-        def initResult = project.init().awaitCompletion()
+        def initResult = project.init().awaitResult()
         assert initResult.errors() == []
         assert initResult.isSuccessful()
     }
@@ -27,31 +27,31 @@ class VcsProject_GitIntegrationTest {
         def vcsRoots = [new GitVcsRoot(projectFolder, nonExistentPath, GitSettings.defaults())]
         def project = new VcsProject(vcsRoots)
 
-        def initResult = project.init().awaitCompletion()
+        def initResult = project.init().awaitResult()
 
         assert !initResult.isSuccessful()
         assert initResult.errors().size() == 1
     }
 
     @Test void "update project"() {
-        project.init().awaitCompletion()
-        def updateResult = project.update().awaitCompletion()
+        project.init().awaitResult()
+        def updateResult = project.update().awaitResult()
         assert updateResult.errors() == []
         assert updateResult.isSuccessful()
     }
 
     @Test void "update project failure"() {
-        project.init().awaitCompletion()
+        project.init().awaitResult()
         new File(projectFolder).deleteDir()
 
-        def updateResult = project.update().awaitCompletion()
+        def updateResult = project.update().awaitResult()
         assert !updateResult.isSuccessful()
         assert updateResult.errors() != []
     }
 
     @Test void "log single commit from project history"() {
-        project.init().awaitCompletion()
-        def logResult = project.log(date("10/08/2014"), date("11/08/2014")).awaitCompletion()
+        project.init().awaitResult()
+        def logResult = project.log(date("10/08/2014"), date("11/08/2014")).awaitResult()
 
         assertEqualCommits(logResult.commits, [
                 new Commit(
@@ -67,8 +67,8 @@ class VcsProject_GitIntegrationTest {
     }
 
     @Test void "log several commits from project history"() {
-        project.init().awaitCompletion()
-        def logResult = project.log(date("10/08/2014"), date("12/08/2014")).awaitCompletion()
+        project.init().awaitResult()
+        def logResult = project.log(date("10/08/2014"), date("12/08/2014")).awaitResult()
 
         assertEqualCommits(logResult.commits, [
                 new Commit(
@@ -94,8 +94,8 @@ class VcsProject_GitIntegrationTest {
     }
 
     @Test void "log modification commit"() {
-        project.init().awaitCompletion()
-        def logResult = project.log(date("12/08/2014"), date("13/08/2014")).awaitCompletion()
+        project.init().awaitResult()
+        def logResult = project.log(date("12/08/2014"), date("13/08/2014")).awaitResult()
 
         assertEqualCommits(logResult.commits, [
                 new Commit(
@@ -114,8 +114,8 @@ class VcsProject_GitIntegrationTest {
     }
 
     @Test void "log moved file commit"() {
-        project.init().awaitCompletion()
-        def logResult = project.log(date("13/08/2014"), date("14/08/2014")).awaitCompletion()
+        project.init().awaitResult()
+        def logResult = project.log(date("13/08/2014"), date("14/08/2014")).awaitResult()
 
         assertEqualCommits(logResult.commits, [
                 new Commit(
@@ -131,8 +131,8 @@ class VcsProject_GitIntegrationTest {
     }
 
     @Test void "log moved and renamed file commit"() {
-        project.init().awaitCompletion()
-        def logResult = project.log(date("14/08/2014"), date("15/08/2014")).awaitCompletion()
+        project.init().awaitResult()
+        def logResult = project.log(date("14/08/2014"), date("15/08/2014")).awaitResult()
 
         assertEqualCommits(logResult.commits, [
                 new Commit(
@@ -148,8 +148,8 @@ class VcsProject_GitIntegrationTest {
     }
 
     @Test void "log deleted file"() {
-        project.init().awaitCompletion()
-        def logResult = project.log(date("15/08/2014"), date("16/08/2014")).awaitCompletion()
+        project.init().awaitResult()
+        def logResult = project.log(date("15/08/2014"), date("16/08/2014")).awaitResult()
 
         assertEqualCommits(logResult.commits, [
                 new Commit(
@@ -165,8 +165,8 @@ class VcsProject_GitIntegrationTest {
     }
 
     @Test void "log content of modified file"() {
-        project.init().awaitCompletion()
-        def logResult = project.log(date("12/08/2014"), date("13/08/2014")).awaitCompletion()
+        project.init().awaitResult()
+        def logResult = project.log(date("12/08/2014"), date("13/08/2014")).awaitResult()
 
         def change = logResult.commits.first().changes.first()
         assert change.type == MODIFICATION
@@ -177,8 +177,8 @@ class VcsProject_GitIntegrationTest {
     }
 
     @Test void "log content of new file"() {
-        project.init().awaitCompletion()
-        def logResult = project.log(date("11/08/2014"), date("12/08/2014")).awaitCompletion()
+        project.init().awaitResult()
+        def logResult = project.log(date("11/08/2014"), date("12/08/2014")).awaitResult()
 
         def change = logResult.commits.first().changes.first()
         assert change.type == NEW
@@ -189,8 +189,8 @@ class VcsProject_GitIntegrationTest {
     }
 
     @Test void "log content of deleted file"() {
-        project.init().awaitCompletion()
-        def logResult = project.log(date("15/08/2014"), date("16/08/2014")).awaitCompletion()
+        project.init().awaitResult()
+        def logResult = project.log(date("15/08/2014"), date("16/08/2014")).awaitResult()
 
         def change = logResult.commits.first().changes.first()
         assert change.type == DELETED
