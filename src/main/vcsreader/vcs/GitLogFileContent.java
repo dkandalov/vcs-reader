@@ -27,7 +27,8 @@ class GitLogFileContent implements CommandExecutor.Command<LogContentResult>, De
     }
 
     private static String trimLastNewLine(String s) {
-        return s.endsWith("\n") ? s.substring(0, s.length() - 1) : s;
+        if (s.endsWith("\r\n")) return s.substring(0, s.length() - 2);
+        else return s.endsWith("\n") || s.endsWith("\r") ? s.substring(0, s.length() - 1) : s;
     }
 
     static ShellCommand gitLogFileContent(String folder, String filePath, String revision, Charset charset) {
