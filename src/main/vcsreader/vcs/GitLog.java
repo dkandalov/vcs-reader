@@ -87,7 +87,7 @@ class GitLog implements CommandExecutor.Command<LogResult>, Described {
         String parentHashes = "%P";
         String commitDate = "%ct";
         String authorName = "%an"; // see http://stackoverflow.com/questions/18750808/difference-between-author-and-committer-in-git
-        String rawBody = "%B";
+        String rawBody = "%s%n%n%-b"; // based on git4idea.checkin.GitCheckinEnvironment.GitCheckinOptions.getLastCommitMessage()
 
         String commitStartSeparator = "%x11%x12%x13%n";
         String fieldSeparator = "%x10%x11%x12%n";
