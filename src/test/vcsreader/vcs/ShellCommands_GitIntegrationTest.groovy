@@ -2,6 +2,8 @@ package vcsreader.vcs
 import org.junit.Before
 import org.junit.Test
 
+import java.nio.charset.Charset
+
 import static GitLogFileContent.gitLogFileContent
 import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.vcs.GitClone.gitClone
@@ -13,14 +15,14 @@ import static vcsreader.vcs.GitUpdate.gitUpdate
 class ShellCommands_GitIntegrationTest {
 
     @Test void "git log file content"() {
-        def command = gitLogFileContent(referenceProject, "file1.txt", firstRevision)
+        def command = gitLogFileContent(referenceProject, "file1.txt", firstRevision, utf8)
         assert command.stdout().trim() == "file1 content"
         assert command.stderr() == ""
         assert command.exitValue() == 0
     }
 
     @Test void "failed git log file content"() {
-        def command = gitLogFileContent(referenceProject, "non-existent file", firstRevision)
+        def command = gitLogFileContent(referenceProject, "non-existent file", firstRevision, utf8)
         assert command.stdout() == ""
         assert command.stderr().startsWith("fatal: Path 'non-existent file' does not exist")
         assert command.exitValue() == 128
@@ -97,6 +99,7 @@ class ShellCommands_GitIntegrationTest {
         new File(projectFolder2).mkdirs()
     }
 
+    private static final Charset utf8 = Charset.forName("UTF-8")
     private static final String projectFolder = "/tmp/git-commands-test/git-repo-${ShellCommands_GitIntegrationTest.simpleName}"
     private static final String projectFolder2 = "/tmp/git-commands-test/git-repo-${ShellCommands_GitIntegrationTest.simpleName}-2"
 }

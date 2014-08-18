@@ -72,7 +72,7 @@ class GitLog implements CommandExecutor.Command<LogResult>, Described {
         String from = "--after=" + Long.toString(fromDate.getTime() / 1000);
         String to = "--before=" + Long.toString(toDate.getTime() / 1000);
         String showFileStatus = "--name-status"; // see --diff-filter at https://www.kernel.org/pub/software/scm/git/docs/git-log.html
-        return new ShellCommand(gitPath, "log", logFormat(), from, to, showFileStatus);
+        return new ShellCommand(gitPath, "log", logFormat(), from, to, showFileStatus, "--encoding=UTF-8");
     }
 
     static ShellCommand gitLogRenames(String gitPath, String folder, String revision) {

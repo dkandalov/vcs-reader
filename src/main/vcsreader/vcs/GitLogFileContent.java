@@ -4,6 +4,7 @@ import vcsreader.CommandExecutor;
 import vcsreader.lang.Described;
 
 import java.io.File;
+import java.nio.charset.Charset;
 
 import static vcsreader.VcsProject.LogContentResult;
 
@@ -11,15 +12,17 @@ class GitLogFileContent implements CommandExecutor.Command<LogContentResult>, De
     private final String folder;
     private final String filePath;
     private final String revision;
+    private final Charset charset;
 
-    GitLogFileContent(String folder, String filePath, String revision) {
+    GitLogFileContent(String folder, String filePath, String revision, Charset charset) {
         this.folder = folder;
         this.filePath = filePath;
         this.revision = revision;
+        this.charset = charset;
     }
 
     @Override public LogContentResult execute() {
-        ShellCommand shellCommand = gitLogFileContent(folder, filePath, revision);
+        ShellCommand shellCommand = gitLogFileContent(folder, filePath, revision, charset);
         return new LogContentResult(trimLastNewLine(shellCommand.stdout()), shellCommand.stderr());
     }
 
@@ -27,16 +30,16 @@ class GitLogFileContent implements CommandExecutor.Command<LogContentResult>, De
         return s.endsWith("\n") ? s.substring(0, s.length() - 1) : s;
     }
 
-    static ShellCommand gitLogFileContent(String folder, String filePath, String revision) {
-        return createCommand(filePath, revision).executeIn(new File(folder));
+    static ShellCommand gitLogFileContent(String folder, String filePath, String revision, Charset charset) {
+        return createCommand(filePath, revision, charset).executeIn(new File(folder));
     }
 
-    private static ShellCommand createCommand(String filePath, String revision) {
-        return new ShellCommand("/usr/bin/git", "show", revision + ":" + filePath);
+    private static ShellCommand createCommand(String filePath, String revision, Charset charset) {
+        return new ShellCommand("/usr/bin/git", "show", revision + ":" + filePath).withCharset(charset);
     }
 
     @Override public String describe() {
-        return createCommand(filePath, revision).describe();
+        return createCommand(filePath, revision, charset).describe();
     }
 
     @SuppressWarnings("RedundantIfStatement")
