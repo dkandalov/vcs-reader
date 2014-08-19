@@ -1,7 +1,7 @@
-package vcsreader.vcs
+package vcsreader.vcs.git
 
-import vcsreader.CommandExecutor
 import vcsreader.VcsProject
+import vcsreader.lang.CommandExecutor
 import vcsreader.lang.Described
 
 import static vcsreader.lang.DateTimeUtil.date

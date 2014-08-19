@@ -1,16 +1,17 @@
-package vcsreader.vcs
+package vcsreader.vcs.git
+
 import org.junit.Before
 import org.junit.Test
 
 import java.nio.charset.Charset
 
-import static GitLogFileContent.gitLogFileContent
 import static vcsreader.lang.DateTimeUtil.date
-import static vcsreader.vcs.GitClone.gitClone
-import static vcsreader.vcs.GitIntegrationTestConfig.*
-import static vcsreader.vcs.GitLog.gitLog
-import static vcsreader.vcs.GitLog.gitLogRenames
-import static vcsreader.vcs.GitUpdate.gitUpdate
+import static vcsreader.vcs.git.GitClone.gitClone
+import static vcsreader.vcs.git.GitIntegrationTestConfig.*
+import static vcsreader.vcs.git.GitLog.gitLog
+import static vcsreader.vcs.git.GitLog.gitLogRenames
+import static vcsreader.vcs.git.GitLogFileContent.gitLogFileContent
+import static vcsreader.vcs.git.GitUpdate.gitUpdate
 
 class ShellCommands_GitIntegrationTest {
 

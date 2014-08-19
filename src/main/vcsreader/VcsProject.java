@@ -3,6 +3,7 @@ package vcsreader;
 import org.jetbrains.annotations.NotNull;
 import vcsreader.lang.Async;
 import vcsreader.lang.AsyncResultListener;
+import vcsreader.lang.CommandExecutor;
 
 import java.util.ArrayList;
 import java.util.Comparator;

@@ -1,10 +1,10 @@
-package vcsreader.vcs;
+package vcsreader.vcs.git;
 
 import org.junit.Test;
-import vcsreader.CommandExecutor;
 import vcsreader.VcsProject;
 import vcsreader.VcsRoot;
 import vcsreader.lang.Async;
+import vcsreader.lang.CommandExecutor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,9 +14,9 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
-import static vcsreader.CommandExecutor.Command;
 import static vcsreader.VcsProject.InitResult;
 import static vcsreader.VcsProject.LogResult;
+import static vcsreader.lang.CommandExecutor.Command;
 import static vcsreader.lang.DateTimeUtil.date;
 
 public class VcsProjectTest {

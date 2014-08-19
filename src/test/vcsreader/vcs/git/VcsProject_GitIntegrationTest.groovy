@@ -1,4 +1,5 @@
-package vcsreader.vcs
+package vcsreader.vcs.git
+
 import org.junit.Before
 import org.junit.Test
 import vcsreader.Change
@@ -11,7 +12,7 @@ import static vcsreader.Change.Type.*
 import static vcsreader.Change.noRevision
 import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.lang.DateTimeUtil.dateTime
-import static vcsreader.vcs.GitIntegrationTestConfig.*
+import static vcsreader.vcs.git.GitIntegrationTestConfig.*
 
 class VcsProject_GitIntegrationTest {
     private final vcsRoots = [new GitVcsRoot(projectFolder, referenceProject, GitSettings.defaults())]

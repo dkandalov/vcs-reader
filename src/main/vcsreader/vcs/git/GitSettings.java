@@ -1,4 +1,4 @@
-package vcsreader.vcs;
+package vcsreader.vcs.git;
 
 import java.nio.charset.Charset;
 

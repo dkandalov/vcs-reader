@@ -1,9 +1,9 @@
-package vcsreader.vcs;
+package vcsreader.vcs.git;
 
-import vcsreader.CommandExecutor;
 import vcsreader.VcsProject;
 import vcsreader.VcsRoot;
 import vcsreader.lang.Async;
+import vcsreader.lang.CommandExecutor;
 
 import java.util.Date;
 

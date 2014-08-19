@@ -4,6 +4,7 @@ base_dir = "/tmp/reference-repos/git-repo"
 raise("#{base_dir} already exists") if Dir.exist?(base_dir)
 FileUtils.mkpath(base_dir)
 
+
 def commit(message, date, author)
   puts `git add --all .`
   puts `git commit -m "#{message}"`
@@ -29,7 +30,7 @@ def update_test_config(commit_hashes)
   replace(
       /def revisions = \[.*\]/,
       "def revisions = [#{hashes_literal}]",
-      "./src/test/vcsreader/vcs/GitIntegrationTestConfig.groovy"
+      "./src/test/vcsreader/vcs/git/GitIntegrationTestConfig.groovy"
   )
 end
 

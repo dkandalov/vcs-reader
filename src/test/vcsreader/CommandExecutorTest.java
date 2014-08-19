@@ -2,12 +2,13 @@ package vcsreader;
 
 import org.junit.Test;
 import vcsreader.lang.Async;
+import vcsreader.lang.CommandExecutor;
 
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
-import static vcsreader.CommandExecutor.Command;
+import static vcsreader.lang.CommandExecutor.Command;
 
 public class CommandExecutorTest {
 

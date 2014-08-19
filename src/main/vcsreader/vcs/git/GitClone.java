@@ -1,7 +1,8 @@
-package vcsreader.vcs;
+package vcsreader.vcs.git;
 
-import vcsreader.CommandExecutor;
+import vcsreader.lang.CommandExecutor;
 import vcsreader.lang.Described;
+import vcsreader.vcs.infrastructure.ShellCommand;
 
 import static java.util.Arrays.asList;
 import static vcsreader.VcsProject.InitResult;

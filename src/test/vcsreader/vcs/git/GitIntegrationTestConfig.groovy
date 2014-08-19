@@ -1,6 +1,8 @@
-package vcsreader.vcs
+package vcsreader.vcs.git
 
 class GitIntegrationTestConfig {
+    // TODO move to properties so that it can be reused in Ruby?
+
     static final String pathToGit = "/usr/bin/git"
     static final String referenceProject = "/tmp/reference-repos/git-repo"
     static final String nonExistentPath = "/tmp/non-existent-path"

@@ -1,9 +1,10 @@
-package vcsreader.vcs;
+package vcsreader.vcs.git;
 
 import vcsreader.Change;
-import vcsreader.CommandExecutor;
 import vcsreader.Commit;
+import vcsreader.lang.CommandExecutor;
 import vcsreader.lang.Described;
+import vcsreader.vcs.infrastructure.ShellCommand;
 
 import java.io.File;
 import java.util.ArrayList;

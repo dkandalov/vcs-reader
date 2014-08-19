@@ -1,11 +1,11 @@
-package vcsreader.vcs;
+package vcsreader.vcs.infrastructure;
 
 import java.io.*;
 import java.nio.charset.Charset;
 
 import static java.nio.charset.Charset.forName;
 
-class ShellCommand {
+public class ShellCommand {
     private static final File CURRENT_DIRECTORY = null;
 
     private final String[] command;

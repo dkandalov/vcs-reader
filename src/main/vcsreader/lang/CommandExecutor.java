@@ -1,7 +1,4 @@
-package vcsreader;
-
-import vcsreader.lang.Async;
-import vcsreader.lang.NamedThreadFactory;
+package vcsreader.lang;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
