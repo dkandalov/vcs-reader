@@ -36,5 +36,4 @@ public class DateTimeUtil {
         }
         throw new RuntimeException("Failed to parse string as dateTime: " + s);
     }
-
 }
