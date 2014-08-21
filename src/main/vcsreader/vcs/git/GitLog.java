@@ -2,8 +2,8 @@ package vcsreader.vcs.git;
 
 import vcsreader.Change;
 import vcsreader.Commit;
-import vcsreader.lang.CommandExecutor;
 import vcsreader.lang.Described;
+import vcsreader.lang.FunctionExecutor;
 import vcsreader.vcs.infrastructure.ShellCommand;
 
 import java.io.File;
@@ -17,7 +17,7 @@ import static vcsreader.VcsProject.LogResult;
 import static vcsreader.lang.StringUtil.split;
 import static vcsreader.lang.StringUtil.trim;
 
-class GitLog implements CommandExecutor.Command<LogResult>, Described {
+class GitLog implements FunctionExecutor.Function<LogResult>, Described {
     private final String folder;
     private final Date fromDate;
     private final Date toDate;

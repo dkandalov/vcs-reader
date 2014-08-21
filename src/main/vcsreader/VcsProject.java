@@ -3,7 +3,7 @@ package vcsreader;
 import org.jetbrains.annotations.NotNull;
 import vcsreader.lang.Async;
 import vcsreader.lang.AsyncResultListener;
-import vcsreader.lang.CommandExecutor;
+import vcsreader.lang.FunctionExecutor;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -16,13 +16,13 @@ public class VcsProject {
     private final List<VcsRoot> vcsRoots;
 
     public VcsProject(List<VcsRoot> vcsRoots) {
-        this(vcsRoots, new CommandExecutor());
+        this(vcsRoots, new FunctionExecutor());
     }
 
-    public VcsProject(List<VcsRoot> vcsRoots, CommandExecutor commandExecutor) {
+    public VcsProject(List<VcsRoot> vcsRoots, FunctionExecutor functionExecutor) {
         this.vcsRoots = vcsRoots;
         for (VcsRoot vcsRoot : vcsRoots) {
-            vcsRoot.setCommandExecutor(commandExecutor);
+            vcsRoot.setFunctionExecutor(functionExecutor);
         }
     }
 

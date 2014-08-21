@@ -1,7 +1,7 @@
 package vcsreader.vcs.git;
 
-import vcsreader.lang.CommandExecutor;
 import vcsreader.lang.Described;
+import vcsreader.lang.FunctionExecutor;
 import vcsreader.vcs.infrastructure.ShellCommand;
 
 import java.io.File;
@@ -9,7 +9,7 @@ import java.io.File;
 import static java.util.Arrays.asList;
 import static vcsreader.VcsProject.UpdateResult;
 
-class GitUpdate implements CommandExecutor.Command<UpdateResult>, Described {
+class GitUpdate implements FunctionExecutor.Function<UpdateResult>, Described {
     private final String pathToGit;
     private final String folder;
 
