@@ -1,14 +1,10 @@
 require 'fileutils.rb'
-
-base_dir = "/tmp/reference-repos/git-repo"
-raise("#{base_dir} already exists") if Dir.exist?(base_dir)
-FileUtils.mkpath(base_dir)
-
+require 'json'
 
 def commit(message, date, author)
-  puts `git add --all .`
-  puts `git commit -m "#{message}"`
-  puts `GIT_COMMITTER_DATE="#{date}" git commit --amend --author "#{author}" --date "#{date}" -m "#{message}"`
+  puts `#{GIT} add --all .`
+  puts `#{GIT} commit -m "#{message}"`
+  puts `GIT_COMMITTER_DATE="#{date}" #{GIT} commit --amend --author "#{author}" --date "#{date}" -m "#{message}"`
 end
 
 def replace(pattern, replacement, file_name)
@@ -18,7 +14,7 @@ def replace(pattern, replacement, file_name)
 end
 
 def log_commit_hashes
-  log = `git log`
+  log = `#{GIT} log`
   log.split("\n").
       delete_if { |line| not line.include?("commit ") }.
       collect { |line| line.gsub(/commit /, "") }.
@@ -28,17 +24,24 @@ end
 def update_test_config(commit_hashes)
   hashes_literal = commit_hashes.collect { |hash| '"' + hash + '"' }.join(",")
   replace(
-      /def revisions = \[.*\]/,
-      "def revisions = [#{hashes_literal}]",
-      "./src/test/vcsreader/vcs/git/GitIntegrationTestConfig.groovy"
+      /"revisions": \[.*\]/,
+      "\"revisions\": [#{hashes_literal}]",
+      "test-config.json"
   )
 end
 
-author = "Some Author <some.author@mail.com>"
+config = JSON.parse(File.new("test-config.json").readlines.join("\n"))
+GIT = config["pathToGit"]
+BASE_DIR = config["referenceProject"]
+author = config["authorWithEmail"]
 commit_hashes = []
 
-Dir.chdir(base_dir) do
-  puts `git init`
+
+raise("#{BASE_DIR} already exists") if Dir.exist?(BASE_DIR)
+FileUtils.mkpath(BASE_DIR)
+
+Dir.chdir(BASE_DIR) do
+  puts `#{GIT} init`
 
   puts `echo "file1 content" > file1.txt`
   commit "initial commit", "Aug 10 15:00:00 2014 +0100", author
