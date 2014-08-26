@@ -3,7 +3,7 @@ require 'json'
 
 class GitRepositoryCreator
   def initialize
-    @path_to_config = "src/test/vcsreader/test-config.json"
+    @path_to_config = "src/test/vcsreader/git-test-config.json"
     config = JSON.parse(File.new(@path_to_config).readlines.join("\n"))
     @git = config["pathToGit"]
     @base_dir = config["referenceProject"]

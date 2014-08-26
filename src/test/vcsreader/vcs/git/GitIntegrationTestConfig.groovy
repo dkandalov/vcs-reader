@@ -3,7 +3,7 @@ package vcsreader.vcs.git
 import groovy.json.JsonSlurper
 
 class GitIntegrationTestConfig {
-    static config = new JsonSlurper().parse(new File("src/test/vcsreader/test-config.json"))
+    static config = new JsonSlurper().parse(new File("src/test/vcsreader/git-test-config.json"))
 
     static final String pathToGit = config["pathToGit"]
     static final String referenceProject = config["referenceProject"]
