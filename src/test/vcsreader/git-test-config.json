@@ -1,5 +1,5 @@
 {
-    "pathToGit": "/usr/bin/git",
+    "pathToGit": "/usr/local/Cellar/git/2.1.0/bin/git",
     "author": "Some Author",
     "authorWithEmail": "Some Author <some.author@mail.com>",
     "referenceProject": "/tmp/reference-repos/git-repo",

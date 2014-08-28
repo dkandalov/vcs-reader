@@ -2,6 +2,7 @@
     "pathToSvn": "/usr/bin/svn",
     "pathToSvnAdmin": "/usr/bin/svnadmin",
     "svnRepository": "/tmp/reference-repos/svn-repo",
+    "svnRepositoryUrl": "file:///tmp/reference-repos/svn-repo",
     "referenceProject": "/tmp/reference-repos/svn-reference-project",
     "author": "Some Author"
 }
