@@ -17,5 +17,7 @@ public interface VcsRoot {
 
     Async<VcsProject.LogContentResult> contentOf(String fileName, String revision);
 
-    void setFunctionExecutor(FunctionExecutor functionExecutor);
+    public interface WithExecutor {
+        void setFunctionExecutor(FunctionExecutor functionExecutor);
+    }
 }

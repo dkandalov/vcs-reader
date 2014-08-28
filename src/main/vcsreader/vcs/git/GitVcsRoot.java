@@ -11,7 +11,7 @@ import static vcsreader.VcsProject.InitResult;
 import static vcsreader.VcsProject.UpdateResult;
 
 // TODO check git version (e.g. "git show" seems to work only since 1.5.x (http://stackoverflow.com/questions/610208/how-to-retrieve-a-single-file-from-specific-revision-in-git)
-public class GitVcsRoot implements VcsRoot {
+public class GitVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
     private final String pathToProject;
     private final String repositoryUrl;
     private final GitSettings settings;
