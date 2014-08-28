@@ -9,6 +9,11 @@ import java.nio.charset.Charset;
 
 import static vcsreader.VcsProject.LogContentResult;
 
+/**
+ * Note that this class is only compatible with git > 1.5 because "git show" seems to work only since 1.5.x
+ * (http://stackoverflow.com/questions/610208/how-to-retrieve-a-single-file-from-specific-revision-in-git).
+ * The assumption is that nobody uses it anymore.
+ */
 class GitLogFileContent implements FunctionExecutor.Function<LogContentResult>, Described {
     private final String folder;
     private final String filePath;
