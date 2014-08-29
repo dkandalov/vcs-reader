@@ -3,7 +3,7 @@ require 'json'
 
 class SvnRepositoryCreator
   def initialize
-    @path_to_config = "svn-test-config.json"
+    @path_to_config = "src/test/vcsreader/vcs/svn/svn-test-config.json"
     config = JSON.parse(File.new(@path_to_config).readlines.join("\n"))
     @svn = config["pathToSvn"]
     @svn_admin = config["pathToSvnAdmin"]

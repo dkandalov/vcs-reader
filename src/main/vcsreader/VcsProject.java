@@ -79,7 +79,6 @@ public class VcsProject {
         T mergeWith(T result);
     }
 
-
     private static class Accumulator<T extends Mergeable<T>> {
         private final Async<T> asyncResult;
         private T mergedResult;
@@ -101,6 +100,7 @@ public class VcsProject {
             }
         }
     }
+
 
     public static class LogContentResult {
         public static LogContentResult none = new LogContentResult(null, null);
