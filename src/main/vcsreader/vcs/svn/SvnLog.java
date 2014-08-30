@@ -17,8 +17,8 @@ public class SvnLog implements FunctionExecutor.Function<LogResult> {
         ShellCommand shellCommand = new ShellCommand(
                 pathToSvn, "log",
                 repositoryUrl,
-                "-r" + dateRange(fromDate, toDate),
-                "--use-merge-history", "--stop-on-copy", "--verbose", "--xml"
+                "-r", dateRange(fromDate, toDate),
+                "--use-merge-history", "--verbose", "--xml"
         );
         return shellCommand.execute();
     }

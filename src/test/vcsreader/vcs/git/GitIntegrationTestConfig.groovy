@@ -7,7 +7,7 @@ class GitIntegrationTestConfig {
 
     static final String pathToGit = config["pathToGit"] as String
     static final String referenceProject = config["referenceProject"] as String
-    static final String nonExistentPath = "/tmp/non-existent-path" as String
+    static final String nonExistentPath = "/tmp/non-existent-path"
 
     static final List<String> revisions = config["revisions"] as List
 

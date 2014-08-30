@@ -16,14 +16,14 @@ import static vcsreader.vcs.git.GitUpdate.gitUpdate
 class ShellCommands_GitIntegrationTest {
 
     @Test void "git log file content"() {
-        def command = gitLogFileContent(referenceProject, "file1.txt", firstRevision, utf8)
+        def command = gitLogFileContent(pathToGit, referenceProject, "file1.txt", firstRevision, utf8)
         assert command.stdout().trim() == "file1 content"
         assert command.stderr() == ""
         assert command.exitValue() == 0
     }
 
     @Test void "failed git log file content"() {
-        def command = gitLogFileContent(referenceProject, "non-existent file", firstRevision, utf8)
+        def command = gitLogFileContent(pathToGit, referenceProject, "non-existent file", firstRevision, utf8)
         assert command.stdout() == ""
         assert command.stderr().startsWith("fatal: Path 'non-existent file' does not exist")
         assert command.exitValue() == 128

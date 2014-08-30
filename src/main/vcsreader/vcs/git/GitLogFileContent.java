@@ -15,12 +15,14 @@ import static vcsreader.VcsProject.LogContentResult;
  * The assumption is that nobody uses it anymore.
  */
 class GitLogFileContent implements FunctionExecutor.Function<LogContentResult>, Described {
+    private final String gitPath;
     private final String folder;
     private final String filePath;
     private final String revision;
     private final Charset charset;
 
-    GitLogFileContent(String folder, String filePath, String revision, Charset charset) {
+    GitLogFileContent(String gitPath, String folder, String filePath, String revision, Charset charset) {
+        this.gitPath = gitPath;
         this.folder = folder;
         this.filePath = filePath;
         this.revision = revision;
@@ -28,7 +30,7 @@ class GitLogFileContent implements FunctionExecutor.Function<LogContentResult>, 
     }
 
     @Override public LogContentResult execute() {
-        ShellCommand shellCommand = gitLogFileContent(folder, filePath, revision, charset);
+        ShellCommand shellCommand = gitLogFileContent(gitPath, folder, filePath, revision, charset);
         return new LogContentResult(trimLastNewLine(shellCommand.stdout()), shellCommand.stderr());
     }
 
@@ -37,16 +39,16 @@ class GitLogFileContent implements FunctionExecutor.Function<LogContentResult>, 
         else return s.endsWith("\n") || s.endsWith("\r") ? s.substring(0, s.length() - 1) : s;
     }
 
-    static ShellCommand gitLogFileContent(String folder, String filePath, String revision, Charset charset) {
-        return createCommand(filePath, revision, charset).executeIn(new File(folder));
+    static ShellCommand gitLogFileContent(String pathToGit, String folder, String filePath, String revision, Charset charset) {
+        return createCommand(pathToGit, filePath, revision, charset).executeIn(new File(folder));
     }
 
-    private static ShellCommand createCommand(String filePath, String revision, Charset charset) {
-        return new ShellCommand("/usr/bin/git", "show", revision + ":" + filePath).withCharset(charset);
+    private static ShellCommand createCommand(String pathToGit, String filePath, String revision, Charset charset) {
+        return new ShellCommand(pathToGit, "show", revision + ":" + filePath).withCharset(charset);
     }
 
     @Override public String describe() {
-        return createCommand(filePath, revision, charset).describe();
+        return createCommand(gitPath, filePath, revision, charset).describe();
     }
 
     @SuppressWarnings("RedundantIfStatement")

@@ -18,16 +18,16 @@ import static vcsreader.lang.StringUtil.split;
 import static vcsreader.lang.StringUtil.trim;
 
 class GitLog implements FunctionExecutor.Function<LogResult>, Described {
+    private final String gitPath;
     private final String folder;
     private final Date fromDate;
     private final Date toDate;
-    private final String gitPath;
 
     public GitLog(String gitPath, String folder, Date fromDate, Date toDate) {
+        this.gitPath = gitPath;
         this.folder = folder;
         this.fromDate = fromDate;
         this.toDate = toDate;
-        this.gitPath = gitPath;
     }
 
     @Override public LogResult execute() {

@@ -5,11 +5,11 @@ def svn_log
 end
 
 def svn_show_file_content
-  repo_url = "http://svn.apache.org/viewvc/"
-  revision = "1610057"
-  file = "/commons/proper/collections/trunk/pom.xml"
+  repo_url = "file:///tmp/reference-repos/svn-repo"
+  revision = "2"
+  file = "file1.txt"
   puts `svn cat #{repo_url}/#{file}@#{revision}`
 end
 
-svn_log
-# svn_show_file_content
+# svn_log
+svn_show_file_content

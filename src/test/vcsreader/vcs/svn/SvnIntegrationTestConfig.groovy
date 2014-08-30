@@ -6,4 +6,5 @@ class SvnIntegrationTestConfig {
 
     static final String pathToSvn = config["pathToSvn"] as String
     static final String repositoryUrl = config["svnRepositoryUrl"] as String
+    static final String nonExistentUrl = "file://non-existent/url"
 }
