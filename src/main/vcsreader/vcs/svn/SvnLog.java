@@ -7,6 +7,7 @@ import vcsreader.vcs.infrastructure.ShellCommand;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -28,7 +29,7 @@ class SvnLog implements FunctionExecutor.Function<LogResult> {
     @Override public LogResult execute() {
         ShellCommand command = svnLog(pathToSvn, repositoryUrl, fromDate, toDate);
 
-        List<Commit> commits = CommitParser.parseCommits(command.stdout());
+        List<Commit> commits = deleteCommitsBefore(fromDate, CommitParser.parseCommits(command.stdout()));
         List<String> errors = command.stderr().trim().isEmpty() ? Collections.<String>emptyList() : asList(command.stderr());
 
         return new LogResult(commits, errors);
@@ -47,6 +48,19 @@ class SvnLog implements FunctionExecutor.Function<LogResult> {
     private static String dateRange(Date fromDate, Date toDate) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         return "{" + dateFormat.format(fromDate) + "}:{" + dateFormat.format(toDate) + "}";
+    }
+
+    /**
+     * Delete commits because "Subversion will find the most recent revision of the repository as of the date you give".
+     * See http://svnbook.red-bean.com/en/1.7/svn.tour.revs.specifiers.html#svn.tour.revs.keywords
+     */
+    private static List<Commit> deleteCommitsBefore(Date date, List<Commit> commits) {
+        Iterator<Commit> iterator = commits.iterator();
+        while (iterator.hasNext()) {
+            Commit commit = iterator.next();
+            if (commit.commitDate.before(date)) iterator.remove();
+        }
+        return commits;
     }
 
 }

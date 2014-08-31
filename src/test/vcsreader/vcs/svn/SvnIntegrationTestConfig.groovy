@@ -11,4 +11,5 @@ class SvnIntegrationTestConfig {
     static final String author = config["author"] as String
     static final String firstRevision = "1"
     static final String secondRevision = "2"
+    static final String thirdRevision = "3"
 }

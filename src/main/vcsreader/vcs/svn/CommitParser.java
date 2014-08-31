@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static java.util.Collections.emptyList;
+
 class CommitParser {
     static List<Commit> parseCommits(String xml) {
         try {
@@ -32,13 +34,13 @@ class CommitParser {
             return commitReadingHandler.commits;
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
-            return null; // TODO
+            return emptyList(); // TODO
         } catch (SAXException e) {
             e.printStackTrace();
-            return null; // TODO
+            return emptyList(); // TODO
         } catch (IOException e) {
             e.printStackTrace();
-            return null; // TODO
+            return emptyList(); // TODO
         }
     }
 
@@ -46,6 +48,7 @@ class CommitParser {
         private final List<Commit> commits = new ArrayList<Commit>();
 
         private String revision;
+        private String revisionBefore;
         private String author;
         private Date commitDate;
         private String comment;
@@ -63,6 +66,7 @@ class CommitParser {
         public void startElement(String uri, String localName, @NotNull String name, Attributes attributes) throws SAXException {
             if (name.equals("logentry")) {
                 revision = attributes.getValue("revision");
+                revisionBefore = previous(revision);
             } else if (name.equals("author")) {
                 expectAuthor = true;
             } else if (name.equals("date")) {
@@ -100,10 +104,14 @@ class CommitParser {
 
         @Override public void endElement(String uri, String localName, @NotNull String name) throws SAXException {
             if (name.equals("logentry")) {
-                commits.add(new Commit(revision, previous(revision), commitDate, author, comment, new ArrayList<Change>(changes)));
+                commits.add(new Commit(revision, revisionBefore, commitDate, author, comment, new ArrayList<Change>(changes)));
                 changes.clear();
             } else if (name.equals("path")) {
-                changes.add(new Change(changeType, fileName, revision));
+                if (changeType == Change.Type.NEW) {
+                    changes.add(new Change(changeType, fileName, revision));
+                } else {
+                    changes.add(new Change(changeType, fileName, fileName, revision, revisionBefore));
+                }
             }
         }
 

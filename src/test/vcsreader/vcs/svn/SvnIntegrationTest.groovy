@@ -7,6 +7,7 @@ import vcsreader.VcsProject
 
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
+import static vcsreader.Change.Type.MODIFICATION
 import static vcsreader.Change.Type.NEW
 import static vcsreader.Change.noRevision
 import static vcsreader.lang.DateTimeUtil.date
@@ -83,26 +84,26 @@ class SvnIntegrationTest {
         assert logResult.isSuccessful()
     }
 
-//    @Test void "log modification commit"() {
-//        project.init().awaitResult()
-//        def logResult = project.log(date("12/08/2014"), date("13/08/2014")).awaitResult()
-//
-//        assertEqualCommits(logResult.commits, [
-//                new Commit(
-//                        thirdRevision, secondRevision,
-//                        dateTime("14:00:00 12/08/2014"),
-//                        author,
-//                        "modified file2, file3",
-//                        [
-//                            new Change(MODIFICATION, "file2.txt", "file2.txt", thirdRevision, secondRevision),
-//                            new Change(MODIFICATION, "file3.txt", "file3.txt", thirdRevision, secondRevision)
-//                        ]
-//                )
-//        ])
-//        assert logResult.errors() == []
-//        assert logResult.isSuccessful()
-//    }
-//
+    @Test void "log modification commit"() {
+        project.init().awaitResult()
+        def logResult = project.log(date("12/08/2014"), date("13/08/2014")).awaitResult()
+
+        assertEqualCommits(logResult.commits, [
+                new Commit(
+                        thirdRevision, secondRevision,
+                        dateTime("14:00:00 12/08/2014"),
+                        author,
+                        "modified file2, file3",
+                        [
+                            new Change(MODIFICATION, "file3.txt", "file3.txt", thirdRevision, secondRevision),
+                            new Change(MODIFICATION, "file2.txt", "file2.txt", thirdRevision, secondRevision)
+                        ]
+                )
+        ])
+        assert logResult.errors() == []
+        assert logResult.isSuccessful()
+    }
+
 //    @Test void "log moved file commit"() {
 //        project.init().awaitResult()
 //        def logResult = project.log(date("13/08/2014"), date("14/08/2014")).awaitResult()
