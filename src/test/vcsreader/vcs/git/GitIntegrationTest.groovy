@@ -14,7 +14,7 @@ import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.lang.DateTimeUtil.dateTime
 import static vcsreader.vcs.git.GitIntegrationTestConfig.*
 
-class VcsProject_GitIntegrationTest {
+class GitIntegrationTest {
     private final vcsRoots = [new GitVcsRoot(projectFolder, referenceProject, GitSettings.defaults())]
     private final project = new VcsProject(vcsRoots)
 
@@ -210,5 +210,5 @@ class VcsProject_GitIntegrationTest {
         new File(projectFolder).mkdirs()
     }
 
-    private static final String projectFolder = "/tmp/git-commands-test/git-repo-${VcsProject_GitIntegrationTest.simpleName}/"
+    private static final String projectFolder = "/tmp/git-commands-test/git-repo-${GitIntegrationTest.simpleName}/"
 }

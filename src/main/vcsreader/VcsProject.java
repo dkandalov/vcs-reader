@@ -23,7 +23,7 @@ public class VcsProject {
         this.vcsRoots = vcsRoots;
         for (VcsRoot vcsRoot : vcsRoots) {
             if (vcsRoot instanceof VcsRoot.WithExecutor) {
-                ((VcsRoot.WithExecutor) vcsRoot).setFunctionExecutor(functionExecutor);
+                ((VcsRoot.WithExecutor) vcsRoot).setExecutor(functionExecutor);
             }
         }
     }

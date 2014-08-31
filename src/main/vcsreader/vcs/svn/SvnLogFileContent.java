@@ -6,7 +6,7 @@ import vcsreader.vcs.infrastructure.ShellCommand;
 
 import java.nio.charset.Charset;
 
-public class SvnLogFileContent implements FunctionExecutor.Function<VcsProject.LogContentResult> {
+class SvnLogFileContent implements FunctionExecutor.Function<VcsProject.LogContentResult> {
     @Override public VcsProject.LogContentResult execute() {
         return null;
     }

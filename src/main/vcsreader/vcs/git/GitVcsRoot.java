@@ -38,7 +38,7 @@ public class GitVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
         return functionExecutor.execute(new GitLogFileContent(settings.pathToGit, pathToProject, filePath, revision, settings.filesCharset));
     }
 
-    @Override public void setFunctionExecutor(FunctionExecutor functionExecutor) {
+    @Override public void setExecutor(FunctionExecutor functionExecutor) {
         this.functionExecutor = functionExecutor;
     }
 

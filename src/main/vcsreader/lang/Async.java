@@ -22,6 +22,9 @@ public class Async<T> {
 
     public void whenCompleted(AsyncResultListener<T> listener) {
         this.whenReadyCallback = listener;
+        if (isComplete()) {
+            listener.onComplete(resultReference.get(), exceptions);
+        }
     }
 
     public Async<T> completeWith(T result) {

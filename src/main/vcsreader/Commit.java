@@ -1,5 +1,7 @@
 package vcsreader;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Date;
 import java.util.List;
 
@@ -11,7 +13,8 @@ public class Commit {
     public final String comment;
     public final List<Change> changes;
 
-    public Commit(String revision, String revisionBefore, Date commitDate, String authorName, String comment, List<Change> changes) {
+    public Commit(String revision, String revisionBefore, Date commitDate, String authorName,
+                  String comment, @NotNull List<Change> changes) {
         this.revision = revision;
         this.revisionBefore = revisionBefore;
         this.commitDate = commitDate;
