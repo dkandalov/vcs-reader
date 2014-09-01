@@ -15,11 +15,10 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static java.util.Collections.emptyList;
+import static vcsreader.Change.Type.MOVED;
 
 class CommitParser {
     static List<Commit> parseCommits(String xml) {
@@ -61,6 +60,11 @@ class CommitParser {
         private boolean expectDate;
         private boolean expectComment;
         private boolean expectFileName;
+        private boolean isFileChange;
+        private boolean isCopy;
+        private String copyFromFileName;
+        private String copyFromRevision;
+        private final Set<String> movedPaths = new HashSet<String>();
 
         @Override
         public void startElement(String uri, String localName, @NotNull String name, Attributes attributes) throws SAXException {
@@ -75,6 +79,10 @@ class CommitParser {
                 expectComment = true;
             } else if (name.equals("path")) {
                 changeType = asChangeType(attributes.getValue("action"));
+                isFileChange = "file".equals(attributes.getValue("kind"));
+                isCopy = attributes.getValue("copyfrom-path") != null;
+                copyFromFileName = trimPath(attributes.getValue("copyfrom-path"));
+                copyFromRevision = attributes.getValue("copyfrom-rev");
                 expectFileName = true;
             }
         }
@@ -95,20 +103,27 @@ class CommitParser {
                 comment = String.valueOf(ch, start, length);
             } else if (expectFileName) {
                 expectFileName = false;
-                fileName = String.valueOf(ch, start, length);
-                if (fileName.length() > 0 && fileName.charAt(0) == '/') {
-                    fileName = fileName.substring(1);
-                }
+                fileName = trimPath(String.valueOf(ch, start, length));
             }
+        }
+
+        private static String trimPath(String path) {
+            if (path == null || path.length() < 1) return null;
+            return path.charAt(0) == '/' ? path.substring(1) : null;
         }
 
         @Override public void endElement(String uri, String localName, @NotNull String name) throws SAXException {
             if (name.equals("logentry")) {
                 commits.add(new Commit(revision, revisionBefore, commitDate, author, comment, new ArrayList<Change>(changes)));
                 changes.clear();
-            } else if (name.equals("path")) {
-                if (changeType == Change.Type.NEW) {
+            } else if (name.equals("path") && isFileChange && !movedPaths.contains(fileName)) {
+                if (isCopy) {
+                    changes.add(new Change(MOVED, fileName, copyFromFileName, revision, copyFromRevision));
+                    movedPaths.add(copyFromFileName);
+                } else if (changeType == Change.Type.NEW) {
                     changes.add(new Change(changeType, fileName, revision));
+                } else if (changeType == Change.Type.DELETED) {
+                    changes.add(new Change(changeType, Change.noFileName, fileName, revision, revisionBefore));
                 } else {
                     changes.add(new Change(changeType, fileName, fileName, revision, revisionBefore));
                 }

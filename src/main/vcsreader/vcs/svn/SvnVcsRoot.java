@@ -34,7 +34,7 @@ public class SvnVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
     }
 
     @Override public Async<VcsProject.LogContentResult> contentOf(String fileName, String revision) {
-        return null;
+        throw new IllegalStateException("TODO");
     }
 
     @Override public void setExecutor(FunctionExecutor functionExecutor) {
