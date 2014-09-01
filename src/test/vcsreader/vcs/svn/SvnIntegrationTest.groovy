@@ -160,35 +160,35 @@ class SvnIntegrationTest {
 
         def change = logResult.commits.first().changes.first()
         assert change.type == MODIFICATION
-        assert change.content() == "file2 new content"
-        assert change.contentBefore() == "file2 content"
+        assert change.content() == "file3 new content"
+        assert change.contentBefore() == "file3 content"
         assert logResult.errors() == []
         assert logResult.isSuccessful()
     }
 
-//    @Test void "log content of new file"() {
-//        project.init().awaitResult()
-//        def logResult = project.log(date("11/08/2014"), date("12/08/2014")).awaitResult()
-//
-//        def change = logResult.commits.first().changes.first()
-//        assert change.type == NEW
-//        assert change.content() == "file2 content"
-//        assert change.contentBefore() == null
-//        assert logResult.errors() == []
-//        assert logResult.isSuccessful()
-//    }
-//
-//    @Test void "log content of deleted file"() {
-//        project.init().awaitResult()
-//        def logResult = project.log(date("15/08/2014"), date("16/08/2014")).awaitResult()
-//
-//        def change = logResult.commits.first().changes.first()
-//        assert change.type == DELETED
-//        assert change.content() == null
-//        assert change.contentBefore() == "file1 content"
-//        assert logResult.errors() == []
-//        assert logResult.isSuccessful()
-//    }
+    @Test void "log content of new file"() {
+        project.init().awaitResult()
+        def logResult = project.log(date("11/08/2014"), date("12/08/2014")).awaitResult()
+
+        def change = logResult.commits.first().changes.first()
+        assert change.type == NEW
+        assert change.content() == "file3 content"
+        assert change.contentBefore() == null
+        assert logResult.errors() == []
+        assert logResult.isSuccessful()
+    }
+
+    @Test void "log content of deleted file"() {
+        project.init().awaitResult()
+        def logResult = project.log(date("15/08/2014"), date("16/08/2014")).awaitResult()
+
+        def change = logResult.commits.first().changes.first()
+        assert change.type == DELETED
+        assert change.content() == null
+        assert change.contentBefore() == "file1 content"
+        assert logResult.errors() == []
+        assert logResult.isSuccessful()
+    }
 
     static assertEqualCommits(List<Commit> actual, List<Commit> expected) {
         assertThat(actual.join("\n\n"), equalTo(expected.join("\n\n")))
