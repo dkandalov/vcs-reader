@@ -1,6 +1,7 @@
 package vcsreader.vcs.svn;
 
 import vcsreader.Commit;
+import vcsreader.lang.Described;
 import vcsreader.lang.FunctionExecutor;
 import vcsreader.vcs.infrastructure.ShellCommand;
 
@@ -13,7 +14,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static vcsreader.VcsProject.LogResult;
 
-class SvnLog implements FunctionExecutor.Function<LogResult> {
+class SvnLog implements FunctionExecutor.Function<LogResult>, Described {
     private final String pathToSvn;
     private final String repositoryUrl;
     private final Date fromDate;
@@ -36,13 +37,16 @@ class SvnLog implements FunctionExecutor.Function<LogResult> {
     }
 
     static ShellCommand svnLog(String pathToSvn, String repositoryUrl, Date fromDate, Date toDate) {
-        ShellCommand shellCommand = new ShellCommand(
-                pathToSvn, "log",
-                repositoryUrl,
-                "-r", dateRange(fromDate, toDate),
-                "--use-merge-history", "--verbose", "--xml"
-        );
-        return shellCommand.execute();
+        return createCommand(pathToSvn, repositoryUrl, fromDate, toDate).execute();
+    }
+
+    private static ShellCommand createCommand(String pathToSvn, String repositoryUrl, Date fromDate, Date toDate) {
+        return new ShellCommand(
+                    pathToSvn, "log",
+                    repositoryUrl,
+                    "-r", dateRange(fromDate, toDate),
+                    "--use-merge-history", "--verbose", "--xml"
+            );
     }
 
     private static String dateRange(Date fromDate, Date toDate) {
@@ -63,4 +67,7 @@ class SvnLog implements FunctionExecutor.Function<LogResult> {
         return commits;
     }
 
+    @Override public String describe() {
+        return createCommand(pathToSvn, repositoryUrl, fromDate, toDate).describe();
+    }
 }

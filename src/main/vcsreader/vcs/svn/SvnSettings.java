@@ -33,4 +33,11 @@ public class SvnSettings {
         result = 31 * result + (filesCharset != null ? filesCharset.hashCode() : 0);
         return result;
     }
+
+    @Override public String toString() {
+        return "SvnSettings{" +
+                "svnPath='" + svnPath + '\'' +
+                ", filesCharset=" + filesCharset +
+                '}';
+    }
 }

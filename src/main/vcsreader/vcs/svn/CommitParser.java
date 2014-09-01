@@ -33,7 +33,7 @@ class CommitParser {
         } catch (ParserConfigurationException e) {
             throw new RuntimeException(e);
         } catch (SAXException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to parse xml: " + xml, e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
