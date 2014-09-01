@@ -17,7 +17,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static java.util.Collections.emptyList;
 import static vcsreader.Change.Type.MOVED;
 
 class CommitParser {
@@ -32,14 +31,11 @@ class CommitParser {
 
             return commitReadingHandler.commits;
         } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-            return emptyList(); // TODO
+            throw new RuntimeException(e);
         } catch (SAXException e) {
-            e.printStackTrace();
-            return emptyList(); // TODO
+            throw new RuntimeException(e);
         } catch (IOException e) {
-            e.printStackTrace();
-            return emptyList(); // TODO
+            throw new RuntimeException(e);
         }
     }
 
@@ -96,7 +92,7 @@ class CommitParser {
                 try {
                     commitDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(String.valueOf(ch, start, length));
                 } catch (ParseException e) {
-                    e.printStackTrace(); // TODO
+                    throw new RuntimeException(e);
                 }
             } else if (expectComment) {
                 expectComment = false;
@@ -134,8 +130,7 @@ class CommitParser {
             if (action.equals("A")) return Change.Type.NEW;
             else if (action.equals("D")) return Change.Type.DELETED;
             else if (action.equals("M")) return Change.Type.MODIFICATION;
-                // TODO implement
-            else return null;
+            else throw new IllegalStateException("Unknown svn action: " + action);
         }
 
         private static String previous(String revision) {
