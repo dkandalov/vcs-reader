@@ -75,7 +75,8 @@ class CommitParser {
                 expectComment = true;
             } else if (name.equals("path")) {
                 changeType = asChangeType(attributes.getValue("action"));
-                isFileChange = "file".equals(attributes.getValue("kind"));
+                String kind = attributes.getValue("kind");
+                isFileChange = (kind == null || kind.isEmpty() || "file".equals(kind));
                 isCopy = attributes.getValue("copyfrom-path") != null;
                 copyFromFileName = trimPath(attributes.getValue("copyfrom-path"));
                 copyFromRevision = attributes.getValue("copyfrom-rev");
