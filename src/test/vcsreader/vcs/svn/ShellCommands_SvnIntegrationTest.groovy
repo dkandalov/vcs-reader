@@ -10,14 +10,14 @@ import static vcsreader.vcs.svn.SvnLogFileContent.svnLogFileContent
 
 class ShellCommands_SvnIntegrationTest {
     @Test void "svn log"() {
-        def command = svnLog(pathToSvn, repositoryUrl, date("01/01/2013"), date("01/01/2023"))
+        def command = svnLog(pathToSvn, repositoryUrl, date("01/01/2013"), date("01/01/2023"), useMergeHistory)
         assert command.stdout().contains("initial commit")
         assert command.stderr() == ""
         assert command.exitValue() == 0
     }
 
     @Test void "failed svn log"() {
-        def command = svnLog(pathToSvn, nonExistentUrl, date("01/01/2013"), date("01/01/2023"))
+        def command = svnLog(pathToSvn, nonExistentUrl, date("01/01/2013"), date("01/01/2023"), useMergeHistory)
         assert !command.stdout().contains("logentry")
         assert command.stderr().contains("Unable to connect to a repository")
         assert command.exitValue() == 1
@@ -39,5 +39,6 @@ class ShellCommands_SvnIntegrationTest {
         assert command.exitValue() == 1
     }
 
-    private static final Charset utf8 = Charset.forName("UTF-8")
+    private static final utf8 = Charset.forName("UTF-8")
+    private static final useMergeHistory = true
 }

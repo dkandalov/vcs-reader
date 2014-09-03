@@ -14,6 +14,7 @@ import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.lang.DateTimeUtil.dateTime
 import static vcsreader.vcs.git.GitIntegrationTestConfig.*
 
+// TODO unescape quotes in file name, see git4idea.GitUtil.unescapePath
 class GitIntegrationTest {
     private final vcsRoots = [new GitVcsRoot(projectFolder, referenceProject, GitSettings.defaults())]
     private final project = new VcsProject(vcsRoots)

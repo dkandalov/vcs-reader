@@ -19,34 +19,42 @@ class SvnLog implements FunctionExecutor.Function<LogResult>, Described {
     private final String repositoryUrl;
     private final Date fromDate;
     private final Date toDate;
+    private final boolean useMergeHistory;
 
-    public SvnLog(String pathToSvn, String repositoryUrl, Date fromDate, Date toDate) {
+    public SvnLog(String pathToSvn, String repositoryUrl, Date fromDate, Date toDate, boolean useMergeHistory) {
         this.pathToSvn = pathToSvn;
         this.repositoryUrl = repositoryUrl;
         this.fromDate = fromDate;
         this.toDate = toDate;
+        this.useMergeHistory = useMergeHistory;
     }
 
     @Override public LogResult execute() {
-        ShellCommand command = svnLog(pathToSvn, repositoryUrl, fromDate, toDate);
+        ShellCommand command = svnLog(pathToSvn, repositoryUrl, fromDate, toDate, useMergeHistory);
 
-        List<Commit> commits = deleteCommitsBefore(fromDate, CommitParser.parseCommits(command.stdout()));
         List<String> errors = command.stderr().trim().isEmpty() ? Collections.<String>emptyList() : asList(command.stderr());
-
-        return new LogResult(commits, errors);
+        if (errors.isEmpty()) {
+            List<Commit> commits = deleteCommitsBefore(fromDate, CommitParser.parseCommits(command.stdout()));
+            return new LogResult(commits, errors);
+        } else {
+            return new LogResult(Collections.<Commit>emptyList(), errors);
+        }
     }
 
-    static ShellCommand svnLog(String pathToSvn, String repositoryUrl, Date fromDate, Date toDate) {
-        return createCommand(pathToSvn, repositoryUrl, fromDate, toDate).execute();
+    static ShellCommand svnLog(String pathToSvn, String repositoryUrl, Date fromDate, Date toDate, boolean useMergeHistory) {
+        return createCommand(pathToSvn, repositoryUrl, fromDate, toDate, useMergeHistory).execute();
     }
 
-    private static ShellCommand createCommand(String pathToSvn, String repositoryUrl, Date fromDate, Date toDate) {
+    private static ShellCommand createCommand(String pathToSvn, String repositoryUrl, Date fromDate, Date toDate, boolean useMergeHistory) {
+        String mergeHistoryParam = (useMergeHistory ? "--use-merge-history" : "");
         return new ShellCommand(
-                    pathToSvn, "log",
-                    repositoryUrl,
-                    "-r", dateRange(fromDate, toDate),
-                    "--use-merge-history", "--verbose", "--xml"
-            );
+                pathToSvn, "log",
+                repositoryUrl,
+                "-r", dateRange(fromDate, toDate),
+                mergeHistoryParam,
+                "--verbose",
+                "--xml"
+        );
     }
 
     private static String dateRange(Date fromDate, Date toDate) {
@@ -68,6 +76,6 @@ class SvnLog implements FunctionExecutor.Function<LogResult>, Described {
     }
 
     @Override public String describe() {
-        return createCommand(pathToSvn, repositoryUrl, fromDate, toDate).describe();
+        return createCommand(pathToSvn, repositoryUrl, fromDate, toDate, useMergeHistory).describe();
     }
 }

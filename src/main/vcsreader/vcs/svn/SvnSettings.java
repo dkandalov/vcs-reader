@@ -5,14 +5,16 @@ import java.nio.charset.Charset;
 public class SvnSettings {
     public final String svnPath;
     public final Charset filesCharset;
+    public final boolean useMergeHistory;
 
-    public SvnSettings(String svnPath, Charset filesCharset) {
+    public SvnSettings(String svnPath, Charset filesCharset, boolean useMergeHistory) {
         this.svnPath = svnPath;
         this.filesCharset = filesCharset;
+        this.useMergeHistory = useMergeHistory;
     }
 
     public static SvnSettings defaults() {
-        return new SvnSettings("/usr/bin/svn", Charset.forName("UTF-8"));
+        return new SvnSettings("/usr/bin/svn", Charset.forName("UTF-8"), true);
     }
 
     @SuppressWarnings("RedundantIfStatement")
@@ -22,6 +24,7 @@ public class SvnSettings {
 
         SvnSettings that = (SvnSettings) o;
 
+        if (useMergeHistory != that.useMergeHistory) return false;
         if (filesCharset != null ? !filesCharset.equals(that.filesCharset) : that.filesCharset != null) return false;
         if (svnPath != null ? !svnPath.equals(that.svnPath) : that.svnPath != null) return false;
 
@@ -31,6 +34,7 @@ public class SvnSettings {
     @Override public int hashCode() {
         int result = svnPath != null ? svnPath.hashCode() : 0;
         result = 31 * result + (filesCharset != null ? filesCharset.hashCode() : 0);
+        result = 31 * result + (useMergeHistory ? 1 : 0);
         return result;
     }
 
@@ -38,6 +42,7 @@ public class SvnSettings {
         return "SvnSettings{" +
                 "svnPath='" + svnPath + '\'' +
                 ", filesCharset=" + filesCharset +
+                ", useMergeHistory=" + useMergeHistory +
                 '}';
     }
 }

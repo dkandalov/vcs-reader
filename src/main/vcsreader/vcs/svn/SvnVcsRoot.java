@@ -19,6 +19,7 @@ public class SvnVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
     }
 
     @Override public Async<InitResult> init() {
+        // TODO check if svn version is compatible
         return new Async<InitResult>().completeWith(new InitResult());
     }
 
@@ -27,7 +28,7 @@ public class SvnVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
     }
 
     @Override public Async<LogResult> log(final Date fromDate, final Date toDate) {
-        return executor.execute(new SvnLog(settings.svnPath, repositoryUrl, fromDate, toDate));
+        return executor.execute(new SvnLog(settings.svnPath, repositoryUrl, fromDate, toDate, settings.useMergeHistory));
     }
 
     @Override public Async<LogContentResult> contentOf(final String fileName, final String revision) {
