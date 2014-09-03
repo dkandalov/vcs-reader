@@ -17,6 +17,18 @@ public class SvnSettings {
         return new SvnSettings("/usr/bin/svn", Charset.forName("UTF-8"), true);
     }
 
+    public SvnSettings withSvnPath(String value) {
+        return new SvnSettings(value, filesCharset, useMergeHistory);
+    }
+
+    public SvnSettings withFilesCharset(Charset value) {
+        return new SvnSettings(svnPath, value, useMergeHistory);
+    }
+
+    public SvnSettings withMergeHistory(boolean value) {
+        return new SvnSettings(svnPath, filesCharset, value);
+    }
+
     @SuppressWarnings("RedundantIfStatement")
     @Override public boolean equals(Object o) {
         if (this == o) return true;

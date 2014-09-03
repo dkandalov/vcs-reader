@@ -3,16 +3,24 @@ package vcsreader.vcs.git;
 import java.nio.charset.Charset;
 
 public class GitSettings {
-    public final String pathToGit;
+    public final String gitPath;
     public final Charset filesCharset;
 
-    public GitSettings(String pathToGit, Charset filesCharset) {
-        this.pathToGit = pathToGit;
+    public GitSettings(String gitPath, Charset filesCharset) {
+        this.gitPath = gitPath;
         this.filesCharset = filesCharset;
     }
 
     public static GitSettings defaults() {
         return new GitSettings("/usr/bin/git", Charset.forName("UTF-8"));
+    }
+
+    public GitSettings withGitPath(String value) {
+        return new GitSettings(value, filesCharset);
+    }
+
+    public GitSettings withFilesCharset(Charset value) {
+        return new GitSettings(gitPath, value);
     }
 
     @SuppressWarnings("RedundantIfStatement")
@@ -23,21 +31,21 @@ public class GitSettings {
         GitSettings that = (GitSettings) o;
 
         if (filesCharset != null ? !filesCharset.equals(that.filesCharset) : that.filesCharset != null) return false;
-        if (pathToGit != null ? !pathToGit.equals(that.pathToGit) : that.pathToGit != null) return false;
+        if (gitPath != null ? !gitPath.equals(that.gitPath) : that.gitPath != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = pathToGit != null ? pathToGit.hashCode() : 0;
+        int result = gitPath != null ? gitPath.hashCode() : 0;
         result = 31 * result + (filesCharset != null ? filesCharset.hashCode() : 0);
         return result;
     }
 
     @Override public String toString() {
         return "GitSettings{" +
-                "pathToGit='" + pathToGit + '\'' +
+                "gitPath='" + gitPath + '\'' +
                 ", filesCharset=" + filesCharset +
                 '}';
     }

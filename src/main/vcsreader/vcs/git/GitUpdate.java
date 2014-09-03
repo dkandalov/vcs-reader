@@ -10,16 +10,16 @@ import static java.util.Arrays.asList;
 import static vcsreader.VcsProject.UpdateResult;
 
 class GitUpdate implements FunctionExecutor.Function<UpdateResult>, Described {
-    private final String pathToGit;
+    private final String gitPath;
     private final String folder;
 
-    public GitUpdate(String pathToGit, String folder) {
-        this.pathToGit = pathToGit;
+    public GitUpdate(String gitPath, String folder) {
+        this.gitPath = gitPath;
         this.folder = folder;
     }
 
     @Override public UpdateResult execute() {
-        ShellCommand shellCommand = gitUpdate(pathToGit, folder);
+        ShellCommand shellCommand = gitUpdate(gitPath, folder);
         boolean successful = (shellCommand.exitValue() == 0);
         if (successful) {
             return new UpdateResult();
@@ -37,7 +37,7 @@ class GitUpdate implements FunctionExecutor.Function<UpdateResult>, Described {
     }
 
     @Override public String describe() {
-        return createCommand(pathToGit).describe();
+        return createCommand(gitPath).describe();
     }
 
     @SuppressWarnings("RedundantIfStatement")
@@ -48,20 +48,20 @@ class GitUpdate implements FunctionExecutor.Function<UpdateResult>, Described {
         GitUpdate gitUpdate = (GitUpdate) o;
 
         if (folder != null ? !folder.equals(gitUpdate.folder) : gitUpdate.folder != null) return false;
-        if (pathToGit != null ? !pathToGit.equals(gitUpdate.pathToGit) : gitUpdate.pathToGit != null) return false;
+        if (gitPath != null ? !gitPath.equals(gitUpdate.gitPath) : gitUpdate.gitPath != null) return false;
 
         return true;
     }
 
     @Override public int hashCode() {
-        int result = pathToGit != null ? pathToGit.hashCode() : 0;
+        int result = gitPath != null ? gitPath.hashCode() : 0;
         result = 31 * result + (folder != null ? folder.hashCode() : 0);
         return result;
     }
 
     @Override public String toString() {
         return "GitUpdate{" +
-                "pathToGit='" + pathToGit + '\'' +
+                "gitPath='" + gitPath + '\'' +
                 ", folder='" + folder + '\'' +
                 '}';
     }

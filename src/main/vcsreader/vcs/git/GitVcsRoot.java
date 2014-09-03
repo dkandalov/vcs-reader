@@ -23,19 +23,19 @@ public class GitVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
     }
 
     @Override public Async<InitResult> init() {
-        return functionExecutor.execute(new GitClone(settings.pathToGit, repositoryUrl, pathToProject));
+        return functionExecutor.execute(new GitClone(settings.gitPath, repositoryUrl, pathToProject));
     }
 
     @Override public Async<UpdateResult> update() {
-        return functionExecutor.execute(new GitUpdate(settings.pathToGit, pathToProject));
+        return functionExecutor.execute(new GitUpdate(settings.gitPath, pathToProject));
     }
 
     @Override public Async<VcsProject.LogResult> log(Date fromDate, Date toDate) {
-        return functionExecutor.execute(new GitLog(settings.pathToGit, pathToProject, fromDate, toDate));
+        return functionExecutor.execute(new GitLog(settings.gitPath, pathToProject, fromDate, toDate));
     }
 
     @Override public Async<VcsProject.LogContentResult> contentOf(String filePath, String revision) {
-        return functionExecutor.execute(new GitLogFileContent(settings.pathToGit, pathToProject, filePath, revision, settings.filesCharset));
+        return functionExecutor.execute(new GitLogFileContent(settings.gitPath, pathToProject, filePath, revision, settings.filesCharset));
     }
 
     @Override public void setExecutor(FunctionExecutor functionExecutor) {
