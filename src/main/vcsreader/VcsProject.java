@@ -103,22 +103,22 @@ public class VcsProject {
 
 
     public static class LogContentResult {
-        public static LogContentResult none = new LogContentResult(null, null);
+        public static LogContentResult none = new LogContentResult("", "");
 
         private final String text;
         private final String stderr;
 
-        public LogContentResult(String text, String stderr) {
+        public LogContentResult(@NotNull String text, @NotNull String stderr) {
             this.text = text;
             this.stderr = stderr;
         }
 
-        public String text() {
+        @NotNull public String text() {
             return text;
         }
 
         public boolean isSuccessful() {
-            return stderr != null && stderr.isEmpty();
+            return stderr.isEmpty();
         }
     }
 

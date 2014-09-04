@@ -1,5 +1,6 @@
 package vcsreader;
 
+import org.jetbrains.annotations.Nullable;
 import vcsreader.lang.Async;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -11,6 +12,7 @@ import static vcsreader.VcsProject.LogContentResult;
 public class Change {
     public static final String noRevision = "noRevision";
     public static final String noFileName = "";
+    public static final String failedToLoadContent = null;
 
     public enum Type {
         MODIFICATION,
@@ -38,24 +40,24 @@ public class Change {
         this.revisionBefore = revisionBefore;
     }
 
-    public String content() {
+    @Nullable public String content() {
         LogContentResult result = contentAsync().awaitResult();
-        return result.isSuccessful() ? result.text() : null;
+        return result.isSuccessful() ? result.text() : failedToLoadContent;
     }
 
-    public String contentBefore() {
+    @Nullable public String contentBefore() {
         LogContentResult result = contentBeforeAsync().awaitResult();
-        return result.isSuccessful() ? result.text() : null;
+        return result.isSuccessful() ? result.text() : failedToLoadContent;
     }
 
     public Async<LogContentResult> contentAsync() {
         if (type == DELETED) return new Async<LogContentResult>().completeWith(LogContentResult.none);
-        return vcsRoot.get().contentOf(fileName, revision);
+        else return vcsRoot.get().contentOf(fileName, revision);
     }
 
     public Async<LogContentResult> contentBeforeAsync() {
         if (type == NEW) return new Async<LogContentResult>().completeWith(LogContentResult.none);
-        return vcsRoot.get().contentOf(fileNameBefore, revisionBefore);
+        else return vcsRoot.get().contentOf(fileNameBefore, revisionBefore);
     }
 
     public void setVcsRoot(VcsRoot vcsRoot) {

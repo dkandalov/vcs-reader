@@ -48,7 +48,7 @@ public class Commit {
         Commit commit = (Commit) o;
 
         if (authorName != null ? !authorName.equals(commit.authorName) : commit.authorName != null) return false;
-        if (changes != null ? !changes.equals(commit.changes) : commit.changes != null) return false;
+        if (!changes.equals(commit.changes)) return false;
         if (comment != null ? !comment.equals(commit.comment) : commit.comment != null) return false;
         if (commitDate != null ? !commitDate.equals(commit.commitDate) : commit.commitDate != null) return false;
         if (revision != null ? !revision.equals(commit.revision) : commit.revision != null) return false;
@@ -64,7 +64,7 @@ public class Commit {
         result = 31 * result + (commitDate != null ? commitDate.hashCode() : 0);
         result = 31 * result + (authorName != null ? authorName.hashCode() : 0);
         result = 31 * result + (comment != null ? comment.hashCode() : 0);
-        result = 31 * result + (changes != null ? changes.hashCode() : 0);
+        result = 31 * result + (changes.hashCode());
         return result;
     }
 }

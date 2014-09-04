@@ -19,7 +19,6 @@ public class SvnVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
     }
 
     @Override public Async<InitResult> init() {
-        // TODO check if svn version is compatible
         return new Async<InitResult>().completeWith(new InitResult());
     }
 

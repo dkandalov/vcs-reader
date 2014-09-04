@@ -185,7 +185,7 @@ class GitIntegrationTest {
         def change = logResult.commits.first().changes.first()
         assert change.type == NEW
         assert change.content() == "file2 content"
-        assert change.contentBefore() == null
+        assert change.contentBefore() == ""
         assert logResult.errors() == []
         assert logResult.isSuccessful()
     }
@@ -196,7 +196,7 @@ class GitIntegrationTest {
 
         def change = logResult.commits.first().changes.first()
         assert change.type == DELETED
-        assert change.content() == null
+        assert change.content() == ""
         assert change.contentBefore() == "file1 content"
         assert logResult.errors() == []
         assert logResult.isSuccessful()

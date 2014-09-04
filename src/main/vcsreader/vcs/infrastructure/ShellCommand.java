@@ -1,5 +1,7 @@
 package vcsreader.vcs.infrastructure;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.*;
 import java.nio.charset.Charset;
 
@@ -74,11 +76,11 @@ public class ShellCommand {
         }
     }
 
-    public String stdout() {
+    @NotNull public String stdout() {
         return stdout.toString();
     }
 
-    public String stderr() {
+    @NotNull public String stderr() {
         return stderr.toString();
     }
 

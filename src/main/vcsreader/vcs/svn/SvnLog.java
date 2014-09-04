@@ -46,12 +46,12 @@ class SvnLog implements FunctionExecutor.Function<LogResult>, Described {
     }
 
     private static ShellCommand createCommand(String pathToSvn, String repositoryUrl, Date fromDate, Date toDate, boolean useMergeHistory) {
-        String mergeHistoryParam = (useMergeHistory ? "--use-merge-history" : "");
+        String mergeHistory = (useMergeHistory ? "--use-merge-history" : "");
         return new ShellCommand(
                 pathToSvn, "log",
                 repositoryUrl,
                 "-r", dateRange(fromDate, toDate),
-                mergeHistoryParam,
+                mergeHistory,
                 "--verbose",
                 "--xml"
         );

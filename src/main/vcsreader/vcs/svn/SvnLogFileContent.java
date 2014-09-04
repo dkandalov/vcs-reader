@@ -1,5 +1,6 @@
 package vcsreader.vcs.svn;
 
+import org.jetbrains.annotations.NotNull;
 import vcsreader.lang.Described;
 import vcsreader.lang.FunctionExecutor;
 import vcsreader.vcs.infrastructure.ShellCommand;
@@ -37,7 +38,7 @@ class SvnLogFileContent implements FunctionExecutor.Function<LogContentResult>, 
                 .withCharset(charset);
     }
 
-    private static String trimLastNewLine(String s) {
+    @NotNull private static String trimLastNewLine(String s) {
         if (s.endsWith("\r\n")) return s.substring(0, s.length() - 2);
         else return s.endsWith("\n") || s.endsWith("\r") ? s.substring(0, s.length() - 1) : s;
     }
