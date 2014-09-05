@@ -1,8 +1,10 @@
 package vcsreader.vcs.svn
+
 import org.junit.Test
 
 import java.nio.charset.Charset
 
+import static SvnInfo.svnInfo
 import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.vcs.svn.SvnIntegrationTestConfig.*
 import static vcsreader.vcs.svn.SvnLog.svnLog
@@ -36,6 +38,20 @@ class ShellCommands_SvnIntegrationTest {
         def command = svnLogFileContent(pathToSvn, repositoryUrl, "non-existent-file", revision, utf8)
         assert command.stdout() == ""
         assert command.stderr().contains("path not found")
+        assert command.exitValue() == 1
+    }
+
+    @Test void "get repository information"() {
+        def command = svnInfo(pathToSvn, repositoryUrl)
+        assert command.stdout().contains("Repository Root: " + repositoryUrl)
+        assert command.stderr() == ""
+        assert command.exitValue() == 0
+    }
+
+    @Test void "failed to get repository information"() {
+        def command = svnInfo(pathToSvn, nonExistentUrl)
+        assert command.stdout() == ""
+        assert command.stderr().contains("Unable to connect to a repository")
         assert command.exitValue() == 1
     }
 

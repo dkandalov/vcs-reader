@@ -21,13 +21,13 @@ class SvnIntegrationTest {
         assert initResult.isSuccessful()
     }
 
-    @Test void "init project never fails"() {
+    @Test void "init project failure"() {
         def vcsRoots = [new SvnVcsRoot(nonExistentUrl, SvnSettings.defaults())]
         def project = new VcsProject(vcsRoots)
 
         def initResult = project.init().awaitResult()
-        assert initResult.isSuccessful()
-        assert initResult.errors().isEmpty()
+        assert !initResult.isSuccessful()
+        assert initResult.errors().size() == 1
     }
 
     @Test void "update project"() {
@@ -188,7 +188,7 @@ class SvnIntegrationTest {
         assert logResult.isSuccessful()
     }
 
-    @Test void "commits path is full even in project which is not root in svn repo"() {
+    @Test void "show only commits for the path when project is not root in svn repo"() {
         def nonRootProject = new VcsProject([new SvnVcsRoot(repositoryUrl + "/folder2", SvnSettings.defaults())])
         nonRootProject.init().awaitResult()
 
@@ -202,10 +202,19 @@ class SvnIntegrationTest {
         nonRootProject.init().awaitCompletion()
 
         def logResult = nonRootProject.log(date("01/08/2014"), date("01/09/2014")).awaitResult()
-        assert logResult.commits[0].changes[0].contentBefore() == "abc"
-        assert logResult.commits[0].changes[0].content() == "abc"
-        assert logResult.commits[1].changes[1].contentBefore() == "123"
-        assert logResult.commits[1].changes[1].content() == "456"
+        assert logResult.commits[0].comment == "moved and renamed file1"
+        assert logResult.commits[0].changes[0].contentBefore() == "file1 content"
+        assert logResult.commits[0].changes[0].content() == "file1 content"
+        assert logResult.commits[1].comment == "deleted file1"
+        assert logResult.commits[1].changes[0].contentBefore() == "file1 content"
+        assert logResult.commits[1].changes[0].content() == ""
+    }
+
+    @Test void "get repository root"() {
+        def svnInfo = new SvnInfo(pathToSvn, repositoryUrl + "/folder2")
+        def result = svnInfo.execute()
+        assert result.repositoryRoot == repositoryUrl
+        assert result.errors().isEmpty()
     }
 
     static assertEqualCommits(List<Commit> actual, List<Commit> expected) {
