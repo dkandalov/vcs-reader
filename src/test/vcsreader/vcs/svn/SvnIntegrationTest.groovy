@@ -13,8 +13,7 @@ import static vcsreader.lang.DateTimeUtil.dateTime
 import static vcsreader.vcs.svn.SvnIntegrationTestConfig.*
 
 class SvnIntegrationTest {
-    private final vcsRoots = [new SvnVcsRoot(repositoryUrl, SvnSettings.defaults())]
-    private final project = new VcsProject(vcsRoots)
+    private final project = new VcsProject([new SvnVcsRoot(repositoryUrl, SvnSettings.defaults())])
 
     @Test void "init project"() {
         def initResult = project.init().awaitResult()
@@ -187,6 +186,26 @@ class SvnIntegrationTest {
         assert change.contentBefore() == "file1 content"
         assert logResult.errors() == []
         assert logResult.isSuccessful()
+    }
+
+    @Test void "commits path is full even in project which is not root in svn repo"() {
+        def nonRootProject = new VcsProject([new SvnVcsRoot(repositoryUrl + "/folder2", SvnSettings.defaults())])
+        nonRootProject.init().awaitResult()
+
+        def logResult = nonRootProject.log(date("01/08/2014"), date("01/09/2014")).awaitResult()
+        assert logResult.commits[0].changes[0] == new Change(MOVED, "folder2/renamed_file1.txt", "folder1/file1.txt", "5", "4")
+        assert logResult.commits[1].changes[0] == new Change(DELETED, "", "folder2/renamed_file1.txt", "6", "5")
+    }
+
+    @Test void "content of commits in project which is not root in svn repo"() {
+        def nonRootProject = new VcsProject([new SvnVcsRoot(repositoryUrl + "/folder2", SvnSettings.defaults())])
+        nonRootProject.init().awaitCompletion()
+
+        def logResult = nonRootProject.log(date("01/08/2014"), date("01/09/2014")).awaitResult()
+        assert logResult.commits[0].changes[0].contentBefore() == "abc"
+        assert logResult.commits[0].changes[0].content() == "abc"
+        assert logResult.commits[1].changes[1].contentBefore() == "123"
+        assert logResult.commits[1].changes[1].content() == "456"
     }
 
     static assertEqualCommits(List<Commit> actual, List<Commit> expected) {
