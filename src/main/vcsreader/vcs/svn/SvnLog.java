@@ -118,10 +118,10 @@ class SvnLog implements FunctionExecutor.Function<LogResult>, Described {
         return subPath;
     }
 
-    private static String changeFilePath(String subPath, String fileName) {
-        int i = fileName.indexOf(subPath);
-        if (i != 0) return Change.noFileName;
-        else return fileName.substring(subPath.length());
+    private static String changeFilePath(String subPath, String filePath) {
+        int i = filePath.indexOf(subPath);
+        if (i != 0) return Change.noFilePath;
+        else return filePath.substring(subPath.length());
     }
 
     @Override public String describe() {

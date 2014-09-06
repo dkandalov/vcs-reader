@@ -49,7 +49,7 @@ class CommitParser {
         private String comment;
         private List<Change> changes = new ArrayList<Change>();
 
-        private String fileName;
+        private String filePath;
         private Change.Type changeType;
 
         private boolean expectAuthor;
@@ -58,7 +58,7 @@ class CommitParser {
         private boolean expectFileName;
         private boolean isFileChange;
         private boolean isCopy;
-        private String copyFromFileName;
+        private String copyFromFilePath;
         private String copyFromRevision;
         private final Set<String> movedPaths = new HashSet<String>();
 
@@ -78,7 +78,7 @@ class CommitParser {
                 String kind = attributes.getValue("kind");
                 isFileChange = (kind == null || kind.isEmpty() || "file".equals(kind));
                 isCopy = attributes.getValue("copyfrom-path") != null;
-                copyFromFileName = trimPath(attributes.getValue("copyfrom-path"));
+                copyFromFilePath = trimPath(attributes.getValue("copyfrom-path"));
                 copyFromRevision = attributes.getValue("copyfrom-rev");
                 expectFileName = true;
             }
@@ -100,7 +100,7 @@ class CommitParser {
                 comment = String.valueOf(ch, start, length);
             } else if (expectFileName) {
                 expectFileName = false;
-                fileName = trimPath(String.valueOf(ch, start, length));
+                filePath = trimPath(String.valueOf(ch, start, length));
             }
         }
 
@@ -113,16 +113,16 @@ class CommitParser {
             if (name.equals("logentry")) {
                 commits.add(new Commit(revision, revisionBefore, commitDate, author, comment, new ArrayList<Change>(changes)));
                 changes.clear();
-            } else if (name.equals("path") && isFileChange && !movedPaths.contains(fileName)) {
+            } else if (name.equals("path") && isFileChange && !movedPaths.contains(filePath)) {
                 if (isCopy) {
-                    changes.add(new Change(MOVED, fileName, copyFromFileName, revision, copyFromRevision));
-                    movedPaths.add(copyFromFileName);
+                    changes.add(new Change(MOVED, filePath, copyFromFilePath, revision, copyFromRevision));
+                    movedPaths.add(copyFromFilePath);
                 } else if (changeType == Change.Type.NEW) {
-                    changes.add(new Change(changeType, fileName, revision));
+                    changes.add(new Change(changeType, filePath, revision));
                 } else if (changeType == Change.Type.DELETED) {
-                    changes.add(new Change(changeType, Change.noFileName, fileName, revision, revisionBefore));
+                    changes.add(new Change(changeType, Change.noFilePath, filePath, revision, revisionBefore));
                 } else {
-                    changes.add(new Change(changeType, fileName, fileName, revision, revisionBefore));
+                    changes.add(new Change(changeType, filePath, filePath, revision, revisionBefore));
                 }
             }
         }

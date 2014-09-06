@@ -15,7 +15,7 @@ public interface VcsRoot {
 
     Async<VcsProject.LogResult> log(Date fromDate, Date toDate);
 
-    Async<VcsProject.LogContentResult> contentOf(String fileName, String revision);
+    Async<VcsProject.LogContentResult> contentOf(String filePath, String revision);
 
     public interface WithExecutor {
         void setExecutor(FunctionExecutor functionExecutor);

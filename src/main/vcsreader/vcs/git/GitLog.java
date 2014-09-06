@@ -157,18 +157,18 @@ class GitLog implements FunctionExecutor.Function<LogResult>, Described {
         Change.Type changeType = parseChangeType(values.get(0));
 
         boolean hasRenames = values.size() > 2;
-        String fileName = unescapeQuotes(hasRenames ? values.get(2) : values.get(1));
-        String fileNameBefore = unescapeQuotes(hasRenames ? values.get(1) : fileName);
+        String filePath = unescapeQuotes(hasRenames ? values.get(2) : values.get(1));
+        String filePathBefore = unescapeQuotes(hasRenames ? values.get(1) : filePath);
 
         if (changeType == NEW) {
-            fileNameBefore = Change.noFileName;
+            filePathBefore = Change.noFilePath;
             revisionBefore = Change.noRevision;
         } else if (changeType == DELETED) {
-            fileNameBefore = fileName;
-            fileName = Change.noFileName;
+            filePathBefore = filePath;
+            filePath = Change.noFilePath;
         }
 
-        return new Change(changeType, fileName, fileNameBefore, revision, revisionBefore);
+        return new Change(changeType, filePath, filePathBefore, revision, revisionBefore);
     }
 
     /**

@@ -10,7 +10,7 @@ import static vcsreader.VcsProject.LogContentResult;
 
 public class Change {
     public static final String noRevision = "noRevision";
-    public static final String noFileName = "";
+    public static final String noFilePath = "";
     public static final String failedToLoadContent = null;
 
     public enum Type {
@@ -28,7 +28,7 @@ public class Change {
     private final AtomicReference<VcsRoot> vcsRoot = new AtomicReference<VcsRoot>();
 
     public Change(Type type, @NotNull String filePath, @NotNull String revision) {
-        this(type, filePath, noFileName, revision, noRevision);
+        this(type, filePath, noFilePath, revision, noRevision);
     }
 
     public Change(Type type, @NotNull String filePath, @NotNull String filePathBefore,
@@ -51,12 +51,12 @@ public class Change {
     }
 
     public Async<LogContentResult> contentAsync() {
-        if (filePath.equals(noFileName)) return new Async<LogContentResult>().completeWith(LogContentResult.none);
+        if (filePath.equals(noFilePath)) return new Async<LogContentResult>().completeWith(LogContentResult.none);
         else return vcsRoot.get().contentOf(filePath, revision);
     }
 
     public Async<LogContentResult> contentBeforeAsync() {
-        if (filePathBefore.equals(noFileName)) return new Async<LogContentResult>().completeWith(LogContentResult.none);
+        if (filePathBefore.equals(noFilePath)) return new Async<LogContentResult>().completeWith(LogContentResult.none);
         else return vcsRoot.get().contentOf(filePathBefore, revisionBefore);
     }
 

@@ -49,11 +49,11 @@ public class SvnVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
         return executor.execute(new SvnLog(settings.svnPath, repositoryUrl, repositoryRoot, fromDate, toDate, settings.useMergeHistory));
     }
 
-    @Override public Async<LogContentResult> contentOf(String fileName, String revision) {
+    @Override public Async<LogContentResult> contentOf(String filePath, String revision) {
         return executor.execute(new SvnLogFileContent(
                 settings.svnPath,
                 repositoryUrl,
-                fileName,
+                filePath,
                 revision,
                 settings.filesCharset
         ));
