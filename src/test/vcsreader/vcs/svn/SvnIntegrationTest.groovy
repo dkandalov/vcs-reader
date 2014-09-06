@@ -37,6 +37,15 @@ class SvnIntegrationTest {
         assert updateResult.isSuccessful()
     }
 
+    @Test void "log empty list of commits from project history"() {
+        project.init().awaitResult()
+        def logResult = project.log(date("01/08/2014"), date("02/08/2014")).awaitResult()
+
+        assert logResult.commits.empty
+        assert logResult.errors() == []
+        assert logResult.isSuccessful()
+    }
+
     @Test void "log single commit from project history"() {
         project.init().awaitResult()
         def logResult = project.log(date("10/08/2014"), date("11/08/2014")).awaitResult()
