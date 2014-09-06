@@ -1,5 +1,6 @@
 package vcsreader.vcs.svn
 
+import org.junit.Before
 import org.junit.Test
 
 import java.nio.charset.Charset
@@ -53,6 +54,10 @@ class ShellCommands_SvnIntegrationTest {
         assert command.stdout() == ""
         assert command.stderr().contains("Unable to connect to a repository")
         assert command.exitValue() == 1
+    }
+
+    @Before void setup() {
+        initTestConfig()
     }
 
     private static final utf8 = Charset.forName("UTF-8")

@@ -2,16 +2,23 @@ package vcsreader.vcs.svn
 import groovy.json.JsonSlurper
 
 class SvnIntegrationTestConfig {
-    static config = new JsonSlurper().parse(new File("src/test/vcsreader/vcs/svn/svn-test-config.json"))
+    static String pathToSvn
+    static String repositoryUrl
+    static String nonExistentUrl
+    static String author
 
-    static final String pathToSvn = config["pathToSvn"] as String
-    static final String repositoryUrl = config["svnRepositoryUrl"] as String
-    static final String nonExistentUrl = "file://non-existent/url"
-
-    static final String author = config["author"] as String
-    static final String firstRevision = "1"
-    static final String secondRevision = "2"
-    static final String thirdRevision = "3"
+    static initTestConfig() {
+        def configFile = new File("src/test/vcsreader/vcs/svn/svn-test-config.json")
+        if (!configFile.exists()) {
+            throw new IllegalStateException("Cannot find " + configFile.name + ".\n" +
+                    "Please make sure you run tests with project root as working directory.")
+        }
+        def config = new JsonSlurper().parse(new File("src/test/vcsreader/vcs/svn/svn-test-config.json"))
+        pathToSvn = config["pathToSvn"] as String
+        repositoryUrl = config["svnRepositoryUrl"] as String
+        nonExistentUrl = "file://non-existent/url"
+        author = config["author"] as String
+    }
 
     static String revision(int n) {
         String.valueOf(n)

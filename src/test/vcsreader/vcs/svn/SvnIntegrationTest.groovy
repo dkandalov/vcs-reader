@@ -1,4 +1,6 @@
 package vcsreader.vcs.svn
+
+import org.junit.Before
 import org.junit.Test
 import vcsreader.Change
 import vcsreader.Commit
@@ -51,11 +53,11 @@ class SvnIntegrationTest {
 
         assertEqualCommits(logResult, [
                 new Commit(
-                        firstRevision, noRevision,
+                        revision(1), noRevision,
                         dateTime("14:00:00 10/08/2014"),
                         author,
                         "initial commit",
-                        [new Change(NEW, "file1.txt", firstRevision)]
+                        [new Change(NEW, "file1.txt", revision(1))]
                 )
         ])
     }
@@ -66,20 +68,20 @@ class SvnIntegrationTest {
 
         assertEqualCommits(logResult, [
                 new Commit(
-                        firstRevision, noRevision,
+                        revision(1), noRevision,
                         dateTime("14:00:00 10/08/2014"),
                         author,
                         "initial commit",
-                        [new Change(NEW, "file1.txt", firstRevision)]
+                        [new Change(NEW, "file1.txt", revision(1))]
                 ),
                 new Commit(
-                        secondRevision, firstRevision,
+                        revision(2), revision(1),
                         dateTime("14:00:00 11/08/2014"),
                         author,
                         "added file2, file3",
                         [
-                            new Change(NEW, "file3.txt", "", secondRevision, noRevision),
-                            new Change(NEW, "file2.txt", "", secondRevision, noRevision)
+                            new Change(NEW, "file3.txt", "", revision(2), noRevision),
+                            new Change(NEW, "file2.txt", "", revision(2), noRevision)
                         ]
                 )
         ])
@@ -91,13 +93,13 @@ class SvnIntegrationTest {
 
         assertEqualCommits(logResult, [
                 new Commit(
-                        thirdRevision, secondRevision,
+                        revision(3), revision(2),
                         dateTime("14:00:00 12/08/2014"),
                         author,
                         "modified file2, file3",
                         [
-                            new Change(MODIFICATION, "file3.txt", "file3.txt", thirdRevision, secondRevision),
-                            new Change(MODIFICATION, "file2.txt", "file2.txt", thirdRevision, secondRevision)
+                            new Change(MODIFICATION, "file3.txt", "file3.txt", revision(3), revision(2)),
+                            new Change(MODIFICATION, "file2.txt", "file2.txt", revision(3), revision(2))
                         ]
                 )
         ])
@@ -228,5 +230,9 @@ class SvnIntegrationTest {
         def result = svnInfo.execute()
         assert result.repositoryRoot == repositoryUrl
         assert result.errors().isEmpty()
+    }
+
+    @Before void setup() {
+        initTestConfig()
     }
 }
