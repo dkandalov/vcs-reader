@@ -1,6 +1,6 @@
 package vcsreader.vcs.svn
 
-import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Test
 
 import java.nio.charset.Charset
@@ -56,7 +56,7 @@ class ShellCommands_SvnIntegrationTest {
         assert command.exitValue() == 1
     }
 
-    @Before void setup() {
+    @BeforeClass static void setupConfig() {
         initTestConfig()
     }
 

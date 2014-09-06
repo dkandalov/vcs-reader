@@ -1,5 +1,6 @@
 package vcsreader.vcs.git
 import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Test
 import vcsreader.Change
 import vcsreader.Commit
@@ -63,11 +64,11 @@ class GitIntegrationTest {
 
         assertEqualCommits(logResult, [
                 new Commit(
-                        firstRevision, noRevision,
+                        revision(1), noRevision,
                         dateTime("14:00:00 10/08/2014"),
                         author,
                         "initial commit",
-                        [new Change(NEW, "file1.txt", firstRevision)]
+                        [new Change(NEW, "file1.txt", revision(1))]
                 )
         ])
     }
@@ -78,20 +79,20 @@ class GitIntegrationTest {
 
         assertEqualCommits(logResult, [
                 new Commit(
-                        firstRevision, noRevision,
+                        revision(1), noRevision,
                         dateTime("14:00:00 10/08/2014"),
                         author,
                         "initial commit",
-                        [new Change(NEW, "file1.txt", firstRevision)]
+                        [new Change(NEW, "file1.txt", revision(1))]
                 ),
                 new Commit(
-                        secondRevision, firstRevision,
+                        revision(2), revision(1),
                         dateTime("14:00:00 11/08/2014"),
                         author,
                         "added file2, file3",
                         [
-                            new Change(NEW, "file2.txt", "", secondRevision, noRevision),
-                            new Change(NEW, "file3.txt", "", secondRevision, noRevision)
+                            new Change(NEW, "file2.txt", "", revision(2), noRevision),
+                            new Change(NEW, "file3.txt", "", revision(2), noRevision)
                         ]
                 )
         ])
@@ -103,13 +104,13 @@ class GitIntegrationTest {
 
         assertEqualCommits(logResult, [
                 new Commit(
-                        thirdRevision, secondRevision,
+                        revision(3), revision(2),
                         dateTime("14:00:00 12/08/2014"),
                         author,
                         "modified file2, file3",
                         [
-                            new Change(MODIFICATION, "file2.txt", "file2.txt", thirdRevision, secondRevision),
-                            new Change(MODIFICATION, "file3.txt", "file3.txt", thirdRevision, secondRevision)
+                            new Change(MODIFICATION, "file2.txt", "file2.txt", revision(3), revision(2)),
+                            new Change(MODIFICATION, "file3.txt", "file3.txt", revision(3), revision(2))
                         ]
                 )
         ])
@@ -121,11 +122,11 @@ class GitIntegrationTest {
 
         assertEqualCommits(logResult, [
                 new Commit(
-                        revisions[3], revisions[2],
+                        revision(4), revision(3),
                         dateTime("14:00:00 13/08/2014"),
                         author,
                         "moved file1",
-                        [new Change(MOVED, "folder1/file1.txt", "file1.txt", revisions[3], revisions[2])]
+                        [new Change(MOVED, "folder1/file1.txt", "file1.txt", revision(4), revision(3))]
                 )
         ])
     }
@@ -136,11 +137,11 @@ class GitIntegrationTest {
 
         assertEqualCommits(logResult, [
                 new Commit(
-                        revisions[4], revisions[3],
+                        revision(5), revision(4),
                         dateTime("14:00:00 14/08/2014"),
                         author,
                         "moved and renamed file1",
-                        [new Change(MOVED, "folder2/renamed_file1.txt", "folder1/file1.txt", revisions[4], revisions[3])]
+                        [new Change(MOVED, "folder2/renamed_file1.txt", "folder1/file1.txt", revision(5), revision(4))]
                 )
         ])
     }
@@ -151,11 +152,11 @@ class GitIntegrationTest {
 
         assertEqualCommits(logResult, [
                 new Commit(
-                        revisions[5], revisions[4],
+                        revision(6), revision(5),
                         dateTime("14:00:00 15/08/2014"),
                         author,
                         "deleted file1",
-                        [new Change(DELETED, "", "folder2/renamed_file1.txt", revisions[5], revisions[4])]
+                        [new Change(DELETED, "", "folder2/renamed_file1.txt", revision(6), revision(5))]
                 )
         ])
     }
@@ -166,11 +167,11 @@ class GitIntegrationTest {
 
         assertEqualCommits(logResult, [
                 new Commit(
-                        revision(6), revision(5),
+                        revision(7), revision(6),
                         dateTime("14:00:00 16/08/2014"),
                         author,
                         "added file with spaces and quotes",
-                        [new Change(NEW, "\"file with spaces.txt\"", "", revision(6), noRevision)]
+                        [new Change(NEW, "\"file with spaces.txt\"", "", revision(7), noRevision)]
                 )
         ])
     }
@@ -214,6 +215,10 @@ class GitIntegrationTest {
     @Before void setup() {
         new File(projectFolder).deleteDir()
         new File(projectFolder).mkdirs()
+    }
+
+    @BeforeClass static void setupConfig() {
+        initTestConfig()
     }
 
     private static final String projectFolder = "/tmp/git-commands-test/git-repo-${GitIntegrationTest.simpleName}/"

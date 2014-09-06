@@ -1,6 +1,6 @@
 package vcsreader.vcs.svn
 
-import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Test
 import vcsreader.Change
 import vcsreader.Commit
@@ -232,7 +232,7 @@ class SvnIntegrationTest {
         assert result.errors().isEmpty()
     }
 
-    @Before void setup() {
+    @BeforeClass static void setupConfig() {
         initTestConfig()
     }
 }

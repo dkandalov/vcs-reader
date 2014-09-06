@@ -13,7 +13,7 @@ class SvnIntegrationTestConfig {
             throw new IllegalStateException("Cannot find " + configFile.name + ".\n" +
                     "Please make sure you run tests with project root as working directory.")
         }
-        def config = new JsonSlurper().parse(new File("src/test/vcsreader/vcs/svn/svn-test-config.json"))
+        def config = new JsonSlurper().parse(configFile)
         pathToSvn = config["pathToSvn"] as String
         repositoryUrl = config["svnRepositoryUrl"] as String
         nonExistentUrl = "file://non-existent/url"

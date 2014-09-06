@@ -1,6 +1,7 @@
 package vcsreader.vcs.git
 
 import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Test
 
 import java.nio.charset.Charset
@@ -16,14 +17,14 @@ import static vcsreader.vcs.git.GitUpdate.gitUpdate
 class ShellCommands_GitIntegrationTest {
 
     @Test void "git log file content"() {
-        def command = gitLogFileContent(pathToGit, referenceProject, "file1.txt", firstRevision, utf8)
+        def command = gitLogFileContent(pathToGit, referenceProject, "file1.txt", revision(1), utf8)
         assert command.stdout().trim() == "file1 content"
         assert command.stderr() == ""
         assert command.exitValue() == 0
     }
 
     @Test void "failed git log file content"() {
-        def command = gitLogFileContent(pathToGit, referenceProject, "non-existent file", firstRevision, utf8)
+        def command = gitLogFileContent(pathToGit, referenceProject, "non-existent file", revision(1), utf8)
         assert command.stdout() == ""
         assert command.stderr().startsWith("fatal: Path 'non-existent file' does not exist")
         assert command.exitValue() == 128
@@ -37,7 +38,7 @@ class ShellCommands_GitIntegrationTest {
     }
 
     @Test void "git log renames"() {
-        def command = gitLogRenames(pathToGit, referenceProject, revisions[3])
+        def command = gitLogRenames(pathToGit, referenceProject, revision(4))
         assert command.stdout().contains("R100")
         assert command.stdout().contains("folder1/file1.txt")
         assert command.stderr() == ""
@@ -98,6 +99,10 @@ class ShellCommands_GitIntegrationTest {
         new File(projectFolder).mkdirs()
         new File(projectFolder2).deleteDir()
         new File(projectFolder2).mkdirs()
+    }
+
+    @BeforeClass static void setupConfig() {
+        initTestConfig()
     }
 
     private static final Charset utf8 = Charset.forName("UTF-8")
