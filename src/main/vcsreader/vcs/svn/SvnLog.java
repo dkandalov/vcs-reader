@@ -77,19 +77,13 @@ class SvnLog implements FunctionExecutor.Function<LogResult>, Described {
     }
 
     private List<Commit> transformToSubPathCommits(List<Commit> commits) {
-        String subPath = repositoryUrl.replace(repositoryRoot, "");
-        if (subPath.startsWith("/")) subPath = subPath.substring(1);
-        if (!subPath.isEmpty() && !subPath.endsWith("/")) subPath += "/";
+        String subPath = subPathOf(repositoryUrl, repositoryRoot);
+        removeChangesNotIn(subPath, commits);
+        modifyFilePathsToUse(subPath, commits);
+        return commits;
+    }
 
-        for (Commit commit : commits) {
-            for (Iterator<Change> iterator = commit.changes.iterator(); iterator.hasNext(); ) {
-                Change change = iterator.next();
-                if (!change.filePath.startsWith(subPath) && !change.filePathBefore.startsWith(subPath)) {
-                    iterator.remove();
-                }
-            }
-        }
-
+    private static void modifyFilePathsToUse(String subPath, List<Commit> commits) {
         for (Commit commit : commits) {
             List<Change> modifiedChanges = new ArrayList<Change>();
             for (Change change : commit.changes) {
@@ -104,7 +98,24 @@ class SvnLog implements FunctionExecutor.Function<LogResult>, Described {
             commit.changes.clear();
             commit.changes.addAll(modifiedChanges);
         }
-        return commits;
+    }
+
+    private static void removeChangesNotIn(String subPath, List<Commit> commits) {
+        for (Commit commit : commits) {
+            for (Iterator<Change> iterator = commit.changes.iterator(); iterator.hasNext(); ) {
+                Change change = iterator.next();
+                if (!change.filePath.startsWith(subPath) && !change.filePathBefore.startsWith(subPath)) {
+                    iterator.remove();
+                }
+            }
+        }
+    }
+
+    private static String subPathOf(String repositoryUrl, String repositoryRoot) {
+        String subPath = repositoryUrl.replace(repositoryRoot, "");
+        if (subPath.startsWith("/")) subPath = subPath.substring(1);
+        if (!subPath.isEmpty() && !subPath.endsWith("/")) subPath += "/";
+        return subPath;
     }
 
     private static String changeFilePath(String subPath, String fileName) {
