@@ -5,28 +5,34 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Date;
 import java.util.List;
 
-public class Commit {
-    public final String revision;
-    public final String revisionBefore;
-    public final Date commitDate;
-    public final String authorName;
-    public final String comment;
-    public final List<Change> changes; // TODO make immutable
+import static java.util.Collections.unmodifiableList;
 
-    public Commit(String revision, String revisionBefore, Date commitDate, String authorName,
-                  String comment, @NotNull List<Change> changes) {
+public class Commit {
+    @NotNull public final String revision;
+    @NotNull public final String revisionBefore;
+    @NotNull public final Date commitDate;
+    @NotNull public final String authorName;
+    @NotNull public final String comment;
+    @NotNull public final List<Change> changes;
+
+    public Commit(@NotNull String revision, @NotNull String revisionBefore, @NotNull Date commitDate,
+                  @NotNull String authorName, @NotNull String comment, @NotNull List<Change> changes) {
         this.revision = revision;
         this.revisionBefore = revisionBefore;
         this.commitDate = commitDate;
         this.authorName = authorName;
         this.comment = comment;
-        this.changes = changes;
+        this.changes = unmodifiableList(changes);
     }
 
     public void setVcsRoot(VcsRoot vcsRoot) {
         for (Change change : changes) {
             change.setVcsRoot(vcsRoot);
         }
+    }
+
+    public Commit withChanges(List<Change> newChanges) {
+        return new Commit(revision, revisionBefore, commitDate, authorName, comment, newChanges);
     }
 
     @Override public String toString() {
@@ -47,23 +53,23 @@ public class Commit {
 
         Commit commit = (Commit) o;
 
-        if (authorName != null ? !authorName.equals(commit.authorName) : commit.authorName != null) return false;
+        if (!authorName.equals(commit.authorName)) return false;
         if (!changes.equals(commit.changes)) return false;
-        if (comment != null ? !comment.equals(commit.comment) : commit.comment != null) return false;
-        if (commitDate != null ? !commitDate.equals(commit.commitDate) : commit.commitDate != null) return false;
-        if (revision != null ? !revision.equals(commit.revision) : commit.revision != null) return false;
-        if (revisionBefore != null ? !revisionBefore.equals(commit.revisionBefore) : commit.revisionBefore != null)
+        if (!comment.equals(commit.comment)) return false;
+        if (!commitDate.equals(commit.commitDate)) return false;
+        if (!revision.equals(commit.revision)) return false;
+        if (!revisionBefore.equals(commit.revisionBefore))
             return false;
 
         return true;
     }
 
     @Override public int hashCode() {
-        int result = revision != null ? revision.hashCode() : 0;
-        result = 31 * result + (revisionBefore != null ? revisionBefore.hashCode() : 0);
-        result = 31 * result + (commitDate != null ? commitDate.hashCode() : 0);
-        result = 31 * result + (authorName != null ? authorName.hashCode() : 0);
-        result = 31 * result + (comment != null ? comment.hashCode() : 0);
+        int result = revision.hashCode();
+        result = 31 * result + (revisionBefore.hashCode());
+        result = 31 * result + (commitDate.hashCode());
+        result = 31 * result + (authorName.hashCode());
+        result = 31 * result + (comment.hashCode());
         result = 31 * result + (changes.hashCode());
         return result;
     }

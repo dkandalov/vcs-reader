@@ -20,19 +20,19 @@ public class Change {
         MOVED
     }
 
-    public final Type type;
+    @NotNull public final Type type;
     @NotNull public final String filePath;
     @NotNull public final String filePathBefore;
     @NotNull public final String revision;
     @NotNull public final String revisionBefore;
     private final AtomicReference<VcsRoot> vcsRoot = new AtomicReference<VcsRoot>();
 
-    public Change(Type type, @NotNull String filePath, @NotNull String revision) {
+    public Change(@NotNull Type type, @NotNull String filePath, @NotNull String revision) {
         this(type, filePath, noFilePath, revision, noRevision);
     }
 
-    public Change(Type type, @NotNull String filePath, @NotNull String filePathBefore,
-                             @NotNull String revision, @NotNull String revisionBefore) {
+    public Change(@NotNull Type type, @NotNull String filePath, @NotNull String filePathBefore,
+                 @NotNull String revision, @NotNull String revisionBefore) {
         this.type = type;
         this.filePath = filePath;
         this.filePathBefore = filePathBefore;
@@ -85,7 +85,7 @@ public class Change {
     }
 
     @Override public int hashCode() {
-        int result = type != null ? type.hashCode() : 0;
+        int result = type.hashCode();
         result = 31 * result + (filePath.hashCode());
         result = 31 * result + (filePathBefore.hashCode());
         result = 31 * result + (revision.hashCode());

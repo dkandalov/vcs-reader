@@ -78,12 +78,13 @@ class SvnLog implements FunctionExecutor.Function<LogResult>, Described {
 
     private List<Commit> transformToSubPathCommits(List<Commit> commits) {
         String subPath = subPathOf(repositoryUrl, repositoryRoot);
-        removeChangesNotIn(subPath, commits);
-        modifyFilePathsToUse(subPath, commits);
+        commits = removeChangesNotIn(subPath, commits);
+        commits = modifyFilePathsToUse(subPath, commits);
         return commits;
     }
 
-    private static void modifyFilePathsToUse(String subPath, List<Commit> commits) {
+    private static List<Commit> modifyFilePathsToUse(String subPath, List<Commit> commits) {
+        List<Commit> result = new ArrayList<Commit>();
         for (Commit commit : commits) {
             List<Change> modifiedChanges = new ArrayList<Change>();
             for (Change change : commit.changes) {
@@ -95,20 +96,25 @@ class SvnLog implements FunctionExecutor.Function<LogResult>, Described {
                         change.revisionBefore
                 ));
             }
-            commit.changes.clear();
-            commit.changes.addAll(modifiedChanges);
+            result.add(commit.withChanges(modifiedChanges));
         }
+        return result;
     }
 
-    private static void removeChangesNotIn(String subPath, List<Commit> commits) {
+    private static List<Commit> removeChangesNotIn(String subPath, List<Commit> commits) {
+        List<Commit> result = new ArrayList<Commit>();
         for (Commit commit : commits) {
-            for (Iterator<Change> iterator = commit.changes.iterator(); iterator.hasNext(); ) {
-                Change change = iterator.next();
-                if (!change.filePath.startsWith(subPath) && !change.filePathBefore.startsWith(subPath)) {
-                    iterator.remove();
+            List<Change> filteredChanges = new ArrayList<Change>();
+            for (Change change : commit.changes) {
+
+                if (change.filePath.startsWith(subPath) || change.filePathBefore.startsWith(subPath)) {
+                    filteredChanges.add(change);
                 }
+
             }
+            result.add(commit.withChanges(filteredChanges));
         }
+        return result;
     }
 
     private static String subPathOf(String repositoryUrl, String repositoryRoot) {
