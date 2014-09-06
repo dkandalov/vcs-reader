@@ -21,21 +21,21 @@ public class Change {
     }
 
     public final Type type;
-    @NotNull public final String fileName; // TODO rename to filePath
-    @NotNull public final String fileNameBefore;
+    @NotNull public final String filePath;
+    @NotNull public final String filePathBefore;
     @NotNull public final String revision;
     @NotNull public final String revisionBefore;
     private final AtomicReference<VcsRoot> vcsRoot = new AtomicReference<VcsRoot>();
 
-    public Change(Type type, @NotNull String fileName, @NotNull String revision) {
-        this(type, fileName, noFileName, revision, noRevision);
+    public Change(Type type, @NotNull String filePath, @NotNull String revision) {
+        this(type, filePath, noFileName, revision, noRevision);
     }
 
-    public Change(Type type, @NotNull String fileName, @NotNull String fileNameBefore,
+    public Change(Type type, @NotNull String filePath, @NotNull String filePathBefore,
                              @NotNull String revision, @NotNull String revisionBefore) {
         this.type = type;
-        this.fileName = fileName;
-        this.fileNameBefore = fileNameBefore;
+        this.filePath = filePath;
+        this.filePathBefore = filePathBefore;
         this.revision = revision;
         this.revisionBefore = revisionBefore;
     }
@@ -51,13 +51,13 @@ public class Change {
     }
 
     public Async<LogContentResult> contentAsync() {
-        if (fileName.equals(noFileName)) return new Async<LogContentResult>().completeWith(LogContentResult.none);
-        else return vcsRoot.get().contentOf(fileName, revision);
+        if (filePath.equals(noFileName)) return new Async<LogContentResult>().completeWith(LogContentResult.none);
+        else return vcsRoot.get().contentOf(filePath, revision);
     }
 
     public Async<LogContentResult> contentBeforeAsync() {
-        if (fileNameBefore.equals(noFileName)) return new Async<LogContentResult>().completeWith(LogContentResult.none);
-        else return vcsRoot.get().contentOf(fileNameBefore, revisionBefore);
+        if (filePathBefore.equals(noFileName)) return new Async<LogContentResult>().completeWith(LogContentResult.none);
+        else return vcsRoot.get().contentOf(filePathBefore, revisionBefore);
     }
 
     public void setVcsRoot(VcsRoot vcsRoot) {
@@ -65,7 +65,7 @@ public class Change {
     }
 
     @Override public String toString() {
-        return "Change{" + type + ',' + fileName + ',' + fileNameBefore + ',' + revision + ',' + revisionBefore + '}';
+        return "Change{" + type + ',' + filePath + ',' + filePathBefore + ',' + revision + ',' + revisionBefore + '}';
     }
 
     @SuppressWarnings({"RedundantIfStatement"})
@@ -76,8 +76,8 @@ public class Change {
         Change change = (Change) o;
 
         if (type != change.type) return false;
-        if (!fileName.equals(change.fileName)) return false;
-        if (!fileNameBefore.equals(change.fileNameBefore)) return false;
+        if (!filePath.equals(change.filePath)) return false;
+        if (!filePathBefore.equals(change.filePathBefore)) return false;
         if (!revision.equals(change.revision)) return false;
         if (!revisionBefore.equals(change.revisionBefore)) return false;
 
@@ -86,8 +86,8 @@ public class Change {
 
     @Override public int hashCode() {
         int result = type != null ? type.hashCode() : 0;
-        result = 31 * result + (fileName.hashCode());
-        result = 31 * result + (fileNameBefore.hashCode());
+        result = 31 * result + (filePath.hashCode());
+        result = 31 * result + (filePathBefore.hashCode());
         result = 31 * result + (revision.hashCode());
         result = 31 * result + (revisionBefore.hashCode());
         return result;

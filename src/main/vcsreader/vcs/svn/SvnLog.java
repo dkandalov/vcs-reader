@@ -84,7 +84,7 @@ class SvnLog implements FunctionExecutor.Function<LogResult>, Described {
         for (Commit commit : commits) {
             for (Iterator<Change> iterator = commit.changes.iterator(); iterator.hasNext(); ) {
                 Change change = iterator.next();
-                if (!change.fileName.startsWith(subPath) && !change.fileNameBefore.startsWith(subPath)) {
+                if (!change.filePath.startsWith(subPath) && !change.filePathBefore.startsWith(subPath)) {
                     iterator.remove();
                 }
             }
@@ -95,8 +95,8 @@ class SvnLog implements FunctionExecutor.Function<LogResult>, Described {
             for (Change change : commit.changes) {
                 modifiedChanges.add(new Change(
                         change.type,
-                        changeFilePath(subPath, change.fileName),
-                        changeFilePath(subPath, change.fileNameBefore),
+                        changeFilePath(subPath, change.filePath),
+                        changeFilePath(subPath, change.filePathBefore),
                         change.revision,
                         change.revisionBefore
                 ));
