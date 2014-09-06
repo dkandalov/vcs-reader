@@ -48,6 +48,10 @@ class SvnRepositoryCreator
 
       rm "folder2/renamed_file1.txt"
       commit "deleted file1", "2014-08-15T15:00:00.000000Z", @author
+
+      puts `echo 123 > "\\"file with spaces.txt\\""`
+      add "\\\"file with spaces.txt\\\""
+      commit "added file with spaces and quotes", "2014-08-16T15:00:00.000000Z", @author
     end
 
     update_test_config
@@ -62,7 +66,7 @@ class SvnRepositoryCreator
 
   def add(*files)
     files.each do |it|
-      puts `#{@svn} add #{it}`
+      puts `#{@svn} add "#{it}"`
     end
   end
 

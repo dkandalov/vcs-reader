@@ -11,7 +11,7 @@ public class Commit {
     public final Date commitDate;
     public final String authorName;
     public final String comment;
-    public final List<Change> changes;
+    public final List<Change> changes; // TODO make immutable
 
     public Commit(String revision, String revisionBefore, Date commitDate, String authorName,
                   String comment, @NotNull List<Change> changes) {

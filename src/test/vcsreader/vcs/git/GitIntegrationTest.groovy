@@ -1,5 +1,4 @@
 package vcsreader.vcs.git
-
 import org.junit.Before
 import org.junit.Test
 import vcsreader.Change
@@ -14,7 +13,6 @@ import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.lang.DateTimeUtil.dateTime
 import static vcsreader.vcs.git.GitIntegrationTestConfig.*
 
-// TODO unescape quotes in file name, see git4idea.GitUtil.unescapePath
 class GitIntegrationTest {
     private final vcsRoots = [new GitVcsRoot(projectFolder, referenceProject, GitSettings.defaults())]
     private final project = new VcsProject(vcsRoots)
@@ -169,6 +167,23 @@ class GitIntegrationTest {
                         author,
                         "deleted file1",
                         [new Change(DELETED, "", "folder2/renamed_file1.txt", revisions[5], revisions[4])]
+                )
+        ])
+        assert logResult.errors() == []
+        assert logResult.isSuccessful()
+    }
+
+    @Test void "log file with spaces and quotes in its name"() {
+        project.init().awaitResult()
+        def logResult = project.log(date("16/08/2014"), date("17/08/2014")).awaitResult()
+
+        assertEqualCommits(logResult.commits, [
+                new Commit(
+                        revision(6), revision(5),
+                        dateTime("14:00:00 16/08/2014"),
+                        author,
+                        "added file with spaces and quotes",
+                        [new Change(NEW, "\"file with spaces.txt\"", "", revision(6), noRevision)]
                 )
         ])
         assert logResult.errors() == []

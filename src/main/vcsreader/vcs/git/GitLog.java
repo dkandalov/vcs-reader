@@ -157,8 +157,8 @@ class GitLog implements FunctionExecutor.Function<LogResult>, Described {
         Change.Type changeType = parseChangeType(values.get(0));
 
         boolean hasRenames = values.size() > 2;
-        String fileName = hasRenames ? values.get(2) : values.get(1);
-        String fileNameBefore = hasRenames ? values.get(1) : fileName;
+        String fileName = unescapeQuotes(hasRenames ? values.get(2) : values.get(1));
+        String fileNameBefore = unescapeQuotes(hasRenames ? values.get(1) : fileName);
 
         if (changeType == NEW) {
             fileNameBefore = Change.noFileName;
@@ -169,6 +169,15 @@ class GitLog implements FunctionExecutor.Function<LogResult>, Described {
         }
 
         return new Change(changeType, fileName, fileNameBefore, revision, revisionBefore);
+    }
+
+    /**
+     * See git4idea.GitUtil#unescapePath(java.lang.String) for more complete implementation.
+     */
+    private static String unescapeQuotes(String filePath) {
+        String quote = "\"";
+        if (!filePath.startsWith(quote)) return filePath;
+        return filePath.substring(1, filePath.length() - 1).replace("\\\"", "\"");
     }
 
     private static Change.Type parseChangeType(String s) {

@@ -162,6 +162,23 @@ class SvnIntegrationTest {
         assert logResult.isSuccessful()
     }
 
+    @Test void "log file with spaces and quotes in its name"() {
+        project.init().awaitResult()
+        def logResult = project.log(date("16/08/2014"), date("17/08/2014")).awaitResult()
+
+        assertEqualCommits(logResult.commits, [
+                new Commit(
+                        revision(7), revision(6),
+                        dateTime("14:00:00 16/08/2014"),
+                        author,
+                        "added file with spaces and quotes",
+                        [new Change(NEW, "\"file with spaces.txt\"", "", revision(7), noRevision)]
+                )
+        ])
+        assert logResult.errors() == []
+        assert logResult.isSuccessful()
+    }
+
     @Test void "log content of modified file"() {
         project.init().awaitResult()
         def logResult = project.log(date("12/08/2014"), date("13/08/2014")).awaitResult()
@@ -229,6 +246,7 @@ class SvnIntegrationTest {
     }
 
     static assertEqualCommits(List<Commit> actual, List<Commit> expected) {
+        // TODO more assertions that output was successful, etc
         assertThat(actual.join("\n\n"), equalTo(expected.join("\n\n")))
     }
 }

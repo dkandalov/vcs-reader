@@ -15,4 +15,8 @@ class GitIntegrationTestConfig {
     static final String firstRevision = revisions[0]
     static final String secondRevision = revisions[1]
     static final String thirdRevision = revisions[2]
+
+    static String revision(int n) {
+        revisions[n]
+    }
 }

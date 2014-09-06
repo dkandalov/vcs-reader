@@ -11,7 +11,7 @@ class GitRepositoryCreator
   end
 
   def create_reference_repository
-    raise("#{@base_dir} already exists") if Dir.exist?(@base_dir)
+    FileUtils.rmtree(@base_dir)
     FileUtils.mkpath(@base_dir)
 
     Dir.chdir(@base_dir) do
@@ -38,6 +38,9 @@ class GitRepositoryCreator
 
       puts `rm folder2/renamed_file1.txt`
       commit "deleted file1", "Aug 15 15:00:00 2014 +0100", @author
+
+      puts `echo 123 > "\\"file with spaces.txt\\""`
+      commit "added file with spaces and quotes", "Aug 16 15:00:00 2014 +0100", @author
 
       @commit_hashes = log_commit_hashes
     end
