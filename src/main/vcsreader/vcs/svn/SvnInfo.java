@@ -1,6 +1,7 @@
 package vcsreader.vcs.svn;
 
 import org.jetbrains.annotations.Nullable;
+import vcsreader.lang.Described;
 import vcsreader.lang.FunctionExecutor;
 import vcsreader.vcs.infrastructure.ShellCommand;
 
@@ -9,7 +10,8 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 
-class SvnInfo implements FunctionExecutor.Function<SvnInfo.Result> {
+
+class SvnInfo implements FunctionExecutor.Function<SvnInfo.Result>, Described {
     private final String svnPath;
     private final String repositoryUrl;
 
@@ -43,7 +45,15 @@ class SvnInfo implements FunctionExecutor.Function<SvnInfo.Result> {
     }
 
     static ShellCommand svnInfo(String svnPath, String repositoryUrl) {
-        return new ShellCommand(svnPath, "info", repositoryUrl).execute();
+        return createCommand(svnPath, repositoryUrl).execute();
+    }
+
+    private static ShellCommand createCommand(String svnPath, String repositoryUrl) {
+        return new ShellCommand(svnPath, "info", repositoryUrl);
+    }
+
+    @Override public String describe() {
+        return createCommand(svnPath, repositoryUrl).describe();
     }
 
     public static class Result {
