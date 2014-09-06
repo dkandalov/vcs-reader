@@ -43,6 +43,7 @@ class SvnRepositoryCreator
 
       mkdir "folder2"
       move "folder1/file1.txt", "folder2/renamed_file1.txt"
+      puts `echo "file2 new new content" > file2.txt`
       commit "moved and renamed file1", "2014-08-14T15:00:00.000000Z", @author
 
       rm "folder2/renamed_file1.txt"

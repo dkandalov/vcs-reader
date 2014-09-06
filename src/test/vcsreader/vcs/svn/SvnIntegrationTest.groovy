@@ -128,7 +128,8 @@ class SvnIntegrationTest {
                         dateTime("14:00:00 14/08/2014"),
                         author,
                         "moved and renamed file1",
-                        [new Change(MOVED, "folder2/renamed_file1.txt", "folder1/file1.txt", revision(5), revision(4))]
+                        [new Change(MOVED, "folder2/renamed_file1.txt", "folder1/file1.txt", revision(5), revision(4)),
+                         new Change(MODIFICATION, "file2.txt", "file2.txt", "5", "4")]
                 )
         ])
         assert logResult.errors() == []
@@ -193,8 +194,9 @@ class SvnIntegrationTest {
         nonRootProject.init().awaitResult()
 
         def logResult = nonRootProject.log(date("01/08/2014"), date("01/09/2014")).awaitResult()
-        assert logResult.commits[0].changes[0] == new Change(MOVED, "folder2/renamed_file1.txt", "folder1/file1.txt", "5", "4")
-        assert logResult.commits[1].changes[0] == new Change(DELETED, "", "folder2/renamed_file1.txt", "6", "5")
+        assert logResult.commits[0].changes == [new Change(MOVED, "renamed_file1.txt", "", "5", "4")]
+        assert logResult.commits[1].changes == [new Change(DELETED, "", "renamed_file1.txt", "6", "5")]
+        assert logResult.commits.size() == 2
     }
 
     @Test void "content of commits in project which is not root in svn repo"() {
@@ -203,7 +205,7 @@ class SvnIntegrationTest {
 
         def logResult = nonRootProject.log(date("01/08/2014"), date("01/09/2014")).awaitResult()
         assert logResult.commits[0].comment == "moved and renamed file1"
-        assert logResult.commits[0].changes[0].contentBefore() == "file1 content"
+        assert logResult.commits[0].changes[0].contentBefore() == "" // no content because file was moved from outside of project root
         assert logResult.commits[0].changes[0].content() == "file1 content"
         assert logResult.commits[1].comment == "deleted file1"
         assert logResult.commits[1].changes[0].contentBefore() == "file1 content"

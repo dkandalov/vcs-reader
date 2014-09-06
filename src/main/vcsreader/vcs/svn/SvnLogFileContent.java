@@ -34,8 +34,8 @@ class SvnLogFileContent implements FunctionExecutor.Function<LogContentResult>, 
     }
 
     private static ShellCommand createCommand(String pathToSvn, String repositoryRoot, String fileName, String revision, Charset charset) {
-        return new ShellCommand(pathToSvn, "cat", repositoryRoot + "/" + fileName + "@" + revision)
-                .withCharset(charset);
+        String filePath = repositoryRoot + "/" + fileName + "@" + revision;
+        return new ShellCommand(pathToSvn, "cat", filePath).withCharset(charset);
     }
 
     @NotNull private static String trimLastNewLine(String s) {
