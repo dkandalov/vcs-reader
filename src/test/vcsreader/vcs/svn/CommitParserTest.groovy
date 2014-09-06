@@ -41,7 +41,7 @@ class CommitParserTest {
             <log>
                 <logentry revision="1">
                 <author>Some Author</author>
-                <date>2014-08-10T15:00:00.000000Z</date>
+                <date>2013-12-21T19:35:02.544940Z</date>
                 <paths>
                     <path prop-mods="false" text-mods="true" kind="folder" action="A">/folder</path>
                     <path kind="" action="A">/file.txt</path>
@@ -54,7 +54,7 @@ class CommitParserTest {
         assertEqualCommits(CommitParser.parseCommits(xml), [
                 new Commit(
                         "1", noRevision,
-                        dateTime("14:00:00 10/08/2014"),
+                        dateTime("19:35:02 21/12/2013"),
                         "Some Author",
                         "commit message",
                         [new Change(NEW, "file.txt", "1")]

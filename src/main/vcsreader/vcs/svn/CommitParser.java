@@ -91,7 +91,7 @@ class CommitParser {
             } else if (expectDate) {
                 expectDate = false;
                 try {
-                    commitDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(String.valueOf(ch, start, length));
+                    commitDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(String.valueOf(ch, start, length));
                 } catch (ParseException e) {
                     throw new RuntimeException(e);
                 }
