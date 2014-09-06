@@ -4,12 +4,11 @@ import vcsreader.Change
 import vcsreader.Commit
 import vcsreader.VcsProject
 
-import static org.hamcrest.CoreMatchers.equalTo
-import static org.junit.Assert.assertThat
 import static vcsreader.Change.Type.*
 import static vcsreader.Change.noRevision
 import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.lang.DateTimeUtil.dateTime
+import static vcsreader.vcs.TestUtil.assertEqualCommits
 import static vcsreader.vcs.svn.SvnIntegrationTestConfig.*
 
 class SvnIntegrationTest {
@@ -50,7 +49,7 @@ class SvnIntegrationTest {
         project.init().awaitResult()
         def logResult = project.log(date("10/08/2014"), date("11/08/2014")).awaitResult()
 
-        assertEqualCommits(logResult.commits, [
+        assertEqualCommits(logResult, [
                 new Commit(
                         firstRevision, noRevision,
                         dateTime("14:00:00 10/08/2014"),
@@ -59,15 +58,13 @@ class SvnIntegrationTest {
                         [new Change(NEW, "file1.txt", firstRevision)]
                 )
         ])
-        assert logResult.errors() == []
-        assert logResult.isSuccessful()
     }
 
     @Test void "log several commits from project history"() {
         project.init().awaitResult()
         def logResult = project.log(date("10/08/2014"), date("12/08/2014")).awaitResult()
 
-        assertEqualCommits(logResult.commits, [
+        assertEqualCommits(logResult, [
                 new Commit(
                         firstRevision, noRevision,
                         dateTime("14:00:00 10/08/2014"),
@@ -86,15 +83,13 @@ class SvnIntegrationTest {
                         ]
                 )
         ])
-        assert logResult.errors() == []
-        assert logResult.isSuccessful()
     }
 
     @Test void "log modification commit"() {
         project.init().awaitResult()
         def logResult = project.log(date("12/08/2014"), date("13/08/2014")).awaitResult()
 
-        assertEqualCommits(logResult.commits, [
+        assertEqualCommits(logResult, [
                 new Commit(
                         thirdRevision, secondRevision,
                         dateTime("14:00:00 12/08/2014"),
@@ -106,15 +101,13 @@ class SvnIntegrationTest {
                         ]
                 )
         ])
-        assert logResult.errors() == []
-        assert logResult.isSuccessful()
     }
 
     @Test void "log moved file commit"() {
         project.init().awaitResult()
         def logResult = project.log(date("13/08/2014"), date("14/08/2014")).awaitResult()
 
-        assertEqualCommits(logResult.commits, [
+        assertEqualCommits(logResult, [
                 new Commit(
                         revision(4), revision(3),
                         dateTime("14:00:00 13/08/2014"),
@@ -123,15 +116,13 @@ class SvnIntegrationTest {
                         [new Change(MOVED, "folder1/file1.txt", "file1.txt", revision(4), revision(1))]
                 )
         ])
-        assert logResult.errors() == []
-        assert logResult.isSuccessful()
     }
 
     @Test void "log moved and renamed file commit"() {
         project.init().awaitResult()
         def logResult = project.log(date("14/08/2014"), date("15/08/2014")).awaitResult()
 
-        assertEqualCommits(logResult.commits, [
+        assertEqualCommits(logResult, [
                 new Commit(
                         revision(5), revision(4),
                         dateTime("14:00:00 14/08/2014"),
@@ -141,15 +132,13 @@ class SvnIntegrationTest {
                          new Change(MODIFICATION, "file2.txt", "file2.txt", "5", "4")]
                 )
         ])
-        assert logResult.errors() == []
-        assert logResult.isSuccessful()
     }
 
     @Test void "log deleted file"() {
         project.init().awaitResult()
         def logResult = project.log(date("15/08/2014"), date("16/08/2014")).awaitResult()
 
-        assertEqualCommits(logResult.commits, [
+        assertEqualCommits(logResult, [
                 new Commit(
                         revision(6), revision(5),
                         dateTime("14:00:00 15/08/2014"),
@@ -158,15 +147,13 @@ class SvnIntegrationTest {
                         [new Change(DELETED, "", "folder2/renamed_file1.txt", revision(6), revision(5))]
                 )
         ])
-        assert logResult.errors() == []
-        assert logResult.isSuccessful()
     }
 
     @Test void "log file with spaces and quotes in its name"() {
         project.init().awaitResult()
         def logResult = project.log(date("16/08/2014"), date("17/08/2014")).awaitResult()
 
-        assertEqualCommits(logResult.commits, [
+        assertEqualCommits(logResult, [
                 new Commit(
                         revision(7), revision(6),
                         dateTime("14:00:00 16/08/2014"),
@@ -175,8 +162,6 @@ class SvnIntegrationTest {
                         [new Change(NEW, "\"file with spaces.txt\"", "", revision(7), noRevision)]
                 )
         ])
-        assert logResult.errors() == []
-        assert logResult.isSuccessful()
     }
 
     @Test void "log content of modified file"() {
@@ -243,10 +228,5 @@ class SvnIntegrationTest {
         def result = svnInfo.execute()
         assert result.repositoryRoot == repositoryUrl
         assert result.errors().isEmpty()
-    }
-
-    static assertEqualCommits(List<Commit> actual, List<Commit> expected) {
-        // TODO more assertions that output was successful, etc
-        assertThat(actual.join("\n\n"), equalTo(expected.join("\n\n")))
     }
 }

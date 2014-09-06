@@ -6,7 +6,7 @@ import vcsreader.Commit
 import static vcsreader.Change.Type.NEW
 import static vcsreader.Change.noRevision
 import static vcsreader.lang.DateTimeUtil.dateTime
-import static vcsreader.vcs.svn.SvnIntegrationTest.assertEqualCommits
+import static vcsreader.vcs.TestUtil.assertEqualCommits
 
 class CommitParserTest {
     @Test void "parse commit with single change"() {

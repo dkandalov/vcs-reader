@@ -5,12 +5,11 @@ import vcsreader.Change
 import vcsreader.Commit
 import vcsreader.VcsProject
 
-import static org.hamcrest.CoreMatchers.equalTo
-import static org.junit.Assert.assertThat
 import static vcsreader.Change.Type.*
 import static vcsreader.Change.noRevision
 import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.lang.DateTimeUtil.dateTime
+import static vcsreader.vcs.TestUtil.assertEqualCommits
 import static vcsreader.vcs.git.GitIntegrationTestConfig.*
 
 class GitIntegrationTest {
@@ -62,7 +61,7 @@ class GitIntegrationTest {
         project.init().awaitResult()
         def logResult = project.log(date("10/08/2014"), date("11/08/2014")).awaitResult()
 
-        assertEqualCommits(logResult.commits, [
+        assertEqualCommits(logResult, [
                 new Commit(
                         firstRevision, noRevision,
                         dateTime("14:00:00 10/08/2014"),
@@ -71,15 +70,13 @@ class GitIntegrationTest {
                         [new Change(NEW, "file1.txt", firstRevision)]
                 )
         ])
-        assert logResult.errors() == []
-        assert logResult.isSuccessful()
     }
 
     @Test void "log several commits from project history"() {
         project.init().awaitResult()
         def logResult = project.log(date("10/08/2014"), date("12/08/2014")).awaitResult()
 
-        assertEqualCommits(logResult.commits, [
+        assertEqualCommits(logResult, [
                 new Commit(
                         firstRevision, noRevision,
                         dateTime("14:00:00 10/08/2014"),
@@ -98,15 +95,13 @@ class GitIntegrationTest {
                         ]
                 )
         ])
-        assert logResult.errors() == []
-        assert logResult.isSuccessful()
     }
 
     @Test void "log modification commit"() {
         project.init().awaitResult()
         def logResult = project.log(date("12/08/2014"), date("13/08/2014")).awaitResult()
 
-        assertEqualCommits(logResult.commits, [
+        assertEqualCommits(logResult, [
                 new Commit(
                         thirdRevision, secondRevision,
                         dateTime("14:00:00 12/08/2014"),
@@ -118,15 +113,13 @@ class GitIntegrationTest {
                         ]
                 )
         ])
-        assert logResult.errors() == []
-        assert logResult.isSuccessful()
     }
 
     @Test void "log moved file commit"() {
         project.init().awaitResult()
         def logResult = project.log(date("13/08/2014"), date("14/08/2014")).awaitResult()
 
-        assertEqualCommits(logResult.commits, [
+        assertEqualCommits(logResult, [
                 new Commit(
                         revisions[3], revisions[2],
                         dateTime("14:00:00 13/08/2014"),
@@ -135,15 +128,13 @@ class GitIntegrationTest {
                         [new Change(MOVED, "folder1/file1.txt", "file1.txt", revisions[3], revisions[2])]
                 )
         ])
-        assert logResult.errors() == []
-        assert logResult.isSuccessful()
     }
 
     @Test void "log moved and renamed file commit"() {
         project.init().awaitResult()
         def logResult = project.log(date("14/08/2014"), date("15/08/2014")).awaitResult()
 
-        assertEqualCommits(logResult.commits, [
+        assertEqualCommits(logResult, [
                 new Commit(
                         revisions[4], revisions[3],
                         dateTime("14:00:00 14/08/2014"),
@@ -152,15 +143,13 @@ class GitIntegrationTest {
                         [new Change(MOVED, "folder2/renamed_file1.txt", "folder1/file1.txt", revisions[4], revisions[3])]
                 )
         ])
-        assert logResult.errors() == []
-        assert logResult.isSuccessful()
     }
 
     @Test void "log deleted file"() {
         project.init().awaitResult()
         def logResult = project.log(date("15/08/2014"), date("16/08/2014")).awaitResult()
 
-        assertEqualCommits(logResult.commits, [
+        assertEqualCommits(logResult, [
                 new Commit(
                         revisions[5], revisions[4],
                         dateTime("14:00:00 15/08/2014"),
@@ -169,15 +158,13 @@ class GitIntegrationTest {
                         [new Change(DELETED, "", "folder2/renamed_file1.txt", revisions[5], revisions[4])]
                 )
         ])
-        assert logResult.errors() == []
-        assert logResult.isSuccessful()
     }
 
     @Test void "log file with spaces and quotes in its name"() {
         project.init().awaitResult()
         def logResult = project.log(date("16/08/2014"), date("17/08/2014")).awaitResult()
 
-        assertEqualCommits(logResult.commits, [
+        assertEqualCommits(logResult, [
                 new Commit(
                         revision(6), revision(5),
                         dateTime("14:00:00 16/08/2014"),
@@ -186,8 +173,6 @@ class GitIntegrationTest {
                         [new Change(NEW, "\"file with spaces.txt\"", "", revision(6), noRevision)]
                 )
         ])
-        assert logResult.errors() == []
-        assert logResult.isSuccessful()
     }
 
     @Test void "log content of modified file"() {
@@ -224,10 +209,6 @@ class GitIntegrationTest {
         assert change.contentBefore() == "file1 content"
         assert logResult.errors() == []
         assert logResult.isSuccessful()
-    }
-
-    private static assertEqualCommits(List<Commit> actual, List<Commit> expected) {
-        assertThat(actual.join("\n\n"), equalTo(expected.join("\n\n")))
     }
 
     @Before void setup() {
