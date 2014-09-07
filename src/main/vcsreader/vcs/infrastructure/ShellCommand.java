@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 import static java.nio.charset.Charset.forName;
 
@@ -18,6 +19,7 @@ public class ShellCommand {
     private Charset outputCharset = forName("UTF-8");
 
     public ShellCommand(String... command) {
+        checkForNulls(command);
         this.command = command;
     }
 
@@ -93,6 +95,14 @@ public class ShellCommand {
         PrintWriter printWriter = new PrintWriter(stringWriter);
         e.printStackTrace(printWriter);
         return stringWriter.getBuffer().toString();
+    }
+
+    private static void checkForNulls(String[] command) {
+        for (String arg : command) {
+            if (arg == null) {
+                throw new IllegalStateException("Shell command cannot have null as inputs, but was: " + Arrays.toString(command));
+            }
+        }
     }
 
     public String describe() {
