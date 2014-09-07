@@ -62,6 +62,13 @@ class CommitParser {
         private String copyFromRevision;
         private final Set<String> movedPaths = new HashSet<String>();
 
+        private final SimpleDateFormat dateFormat;
+
+        private CommitReadingHandler() {
+            dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        }
+
         @Override
         public void startElement(String uri, String localName, @NotNull String name, Attributes attributes) throws SAXException {
             if (name.equals("logentry")) {
@@ -91,7 +98,7 @@ class CommitParser {
             } else if (expectDate) {
                 expectDate = false;
                 try {
-                    commitDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(String.valueOf(ch, start, length));
+                    commitDate = dateFormat.parse(String.valueOf(ch, start, length));
                 } catch (ParseException e) {
                     throw new RuntimeException(e);
                 }

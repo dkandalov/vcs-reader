@@ -54,7 +54,7 @@ class SvnIntegrationTest {
         assertEqualCommits(logResult, [
                 new Commit(
                         revision(1), noRevision,
-                        dateTime("14:00:00 10/08/2014"),
+                        dateTime("15:00:00 10/08/2014"),
                         author,
                         "initial commit",
                         [new Change(NEW, "file1.txt", revision(1))]
@@ -69,14 +69,14 @@ class SvnIntegrationTest {
         assertEqualCommits(logResult, [
                 new Commit(
                         revision(1), noRevision,
-                        dateTime("14:00:00 10/08/2014"),
+                        dateTime("15:00:00 10/08/2014"),
                         author,
                         "initial commit",
                         [new Change(NEW, "file1.txt", revision(1))]
                 ),
                 new Commit(
                         revision(2), revision(1),
-                        dateTime("14:00:00 11/08/2014"),
+                        dateTime("15:00:00 11/08/2014"),
                         author,
                         "added file2, file3",
                         [
@@ -94,7 +94,7 @@ class SvnIntegrationTest {
         assertEqualCommits(logResult, [
                 new Commit(
                         revision(3), revision(2),
-                        dateTime("14:00:00 12/08/2014"),
+                        dateTime("15:00:00 12/08/2014"),
                         author,
                         "modified file2, file3",
                         [
@@ -112,7 +112,7 @@ class SvnIntegrationTest {
         assertEqualCommits(logResult, [
                 new Commit(
                         revision(4), revision(3),
-                        dateTime("14:00:00 13/08/2014"),
+                        dateTime("15:00:00 13/08/2014"),
                         author,
                         "moved file1",
                         [new Change(MOVED, "folder1/file1.txt", "file1.txt", revision(4), revision(1))]
@@ -127,7 +127,7 @@ class SvnIntegrationTest {
         assertEqualCommits(logResult, [
                 new Commit(
                         revision(5), revision(4),
-                        dateTime("14:00:00 14/08/2014"),
+                        dateTime("15:00:00 14/08/2014"),
                         author,
                         "moved and renamed file1",
                         [new Change(MOVED, "folder2/renamed_file1.txt", "folder1/file1.txt", revision(5), revision(4)),
@@ -143,7 +143,7 @@ class SvnIntegrationTest {
         assertEqualCommits(logResult, [
                 new Commit(
                         revision(6), revision(5),
-                        dateTime("14:00:00 15/08/2014"),
+                        dateTime("15:00:00 15/08/2014"),
                         author,
                         "deleted file1",
                         [new Change(DELETED, "", "folder2/renamed_file1.txt", revision(6), revision(5))]
@@ -158,7 +158,7 @@ class SvnIntegrationTest {
         assertEqualCommits(logResult, [
                 new Commit(
                         revision(7), revision(6),
-                        dateTime("14:00:00 16/08/2014"),
+                        dateTime("15:00:00 16/08/2014"),
                         author,
                         "added file with spaces and quotes",
                         [new Change(NEW, "\"file with spaces.txt\"", "", revision(7), noRevision)]
