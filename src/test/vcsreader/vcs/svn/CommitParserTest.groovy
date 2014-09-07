@@ -1,4 +1,5 @@
 package vcsreader.vcs.svn
+
 import org.junit.Test
 import vcsreader.Change
 import vcsreader.Commit
@@ -27,7 +28,7 @@ class CommitParserTest {
         assertEqualCommits(CommitParser.parseCommits(xml), [
                 new Commit(
                         "1", noRevision,
-                        dateTime("14:00:00 10/08/2014"),
+                        dateTime("15:00:00 10/08/2014"),
                         "Some Author",
                         "initial commit",
                         [new Change(NEW, "file1.txt", "1")]
@@ -60,5 +61,27 @@ class CommitParserTest {
                         [new Change(NEW, "file.txt", "1")]
                 )
         ])
+    }
+
+    @Test void "parse commit with long message"() {
+        def xml = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <log>
+                <logentry revision="1696">
+                <author>ebruneton</author>
+                <date>2013-10-12T14:39:22.432589Z</date>
+                <paths><path kind="" action="M">/some/file</path></paths>
+<msg>- Update the product version to 5.0 beta
+- Fix a few "bugs" found with Findbugs
+- Switch to JDK 8 to run the tests.</msg>
+</logentry>
+            </log>
+        """.trim()
+
+        String comment = CommitParser.parseCommits(xml)[0].comment
+        assert comment ==
+                "- Update the product version to 5.0 beta\n" +
+                "- Fix a few \"bugs\" found with Findbugs\n" +
+                "- Switch to JDK 8 to run the tests."
     }
 }

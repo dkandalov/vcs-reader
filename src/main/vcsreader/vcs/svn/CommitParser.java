@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static vcsreader.Change.Type.MOVED;
+import static vcsreader.Change.noFilePath;
 
 class CommitParser {
     static List<Commit> parseCommits(String xml) {
@@ -46,6 +47,7 @@ class CommitParser {
         private String revisionBefore;
         private String author;
         private Date commitDate;
+        private String commitDateString;
         private String comment;
         private List<Change> changes = new ArrayList<Change>();
 
@@ -76,10 +78,13 @@ class CommitParser {
                 revisionBefore = previous(revision);
             } else if (name.equals("author")) {
                 expectAuthor = true;
+                author = "";
             } else if (name.equals("date")) {
                 expectDate = true;
+                commitDateString = "";
             } else if (name.equals("msg")) {
                 expectComment = true;
+                comment = "";
             } else if (name.equals("path")) {
                 changeType = asChangeType(attributes.getValue("action"));
                 String kind = attributes.getValue("kind");
@@ -87,27 +92,20 @@ class CommitParser {
                 isCopy = attributes.getValue("copyfrom-path") != null;
                 copyFromFilePath = trimPath(attributes.getValue("copyfrom-path"));
                 copyFromRevision = attributes.getValue("copyfrom-rev");
+                filePath = "";
                 expectFileName = true;
             }
         }
 
         @Override public void characters(char[] ch, int start, int length) throws SAXException {
             if (expectAuthor) {
-                expectAuthor = false;
-                author = String.valueOf(ch, start, length);
+                author += String.valueOf(ch, start, length);
             } else if (expectDate) {
-                expectDate = false;
-                try {
-                    commitDate = dateFormat.parse(String.valueOf(ch, start, length));
-                } catch (ParseException e) {
-                    throw new RuntimeException(e);
-                }
+                commitDateString += String.valueOf(ch, start, length);
             } else if (expectComment) {
-                expectComment = false;
-                comment = String.valueOf(ch, start, length);
+                comment += String.valueOf(ch, start, length);
             } else if (expectFileName) {
-                expectFileName = false;
-                filePath = trimPath(String.valueOf(ch, start, length));
+                filePath += trimPath(String.valueOf(ch, start, length));
             }
         }
 
@@ -120,16 +118,32 @@ class CommitParser {
             if (name.equals("logentry")) {
                 commits.add(new Commit(revision, revisionBefore, commitDate, author, comment, new ArrayList<Change>(changes)));
                 changes.clear();
-            } else if (name.equals("path") && isFileChange && !movedPaths.contains(filePath)) {
-                if (isCopy) {
-                    changes.add(new Change(MOVED, filePath, copyFromFilePath, revision, copyFromRevision));
-                    movedPaths.add(copyFromFilePath);
-                } else if (changeType == Change.Type.NEW) {
-                    changes.add(new Change(changeType, filePath, revision));
-                } else if (changeType == Change.Type.DELETED) {
-                    changes.add(new Change(changeType, Change.noFilePath, filePath, revision, revisionBefore));
-                } else {
-                    changes.add(new Change(changeType, filePath, filePath, revision, revisionBefore));
+            } else if (name.equals("path")) {
+                expectFileName = false;
+                if (isFileChange && !movedPaths.contains(filePath)) {
+                    if (isCopy) {
+                        changes.add(new Change(MOVED, filePath, copyFromFilePath, revision, copyFromRevision));
+                        movedPaths.add(copyFromFilePath);
+                    } else if (changeType == Change.Type.NEW) {
+                        changes.add(new Change(changeType, filePath, revision));
+                    } else if (changeType == Change.Type.DELETED) {
+                        changes.add(new Change(changeType, noFilePath, filePath, revision, revisionBefore));
+                    } else {
+                        changes.add(new Change(changeType, filePath, filePath, revision, revisionBefore));
+                    }
+                }
+            } else if (name.equals("path")) {
+                expectFileName = false;
+            } else if (name.equals("author")) {
+                expectAuthor = false;
+            } else if (name.equals("msg")) {
+                expectComment = false;
+            } else if (name.equals("date")) {
+                expectDate = false;
+                try {
+                    commitDate = dateFormat.parse(commitDateString);
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }

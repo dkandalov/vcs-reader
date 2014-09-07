@@ -79,19 +79,19 @@ class SvnLog implements FunctionExecutor.Function<LogResult>, Described {
     private List<Commit> transformToSubPathCommits(List<Commit> commits) {
         String subPath = subPathOf(repositoryUrl, repositoryRoot);
         commits = removeChangesNotIn(subPath, commits);
-        commits = modifyFilePathsToUse(subPath, commits);
+        commits = modifyChanges(subPath, commits);
         return commits;
     }
 
-    private static List<Commit> modifyFilePathsToUse(String subPath, List<Commit> commits) {
+    private static List<Commit> modifyChanges(String subPath, List<Commit> commits) {
         List<Commit> result = new ArrayList<Commit>();
         for (Commit commit : commits) {
             List<Change> modifiedChanges = new ArrayList<Change>();
             for (Change change : commit.changes) {
                 modifiedChanges.add(new Change(
-                        change.type,
-                        changeFilePath(subPath, change.filePath),
-                        changeFilePath(subPath, change.filePathBefore),
+                        changeTypeConsideringSubPath(subPath, change),
+                        useSubPathAsRoot(subPath, change.filePath),
+                        useSubPathAsRoot(subPath, change.filePathBefore),
                         change.revision,
                         change.revisionBefore
                 ));
@@ -124,7 +124,14 @@ class SvnLog implements FunctionExecutor.Function<LogResult>, Described {
         return subPath;
     }
 
-    private static String changeFilePath(String subPath, String filePath) {
+    private static Change.Type changeTypeConsideringSubPath(String subPath, Change change) {
+        if (change.type != Change.Type.MOVED) return change.type;
+        else if (!change.filePath.startsWith(subPath)) return Change.Type.DELETED;
+        else if (!change.filePathBefore.startsWith(subPath)) return Change.Type.NEW;
+        else return change.type;
+    }
+
+    private static String useSubPathAsRoot(String subPath, String filePath) {
         int i = filePath.indexOf(subPath);
         if (i != 0) return Change.noFilePath;
         else return filePath.substring(subPath.length());

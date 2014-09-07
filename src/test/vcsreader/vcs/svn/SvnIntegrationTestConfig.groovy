@@ -18,6 +18,11 @@ class SvnIntegrationTestConfig {
         repositoryUrl = config["svnRepositoryUrl"] as String
         nonExistentUrl = "file://non-existent/url"
         author = config["author"] as String
+
+        if (!new File(pathToSvn).exists())
+            throw new FileNotFoundException("Cannot find " + pathToSvn + ". Please check content of " + configFile.absolutePath)
+        if (!new File(repositoryUrl.replace("file://", "")).exists())
+            throw new FileNotFoundException("Cannot find " + repositoryUrl + ". Please run svn-create-repo.rb")
     }
 
     static String revision(int n) {

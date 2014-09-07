@@ -207,9 +207,15 @@ class SvnIntegrationTest {
         nonRootProject.init().awaitResult()
 
         def logResult = nonRootProject.log(date("01/08/2014"), date("01/09/2014")).awaitResult()
-        assert logResult.commits[0].changes == [new Change(MOVED, "renamed_file1.txt", "", "5", "4")]
-        assert logResult.commits[1].changes == [new Change(DELETED, "", "renamed_file1.txt", "6", "5")]
-        assert logResult.commits.size() == 2
+        assertEqualCommits(logResult, [
+                new Commit(revision(5), revision(4), dateTime("15:00:00 14/08/2014"), author, "moved and renamed file1", [
+                        // note that change has NEW type because it was moved from outside sub path
+                        new Change(NEW, "renamed_file1.txt", "", revision(5), revision(4))
+                ]),
+                new Commit(revision(6), revision(5), dateTime("15:00:00 15/08/2014"), author, "deleted file1", [
+                        new Change(DELETED, "", "renamed_file1.txt", revision(6), revision(5))
+                ])
+        ])
     }
 
     @Test void "content of commits in project which is not root in svn repo"() {
