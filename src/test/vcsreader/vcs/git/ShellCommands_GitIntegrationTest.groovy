@@ -18,8 +18,8 @@ class ShellCommands_GitIntegrationTest {
 
     @Test void "git log file content"() {
         def command = gitLogFileContent(pathToGit, referenceProject, "file1.txt", revision(1), utf8)
-        assert command.stdout().trim() == "file1 content"
         assert command.stderr() == ""
+        assert command.stdout().trim() == "file1 content"
         assert command.exitValue() == 0
     }
 
@@ -32,16 +32,16 @@ class ShellCommands_GitIntegrationTest {
 
     @Test void "git log"() {
         def command = gitLog(pathToGit, referenceProject, date("01/01/2013"), date("01/01/2023"))
-        assert command.stdout().contains("initial commit")
         assert command.stderr() == ""
+        assert command.stdout().contains("initial commit")
         assert command.exitValue() == 0
     }
 
     @Test void "git log renames"() {
         def command = gitLogRenames(pathToGit, referenceProject, revision(4))
+        assert command.stderr() == ""
         assert command.stdout().contains("R100")
         assert command.stdout().contains("folder1/file1.txt")
-        assert command.stderr() == ""
         assert command.exitValue() == 0
     }
 
@@ -71,8 +71,8 @@ class ShellCommands_GitIntegrationTest {
     @Test void "update repository"() {
         gitClone(pathToGit, "file://" + referenceProject, projectFolder)
         def command = gitUpdate(pathToGit, projectFolder)
-        assert command.stdout() == "Already up-to-date.\n"
         assert command.stderr().trim() == ""
+        assert command.stdout() == "Already up-to-date.\n"
         assert command.exitValue() == 0
     }
 

@@ -14,8 +14,8 @@ import static vcsreader.vcs.svn.SvnLogFileContent.svnLogFileContent
 class ShellCommands_SvnIntegrationTest {
     @Test void "svn log"() {
         def command = svnLog(pathToSvn, repositoryUrl, date("01/01/2013"), date("01/01/2023"), useMergeHistory)
-        assert command.stdout().contains("initial commit")
         assert command.stderr() == ""
+        assert command.stdout().contains("initial commit")
         assert command.exitValue() == 0
     }
 
@@ -29,8 +29,8 @@ class ShellCommands_SvnIntegrationTest {
     @Test void "svn log file content"() {
         def revision = "1"
         def command = svnLogFileContent(pathToSvn, repositoryUrl, "file1.txt", revision, utf8)
-        assert command.stdout().trim() == "file1 content"
         assert command.stderr() == ""
+        assert command.stdout().trim() == "file1 content"
         assert command.exitValue() == 0
     }
 
@@ -44,8 +44,8 @@ class ShellCommands_SvnIntegrationTest {
 
     @Test void "get repository information"() {
         def command = svnInfo(pathToSvn, repositoryUrl)
-        assert command.stdout().contains("Repository Root: " + repositoryUrl)
         assert command.stderr() == ""
+        assert command.stdout().contains("Repository Root: " + repositoryUrl)
         assert command.exitValue() == 0
     }
 
