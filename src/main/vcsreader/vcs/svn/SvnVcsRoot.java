@@ -3,7 +3,7 @@ package vcsreader.vcs.svn;
 import vcsreader.VcsRoot;
 import vcsreader.lang.Async;
 import vcsreader.lang.AsyncResultListener;
-import vcsreader.lang.FunctionExecutor;
+import vcsreader.lang.VcsCommandExecutor;
 
 import java.util.Date;
 import java.util.List;
@@ -14,7 +14,7 @@ public class SvnVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
     private final String repositoryUrl;
     private final SvnSettings settings;
     private String repositoryRoot;
-    private transient FunctionExecutor executor;
+    private transient VcsCommandExecutor executor;
 
     public SvnVcsRoot(String repositoryUrl, SvnSettings settings) {
         this.repositoryUrl = repositoryUrl;
@@ -59,8 +59,8 @@ public class SvnVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
         ));
     }
 
-    @Override public void setExecutor(FunctionExecutor functionExecutor) {
-        this.executor = functionExecutor;
+    @Override public void setExecutor(VcsCommandExecutor commandExecutor) {
+        this.executor = commandExecutor;
     }
 
     @Override public String toString() {

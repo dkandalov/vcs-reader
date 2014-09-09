@@ -4,7 +4,7 @@ import org.junit.Test;
 import vcsreader.VcsProject;
 import vcsreader.VcsRoot;
 import vcsreader.lang.Async;
-import vcsreader.lang.FunctionExecutor;
+import vcsreader.lang.VcsCommandExecutor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,11 +17,11 @@ import static org.mockito.Mockito.mock;
 import static vcsreader.VcsProject.InitResult;
 import static vcsreader.VcsProject.LogResult;
 import static vcsreader.lang.DateTimeUtil.date;
-import static vcsreader.lang.FunctionExecutor.Function;
+import static vcsreader.lang.VcsCommandExecutor.VcsCommand;
 
 public class VcsProjectTest {
     private final GitSettings settings = GitSettings.defaults();
-    private final FakeFunctionExecutor fakeExecutor = new FakeFunctionExecutor();
+    private final FakeVcsCommandExecutor fakeExecutor = new FakeVcsCommandExecutor();
 
     @Test public void successfulProjectInitialization() {
         // given
@@ -35,7 +35,7 @@ public class VcsProjectTest {
         Async<InitResult> initResult = project.init();
 
         // then
-        assertThat(fakeExecutor.functions, equalTo(Arrays.<Function>asList(
+        assertThat(fakeExecutor.commands, equalTo(Arrays.<VcsCommand>asList(
                 new GitClone("/usr/bin/git", "git://some/url", "/local/path"),
                 new GitClone("/usr/bin/git", "git://some/url", "/local/path2")
         )));
@@ -58,7 +58,7 @@ public class VcsProjectTest {
         Async<LogResult> logResult = project.log(date("01/07/2014"), date("08/07/2014"));
 
         // then
-        assertThat(fakeExecutor.functions, equalTo(Arrays.<Function>asList(
+        assertThat(fakeExecutor.commands, equalTo(Arrays.<VcsCommand>asList(
                 new GitLog("/usr/bin/git", "/local/path", date("01/07/2014"), date("08/07/2014")),
                 new GitLog("/usr/bin/git", "/local/path2", date("01/07/2014"), date("08/07/2014"))
         )));
@@ -87,13 +87,13 @@ public class VcsProjectTest {
     }
 
 
-    private static class FakeFunctionExecutor extends FunctionExecutor {
+    private static class FakeVcsCommandExecutor extends VcsCommandExecutor {
         private final List<Async<Object>> asyncResults = new ArrayList<Async<Object>>();
-        public final List<Function> functions = new ArrayList<Function>();
+        public final List<VcsCommand> commands = new ArrayList<VcsCommand>();
 
         @SuppressWarnings("unchecked")
-        @Override public Async<Object> execute(Function function) {
-            functions.add(function);
+        @Override public Async<Object> execute(VcsCommand command) {
+            commands.add(command);
 
             Async<Object> asyncResult = new Async<Object>();
             asyncResults.add(asyncResult);

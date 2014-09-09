@@ -2,14 +2,14 @@ package vcsreader.vcs.git
 
 import vcsreader.VcsProject
 import vcsreader.lang.Described
-import vcsreader.lang.FunctionExecutor
+import vcsreader.lang.VcsCommandExecutor
 
 import static vcsreader.lang.DateTimeUtil.date
 
 class GitLog_Playground {
     static void main(String[] args) {
-        def executor = new FunctionExecutor(new FunctionExecutor.Listener() {
-            @Override void onFunctionCall(FunctionExecutor.Function function) {
+        def executor = new VcsCommandExecutor(new VcsCommandExecutor.Listener() {
+            @Override void onFunctionCall(VcsCommandExecutor.VcsCommand function) {
                 println(((Described) function).describe())
             }
         })

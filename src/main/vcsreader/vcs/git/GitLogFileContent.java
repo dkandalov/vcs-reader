@@ -1,7 +1,7 @@
 package vcsreader.vcs.git;
 
 import vcsreader.lang.Described;
-import vcsreader.lang.FunctionExecutor;
+import vcsreader.lang.VcsCommandExecutor;
 import vcsreader.vcs.infrastructure.ShellCommand;
 
 import java.nio.charset.Charset;
@@ -13,7 +13,7 @@ import static vcsreader.VcsProject.LogContentResult;
  * (http://stackoverflow.com/questions/610208/how-to-retrieve-a-single-file-from-specific-revision-in-git).
  * The assumption is that nobody uses it anymore.
  */
-class GitLogFileContent implements FunctionExecutor.Function<LogContentResult>, Described {
+class GitLogFileContent implements VcsCommandExecutor.VcsCommand<LogContentResult>, Described {
     private final String gitPath;
     private final String folder;
     private final String filePath;

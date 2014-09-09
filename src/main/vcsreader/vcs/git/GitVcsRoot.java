@@ -3,7 +3,7 @@ package vcsreader.vcs.git;
 import vcsreader.VcsProject;
 import vcsreader.VcsRoot;
 import vcsreader.lang.Async;
-import vcsreader.lang.FunctionExecutor;
+import vcsreader.lang.VcsCommandExecutor;
 
 import java.util.Date;
 
@@ -14,7 +14,7 @@ public class GitVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
     private final String pathToProject;
     private final String repositoryUrl;
     private final GitSettings settings;
-    private transient FunctionExecutor functionExecutor;
+    private transient VcsCommandExecutor commandExecutor;
 
     public GitVcsRoot(String pathToProject, String repositoryUrl, GitSettings settings) {
         this.pathToProject = pathToProject;
@@ -23,23 +23,23 @@ public class GitVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
     }
 
     @Override public Async<InitResult> init() {
-        return functionExecutor.execute(new GitClone(settings.gitPath, repositoryUrl, pathToProject));
+        return commandExecutor.execute(new GitClone(settings.gitPath, repositoryUrl, pathToProject));
     }
 
     @Override public Async<UpdateResult> update() {
-        return functionExecutor.execute(new GitUpdate(settings.gitPath, pathToProject));
+        return commandExecutor.execute(new GitUpdate(settings.gitPath, pathToProject));
     }
 
     @Override public Async<VcsProject.LogResult> log(Date fromDate, Date toDate) {
-        return functionExecutor.execute(new GitLog(settings.gitPath, pathToProject, fromDate, toDate));
+        return commandExecutor.execute(new GitLog(settings.gitPath, pathToProject, fromDate, toDate));
     }
 
     @Override public Async<VcsProject.LogContentResult> contentOf(String filePath, String revision) {
-        return functionExecutor.execute(new GitLogFileContent(settings.gitPath, pathToProject, filePath, revision, settings.filesCharset));
+        return commandExecutor.execute(new GitLogFileContent(settings.gitPath, pathToProject, filePath, revision, settings.filesCharset));
     }
 
-    @Override public void setExecutor(FunctionExecutor functionExecutor) {
-        this.functionExecutor = functionExecutor;
+    @Override public void setExecutor(VcsCommandExecutor commandExecutor) {
+        this.commandExecutor = commandExecutor;
     }
 
     @SuppressWarnings("RedundantIfStatement")

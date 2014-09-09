@@ -2,7 +2,7 @@ package vcsreader.vcs.svn;
 
 import org.jetbrains.annotations.Nullable;
 import vcsreader.lang.Described;
-import vcsreader.lang.FunctionExecutor;
+import vcsreader.lang.VcsCommandExecutor;
 import vcsreader.vcs.infrastructure.ShellCommand;
 
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 
 
-class SvnInfo implements FunctionExecutor.Function<SvnInfo.Result>, Described {
+class SvnInfo implements VcsCommandExecutor.VcsCommand<SvnInfo.Result>, Described {
     private final String svnPath;
     private final String repositoryUrl;
 

@@ -1,7 +1,7 @@
 package vcsreader;
 
 import vcsreader.lang.Async;
-import vcsreader.lang.FunctionExecutor;
+import vcsreader.lang.VcsCommandExecutor;
 
 import java.util.Date;
 
@@ -18,6 +18,6 @@ public interface VcsRoot {
     Async<VcsProject.LogContentResult> contentOf(String filePath, String revision);
 
     public interface WithExecutor {
-        void setExecutor(FunctionExecutor functionExecutor);
+        void setExecutor(VcsCommandExecutor commandExecutor);
     }
 }

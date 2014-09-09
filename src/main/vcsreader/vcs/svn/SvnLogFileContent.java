@@ -2,14 +2,14 @@ package vcsreader.vcs.svn;
 
 import org.jetbrains.annotations.NotNull;
 import vcsreader.lang.Described;
-import vcsreader.lang.FunctionExecutor;
+import vcsreader.lang.VcsCommandExecutor;
 import vcsreader.vcs.infrastructure.ShellCommand;
 
 import java.nio.charset.Charset;
 
 import static vcsreader.VcsProject.LogContentResult;
 
-class SvnLogFileContent implements FunctionExecutor.Function<LogContentResult>, Described {
+class SvnLogFileContent implements VcsCommandExecutor.VcsCommand<LogContentResult>, Described {
     private final String pathToSvn;
     private final String repositoryRoot;
     private final String filePath;

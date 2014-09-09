@@ -1,13 +1,13 @@
 package vcsreader.vcs.git;
 
 import vcsreader.lang.Described;
-import vcsreader.lang.FunctionExecutor;
+import vcsreader.lang.VcsCommandExecutor;
 import vcsreader.vcs.infrastructure.ShellCommand;
 
 import static java.util.Arrays.asList;
 import static vcsreader.VcsProject.InitResult;
 
-class GitClone implements FunctionExecutor.Function<InitResult>, Described {
+class GitClone implements VcsCommandExecutor.VcsCommand<InitResult>, Described {
     private final String repositoryUrl;
     private final String localPath;
     private final String pathToGit;
