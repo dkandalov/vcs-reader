@@ -4,8 +4,6 @@ import vcsreader.lang.Described;
 import vcsreader.lang.FunctionExecutor;
 import vcsreader.vcs.infrastructure.ShellCommand;
 
-import java.io.File;
-
 import static java.util.Arrays.asList;
 import static vcsreader.VcsProject.UpdateResult;
 
@@ -29,7 +27,7 @@ class GitUpdate implements FunctionExecutor.Function<UpdateResult>, Described {
     }
 
     static ShellCommand gitUpdate(String pathToGit, String folder) {
-        return createCommand(pathToGit).executeIn(new File(folder));
+        return createCommand(pathToGit).executeIn(folder);
     }
 
     private static ShellCommand createCommand(String pathToGit) {

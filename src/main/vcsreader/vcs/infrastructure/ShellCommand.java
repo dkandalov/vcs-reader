@@ -34,6 +34,10 @@ public class ShellCommand {
         return executeIn(currentDirectory);
     }
 
+    public ShellCommand executeIn(String directory) {
+        return executeIn(new File(directory));
+    }
+
     public ShellCommand executeIn(File directory) {
         BufferedReader stdoutReader = null;
         BufferedReader stderrReader = null;

@@ -6,7 +6,6 @@ import vcsreader.lang.Described;
 import vcsreader.lang.FunctionExecutor;
 import vcsreader.vcs.infrastructure.ShellCommand;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -66,7 +65,7 @@ class GitLog implements FunctionExecutor.Function<LogResult>, Described {
     }
 
     static ShellCommand gitLog(String gitPath, String folder, Date fromDate, Date toDate) {
-        return createCommand(gitPath, fromDate, toDate).executeIn(new File(folder));
+        return createCommand(gitPath, fromDate, toDate).executeIn(folder);
     }
 
     private static ShellCommand createCommand(String gitPath, Date fromDate, Date toDate) {
@@ -79,7 +78,7 @@ class GitLog implements FunctionExecutor.Function<LogResult>, Described {
     static ShellCommand gitLogRenames(String gitPath, String folder, String revision) {
         // based on git4idea.history.GitHistoryUtils#getFirstCommitRenamePath
         ShellCommand shellCommand = new ShellCommand(gitPath, "show", "-M", "--pretty=format:", "--name-status", revision);
-        return shellCommand.executeIn(new File(folder));
+        return shellCommand.executeIn(folder);
     }
 
     private static String logFormat() {

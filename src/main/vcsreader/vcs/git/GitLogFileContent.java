@@ -4,7 +4,6 @@ import vcsreader.lang.Described;
 import vcsreader.lang.FunctionExecutor;
 import vcsreader.vcs.infrastructure.ShellCommand;
 
-import java.io.File;
 import java.nio.charset.Charset;
 
 import static vcsreader.VcsProject.LogContentResult;
@@ -40,7 +39,7 @@ class GitLogFileContent implements FunctionExecutor.Function<LogContentResult>, 
     }
 
     static ShellCommand gitLogFileContent(String pathToGit, String folder, String filePath, String revision, Charset charset) {
-        return createCommand(pathToGit, filePath, revision, charset).executeIn(new File(folder));
+        return createCommand(pathToGit, filePath, revision, charset).executeIn(folder);
     }
 
     private static ShellCommand createCommand(String pathToGit, String filePath, String revision, Charset charset) {
