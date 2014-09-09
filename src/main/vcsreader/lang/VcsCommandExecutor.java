@@ -33,12 +33,6 @@ public class VcsCommandExecutor {
         };
     }
 
-    public interface VcsCommand<R> {
-        R execute();
-
-        String describe();
-    }
-
     public interface Listener {
         void onFunctionCall(VcsCommand command);
     }

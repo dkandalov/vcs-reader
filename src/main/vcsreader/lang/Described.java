@@ -1,5 +1,5 @@
 package vcsreader.lang;
 
-public interface Described {
+interface Described {
     String describe();
 }

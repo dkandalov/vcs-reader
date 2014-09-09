@@ -2,8 +2,7 @@ package vcsreader.vcs.git;
 
 import vcsreader.Change;
 import vcsreader.Commit;
-import vcsreader.lang.Described;
-import vcsreader.lang.VcsCommandExecutor;
+import vcsreader.lang.VcsCommand;
 import vcsreader.vcs.infrastructure.ShellCommand;
 
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ import static vcsreader.VcsProject.LogResult;
 import static vcsreader.lang.StringUtil.split;
 import static vcsreader.lang.StringUtil.trim;
 
-class GitLog implements VcsCommandExecutor.VcsCommand<LogResult>, Described {
+class GitLog implements VcsCommand<LogResult> {
     private final String gitPath;
     private final String folder;
     private final Date fromDate;

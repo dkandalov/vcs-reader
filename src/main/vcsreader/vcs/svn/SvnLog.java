@@ -2,8 +2,7 @@ package vcsreader.vcs.svn;
 
 import vcsreader.Change;
 import vcsreader.Commit;
-import vcsreader.lang.Described;
-import vcsreader.lang.VcsCommandExecutor;
+import vcsreader.lang.VcsCommand;
 import vcsreader.vcs.infrastructure.ShellCommand;
 
 import java.text.SimpleDateFormat;
@@ -12,7 +11,7 @@ import java.util.*;
 import static java.util.Arrays.asList;
 import static vcsreader.VcsProject.LogResult;
 
-class SvnLog implements VcsCommandExecutor.VcsCommand<LogResult>, Described {
+class SvnLog implements VcsCommand<LogResult> {
     private final String pathToSvn;
     private final String repositoryUrl;
     private final String repositoryRoot;

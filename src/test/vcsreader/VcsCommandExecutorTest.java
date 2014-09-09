@@ -2,13 +2,13 @@ package vcsreader;
 
 import org.junit.Test;
 import vcsreader.lang.Async;
+import vcsreader.lang.VcsCommand;
 import vcsreader.lang.VcsCommandExecutor;
 
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
-import static vcsreader.lang.VcsCommandExecutor.VcsCommand;
 
 public class VcsCommandExecutorTest {
 
@@ -31,7 +31,7 @@ public class VcsCommandExecutorTest {
     }
 
     @Test public void notifyListenerAboutFunctions() {
-        final AtomicReference<VcsCommandExecutor.VcsCommand<?>> reference = new AtomicReference<VcsCommandExecutor.VcsCommand<?>>();
+        final AtomicReference<VcsCommand<?>> reference = new AtomicReference<VcsCommand<?>>();
         VcsCommandExecutor executor = new VcsCommandExecutor(new VcsCommandExecutor.Listener() {
             @Override public void onFunctionCall(VcsCommand function) {
                 reference.set(function);
@@ -43,7 +43,7 @@ public class VcsCommandExecutorTest {
         assertThat(reference.get(), instanceOf(SuccessfulVcsCommand.class));
     }
 
-    private static class SuccessfulVcsCommand implements VcsCommandExecutor.VcsCommand<String> {
+    private static class SuccessfulVcsCommand implements VcsCommand<String> {
         @Override public String execute() {
             return "completed";
         }
@@ -53,7 +53,7 @@ public class VcsCommandExecutorTest {
         }
     }
 
-    private static class FailedVcsCommand implements VcsCommandExecutor.VcsCommand<String> {
+    private static class FailedVcsCommand implements VcsCommand<String> {
         @Override public String execute() {
             throw new RuntimeException();
         }

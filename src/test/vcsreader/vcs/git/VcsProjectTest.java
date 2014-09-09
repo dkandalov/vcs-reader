@@ -4,6 +4,7 @@ import org.junit.Test;
 import vcsreader.VcsProject;
 import vcsreader.VcsRoot;
 import vcsreader.lang.Async;
+import vcsreader.lang.VcsCommand;
 import vcsreader.lang.VcsCommandExecutor;
 
 import java.util.ArrayList;
@@ -17,7 +18,6 @@ import static org.mockito.Mockito.mock;
 import static vcsreader.VcsProject.InitResult;
 import static vcsreader.VcsProject.LogResult;
 import static vcsreader.lang.DateTimeUtil.date;
-import static vcsreader.lang.VcsCommandExecutor.VcsCommand;
 
 public class VcsProjectTest {
     private final GitSettings settings = GitSettings.defaults();

@@ -1,13 +1,12 @@
 package vcsreader.vcs.git;
 
-import vcsreader.lang.Described;
-import vcsreader.lang.VcsCommandExecutor;
+import vcsreader.lang.VcsCommand;
 import vcsreader.vcs.infrastructure.ShellCommand;
 
 import static java.util.Arrays.asList;
 import static vcsreader.VcsProject.UpdateResult;
 
-class GitUpdate implements VcsCommandExecutor.VcsCommand<UpdateResult>, Described {
+class GitUpdate implements VcsCommand<UpdateResult> {
     private final String gitPath;
     private final String folder;
 
