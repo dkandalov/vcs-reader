@@ -9,7 +9,8 @@ import java.util.Arrays;
 import static java.nio.charset.Charset.forName;
 
 public class ShellCommand {
-    private static final File CURRENT_DIRECTORY = null;
+    private static final File currentDirectory = null;
+    private static final int exitValueOnException = -1;
 
     private final String[] command;
 
@@ -17,6 +18,7 @@ public class ShellCommand {
     private final StringBuilder stderr = new StringBuilder();
     private int exitValue;
     private Charset outputCharset = forName("UTF-8");
+    private Process process;
 
     public ShellCommand(String... command) {
         checkForNulls(command);
@@ -29,7 +31,7 @@ public class ShellCommand {
     }
 
     public ShellCommand execute() {
-        return executeIn(CURRENT_DIRECTORY);
+        return executeIn(currentDirectory);
     }
 
     public ShellCommand executeIn(File directory) {
@@ -37,7 +39,7 @@ public class ShellCommand {
         BufferedReader stderrReader = null;
         try {
 
-            Process process = new ProcessBuilder(command).directory(directory).start();
+            process = new ProcessBuilder(command).directory(directory).start();
             stdoutReader = new BufferedReader(new InputStreamReader(process.getInputStream(), outputCharset));
             stderrReader = new BufferedReader(new InputStreamReader(process.getErrorStream(), outputCharset));
 
@@ -58,10 +60,10 @@ public class ShellCommand {
 
         } catch (IOException e) {
             stderr.append("\n").append(asString(e));
-            exitValue = -1;
+            exitValue = exitValueOnException;
         } catch (InterruptedException e) {
             stderr.append("\n").append(asString(e));
-            exitValue = -1;
+            exitValue = exitValueOnException;
         } finally {
             close(stdoutReader);
             close(stderrReader);
@@ -70,12 +72,8 @@ public class ShellCommand {
         return this;
     }
 
-    private static void close(Reader reader) {
-        if (reader == null) return;
-        try {
-            reader.close();
-        } catch (IOException ignored) {
-        }
+    public void kill() {
+        process.destroy();
     }
 
     @NotNull public String stdout() {
@@ -88,6 +86,14 @@ public class ShellCommand {
 
     public int exitValue() {
         return exitValue;
+    }
+
+    public String describe() {
+        String result = "";
+        for (String s : command) {
+            result += s + " ";
+        }
+        return result;
     }
 
     private static String asString(Exception e) {
@@ -105,11 +111,11 @@ public class ShellCommand {
         }
     }
 
-    public String describe() {
-        String result = "";
-        for (String s : command) {
-            result += s + " ";
+    private static void close(Reader reader) {
+        if (reader == null) return;
+        try {
+            reader.close();
+        } catch (IOException ignored) {
         }
-        return result;
     }
 }
