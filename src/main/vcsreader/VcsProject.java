@@ -1,7 +1,6 @@
 package vcsreader;
 
 import org.jetbrains.annotations.NotNull;
-import vcsreader.lang.Async;
 import vcsreader.lang.VcsCommandExecutor;
 
 import java.util.ArrayList;
@@ -29,41 +28,46 @@ public class VcsProject {
     }
 
     public InitResult init() {
-        Accumulator<InitResult> accumulator = new Accumulator<InitResult>(vcsRoots.size());
+        Accumulator<InitResult> accumulator = new Accumulator<InitResult>();
         for (VcsRoot vcsRoot : vcsRoots) {
             try {
+
                 InitResult initResult = vcsRoot.init();
-                accumulator.update(initResult, new ArrayList<Exception>());
+
+                accumulator.update(initResult);
             } catch (Exception e) {
-                accumulator.update(null, asList(e));
+                accumulator.update(new InitResult(e));
             }
         }
         return accumulator.mergedResult;
     }
 
     public UpdateResult update() {
-        Accumulator<UpdateResult> accumulator = new Accumulator<UpdateResult>(vcsRoots.size());
+        Accumulator<UpdateResult> accumulator = new Accumulator<UpdateResult>();
         for (VcsRoot vcsRoot : vcsRoots) {
-
             try {
+
                 UpdateResult updateResult = vcsRoot.update();
-                accumulator.update(updateResult, new ArrayList<Exception>());
+
+                accumulator.update(updateResult);
             } catch (Exception e) {
-                accumulator.update(null, asList(e));
+                accumulator.update(new UpdateResult(e));
             }
         }
         return accumulator.mergedResult;
     }
 
     public LogResult log(Date fromDate, Date toDate) {
-        Accumulator<LogResult> accumulator = new Accumulator<LogResult>(vcsRoots.size());
+        Accumulator<LogResult> accumulator = new Accumulator<LogResult>();
         for (VcsRoot vcsRoot : vcsRoots) {
             try {
+
                 LogResult logResult = vcsRoot.log(fromDate, toDate);
                 logResult = (logResult != null ? logResult.setVcsRoot(vcsRoot) : null);
-                accumulator.update(logResult, new ArrayList<Exception>());
+
+                accumulator.update(logResult);
             } catch (Exception e) {
-                accumulator.update(null, asList(e));
+                accumulator.update(new LogResult(e));
             }
         }
         return accumulator.mergedResult;
@@ -75,23 +79,13 @@ public class VcsProject {
     }
 
     private static class Accumulator<T extends Mergeable<T>> {
-        private final Async<T> asyncResult;
         private T mergedResult;
 
-        public Accumulator(int expectedResults) {
-            this.asyncResult = new Async<T>(expectedResults);
-        }
-
-        public synchronized void update(T result, List<Exception> exceptions) {
-            if (!exceptions.isEmpty()) {
-                asyncResult.completeWithFailure(exceptions);
+        public void update(T result) {
+            if (mergedResult == null) {
+                mergedResult = result;
             } else {
-                if (mergedResult == null) {
-                    mergedResult = result;
-                } else {
-                    mergedResult = mergedResult.mergeWith(result);
-                }
-                asyncResult.completeWith(mergedResult);
+                mergedResult = mergedResult.mergeWith(result);
             }
         }
     }
@@ -120,22 +114,34 @@ public class VcsProject {
     public static class LogResult implements Mergeable<LogResult> {
         private final List<Commit> commits;
         private final List<String> errors;
+        private final List<Exception> exceptions;
 
         public LogResult(List<Commit> commits, List<String> errors) {
+            this(commits, errors, new ArrayList<Exception>());
+        }
+
+        public LogResult(Exception e) {
+            this(new ArrayList<Commit>(), new ArrayList<String>(), asList(e));
+        }
+
+        public LogResult(List<Commit> commits, List<String> errors, List<Exception> exceptions) {
             this.commits = commits;
             this.errors = errors;
+            this.exceptions = exceptions;
         }
 
         public LogResult mergeWith(LogResult result) {
             List<Commit> newCommits = new ArrayList<Commit>(commits);
             List<String> newErrors = new ArrayList<String>(errors);
+            List<Exception> newExceptions = new ArrayList<Exception>(exceptions);
             newCommits.addAll(result.commits);
             newErrors.addAll(result.errors);
-            return new LogResult(newCommits, newErrors);
+            newExceptions.addAll(result.exceptions);
+            return new LogResult(newCommits, newErrors, newExceptions);
         }
 
         public boolean isSuccessful() {
-            return errors.isEmpty();
+            return errors.isEmpty() && exceptions.isEmpty();
         }
 
         public List<String> errors() {
@@ -162,19 +168,31 @@ public class VcsProject {
 
     public static class UpdateResult implements Mergeable<UpdateResult> {
         private final List<String> errors;
+        private final List<Exception> exceptions;
 
         public UpdateResult() {
-            this(new ArrayList<String>());
+            this(new ArrayList<String>(), new ArrayList<Exception>());
         }
 
-        public UpdateResult(List<String> errors) {
+        public UpdateResult(Exception e) {
+            this(new ArrayList<String>(), asList(e));
+        }
+
+        public UpdateResult(List<String> errors, List<Exception> exceptions) {
             this.errors = errors;
+            this.exceptions = exceptions;
+        }
+
+        public UpdateResult(String error) {
+            this(asList(error), new ArrayList<Exception>());
         }
 
         @Override public UpdateResult mergeWith(UpdateResult result) {
             List<String> newErrors = new ArrayList<String>(errors);
+            List<Exception> newExceptions = new ArrayList<Exception>(exceptions);
             newErrors.addAll(result.errors);
-            return new UpdateResult(newErrors);
+            newExceptions.addAll(result.exceptions);
+            return new UpdateResult(newErrors, newExceptions);
         }
 
         public List<String> errors() {
@@ -182,25 +200,37 @@ public class VcsProject {
         }
 
         public boolean isSuccessful() {
-            return errors.isEmpty();
+            return errors.isEmpty() && exceptions.isEmpty();
         }
     }
 
     public static class InitResult implements Mergeable<InitResult> {
         private final List<String> errors;
+        private final List<Exception> exceptions;
 
         public InitResult() {
-            this(new ArrayList<String>());
+            this(new ArrayList<String>(), new ArrayList<Exception>());
+        }
+
+        public InitResult(Exception e) {
+            this(new ArrayList<String>(), asList(e));
+        }
+
+        public InitResult(List<String> errors, List<Exception> exceptions) {
+            this.errors = errors;
+            this.exceptions = exceptions;
         }
 
         public InitResult(List<String> errors) {
-            this.errors = errors;
+            this(errors, new ArrayList<Exception>());
         }
 
         @Override public InitResult mergeWith(InitResult result) {
             List<String> newErrors = new ArrayList<String>(errors);
+            List<Exception> newExceptions = new ArrayList<Exception>(exceptions);
             newErrors.addAll(result.errors);
-            return new InitResult(newErrors);
+            newExceptions.addAll(result.exceptions);
+            return new InitResult(newErrors, newExceptions);
         }
 
         public List<String> errors() {
@@ -208,7 +238,7 @@ public class VcsProject {
         }
 
         public boolean isSuccessful() {
-            return errors.isEmpty();
+            return errors.isEmpty() && exceptions.isEmpty();
         }
     }
 }
