@@ -17,21 +17,21 @@ import static vcsreader.vcs.git.GitUpdate.gitUpdate
 class ShellCommands_GitIntegrationTest {
 
     @Test void "git log file content"() {
-        def command = gitLogFileContent(pathToGit, referenceProject, "file1.txt", revision(1), utf8)
+        def command = gitLogFileContent(pathToGit, referenceProject, "file1.txt", revision(1), utf8).execute()
         assert command.stderr() == ""
         assert command.stdout().trim() == "file1 content"
         assert command.exitValue() == 0
     }
 
     @Test void "failed git log file content"() {
-        def command = gitLogFileContent(pathToGit, referenceProject, "non-existent file", revision(1), utf8)
+        def command = gitLogFileContent(pathToGit, referenceProject, "non-existent file", revision(1), utf8).execute()
         assert command.stdout() == ""
         assert command.stderr().startsWith("fatal: Path 'non-existent file' does not exist")
         assert command.exitValue() == 128
     }
 
     @Test void "git log"() {
-        def command = gitLog(pathToGit, referenceProject, date("01/01/2013"), date("01/01/2023"))
+        def command = gitLog(pathToGit, referenceProject, date("01/01/2013"), date("01/01/2023")).execute()
         assert command.stderr() == ""
         assert command.stdout().contains("initial commit")
         assert command.exitValue() == 0
@@ -46,21 +46,21 @@ class ShellCommands_GitIntegrationTest {
     }
 
     @Test void "failed git log"() {
-        def command = gitLog(pathToGit, nonExistentPath, date("01/01/2013"), date("01/01/2023"))
+        def command = gitLog(pathToGit, nonExistentPath, date("01/01/2013"), date("01/01/2023")).execute()
         assert command.stdout() == ""
         assert command.stderr() != ""
         assert command.exitValue() != 0
     }
 
     @Test void "clone repository"() {
-        def command = gitClone(pathToGit, "file://" + referenceProject, projectFolder)
+        def command = gitClone(pathToGit, "file://" + referenceProject, projectFolder).execute()
         assert command.stdout() == ""
         assert command.stderr().trim() == "Cloning into '${projectFolder}'..."
         assert command.exitValue() == 0
     }
 
     @Test void "failed clone of non-existent repository"() {
-        def command = gitClone(pathToGit, "file://" + nonExistentPath, projectFolder)
+        def command = gitClone(pathToGit, "file://" + nonExistentPath, projectFolder).execute()
         assert command.stdout() == ""
         assert command.stderr().startsWith(
                 "Cloning into '${projectFolder}'...\n" +
@@ -69,26 +69,26 @@ class ShellCommands_GitIntegrationTest {
     }
 
     @Test void "update repository"() {
-        gitClone(pathToGit, "file://" + referenceProject, projectFolder)
-        def command = gitUpdate(pathToGit, projectFolder)
+        gitClone(pathToGit, "file://" + referenceProject, projectFolder).execute()
+        def command = gitUpdate(pathToGit, projectFolder).execute()
         assert command.stderr().trim() == ""
         assert command.stdout() == "Already up-to-date.\n"
         assert command.exitValue() == 0
     }
 
     @Test void "failed update of non-existing repository"() {
-        def command = gitUpdate(pathToGit, nonExistentPath)
+        def command = gitUpdate(pathToGit, nonExistentPath).execute()
         assert command.stdout() == ""
         assert command.stderr() != ""
         assert command.exitValue() != 0
     }
 
     @Test void "failed update without upstream repository"() {
-        gitClone(pathToGit, "file://" + referenceProject, projectFolder + "")
-        gitClone(pathToGit, "file://" + projectFolder, projectFolder2)
+        gitClone(pathToGit, "file://" + referenceProject, projectFolder + "").execute()
+        gitClone(pathToGit, "file://" + projectFolder, projectFolder2).execute()
         new File(projectFolder).deleteDir()
 
-        def command = gitUpdate(pathToGit, projectFolder2)
+        def command = gitUpdate(pathToGit, projectFolder2).execute()
         assert command.stdout() == ""
         assert command.stderr().contains("fatal: Could not read from remote repository.")
         assert command.exitValue() == 1

@@ -9,14 +9,16 @@ import static vcsreader.VcsProject.UpdateResult;
 class GitUpdate implements VcsCommand<UpdateResult> {
     private final String gitPath;
     private final String folder;
+    private final ShellCommand shellCommand;
 
     public GitUpdate(String gitPath, String folder) {
         this.gitPath = gitPath;
         this.folder = folder;
+        this.shellCommand = gitUpdate(gitPath, folder);
     }
 
     @Override public UpdateResult execute() {
-        ShellCommand shellCommand = gitUpdate(gitPath, folder);
+        shellCommand.execute();
         boolean successful = (shellCommand.exitValue() == 0);
         if (successful) {
             return new UpdateResult();
@@ -26,15 +28,11 @@ class GitUpdate implements VcsCommand<UpdateResult> {
     }
 
     static ShellCommand gitUpdate(String pathToGit, String folder) {
-        return createCommand(pathToGit).executeIn(folder);
-    }
-
-    private static ShellCommand createCommand(String pathToGit) {
-        return new ShellCommand(pathToGit, "pull", "origin");
+        return new ShellCommand(pathToGit, "pull", "origin").workingDir(folder);
     }
 
     @Override public String describe() {
-        return createCommand(gitPath).describe();
+        return shellCommand.describe();
     }
 
     @SuppressWarnings("RedundantIfStatement")

@@ -18,6 +18,7 @@ class SvnLog implements VcsCommand<LogResult> {
     private final Date fromDate;
     private final Date toDate;
     private final boolean useMergeHistory;
+    private final ShellCommand shellCommand;
 
     public SvnLog(String pathToSvn, String repositoryUrl, String repositoryRoot, Date fromDate, Date toDate, boolean useMergeHistory) {
         this.pathToSvn = pathToSvn;
@@ -26,14 +27,15 @@ class SvnLog implements VcsCommand<LogResult> {
         this.fromDate = fromDate;
         this.toDate = toDate;
         this.useMergeHistory = useMergeHistory;
+        this.shellCommand = svnLog(pathToSvn, repositoryUrl, fromDate, toDate, useMergeHistory);
     }
 
     @Override public LogResult execute() {
-        ShellCommand command = svnLog(pathToSvn, repositoryUrl, fromDate, toDate, useMergeHistory);
+        shellCommand.execute();
 
-        List<String> errors = command.stderr().trim().isEmpty() ? Collections.<String>emptyList() : asList(command.stderr());
+        List<String> errors = shellCommand.stderr().trim().isEmpty() ? Collections.<String>emptyList() : asList(shellCommand.stderr());
         if (errors.isEmpty()) {
-            List<Commit> allCommits = CommitParser.parseCommits(command.stdout());
+            List<Commit> allCommits = CommitParser.parseCommits(shellCommand.stdout());
             List<Commit> commits = transformToSubPathCommits(deleteCommitsBefore(fromDate, allCommits));
             return new LogResult(commits, errors);
         } else {
@@ -42,10 +44,6 @@ class SvnLog implements VcsCommand<LogResult> {
     }
 
     static ShellCommand svnLog(String pathToSvn, String repositoryUrl, Date fromDate, Date toDate, boolean useMergeHistory) {
-        return createCommand(pathToSvn, repositoryUrl, fromDate, toDate, useMergeHistory).execute();
-    }
-
-    private static ShellCommand createCommand(String pathToSvn, String repositoryUrl, Date fromDate, Date toDate, boolean useMergeHistory) {
         String mergeHistory = (useMergeHistory ? "--use-merge-history" : "");
         return new ShellCommand(
                 pathToSvn, "log",
@@ -137,6 +135,44 @@ class SvnLog implements VcsCommand<LogResult> {
     }
 
     @Override public String describe() {
-        return createCommand(pathToSvn, repositoryUrl, fromDate, toDate, useMergeHistory).describe();
+        return shellCommand.describe();
+    }
+
+    @SuppressWarnings("RedundantIfStatement")
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SvnLog svnLog = (SvnLog) o;
+
+        if (useMergeHistory != svnLog.useMergeHistory) return false;
+        if (!fromDate.equals(svnLog.fromDate)) return false;
+        if (!pathToSvn.equals(svnLog.pathToSvn)) return false;
+        if (!repositoryRoot.equals(svnLog.repositoryRoot)) return false;
+        if (!repositoryUrl.equals(svnLog.repositoryUrl)) return false;
+        if (!toDate.equals(svnLog.toDate)) return false;
+
+        return true;
+    }
+
+    @Override public int hashCode() {
+        int result = pathToSvn.hashCode();
+        result = 31 * result + repositoryUrl.hashCode();
+        result = 31 * result + repositoryRoot.hashCode();
+        result = 31 * result + fromDate.hashCode();
+        result = 31 * result + toDate.hashCode();
+        result = 31 * result + (useMergeHistory ? 1 : 0);
+        return result;
+    }
+
+    @Override public String toString() {
+        return "SvnLog{" +
+                "pathToSvn='" + pathToSvn + '\'' +
+                ", repositoryUrl='" + repositoryUrl + '\'' +
+                ", repositoryRoot='" + repositoryRoot + '\'' +
+                ", fromDate=" + fromDate +
+                ", toDate=" + toDate +
+                ", useMergeHistory=" + useMergeHistory +
+                '}';
     }
 }

@@ -20,22 +20,32 @@ class GitLog implements VcsCommand<LogResult> {
     private final String folder;
     private final Date fromDate;
     private final Date toDate;
+    private final ShellCommand shellCommand;
 
     public GitLog(String gitPath, String folder, Date fromDate, Date toDate) {
         this.gitPath = gitPath;
         this.folder = folder;
         this.fromDate = fromDate;
         this.toDate = toDate;
+        this.shellCommand = gitLog(gitPath, folder, fromDate, toDate);
     }
 
     @Override public LogResult execute() {
-        ShellCommand shellCommand = gitLog(gitPath, folder, fromDate, toDate);
+        shellCommand.execute();
 
+        // TODO try extracting commit parser
         List<Commit> commits = parseListOfCommits(shellCommand.stdout());
         commits = handleFileRenamesIn(commits);
 
         List<String> errors = (shellCommand.stderr().trim().isEmpty() ? new ArrayList<String>() : asList(shellCommand.stderr()));
         return new LogResult(commits, errors);
+    }
+
+    static ShellCommand gitLog(String gitPath, String folder, Date fromDate, Date toDate) {
+        String from = "--after=" + Long.toString(fromDate.getTime() / 1000);
+        String to = "--before=" + Long.toString(toDate.getTime() / 1000);
+        String showFileStatus = "--name-status"; // see --diff-filter at https://www.kernel.org/pub/software/scm/git/docs/git-log.html
+        return new ShellCommand(gitPath, "log", logFormat(), from, to, showFileStatus, "--encoding=UTF-8").workingDir(folder);
     }
 
     private List<Commit> handleFileRenamesIn(List<Commit> commits) {
@@ -63,21 +73,10 @@ class GitLog implements VcsCommand<LogResult> {
         return hasDeletions && hasAdditions;
     }
 
-    static ShellCommand gitLog(String gitPath, String folder, Date fromDate, Date toDate) {
-        return createCommand(gitPath, fromDate, toDate).executeIn(folder);
-    }
-
-    private static ShellCommand createCommand(String gitPath, Date fromDate, Date toDate) {
-        String from = "--after=" + Long.toString(fromDate.getTime() / 1000);
-        String to = "--before=" + Long.toString(toDate.getTime() / 1000);
-        String showFileStatus = "--name-status"; // see --diff-filter at https://www.kernel.org/pub/software/scm/git/docs/git-log.html
-        return new ShellCommand(gitPath, "log", logFormat(), from, to, showFileStatus, "--encoding=UTF-8");
-    }
-
     static ShellCommand gitLogRenames(String gitPath, String folder, String revision) {
         // based on git4idea.history.GitHistoryUtils#getFirstCommitRenamePath
-        ShellCommand shellCommand = new ShellCommand(gitPath, "show", "-M", "--pretty=format:", "--name-status", revision);
-        return shellCommand.executeIn(folder);
+        ShellCommand shellCommand = new ShellCommand(gitPath, "show", "-M", "--pretty=format:", "--name-status", revision).workingDir(folder);
+        return shellCommand.execute();
     }
 
     private static String logFormat() {
@@ -208,12 +207,11 @@ class GitLog implements VcsCommand<LogResult> {
     }
 
     @Override public String describe() {
-        return createCommand(gitPath, fromDate, toDate).describe();
+        return shellCommand.describe(); // TODO add subcommands descriptions
     }
 
     @SuppressWarnings("RedundantIfStatement")
-    @Override
-    public boolean equals(Object o) {
+    @Override public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -221,14 +219,15 @@ class GitLog implements VcsCommand<LogResult> {
 
         if (folder != null ? !folder.equals(gitLog.folder) : gitLog.folder != null) return false;
         if (fromDate != null ? !fromDate.equals(gitLog.fromDate) : gitLog.fromDate != null) return false;
+        if (gitPath != null ? !gitPath.equals(gitLog.gitPath) : gitLog.gitPath != null) return false;
         if (toDate != null ? !toDate.equals(gitLog.toDate) : gitLog.toDate != null) return false;
 
         return true;
     }
 
-    @Override
-    public int hashCode() {
-        int result = folder != null ? folder.hashCode() : 0;
+    @Override public int hashCode() {
+        int result = gitPath != null ? gitPath.hashCode() : 0;
+        result = 31 * result + (folder != null ? folder.hashCode() : 0);
         result = 31 * result + (fromDate != null ? fromDate.hashCode() : 0);
         result = 31 * result + (toDate != null ? toDate.hashCode() : 0);
         return result;
@@ -236,9 +235,10 @@ class GitLog implements VcsCommand<LogResult> {
 
     @Override public String toString() {
         return "GitLog{" +
-                "folder='" + folder + '\'' +
+                "toDate=" + toDate +
                 ", fromDate=" + fromDate +
-                ", toDate=" + toDate +
+                ", folder='" + folder + '\'' +
+                ", gitPath='" + gitPath + '\'' +
                 '}';
     }
 }

@@ -7,18 +7,21 @@ import static java.util.Arrays.asList;
 import static vcsreader.VcsProject.InitResult;
 
 class GitClone implements VcsCommand<InitResult> {
+    private final String pathToGit;
     private final String repositoryUrl;
     private final String localPath;
-    private final String pathToGit;
+    private final ShellCommand shellCommand;
 
     public GitClone(String pathToGit, String repositoryUrl, String localPath) {
         this.pathToGit = pathToGit;
         this.repositoryUrl = repositoryUrl;
         this.localPath = localPath;
+        this.shellCommand = gitClone(pathToGit, repositoryUrl, localPath);
     }
 
     @Override public InitResult execute() {
-        ShellCommand shellCommand = gitClone(pathToGit, repositoryUrl, localPath);
+        shellCommand.execute();
+
         boolean successful = (shellCommand.exitValue() == 0);
         if (successful) {
             return new InitResult();
@@ -28,15 +31,11 @@ class GitClone implements VcsCommand<InitResult> {
     }
 
     static ShellCommand gitClone(String pathToGit, String repositoryUrl, String localPath) {
-        return createCommand(pathToGit, repositoryUrl, localPath).execute();
-    }
-
-    private static ShellCommand createCommand(String pathToGit, String repositoryUrl, String localPath) {
         return new ShellCommand(pathToGit, "clone", "-v", repositoryUrl, localPath);
     }
 
     @Override public String describe() {
-        return createCommand(pathToGit, repositoryUrl, localPath).describe();
+        return shellCommand.describe();
     }
 
     @SuppressWarnings("RedundantIfStatement")
@@ -46,8 +45,8 @@ class GitClone implements VcsCommand<InitResult> {
 
         GitClone gitClone = (GitClone) o;
 
-        if (localPath != null ? !localPath.equals(gitClone.localPath) : gitClone.localPath != null)
-            return false;
+        if (localPath != null ? !localPath.equals(gitClone.localPath) : gitClone.localPath != null) return false;
+        if (pathToGit != null ? !pathToGit.equals(gitClone.pathToGit) : gitClone.pathToGit != null) return false;
         if (repositoryUrl != null ? !repositoryUrl.equals(gitClone.repositoryUrl) : gitClone.repositoryUrl != null)
             return false;
 
@@ -55,14 +54,16 @@ class GitClone implements VcsCommand<InitResult> {
     }
 
     @Override public int hashCode() {
-        int result = repositoryUrl != null ? repositoryUrl.hashCode() : 0;
+        int result = pathToGit != null ? pathToGit.hashCode() : 0;
+        result = 31 * result + (repositoryUrl != null ? repositoryUrl.hashCode() : 0);
         result = 31 * result + (localPath != null ? localPath.hashCode() : 0);
         return result;
     }
 
     @Override public String toString() {
         return "GitClone{" +
-                "repositoryUrl='" + repositoryUrl + '\'' +
+                "pathToGit='" + pathToGit + '\'' +
+                ", repositoryUrl='" + repositoryUrl + '\'' +
                 ", localPath='" + localPath + '\'' +
                 '}';
     }

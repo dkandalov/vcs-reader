@@ -13,24 +13,30 @@ import static java.util.Arrays.asList;
 class SvnInfo implements VcsCommand<SvnInfo.Result> {
     private final String svnPath;
     private final String repositoryUrl;
+    private final ShellCommand shellCommand;
 
     public SvnInfo(String svnPath, String repositoryUrl) {
         this.svnPath = svnPath;
         this.repositoryUrl = repositoryUrl;
+        this.shellCommand = svnInfo(svnPath, repositoryUrl);
     }
 
     @Override public SvnInfo.Result execute() {
-        ShellCommand command = svnInfo(svnPath, repositoryUrl);
-        if (!command.stderr().isEmpty()) {
-            return new Result("", asList(command.stdout()));
+        shellCommand.execute();
+        if (!shellCommand.stderr().isEmpty()) {
+            return new Result("", asList(shellCommand.stdout()));
         }
 
-        String repositoryRoot = parse(command.stdout());
+        String repositoryRoot = parse(shellCommand.stdout());
         if (repositoryRoot == null) {
             return new Result("", asList("Didn't find svn root in output for " + repositoryUrl));
         } else {
             return new Result(repositoryRoot);
         }
+    }
+
+    static ShellCommand svnInfo(String svnPath, String repositoryUrl) {
+        return new ShellCommand(svnPath, "info", repositoryUrl).execute();
     }
 
     @Nullable private static String parse(String stdout) {
@@ -43,17 +49,37 @@ class SvnInfo implements VcsCommand<SvnInfo.Result> {
         return null;
     }
 
-    static ShellCommand svnInfo(String svnPath, String repositoryUrl) {
-        return createCommand(svnPath, repositoryUrl).execute();
-    }
-
-    private static ShellCommand createCommand(String svnPath, String repositoryUrl) {
-        return new ShellCommand(svnPath, "info", repositoryUrl);
-    }
-
     @Override public String describe() {
-        return createCommand(svnPath, repositoryUrl).describe();
+        return shellCommand.describe();
     }
+
+    @SuppressWarnings("RedundantIfStatement")
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SvnInfo svnInfo = (SvnInfo) o;
+
+        if (repositoryUrl != null ? !repositoryUrl.equals(svnInfo.repositoryUrl) : svnInfo.repositoryUrl != null)
+            return false;
+        if (svnPath != null ? !svnPath.equals(svnInfo.svnPath) : svnInfo.svnPath != null) return false;
+
+        return true;
+    }
+
+    @Override public int hashCode() {
+        int result = svnPath != null ? svnPath.hashCode() : 0;
+        result = 31 * result + (repositoryUrl != null ? repositoryUrl.hashCode() : 0);
+        return result;
+    }
+
+    @Override public String toString() {
+        return "SvnInfo{" +
+                "svnPath='" + svnPath + '\'' +
+                ", repositoryUrl='" + repositoryUrl + '\'' +
+                '}';
+    }
+
 
     public static class Result {
         public final String repositoryRoot;

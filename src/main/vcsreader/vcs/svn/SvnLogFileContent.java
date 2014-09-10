@@ -14,6 +14,7 @@ class SvnLogFileContent implements VcsCommand<LogContentResult> {
     private final String filePath;
     private final String revision;
     private final Charset charset;
+    private final ShellCommand shellCommand;
 
     SvnLogFileContent(String pathToSvn, String repositoryRoot, String filePath, String revision, Charset charset) {
         this.pathToSvn = pathToSvn;
@@ -21,18 +22,15 @@ class SvnLogFileContent implements VcsCommand<LogContentResult> {
         this.filePath = filePath;
         this.revision = revision;
         this.charset = charset;
+        this.shellCommand = svnLogFileContent(pathToSvn, repositoryRoot, filePath, revision, charset);
     }
 
     @Override public LogContentResult execute() {
-        ShellCommand command = svnLogFileContent(pathToSvn, repositoryRoot, filePath, revision, charset);
-        return new LogContentResult(trimLastNewLine(command.stdout()), command.stderr());
+        shellCommand.execute();
+        return new LogContentResult(trimLastNewLine(shellCommand.stdout()), shellCommand.stderr());
     }
 
     static ShellCommand svnLogFileContent(String pathToSvn, String repositoryRoot, String filePath, String revision, Charset charset) {
-        return createCommand(pathToSvn, repositoryRoot, filePath, revision, charset).execute();
-    }
-
-    private static ShellCommand createCommand(String pathToSvn, String repositoryRoot, String filePath, String revision, Charset charset) {
         String fileRevisionUrl = repositoryRoot + "/" + filePath + "@" + revision;
         return new ShellCommand(pathToSvn, "cat", fileRevisionUrl).withCharset(charset);
     }
@@ -43,6 +41,41 @@ class SvnLogFileContent implements VcsCommand<LogContentResult> {
     }
 
     @Override public String describe() {
-        return createCommand(pathToSvn, repositoryRoot, filePath, revision, charset).describe();
+        return shellCommand.describe();
+    }
+
+    @SuppressWarnings("RedundantIfStatement")
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SvnLogFileContent that = (SvnLogFileContent) o;
+
+        if (!charset.equals(that.charset)) return false;
+        if (!filePath.equals(that.filePath)) return false;
+        if (!pathToSvn.equals(that.pathToSvn)) return false;
+        if (!repositoryRoot.equals(that.repositoryRoot)) return false;
+        if (!revision.equals(that.revision)) return false;
+
+        return true;
+    }
+
+    @Override public int hashCode() {
+        int result = pathToSvn.hashCode();
+        result = 31 * result + repositoryRoot.hashCode();
+        result = 31 * result + filePath.hashCode();
+        result = 31 * result + revision.hashCode();
+        result = 31 * result + charset.hashCode();
+        return result;
+    }
+
+    @Override public String toString() {
+        return "SvnLogFileContent{" +
+                "pathToSvn='" + pathToSvn + '\'' +
+                ", repositoryRoot='" + repositoryRoot + '\'' +
+                ", filePath='" + filePath + '\'' +
+                ", revision='" + revision + '\'' +
+                ", charset=" + charset +
+                '}';
     }
 }

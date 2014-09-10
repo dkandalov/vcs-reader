@@ -18,6 +18,7 @@ class GitLogFileContent implements VcsCommand<LogContentResult> {
     private final String filePath;
     private final String revision;
     private final Charset charset;
+    private final ShellCommand shellCommand;
 
     GitLogFileContent(String gitPath, String folder, String filePath, String revision, Charset charset) {
         this.gitPath = gitPath;
@@ -25,11 +26,16 @@ class GitLogFileContent implements VcsCommand<LogContentResult> {
         this.filePath = filePath;
         this.revision = revision;
         this.charset = charset;
+        this.shellCommand = gitLogFileContent(gitPath, folder, filePath, revision, charset);
     }
 
     @Override public LogContentResult execute() {
-        ShellCommand shellCommand = gitLogFileContent(gitPath, folder, filePath, revision, charset);
+        shellCommand.execute();
         return new LogContentResult(trimLastNewLine(shellCommand.stdout()), shellCommand.stderr());
+    }
+
+    static ShellCommand gitLogFileContent(String pathToGit, String folder, String filePath, String revision, Charset charset) {
+        return new ShellCommand(pathToGit, "show", revision + ":" + filePath).withCharset(charset).workingDir(folder);
     }
 
     private static String trimLastNewLine(String s) {
@@ -37,16 +43,8 @@ class GitLogFileContent implements VcsCommand<LogContentResult> {
         else return s.endsWith("\n") || s.endsWith("\r") ? s.substring(0, s.length() - 1) : s;
     }
 
-    static ShellCommand gitLogFileContent(String pathToGit, String folder, String filePath, String revision, Charset charset) {
-        return createCommand(pathToGit, filePath, revision, charset).executeIn(folder);
-    }
-
-    private static ShellCommand createCommand(String pathToGit, String filePath, String revision, Charset charset) {
-        return new ShellCommand(pathToGit, "show", revision + ":" + filePath).withCharset(charset);
-    }
-
     @Override public String describe() {
-        return createCommand(gitPath, filePath, revision, charset).describe();
+        return shellCommand.describe();
     }
 
     @SuppressWarnings("RedundantIfStatement")
@@ -54,27 +52,33 @@ class GitLogFileContent implements VcsCommand<LogContentResult> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        GitLogFileContent gitLogFileContent = (GitLogFileContent) o;
+        GitLogFileContent that = (GitLogFileContent) o;
 
-        if (filePath != null ? !filePath.equals(gitLogFileContent.filePath) : gitLogFileContent.filePath != null) return false;
-        if (folder != null ? !folder.equals(gitLogFileContent.folder) : gitLogFileContent.folder != null) return false;
-        if (revision != null ? !revision.equals(gitLogFileContent.revision) : gitLogFileContent.revision != null) return false;
+        if (charset != null ? !charset.equals(that.charset) : that.charset != null) return false;
+        if (filePath != null ? !filePath.equals(that.filePath) : that.filePath != null) return false;
+        if (folder != null ? !folder.equals(that.folder) : that.folder != null) return false;
+        if (gitPath != null ? !gitPath.equals(that.gitPath) : that.gitPath != null) return false;
+        if (revision != null ? !revision.equals(that.revision) : that.revision != null) return false;
 
         return true;
     }
 
     @Override public int hashCode() {
-        int result = folder != null ? folder.hashCode() : 0;
+        int result = gitPath != null ? gitPath.hashCode() : 0;
+        result = 31 * result + (folder != null ? folder.hashCode() : 0);
         result = 31 * result + (filePath != null ? filePath.hashCode() : 0);
         result = 31 * result + (revision != null ? revision.hashCode() : 0);
+        result = 31 * result + (charset != null ? charset.hashCode() : 0);
         return result;
     }
 
     @Override public String toString() {
         return "GitLogFileContent{" +
-                "folder='" + folder + '\'' +
+                "gitPath='" + gitPath + '\'' +
+                ", folder='" + folder + '\'' +
                 ", filePath='" + filePath + '\'' +
                 ", revision='" + revision + '\'' +
+                ", charset=" + charset +
                 '}';
     }
 }

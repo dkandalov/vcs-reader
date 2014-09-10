@@ -17,12 +17,18 @@ public class ShellCommand {
     private final StringBuilder stdout = new StringBuilder();
     private final StringBuilder stderr = new StringBuilder();
     private int exitValue;
+    private File workingDirectory = currentDirectory;
     private Charset outputCharset = forName("UTF-8");
-    private Process process;
+    private Process process; // TODO make atomic reference
 
     public ShellCommand(String... command) {
         checkForNulls(command);
         this.command = command;
+    }
+
+    public ShellCommand workingDir(String path) {
+        workingDirectory = new File(path);
+        return this;
     }
 
     public ShellCommand withCharset(Charset charset) {
@@ -31,19 +37,11 @@ public class ShellCommand {
     }
 
     public ShellCommand execute() {
-        return executeIn(currentDirectory);
-    }
-
-    public ShellCommand executeIn(String directory) {
-        return executeIn(new File(directory));
-    }
-
-    public ShellCommand executeIn(File directory) {
         BufferedReader stdoutReader = null;
         BufferedReader stderrReader = null;
         try {
 
-            process = new ProcessBuilder(command).directory(directory).start();
+            process = new ProcessBuilder(command).directory(workingDirectory).start();
             stdoutReader = new BufferedReader(new InputStreamReader(process.getInputStream(), outputCharset));
             stderrReader = new BufferedReader(new InputStreamReader(process.getErrorStream(), outputCharset));
 
@@ -97,6 +95,7 @@ public class ShellCommand {
         for (String s : command) {
             result += s + " ";
         }
+        // TODO include current folder
         return result;
     }
 
