@@ -7,13 +7,14 @@ import vcsreader.lang.VcsCommandExecutor;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static vcsreader.VcsProject.*;
 
 public class SvnVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
     private final String repositoryUrl;
     private final SvnSettings settings;
-    private String repositoryRoot;
+    private final AtomicReference<String> repositoryRoot = new AtomicReference<String>();
     private transient VcsCommandExecutor executor;
 
     public SvnVcsRoot(String repositoryUrl, SvnSettings settings) {
@@ -33,7 +34,7 @@ public class SvnVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
                             asyncResult.completeWith(new InitResult(result.errors()));
 
                         } else {
-                            repositoryRoot = result.repositoryRoot;
+                            repositoryRoot.set(result.repositoryRoot);
                             asyncResult.completeWith(new InitResult());
                         }
                     }
@@ -46,7 +47,7 @@ public class SvnVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
     }
 
     @Override public Async<LogResult> log(Date fromDate, Date toDate) {
-        return executor.execute(new SvnLog(settings.svnPath, repositoryUrl, repositoryRoot, fromDate, toDate, settings.useMergeHistory));
+        return executor.execute(new SvnLog(settings.svnPath, repositoryUrl, repositoryRoot.get(), fromDate, toDate, settings.useMergeHistory));
     }
 
     @Override public Async<LogContentResult> contentOf(String filePath, String revision) {
