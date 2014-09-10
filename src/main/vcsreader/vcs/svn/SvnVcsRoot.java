@@ -20,7 +20,7 @@ public class SvnVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
     }
 
     @Override public InitResult init() {
-        SvnInfo.Result result = executor.executeSync(new SvnInfo(settings.svnPath, repositoryUrl));
+        SvnInfo.Result result = executor.execute(new SvnInfo(settings.svnPath, repositoryUrl));
         if (result.isSuccessful()) {
             repositoryRoot.set(result.repositoryRoot);
             return new InitResult();
@@ -34,11 +34,11 @@ public class SvnVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
     }
 
     @Override public LogResult log(Date fromDate, Date toDate) {
-        return executor.executeSync(new SvnLog(settings.svnPath, repositoryUrl, repositoryRoot.get(), fromDate, toDate, settings.useMergeHistory));
+        return executor.execute(new SvnLog(settings.svnPath, repositoryUrl, repositoryRoot.get(), fromDate, toDate, settings.useMergeHistory));
     }
 
     @Override public LogContentResult contentOf(String filePath, String revision) {
-        return executor.executeSync(new SvnLogFileContent(
+        return executor.execute(new SvnLogFileContent(
                 settings.svnPath,
                 repositoryUrl,
                 filePath,

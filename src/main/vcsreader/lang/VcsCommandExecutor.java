@@ -1,7 +1,5 @@
 package vcsreader.lang;
 
-import static java.util.Arrays.asList;
-
 public class VcsCommandExecutor {
     private final Listener listener;
 
@@ -13,22 +11,9 @@ public class VcsCommandExecutor {
         this.listener = listener;
     }
 
-    public <T> Async<T> execute(final VcsCommand<T> command) {
-        Async<T> asyncResult = new Async<T>();
-        try {
-            listener.onFunctionCall(command);
-
-            T result = command.execute();
-            asyncResult.completeWith(result);
-
-        } catch (Exception e) {
-            asyncResult.completeWithFailure(asList(e));
-        }
-        return asyncResult;
-    }
-
-    public <T> T executeSync(final VcsCommand<T> command) {
-        return execute(command).awaitResult();
+    public <T> T execute(final VcsCommand<T> command) {
+        listener.onFunctionCall(command);
+        return command.execute();
     }
 
     private static Listener dummyListener() {

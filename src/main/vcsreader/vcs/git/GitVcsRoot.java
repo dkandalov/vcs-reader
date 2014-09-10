@@ -20,19 +20,19 @@ public class GitVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
     }
 
     @Override public InitResult init() {
-        return commandExecutor.executeSync(new GitClone(settings.gitPath, repositoryUrl, pathToProject));
+        return commandExecutor.execute(new GitClone(settings.gitPath, repositoryUrl, pathToProject));
     }
 
     @Override public UpdateResult update() {
-        return commandExecutor.executeSync(new GitUpdate(settings.gitPath, pathToProject));
+        return commandExecutor.execute(new GitUpdate(settings.gitPath, pathToProject));
     }
 
     @Override public LogResult log(Date fromDate, Date toDate) {
-        return commandExecutor.executeSync(new GitLog(settings.gitPath, pathToProject, fromDate, toDate));
+        return commandExecutor.execute(new GitLog(settings.gitPath, pathToProject, fromDate, toDate));
     }
 
     @Override public LogContentResult contentOf(String filePath, String revision) {
-        return commandExecutor.executeSync(new GitLogFileContent(settings.gitPath, pathToProject, filePath, revision, settings.filesCharset));
+        return commandExecutor.execute(new GitLogFileContent(settings.gitPath, pathToProject, filePath, revision, settings.filesCharset));
     }
 
     @Override public void setExecutor(VcsCommandExecutor commandExecutor) {
