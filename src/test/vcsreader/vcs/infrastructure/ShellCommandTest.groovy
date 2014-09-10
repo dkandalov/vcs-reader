@@ -4,21 +4,21 @@ import org.junit.Test
 import static java.util.concurrent.Executors.newSingleThreadExecutor
 
 class ShellCommandTest {
-    @Test void "successful command"() {
+    @Test void "successful shell command execution"() {
         def shellCommand = new ShellCommand("ls").execute()
         assert shellCommand.stderr().empty
         assert !shellCommand.stdout().empty
         assert shellCommand.exitValue() == 0
     }
 
-    @Test void "failed command"() {
+    @Test void "failed shell command execution"() {
         def shellCommand = new ShellCommand("fake-command").execute()
         assert shellCommand.stdout().empty
         assert !shellCommand.stderr().empty
         assert shellCommand.exitValue() == -1
     }
 
-    @Test(timeout = 1000L) void "kill hanging command"() {
+    @Test(timeout = 1000L) void "kill hanging shell command"() {
         def shellCommand = new ShellCommand("sleep", "10000")
 
         newSingleThreadExecutor().execute {
@@ -27,6 +27,11 @@ class ShellCommandTest {
         }
         shellCommand.execute()
 
-        assert shellCommand.exitValue() == -1
+        assert shellCommand.exitValue() == -234
+    }
+
+    @Test void "shell command description"() {
+        assert new ShellCommand("ls", "-l").describe() == "ls -l"
+        assert new ShellCommand("ls", "-l").workingDir("/").describe() == "ls -l (running in /)"
     }
 }

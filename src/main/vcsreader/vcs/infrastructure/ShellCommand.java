@@ -5,21 +5,23 @@ import org.jetbrains.annotations.NotNull;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static java.nio.charset.Charset.forName;
 
 public class ShellCommand {
     private static final File currentDirectory = null;
+    private static final int exitValueBeforeFinished = -123;
     private static final int exitValueOnException = -1;
 
     private final String[] command;
 
     private final StringBuilder stdout = new StringBuilder();
     private final StringBuilder stderr = new StringBuilder();
-    private int exitValue;
+    private int exitValue = exitValueBeforeFinished;
     private File workingDirectory = currentDirectory;
     private Charset outputCharset = forName("UTF-8");
-    private Process process; // TODO make atomic reference
+    private final AtomicReference<Process> processRef = new AtomicReference<Process>();
 
     public ShellCommand(String... command) {
         checkForNulls(command);
@@ -41,7 +43,8 @@ public class ShellCommand {
         BufferedReader stderrReader = null;
         try {
 
-            process = new ProcessBuilder(command).directory(workingDirectory).start();
+            Process process = new ProcessBuilder(command).directory(workingDirectory).start();
+            processRef.set(process);
             stdoutReader = new BufferedReader(new InputStreamReader(process.getInputStream(), outputCharset));
             stderrReader = new BufferedReader(new InputStreamReader(process.getErrorStream(), outputCharset));
 
@@ -75,7 +78,9 @@ public class ShellCommand {
     }
 
     public void kill() {
-        process.destroy();
+        if (processRef.get() != null) {
+            processRef.get().destroy();
+        }
     }
 
     @NotNull public String stdout() {
@@ -92,10 +97,13 @@ public class ShellCommand {
 
     public String describe() {
         String result = "";
-        for (String s : command) {
-            result += s + " ";
+        for (int i = 0; i < command.length; i++) {
+            result += command[i];
+            if (i < command.length - 1) result += " ";
         }
-        // TODO include current folder
+        if (workingDirectory != null) {
+            result += " (running in " + workingDirectory + ")";
+        }
         return result;
     }
 
