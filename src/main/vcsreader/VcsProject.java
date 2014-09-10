@@ -92,14 +92,22 @@ public class VcsProject {
 
 
     public static class LogContentResult {
-        public static LogContentResult none = new LogContentResult("", "");
-
         private final String text;
         private final String stderr;
+        private final int exitValue;
 
-        public LogContentResult(@NotNull String text, @NotNull String stderr) {
+        public LogContentResult(@NotNull String text) {
+            this(text, "", 0);
+        }
+
+        public LogContentResult(@NotNull String stderr, int exitValue) {
+            this("", stderr, exitValue);
+        }
+
+        private LogContentResult(@NotNull String text, @NotNull String stderr, int exitValue) {
             this.text = text;
             this.stderr = stderr;
+            this.exitValue = exitValue;
         }
 
         @NotNull public String text() {
@@ -107,7 +115,7 @@ public class VcsProject {
         }
 
         public boolean isSuccessful() {
-            return stderr.isEmpty();
+            return stderr.isEmpty() && exitValue == 0;
         }
     }
 

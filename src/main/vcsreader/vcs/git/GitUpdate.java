@@ -3,7 +3,6 @@ package vcsreader.vcs.git;
 import vcsreader.lang.VcsCommand;
 import vcsreader.vcs.infrastructure.ShellCommand;
 
-import static java.util.Arrays.asList;
 import static vcsreader.VcsProject.UpdateResult;
 import static vcsreader.vcs.git.GitShellCommand.isSuccessful;
 

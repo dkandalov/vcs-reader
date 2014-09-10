@@ -6,6 +6,7 @@ import vcsreader.vcs.infrastructure.ShellCommand;
 import java.nio.charset.Charset;
 
 import static vcsreader.VcsProject.LogContentResult;
+import static vcsreader.vcs.git.GitShellCommand.isSuccessful;
 
 /**
  * Note that this class is only compatible with git > 1.5 because "git show" seems to work only since 1.5.x
@@ -31,8 +32,11 @@ class GitLogFileContent implements VcsCommand<LogContentResult> {
 
     @Override public LogContentResult execute() {
         shellCommand.execute();
-        // TODO use exit code
-        return new LogContentResult(trimLastNewLine(shellCommand.stdout()), shellCommand.stderr());
+        if (isSuccessful(shellCommand)) {
+            return new LogContentResult(trimLastNewLine(shellCommand.stdout()));
+        } else {
+            return new LogContentResult(shellCommand.stderr(), shellCommand.exitValue());
+        }
     }
 
     static ShellCommand gitLogFileContent(String pathToGit, String folder, String filePath, String revision, Charset charset) {

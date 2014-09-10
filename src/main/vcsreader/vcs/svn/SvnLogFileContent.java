@@ -7,28 +7,32 @@ import vcsreader.vcs.infrastructure.ShellCommand;
 import java.nio.charset.Charset;
 
 import static vcsreader.VcsProject.LogContentResult;
+import static vcsreader.vcs.svn.SvnShellCommand.isSuccessful;
 
 class SvnLogFileContent implements VcsCommand<LogContentResult> {
-    private final String pathToSvn;
+    private final String svnPath;
     private final String repositoryRoot;
     private final String filePath;
     private final String revision;
     private final Charset charset;
     private final ShellCommand shellCommand;
 
-    SvnLogFileContent(String pathToSvn, String repositoryRoot, String filePath, String revision, Charset charset) {
-        this.pathToSvn = pathToSvn;
+    SvnLogFileContent(String svnPath, String repositoryRoot, String filePath, String revision, Charset charset) {
+        this.svnPath = svnPath;
         this.repositoryRoot = repositoryRoot;
         this.filePath = filePath;
         this.revision = revision;
         this.charset = charset;
-        this.shellCommand = svnLogFileContent(pathToSvn, repositoryRoot, filePath, revision, charset);
+        this.shellCommand = svnLogFileContent(svnPath, repositoryRoot, filePath, revision, charset);
     }
 
     @Override public LogContentResult execute() {
         shellCommand.execute();
-        // TODO use exit code
-        return new LogContentResult(trimLastNewLine(shellCommand.stdout()), shellCommand.stderr());
+        if (isSuccessful(shellCommand)) {
+            return new LogContentResult(trimLastNewLine(shellCommand.stdout()));
+        } else {
+            return new LogContentResult(shellCommand.stderr(), shellCommand.exitValue());
+        }
     }
 
     static ShellCommand svnLogFileContent(String pathToSvn, String repositoryRoot, String filePath, String revision, Charset charset) {
@@ -54,7 +58,7 @@ class SvnLogFileContent implements VcsCommand<LogContentResult> {
 
         if (!charset.equals(that.charset)) return false;
         if (!filePath.equals(that.filePath)) return false;
-        if (!pathToSvn.equals(that.pathToSvn)) return false;
+        if (!svnPath.equals(that.svnPath)) return false;
         if (!repositoryRoot.equals(that.repositoryRoot)) return false;
         if (!revision.equals(that.revision)) return false;
 
@@ -62,7 +66,7 @@ class SvnLogFileContent implements VcsCommand<LogContentResult> {
     }
 
     @Override public int hashCode() {
-        int result = pathToSvn.hashCode();
+        int result = svnPath.hashCode();
         result = 31 * result + repositoryRoot.hashCode();
         result = 31 * result + filePath.hashCode();
         result = 31 * result + revision.hashCode();
@@ -72,7 +76,7 @@ class SvnLogFileContent implements VcsCommand<LogContentResult> {
 
     @Override public String toString() {
         return "SvnLogFileContent{" +
-                "pathToSvn='" + pathToSvn + '\'' +
+                "svnPath='" + svnPath + '\'' +
                 ", repositoryRoot='" + repositoryRoot + '\'' +
                 ", filePath='" + filePath + '\'' +
                 ", revision='" + revision + '\'' +
