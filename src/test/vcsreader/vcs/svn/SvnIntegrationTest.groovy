@@ -17,7 +17,7 @@ class SvnIntegrationTest {
     private final project = new VcsProject([new SvnVcsRoot(repositoryUrl, SvnSettings.defaults())])
 
     @Test void "init project"() {
-        def initResult = project.init().awaitResult()
+        def initResult = project.init()
         assert initResult.errors() == []
         assert initResult.isSuccessful()
     }
@@ -26,21 +26,21 @@ class SvnIntegrationTest {
         def vcsRoots = [new SvnVcsRoot(nonExistentUrl, SvnSettings.defaults())]
         def project = new VcsProject(vcsRoots)
 
-        def initResult = project.init().awaitResult()
+        def initResult = project.init()
         assert !initResult.isSuccessful()
         assert initResult.errors().size() == 1
     }
 
     @Test void "update project"() {
-        project.init().awaitResult()
-        def updateResult = project.update().awaitResult()
+        project.init()
+        def updateResult = project.update()
         assert updateResult.errors() == []
         assert updateResult.isSuccessful()
     }
 
     @Test void "log empty list of commits from project history"() {
-        project.init().awaitResult()
-        def logResult = project.log(date("01/08/2014"), date("02/08/2014")).awaitResult()
+        project.init()
+        def logResult = project.log(date("01/08/2014"), date("02/08/2014"))
 
         assert logResult.commits.empty
         assert logResult.errors() == []
@@ -48,8 +48,8 @@ class SvnIntegrationTest {
     }
 
     @Test void "log single commit from project history"() {
-        project.init().awaitResult()
-        def logResult = project.log(date("10/08/2014"), date("11/08/2014")).awaitResult()
+        project.init()
+        def logResult = project.log(date("10/08/2014"), date("11/08/2014"))
 
         assertEqualCommits(logResult, [
                 new Commit(
@@ -63,8 +63,8 @@ class SvnIntegrationTest {
     }
 
     @Test void "log several commits from project history"() {
-        project.init().awaitResult()
-        def logResult = project.log(date("10/08/2014"), date("12/08/2014")).awaitResult()
+        project.init()
+        def logResult = project.log(date("10/08/2014"), date("12/08/2014"))
 
         assertEqualCommits(logResult, [
                 new Commit(
@@ -88,8 +88,8 @@ class SvnIntegrationTest {
     }
 
     @Test void "log modification commit"() {
-        project.init().awaitResult()
-        def logResult = project.log(date("12/08/2014"), date("13/08/2014")).awaitResult()
+        project.init()
+        def logResult = project.log(date("12/08/2014"), date("13/08/2014"))
 
         assertEqualCommits(logResult, [
                 new Commit(
@@ -106,8 +106,8 @@ class SvnIntegrationTest {
     }
 
     @Test void "log moved file commit"() {
-        project.init().awaitResult()
-        def logResult = project.log(date("13/08/2014"), date("14/08/2014")).awaitResult()
+        project.init()
+        def logResult = project.log(date("13/08/2014"), date("14/08/2014"))
 
         assertEqualCommits(logResult, [
                 new Commit(
@@ -121,8 +121,8 @@ class SvnIntegrationTest {
     }
 
     @Test void "log moved and renamed file commit"() {
-        project.init().awaitResult()
-        def logResult = project.log(date("14/08/2014"), date("15/08/2014")).awaitResult()
+        project.init()
+        def logResult = project.log(date("14/08/2014"), date("15/08/2014"))
 
         assertEqualCommits(logResult, [
                 new Commit(
@@ -137,8 +137,8 @@ class SvnIntegrationTest {
     }
 
     @Test void "log deleted file"() {
-        project.init().awaitResult()
-        def logResult = project.log(date("15/08/2014"), date("16/08/2014")).awaitResult()
+        project.init()
+        def logResult = project.log(date("15/08/2014"), date("16/08/2014"))
 
         assertEqualCommits(logResult, [
                 new Commit(
@@ -152,8 +152,8 @@ class SvnIntegrationTest {
     }
 
     @Test void "log file with spaces and quotes in its name"() {
-        project.init().awaitResult()
-        def logResult = project.log(date("16/08/2014"), date("17/08/2014")).awaitResult()
+        project.init()
+        def logResult = project.log(date("16/08/2014"), date("17/08/2014"))
 
         assertEqualCommits(logResult, [
                 new Commit(
@@ -167,8 +167,8 @@ class SvnIntegrationTest {
     }
 
     @Test void "log content of modified file"() {
-        project.init().awaitResult()
-        def logResult = project.log(date("12/08/2014"), date("13/08/2014")).awaitResult()
+        project.init()
+        def logResult = project.log(date("12/08/2014"), date("13/08/2014"))
 
         def change = logResult.commits.first().changes.first()
         assert change.type == MODIFICATION
@@ -179,8 +179,8 @@ class SvnIntegrationTest {
     }
 
     @Test void "log content of new file"() {
-        project.init().awaitResult()
-        def logResult = project.log(date("11/08/2014"), date("12/08/2014")).awaitResult()
+        project.init()
+        def logResult = project.log(date("11/08/2014"), date("12/08/2014"))
 
         def change = logResult.commits.first().changes.first()
         assert change.type == NEW
@@ -191,8 +191,8 @@ class SvnIntegrationTest {
     }
 
     @Test void "log content of deleted file"() {
-        project.init().awaitResult()
-        def logResult = project.log(date("15/08/2014"), date("16/08/2014")).awaitResult()
+        project.init()
+        def logResult = project.log(date("15/08/2014"), date("16/08/2014"))
 
         def change = logResult.commits.first().changes.first()
         assert change.type == DELETED
@@ -204,9 +204,9 @@ class SvnIntegrationTest {
 
     @Test void "show only commits for the path when project is not root in svn repo"() {
         def nonRootProject = new VcsProject([new SvnVcsRoot(repositoryUrl + "/folder2", SvnSettings.defaults())])
-        nonRootProject.init().awaitResult()
+        nonRootProject.init()
 
-        def logResult = nonRootProject.log(date("01/08/2014"), date("01/09/2014")).awaitResult()
+        def logResult = nonRootProject.log(date("01/08/2014"), date("01/09/2014"))
         assertEqualCommits(logResult, [
                 new Commit(revision(5), revision(4), dateTime("15:00:00 14/08/2014"), author, "moved and renamed file1", [
                         // note that change has NEW type because it was moved from outside sub path
@@ -220,9 +220,9 @@ class SvnIntegrationTest {
 
     @Test void "content of commits in project which is not root in svn repo"() {
         def nonRootProject = new VcsProject([new SvnVcsRoot(repositoryUrl + "/folder2", SvnSettings.defaults())])
-        nonRootProject.init().awaitCompletion()
+        nonRootProject.init()
 
-        def logResult = nonRootProject.log(date("01/08/2014"), date("01/09/2014")).awaitResult()
+        def logResult = nonRootProject.log(date("01/08/2014"), date("01/09/2014"))
         assert logResult.commits[0].comment == "moved and renamed file1"
         assert logResult.commits[0].changes[0].contentBefore() == "" // no content because file was moved from outside of project root
         assert logResult.commits[0].changes[0].content() == "file1 content"

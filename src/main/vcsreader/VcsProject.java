@@ -28,8 +28,8 @@ public class VcsProject {
         }
     }
 
-    public Async<InitResult> init() {
-        final Accumulator<InitResult> accumulator = new Accumulator<InitResult>(vcsRoots.size());
+    public InitResult init() {
+        Accumulator<InitResult> accumulator = new Accumulator<InitResult>(vcsRoots.size());
         for (VcsRoot vcsRoot : vcsRoots) {
             try {
                 InitResult initResult = vcsRoot.init();
@@ -38,11 +38,11 @@ public class VcsProject {
                 accumulator.update(null, asList(e));
             }
         }
-        return accumulator.asyncResult;
+        return accumulator.mergedResult;
     }
 
-    public Async<UpdateResult> update() {
-        final Accumulator<UpdateResult> accumulator = new Accumulator<UpdateResult>(vcsRoots.size());
+    public UpdateResult update() {
+        Accumulator<UpdateResult> accumulator = new Accumulator<UpdateResult>(vcsRoots.size());
         for (VcsRoot vcsRoot : vcsRoots) {
 
             try {
@@ -52,12 +52,12 @@ public class VcsProject {
                 accumulator.update(null, asList(e));
             }
         }
-        return accumulator.asyncResult;
+        return accumulator.mergedResult;
     }
 
-    public Async<LogResult> log(Date fromDate, Date toDate) {
+    public LogResult log(Date fromDate, Date toDate) {
         Accumulator<LogResult> accumulator = new Accumulator<LogResult>(vcsRoots.size());
-        for (final VcsRoot vcsRoot : vcsRoots) {
+        for (VcsRoot vcsRoot : vcsRoots) {
             try {
                 LogResult logResult = vcsRoot.log(fromDate, toDate);
                 logResult = (logResult != null ? logResult.setVcsRoot(vcsRoot) : null);
@@ -66,7 +66,7 @@ public class VcsProject {
                 accumulator.update(null, asList(e));
             }
         }
-        return accumulator.asyncResult;
+        return accumulator.mergedResult;
     }
 
 
