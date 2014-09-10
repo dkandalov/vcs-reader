@@ -1,14 +1,11 @@
 package vcsreader.vcs.git;
 
-import vcsreader.VcsProject;
 import vcsreader.VcsRoot;
-import vcsreader.lang.Async;
 import vcsreader.lang.VcsCommandExecutor;
 
 import java.util.Date;
 
-import static vcsreader.VcsProject.InitResult;
-import static vcsreader.VcsProject.UpdateResult;
+import static vcsreader.VcsProject.*;
 
 public class GitVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
     private final String pathToProject;
@@ -22,20 +19,20 @@ public class GitVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
         this.settings = settings;
     }
 
-    @Override public Async<InitResult> init() {
-        return commandExecutor.execute(new GitClone(settings.gitPath, repositoryUrl, pathToProject));
+    @Override public InitResult init() {
+        return commandExecutor.executeSync(new GitClone(settings.gitPath, repositoryUrl, pathToProject));
     }
 
-    @Override public Async<UpdateResult> update() {
-        return commandExecutor.execute(new GitUpdate(settings.gitPath, pathToProject));
+    @Override public UpdateResult update() {
+        return commandExecutor.executeSync(new GitUpdate(settings.gitPath, pathToProject));
     }
 
-    @Override public Async<VcsProject.LogResult> log(Date fromDate, Date toDate) {
-        return commandExecutor.execute(new GitLog(settings.gitPath, pathToProject, fromDate, toDate));
+    @Override public LogResult log(Date fromDate, Date toDate) {
+        return commandExecutor.executeSync(new GitLog(settings.gitPath, pathToProject, fromDate, toDate));
     }
 
-    @Override public Async<VcsProject.LogContentResult> contentOf(String filePath, String revision) {
-        return commandExecutor.execute(new GitLogFileContent(settings.gitPath, pathToProject, filePath, revision, settings.filesCharset));
+    @Override public LogContentResult contentOf(String filePath, String revision) {
+        return commandExecutor.executeSync(new GitLogFileContent(settings.gitPath, pathToProject, filePath, revision, settings.filesCharset));
     }
 
     @Override public void setExecutor(VcsCommandExecutor commandExecutor) {

@@ -2,7 +2,6 @@ package vcsreader;
 
 import org.jetbrains.annotations.NotNull;
 import vcsreader.lang.Async;
-import vcsreader.lang.AsyncResultListener;
 import vcsreader.lang.VcsCommandExecutor;
 
 import java.util.ArrayList;
@@ -10,6 +9,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.sort;
 
 public class VcsProject {
@@ -31,14 +31,12 @@ public class VcsProject {
     public Async<InitResult> init() {
         final Accumulator<InitResult> accumulator = new Accumulator<InitResult>(vcsRoots.size());
         for (VcsRoot vcsRoot : vcsRoots) {
-
-            Async<InitResult> asyncResult = vcsRoot.init();
-
-            asyncResult.whenCompleted(new AsyncResultListener<InitResult>() {
-                @Override public void onComplete(InitResult result, List<Exception> exceptions) {
-                    accumulator.update(result, exceptions);
-                }
-            });
+            try {
+                InitResult initResult = vcsRoot.init();
+                accumulator.update(initResult, new ArrayList<Exception>());
+            } catch (Exception e) {
+                accumulator.update(null, asList(e));
+            }
         }
         return accumulator.asyncResult;
     }
@@ -47,29 +45,26 @@ public class VcsProject {
         final Accumulator<UpdateResult> accumulator = new Accumulator<UpdateResult>(vcsRoots.size());
         for (VcsRoot vcsRoot : vcsRoots) {
 
-            Async<UpdateResult> asyncResult = vcsRoot.update();
-
-            asyncResult.whenCompleted(new AsyncResultListener<UpdateResult>() {
-                @Override public void onComplete(UpdateResult result, List<Exception> exceptions) {
-                    accumulator.update(result, exceptions);
-                }
-            });
+            try {
+                UpdateResult updateResult = vcsRoot.update();
+                accumulator.update(updateResult, new ArrayList<Exception>());
+            } catch (Exception e) {
+                accumulator.update(null, asList(e));
+            }
         }
         return accumulator.asyncResult;
     }
 
     public Async<LogResult> log(Date fromDate, Date toDate) {
-        final Accumulator<LogResult> accumulator = new Accumulator<LogResult>(vcsRoots.size());
+        Accumulator<LogResult> accumulator = new Accumulator<LogResult>(vcsRoots.size());
         for (final VcsRoot vcsRoot : vcsRoots) {
-
-            Async<VcsProject.LogResult> asyncResult = vcsRoot.log(fromDate, toDate);
-
-            asyncResult.whenCompleted(new AsyncResultListener<VcsProject.LogResult>() {
-                @Override public void onComplete(LogResult result, List<Exception> exceptions) {
-                    LogResult logResult = (result != null ? result.setVcsRoot(vcsRoot) : null);
-                    accumulator.update(logResult, exceptions);
-                }
-            });
+            try {
+                LogResult logResult = vcsRoot.log(fromDate, toDate);
+                logResult = (logResult != null ? logResult.setVcsRoot(vcsRoot) : null);
+                accumulator.update(logResult, new ArrayList<Exception>());
+            } catch (Exception e) {
+                accumulator.update(null, asList(e));
+            }
         }
         return accumulator.asyncResult;
     }

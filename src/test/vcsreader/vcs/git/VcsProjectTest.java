@@ -30,6 +30,7 @@ public class VcsProjectTest {
                 new GitVcsRoot("/local/path2", "git://some/url", settings)
         );
         VcsProject project = new VcsProject(vcsRoots, fakeExecutor);
+        fakeExecutor.completeAllCallsWith(mock(InitResult.class));
 
         // when
         Async<InitResult> initResult = project.init();
@@ -39,10 +40,6 @@ public class VcsProjectTest {
                 new GitClone("/usr/bin/git", "git://some/url", "/local/path"),
                 new GitClone("/usr/bin/git", "git://some/url", "/local/path2")
         )));
-        assertThat(initResult.isComplete(), equalTo(false));
-
-        // then
-        fakeExecutor.completeAllCallsWith(mock(InitResult.class));
         assertThat(initResult.isComplete(), equalTo(true));
     }
 
@@ -53,6 +50,7 @@ public class VcsProjectTest {
                 new GitVcsRoot("/local/path2", "git://some/url", settings)
         );
         VcsProject project = new VcsProject(vcsRoots, fakeExecutor);
+        fakeExecutor.completeAllCallsWith(mock(LogResult.class));
 
         // when
         Async<LogResult> logResult = project.log(date("01/07/2014"), date("08/07/2014"));
@@ -62,10 +60,6 @@ public class VcsProjectTest {
                 new GitLog("/usr/bin/git", "/local/path", date("01/07/2014"), date("08/07/2014")),
                 new GitLog("/usr/bin/git", "/local/path2", date("01/07/2014"), date("08/07/2014"))
         )));
-        assertThat(logResult.isComplete(), equalTo(false));
-
-        // then
-        fakeExecutor.completeAllCallsWith(mock(LogResult.class));
         assertThat(logResult.isComplete(), equalTo(true));
     }
 
@@ -76,40 +70,39 @@ public class VcsProjectTest {
                 new GitVcsRoot("/local/path2", "git://some/url", settings)
         );
         VcsProject project = new VcsProject(vcsRoots, fakeExecutor);
+        fakeExecutor.failAllCallsWith(new Exception());
 
         // when
         Async<LogResult> logResult = project.log(date("01/07/2014"), date("08/07/2014"));
 
         // then
-        fakeExecutor.failAllCallsWith(new Exception());
         assertThat(logResult.isComplete(), equalTo(true));
         assertThat(logResult.hasExceptions(), equalTo(true));
     }
 
 
     private static class FakeVcsCommandExecutor extends VcsCommandExecutor {
-        private final List<Async<Object>> asyncResults = new ArrayList<Async<Object>>();
         public final List<VcsCommand> commands = new ArrayList<VcsCommand>();
+        private Object completeWithResult;
+        private Exception failWithException;
 
         @SuppressWarnings("unchecked")
         @Override public Async<Object> execute(VcsCommand command) {
-            commands.add(command);
-
             Async<Object> asyncResult = new Async<Object>();
-            asyncResults.add(asyncResult);
+
+            commands.add(command);
+            if (completeWithResult != null) asyncResult.completeWith(completeWithResult);
+            else if (failWithException != null) asyncResult.completeWithFailure(asList(failWithException));
+
             return asyncResult;
         }
 
         public void completeAllCallsWith(Object result) {
-            for (Async<Object> asyncResult : asyncResults) {
-                asyncResult.completeWith(result);
-            }
+            completeWithResult = result;
         }
 
         public void failAllCallsWith(Exception e) {
-            for (Async<Object> asyncResult : asyncResults) {
-                asyncResult.completeWithFailure(asList(e));
-            }
+            failWithException = e;
         }
     }
 }

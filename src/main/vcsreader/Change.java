@@ -2,7 +2,6 @@ package vcsreader;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import vcsreader.lang.Async;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -41,23 +40,15 @@ public class Change {
     }
 
     @Nullable public String content() {
-        LogContentResult result = contentAsync().awaitResult();
-        return result.isSuccessful() ? result.text() : failedToLoadContent;
+        if (filePath.equals(noFilePath)) return "";
+        LogContentResult logContentResult = vcsRoot.get().contentOf(filePath, revision);
+        return logContentResult.isSuccessful() ? logContentResult.text() : failedToLoadContent;
     }
 
     @Nullable public String contentBefore() {
-        LogContentResult result = contentBeforeAsync().awaitResult();
-        return result.isSuccessful() ? result.text() : failedToLoadContent;
-    }
-
-    public Async<LogContentResult> contentAsync() {
-        if (filePath.equals(noFilePath)) return new Async<LogContentResult>().completeWith(LogContentResult.none);
-        else return vcsRoot.get().contentOf(filePath, revision);
-    }
-
-    public Async<LogContentResult> contentBeforeAsync() {
-        if (filePathBefore.equals(noFilePath)) return new Async<LogContentResult>().completeWith(LogContentResult.none);
-        else return vcsRoot.get().contentOf(filePathBefore, revisionBefore);
+        if (filePathBefore.equals(noFilePath)) return "";
+        LogContentResult logContentResult = vcsRoot.get().contentOf(filePathBefore, revisionBefore);
+        return logContentResult.isSuccessful() ? logContentResult.text() : failedToLoadContent;
     }
 
     public void setVcsRoot(VcsRoot vcsRoot) {

@@ -27,6 +27,7 @@ class SvnLogFileContent implements VcsCommand<LogContentResult> {
 
     @Override public LogContentResult execute() {
         shellCommand.execute();
+        // TODO use exit code
         return new LogContentResult(trimLastNewLine(shellCommand.stdout()), shellCommand.stderr());
     }
 

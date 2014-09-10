@@ -1,21 +1,19 @@
 package vcsreader;
 
-import vcsreader.lang.Async;
 import vcsreader.lang.VcsCommandExecutor;
 
 import java.util.Date;
 
-import static vcsreader.VcsProject.InitResult;
-import static vcsreader.VcsProject.UpdateResult;
+import static vcsreader.VcsProject.*;
 
 public interface VcsRoot {
-    Async<InitResult> init();
+    InitResult init();
 
-    Async<UpdateResult> update();
+    UpdateResult update();
 
-    Async<VcsProject.LogResult> log(Date fromDate, Date toDate);
+    LogResult log(Date fromDate, Date toDate);
 
-    Async<VcsProject.LogContentResult> contentOf(String filePath, String revision);
+    LogContentResult contentOf(String filePath, String revision);
 
     public interface WithExecutor {
         void setExecutor(VcsCommandExecutor commandExecutor);

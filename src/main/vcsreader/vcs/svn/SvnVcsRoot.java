@@ -1,12 +1,9 @@
 package vcsreader.vcs.svn;
 
 import vcsreader.VcsRoot;
-import vcsreader.lang.Async;
-import vcsreader.lang.AsyncResultListener;
 import vcsreader.lang.VcsCommandExecutor;
 
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static vcsreader.VcsProject.*;
@@ -22,36 +19,26 @@ public class SvnVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
         this.settings = settings;
     }
 
-    @Override public Async<InitResult> init() {
-        final Async<InitResult> asyncResult = new Async<InitResult>();
-        executor.execute(new SvnInfo(settings.svnPath, repositoryUrl))
-                .whenCompleted(new AsyncResultListener<SvnInfo.Result>() {
-                    @Override public void onComplete(SvnInfo.Result result, List<Exception> exceptions) {
-                        if (!exceptions.isEmpty()) {
-                            asyncResult.completeWithFailure(exceptions);
-
-                        } else if (!result.isSuccessful()) {
-                            asyncResult.completeWith(new InitResult(result.errors()));
-
-                        } else {
-                            repositoryRoot.set(result.repositoryRoot);
-                            asyncResult.completeWith(new InitResult());
-                        }
-                    }
-                });
-        return asyncResult;
+    @Override public InitResult init() {
+        SvnInfo.Result result = executor.executeSync(new SvnInfo(settings.svnPath, repositoryUrl));
+        if (result.isSuccessful()) {
+            repositoryRoot.set(result.repositoryRoot);
+            return new InitResult();
+        } else {
+            return new InitResult(result.errors());
+        }
     }
 
-    @Override public Async<UpdateResult> update() {
-        return new Async<UpdateResult>().completeWith(new UpdateResult());
+    @Override public UpdateResult update() {
+        return new UpdateResult();
     }
 
-    @Override public Async<LogResult> log(Date fromDate, Date toDate) {
-        return executor.execute(new SvnLog(settings.svnPath, repositoryUrl, repositoryRoot.get(), fromDate, toDate, settings.useMergeHistory));
+    @Override public LogResult log(Date fromDate, Date toDate) {
+        return executor.executeSync(new SvnLog(settings.svnPath, repositoryUrl, repositoryRoot.get(), fromDate, toDate, settings.useMergeHistory));
     }
 
-    @Override public Async<LogContentResult> contentOf(String filePath, String revision) {
-        return executor.execute(new SvnLogFileContent(
+    @Override public LogContentResult contentOf(String filePath, String revision) {
+        return executor.executeSync(new SvnLogFileContent(
                 settings.svnPath,
                 repositoryUrl,
                 filePath,

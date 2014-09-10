@@ -27,6 +27,10 @@ public class VcsCommandExecutor {
         return asyncResult;
     }
 
+    public <T> T executeSync(final VcsCommand<T> command) {
+        return execute(command).awaitResult();
+    }
+
     private static Listener dummyListener() {
         return new Listener() {
             @Override public void onFunctionCall(VcsCommand command) {}
