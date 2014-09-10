@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static vcsreader.vcs.svn.SvnShellCommand.isSuccessful;
 
 
 class SvnInfo implements VcsCommand<SvnInfo.Result> {
@@ -23,15 +24,16 @@ class SvnInfo implements VcsCommand<SvnInfo.Result> {
 
     @Override public SvnInfo.Result execute() {
         shellCommand.execute();
-        if (!shellCommand.stderr().isEmpty()) {
-            return new Result("", asList(shellCommand.stdout()));
-        }
 
-        String repositoryRoot = parse(shellCommand.stdout());
-        if (repositoryRoot == null) {
-            return new Result("", asList("Didn't find svn root in output for " + repositoryUrl));
+        if (isSuccessful(shellCommand)) {
+            String repositoryRoot = parse(shellCommand.stdout());
+            if (repositoryRoot == null) {
+                return new Result("", asList("Didn't find svn root in output for " + repositoryUrl));
+            } else {
+                return new Result(repositoryRoot);
+            }
         } else {
-            return new Result(repositoryRoot);
+            return new Result("", asList(shellCommand.stdout()));
         }
     }
 

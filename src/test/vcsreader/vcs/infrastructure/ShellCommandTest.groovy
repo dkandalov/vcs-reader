@@ -27,7 +27,7 @@ class ShellCommandTest {
         }
         shellCommand.execute()
 
-        assert shellCommand.exitValue() == -234
+        assert shellCommand.exitValue() == -1
     }
 
     @Test void "shell command description"() {

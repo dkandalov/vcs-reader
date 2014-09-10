@@ -5,6 +5,7 @@ import vcsreader.vcs.infrastructure.ShellCommand;
 
 import static java.util.Arrays.asList;
 import static vcsreader.VcsProject.UpdateResult;
+import static vcsreader.vcs.git.GitShellCommand.isSuccessful;
 
 class GitUpdate implements VcsCommand<UpdateResult> {
     private final String gitPath;
@@ -19,8 +20,7 @@ class GitUpdate implements VcsCommand<UpdateResult> {
 
     @Override public UpdateResult execute() {
         shellCommand.execute();
-        boolean successful = (shellCommand.exitValue() == 0);
-        if (successful) {
+        if (isSuccessful(shellCommand)) {
             return new UpdateResult();
         } else {
             return new UpdateResult(asList(shellCommand.stderr()));

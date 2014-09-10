@@ -32,7 +32,7 @@ public class Change {
     }
 
     public Change(@NotNull Type type, @NotNull String filePath, @NotNull String filePathBefore,
-                 @NotNull String revision, @NotNull String revisionBefore) {
+                  @NotNull String revision, @NotNull String revisionBefore) {
         this.type = type;
         this.filePath = filePath;
         this.filePathBefore = filePathBefore;

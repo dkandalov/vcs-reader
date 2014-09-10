@@ -5,6 +5,7 @@ import vcsreader.vcs.infrastructure.ShellCommand;
 
 import static java.util.Arrays.asList;
 import static vcsreader.VcsProject.InitResult;
+import static vcsreader.vcs.git.GitShellCommand.isSuccessful;
 
 class GitClone implements VcsCommand<InitResult> {
     private final String pathToGit;
@@ -22,8 +23,7 @@ class GitClone implements VcsCommand<InitResult> {
     @Override public InitResult execute() {
         shellCommand.execute();
 
-        boolean successful = (shellCommand.exitValue() == 0);
-        if (successful) {
+        if (isSuccessful(shellCommand)) {
             return new InitResult();
         } else {
             return new InitResult(asList(shellCommand.stderr()));

@@ -10,6 +10,7 @@ import java.util.*;
 
 import static java.util.Arrays.asList;
 import static vcsreader.VcsProject.LogResult;
+import static vcsreader.vcs.svn.SvnShellCommand.isSuccessful;
 
 class SvnLog implements VcsCommand<LogResult> {
     private final String pathToSvn;
@@ -33,13 +34,12 @@ class SvnLog implements VcsCommand<LogResult> {
     @Override public LogResult execute() {
         shellCommand.execute();
 
-        List<String> errors = shellCommand.stderr().trim().isEmpty() ? Collections.<String>emptyList() : asList(shellCommand.stderr());
-        if (errors.isEmpty()) {
+        if (isSuccessful(shellCommand)) {
             List<Commit> allCommits = CommitParser.parseCommits(shellCommand.stdout());
             List<Commit> commits = transformToSubPathCommits(deleteCommitsBefore(fromDate, allCommits));
-            return new LogResult(commits, errors);
+            return new LogResult(commits, new ArrayList<String>());
         } else {
-            return new LogResult(Collections.<Commit>emptyList(), errors);
+            return new LogResult(Collections.<Commit>emptyList(), asList(shellCommand.stderr()));
         }
     }
 

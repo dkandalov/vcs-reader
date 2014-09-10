@@ -38,7 +38,7 @@ class ShellCommands_GitIntegrationTest {
     }
 
     @Test void "git log renames"() {
-        def command = gitLogRenames(pathToGit, referenceProject, revision(4))
+        def command = gitLogRenames(pathToGit, referenceProject, revision(4)).execute()
         assert command.stderr() == ""
         assert command.stdout().contains("R100")
         assert command.stdout().contains("folder1/file1.txt")

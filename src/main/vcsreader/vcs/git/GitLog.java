@@ -15,13 +15,17 @@ import static vcsreader.Change.Type.NEW;
 import static vcsreader.VcsProject.LogResult;
 import static vcsreader.vcs.git.CommitParser.parseListOfChanges;
 import static vcsreader.vcs.git.CommitParser.parseListOfCommits;
+import static vcsreader.vcs.git.GitShellCommand.isSuccessful;
 
 class GitLog implements VcsCommand<LogResult> {
     private final String gitPath;
     private final String folder;
     private final Date fromDate;
     private final Date toDate;
+
     private final ShellCommand shellCommand;
+    private final List<ShellCommand> shellSubCommands = new ArrayList<ShellCommand>();
+
 
     public GitLog(String gitPath, String folder, Date fromDate, Date toDate) {
         this.gitPath = gitPath;
@@ -34,11 +38,15 @@ class GitLog implements VcsCommand<LogResult> {
     @Override public LogResult execute() {
         shellCommand.execute();
 
-        List<Commit> commits = parseListOfCommits(shellCommand.stdout());
-        commits = handleFileRenamesIn(commits);
+        if (isSuccessful(shellCommand)) {
+            List<Commit> commits = parseListOfCommits(shellCommand.stdout());
+            commits = handleFileRenamesIn(commits);
 
-        List<String> errors = (shellCommand.stderr().trim().isEmpty() ? new ArrayList<String>() : asList(shellCommand.stderr()));
-        return new LogResult(commits, errors);
+            List<String> errors = (shellCommand.stderr().trim().isEmpty() ? new ArrayList<String>() : asList(shellCommand.stderr()));
+            return new LogResult(commits, errors);
+        } else {
+            return new LogResult(new ArrayList<Commit>(), asList(shellCommand.stderr()));
+        }
     }
 
     static ShellCommand gitLog(String gitPath, String folder, Date fromDate, Date toDate) {
@@ -48,15 +56,23 @@ class GitLog implements VcsCommand<LogResult> {
         return new ShellCommand(gitPath, "log", logFormat(), from, to, showFileStatus, "--encoding=UTF-8").workingDir(folder);
     }
 
+    static ShellCommand gitLogRenames(String gitPath, String folder, String revision) {
+        // based on git4idea.history.GitHistoryUtils#getFirstCommitRenamePath
+        return new ShellCommand(gitPath, "show", "-M", "--pretty=format:", "--name-status", revision).workingDir(folder);
+    }
+
     private List<Commit> handleFileRenamesIn(List<Commit> commits) {
         List<Commit> result = new ArrayList<Commit>();
         for (Commit commit : commits) {
             if (hasPotentialRenames(commit)) {
-
                 ShellCommand shellCommand = gitLogRenames(gitPath, folder, commit.revision);
-                List<Change> updatedChanges = parseListOfChanges(shellCommand.stdout(), commit.revision, commit.revisionBefore);
-                commit = new Commit(commit.revision, commit.revisionBefore, commit.commitDate, commit.authorName, commit.comment, updatedChanges);
+                shellSubCommands.add(shellCommand);
+                shellCommand.execute();
 
+                if (isSuccessful(shellCommand)) {
+                    List<Change> updatedChanges = parseListOfChanges(shellCommand.stdout(), commit.revision, commit.revisionBefore);
+                    commit = new Commit(commit.revision, commit.revisionBefore, commit.commitDate, commit.authorName, commit.comment, updatedChanges);
+                }
             }
             result.add(commit);
         }
@@ -71,12 +87,6 @@ class GitLog implements VcsCommand<LogResult> {
             else if (change.type == NEW) hasAdditions = true;
         }
         return hasDeletions && hasAdditions;
-    }
-
-    static ShellCommand gitLogRenames(String gitPath, String folder, String revision) {
-        // based on git4idea.history.GitHistoryUtils#getFirstCommitRenamePath
-        ShellCommand shellCommand = new ShellCommand(gitPath, "show", "-M", "--pretty=format:", "--name-status", revision).workingDir(folder);
-        return shellCommand.execute();
     }
 
     private static String logFormat() {
@@ -100,7 +110,11 @@ class GitLog implements VcsCommand<LogResult> {
     }
 
     @Override public String describe() {
-        return shellCommand.describe(); // TODO add subcommands descriptions
+        String result = shellCommand.describe();
+        for (ShellCommand shellSubCommand : shellSubCommands) {
+            result += "\n" + shellSubCommand.describe();
+        }
+        return result;
     }
 
     @SuppressWarnings("RedundantIfStatement")
