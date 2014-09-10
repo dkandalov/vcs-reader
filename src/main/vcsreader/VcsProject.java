@@ -116,12 +116,16 @@ public class VcsProject {
         private final List<String> errors;
         private final List<Exception> exceptions;
 
-        public LogResult(List<Commit> commits, List<String> errors) {
-            this(commits, errors, new ArrayList<Exception>());
+        public LogResult() {
+            this(new ArrayList<Commit>(), new ArrayList<String>(), new ArrayList<Exception>());
         }
 
         public LogResult(Exception e) {
             this(new ArrayList<Commit>(), new ArrayList<String>(), asList(e));
+        }
+
+        public LogResult(List<Commit> commits, List<String> errors) {
+            this(commits, errors, new ArrayList<Exception>());
         }
 
         public LogResult(List<Commit> commits, List<String> errors, List<Exception> exceptions) {
@@ -146,6 +150,10 @@ public class VcsProject {
 
         public List<String> errors() {
             return errors;
+        }
+
+        public List<Exception> exceptions() {
+            return exceptions;
         }
 
         public List<Commit> getCommits() {
@@ -199,6 +207,10 @@ public class VcsProject {
             return errors;
         }
 
+        public List<Exception> exceptions() {
+            return exceptions;
+        }
+
         public boolean isSuccessful() {
             return errors.isEmpty() && exceptions.isEmpty();
         }
@@ -235,6 +247,10 @@ public class VcsProject {
 
         public List<String> errors() {
             return errors;
+        }
+
+        public List<Exception> exceptions() {
+            return exceptions;
         }
 
         public boolean isSuccessful() {

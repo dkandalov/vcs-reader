@@ -1,10 +1,8 @@
 package vcsreader.vcs.git;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import vcsreader.VcsProject;
 import vcsreader.VcsRoot;
-import vcsreader.lang.Async;
 import vcsreader.lang.VcsCommand;
 import vcsreader.lang.VcsCommandExecutor;
 
@@ -12,15 +10,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 import static vcsreader.VcsProject.InitResult;
 import static vcsreader.VcsProject.LogResult;
 import static vcsreader.lang.DateTimeUtil.date;
 
-@Ignore // TODO
 public class VcsProjectTest {
     private final GitSettings settings = GitSettings.defaults();
     private final FakeVcsCommandExecutor fakeExecutor = new FakeVcsCommandExecutor();
@@ -32,7 +27,7 @@ public class VcsProjectTest {
                 new GitVcsRoot("/local/path2", "git://some/url", settings)
         );
         VcsProject project = new VcsProject(vcsRoots, fakeExecutor);
-        fakeExecutor.completeAllCallsWith(mock(InitResult.class));
+        fakeExecutor.completeAllCallsWith(new InitResult());
 
         // when
         InitResult initResult = project.init();
@@ -43,6 +38,7 @@ public class VcsProjectTest {
                 new GitClone("/usr/bin/git", "git://some/url", "/local/path2")
         )));
         assertThat(initResult.errors().size(), equalTo(0));
+        assertThat(initResult.exceptions().size(), equalTo(0));
     }
 
     @Test public void successfulLogProjectHistory() {
@@ -52,7 +48,7 @@ public class VcsProjectTest {
                 new GitVcsRoot("/local/path2", "git://some/url", settings)
         );
         VcsProject project = new VcsProject(vcsRoots, fakeExecutor);
-        fakeExecutor.completeAllCallsWith(mock(LogResult.class));
+        fakeExecutor.completeAllCallsWith(new LogResult());
 
         // when
         LogResult logResult = project.log(date("01/07/2014"), date("08/07/2014"));
@@ -63,6 +59,7 @@ public class VcsProjectTest {
                 new GitLog("/usr/bin/git", "/local/path2", date("01/07/2014"), date("08/07/2014"))
         )));
         assertThat(logResult.errors().size(), equalTo(0));
+        assertThat(logResult.exceptions().size(), equalTo(0));
     }
 
     @Test public void failedLogProjectHistory() {
@@ -79,6 +76,7 @@ public class VcsProjectTest {
 
         // then
         assertThat(logResult.errors().size(), equalTo(0));
+        assertThat(logResult.exceptions().size(), equalTo(2));
     }
 
 
@@ -88,14 +86,12 @@ public class VcsProjectTest {
         private Exception failWithException;
 
         @SuppressWarnings("unchecked")
-        @Override public Async<Object> execute(VcsCommand command) {
-            Async<Object> asyncResult = new Async<Object>();
-
+        @Override public Object execute(VcsCommand command) {
             commands.add(command);
-            if (completeWithResult != null) asyncResult.completeWith(completeWithResult);
-            else if (failWithException != null) asyncResult.completeWithFailure(asList(failWithException));
 
-            return asyncResult;
+            if (completeWithResult != null) return completeWithResult;
+            if (failWithException != null) return failWithException;
+            throw new IllegalStateException();
         }
 
         public void completeAllCallsWith(Object result) {
