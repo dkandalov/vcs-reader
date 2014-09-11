@@ -23,9 +23,9 @@ public class ShellCommand {
     private Charset outputCharset = forName("UTF-8");
     private final AtomicReference<Process> processRef = new AtomicReference<Process>();
 
-    public ShellCommand(String... command) {
-        checkForNulls(command);
-        this.command = command;
+    public ShellCommand(String... commandAndArgs) {
+        checkForNulls(commandAndArgs);
+        this.command = commandAndArgs;
     }
 
     public ShellCommand workingDir(String path) {
