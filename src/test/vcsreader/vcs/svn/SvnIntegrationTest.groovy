@@ -22,13 +22,13 @@ class SvnIntegrationTest {
         assert initResult.isSuccessful()
     }
 
-    @Test void "init project failure"() {
+    @Test void "init project is always successful"() {
         def vcsRoots = [new SvnVcsRoot(nonExistentUrl, SvnSettings.defaults())]
         def project = new VcsProject(vcsRoots)
 
         def initResult = project.init()
-        assert !initResult.isSuccessful()
-        assert initResult.errors().size() == 1
+        assert initResult.errors() == []
+        assert initResult.isSuccessful()
     }
 
     @Test void "update project"() {

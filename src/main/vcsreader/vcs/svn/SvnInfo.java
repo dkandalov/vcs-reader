@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static vcsreader.vcs.svn.SvnInfo.Result.unknownRoot;
 import static vcsreader.vcs.svn.SvnShellCommand.isSuccessful;
 
 
@@ -28,12 +29,12 @@ class SvnInfo implements VcsCommand<SvnInfo.Result> {
         if (isSuccessful(shellCommand)) {
             String repositoryRoot = parse(shellCommand.stdout());
             if (repositoryRoot == null) {
-                return new Result("", asList("Didn't find svn root in output for " + repositoryUrl));
+                return new Result(unknownRoot, asList("Didn't find svn root in output for " + repositoryUrl));
             } else {
                 return new Result(repositoryRoot);
             }
         } else {
-            return new Result("", asList(shellCommand.stdout()));
+            return new Result(unknownRoot, asList(shellCommand.stdout()));
         }
     }
 
@@ -84,6 +85,8 @@ class SvnInfo implements VcsCommand<SvnInfo.Result> {
 
 
     public static class Result {
+        public static String unknownRoot = "";
+
         public final String repositoryRoot;
         private final List<String> errors;
 

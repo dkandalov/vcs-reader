@@ -4,14 +4,13 @@ import vcsreader.VcsRoot;
 import vcsreader.lang.VcsCommandExecutor;
 
 import java.util.Date;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static vcsreader.VcsProject.*;
 
 public class SvnVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
     private final String repositoryUrl;
     private final SvnSettings settings;
-    private final AtomicReference<String> repositoryRoot = new AtomicReference<String>();
+    private String repositoryRoot;
     private transient VcsCommandExecutor executor;
 
     public SvnVcsRoot(String repositoryUrl, SvnSettings settings) {
@@ -20,13 +19,7 @@ public class SvnVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
     }
 
     @Override public InitResult init() {
-        SvnInfo.Result result = executor.execute(new SvnInfo(settings.svnPath, repositoryUrl));
-        if (result.isSuccessful()) {
-            repositoryRoot.set(result.repositoryRoot);
-            return new InitResult();
-        } else {
-            return new InitResult(result.errors());
-        }
+        return new InitResult();
     }
 
     @Override public UpdateResult update() {
@@ -34,7 +27,11 @@ public class SvnVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
     }
 
     @Override public LogResult log(Date fromDate, Date toDate) {
-        return executor.execute(new SvnLog(settings.svnPath, repositoryUrl, repositoryRoot.get(), fromDate, toDate, settings.useMergeHistory));
+        if (repositoryRoot == null) {
+            SvnInfo.Result result = executor.execute(new SvnInfo(settings.svnPath, repositoryUrl));
+            repositoryRoot = result.repositoryRoot;
+        }
+        return executor.execute(new SvnLog(settings.svnPath, repositoryUrl, repositoryRoot, fromDate, toDate, settings.useMergeHistory));
     }
 
     @Override public LogContentResult contentOf(String filePath, String revision) {
