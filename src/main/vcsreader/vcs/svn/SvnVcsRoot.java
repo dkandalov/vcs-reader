@@ -18,8 +18,8 @@ public class SvnVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
         this.settings = settings;
     }
 
-    @Override public InitResult init() {
-        return new InitResult();
+    @Override public CloneResult cloneToLocal() {
+        return new CloneResult();
     }
 
     @Override public UpdateResult update() {

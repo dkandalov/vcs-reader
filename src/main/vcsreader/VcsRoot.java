@@ -7,7 +7,7 @@ import java.util.Date;
 import static vcsreader.VcsProject.*;
 
 public interface VcsRoot {
-    InitResult init();
+    CloneResult cloneToLocal();
 
     UpdateResult update();
 

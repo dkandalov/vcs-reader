@@ -12,7 +12,6 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static vcsreader.VcsProject.InitResult;
 import static vcsreader.VcsProject.LogResult;
 import static vcsreader.lang.DateTimeUtil.date;
 
@@ -20,25 +19,25 @@ public class VcsProjectTest {
     private final GitSettings settings = GitSettings.defaults();
     private final FakeVcsCommandExecutor fakeExecutor = new FakeVcsCommandExecutor();
 
-    @Test public void successfulProjectInitialization() {
+    @Test public void successfulProjectClone() {
         // given
         List<VcsRoot> vcsRoots = Arrays.<VcsRoot>asList(
                 new GitVcsRoot("/local/path", "git://some/url", settings),
                 new GitVcsRoot("/local/path2", "git://some/url", settings)
         );
         VcsProject project = new VcsProject(vcsRoots, fakeExecutor);
-        fakeExecutor.completeAllCallsWith(new InitResult());
+        fakeExecutor.completeAllCallsWith(new VcsProject.CloneResult());
 
         // when
-        InitResult initResult = project.init();
+        VcsProject.CloneResult cloneResult = project.cloneToLocal();
 
         // then
         assertThat(fakeExecutor.commands, equalTo(Arrays.<VcsCommand>asList(
                 new GitClone("/usr/bin/git", "git://some/url", "/local/path"),
                 new GitClone("/usr/bin/git", "git://some/url", "/local/path2")
         )));
-        assertThat(initResult.errors().size(), equalTo(0));
-        assertThat(initResult.exceptions().size(), equalTo(0));
+        assertThat(cloneResult.errors().size(), equalTo(0));
+        assertThat(cloneResult.exceptions().size(), equalTo(0));
     }
 
     @Test public void successfulLogProjectHistory() {

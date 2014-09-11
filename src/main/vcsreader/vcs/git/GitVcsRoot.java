@@ -11,7 +11,7 @@ public class GitVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
     private final String pathToProject;
     private final String repositoryUrl;
     private final GitSettings settings;
-    private transient VcsCommandExecutor commandExecutor;
+    private transient VcsCommandExecutor executor;
 
     public GitVcsRoot(String pathToProject, String repositoryUrl, GitSettings settings) {
         this.pathToProject = pathToProject;
@@ -19,24 +19,24 @@ public class GitVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
         this.settings = settings;
     }
 
-    @Override public InitResult init() {
-        return commandExecutor.execute(new GitClone(settings.gitPath, repositoryUrl, pathToProject));
+    @Override public CloneResult cloneToLocal() {
+        return executor.execute(new GitClone(settings.gitPath, repositoryUrl, pathToProject));
     }
 
     @Override public UpdateResult update() {
-        return commandExecutor.execute(new GitUpdate(settings.gitPath, pathToProject));
+        return executor.execute(new GitUpdate(settings.gitPath, pathToProject));
     }
 
     @Override public LogResult log(Date fromDate, Date toDate) {
-        return commandExecutor.execute(new GitLog(settings.gitPath, pathToProject, fromDate, toDate));
+        return executor.execute(new GitLog(settings.gitPath, pathToProject, fromDate, toDate));
     }
 
     @Override public LogContentResult contentOf(String filePath, String revision) {
-        return commandExecutor.execute(new GitLogFileContent(settings.gitPath, pathToProject, filePath, revision, settings.filesCharset));
+        return executor.execute(new GitLogFileContent(settings.gitPath, pathToProject, filePath, revision, settings.filesCharset));
     }
 
     @Override public void setExecutor(VcsCommandExecutor commandExecutor) {
-        this.commandExecutor = commandExecutor;
+        this.executor = commandExecutor;
     }
 
     @SuppressWarnings("RedundantIfStatement")

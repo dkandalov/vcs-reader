@@ -27,16 +27,16 @@ public class VcsProject {
         }
     }
 
-    public InitResult init() {
-        Accumulator<InitResult> accumulator = new Accumulator<InitResult>();
+    public CloneResult cloneToLocal() {
+        Accumulator<CloneResult> accumulator = new Accumulator<CloneResult>();
         for (VcsRoot vcsRoot : vcsRoots) {
             try {
 
-                InitResult initResult = vcsRoot.init();
+                CloneResult cloneResult = vcsRoot.cloneToLocal();
 
-                accumulator.update(initResult);
+                accumulator.update(cloneResult);
             } catch (Exception e) {
-                accumulator.update(new InitResult(e));
+                accumulator.update(new CloneResult(e));
             }
         }
         return accumulator.mergedResult;
@@ -224,33 +224,33 @@ public class VcsProject {
         }
     }
 
-    public static class InitResult implements Mergeable<InitResult> {
+    public static class CloneResult implements Mergeable<CloneResult> {
         private final List<String> errors;
         private final List<Exception> exceptions;
 
-        public InitResult() {
+        public CloneResult() {
             this(new ArrayList<String>(), new ArrayList<Exception>());
         }
 
-        public InitResult(Exception e) {
+        public CloneResult(Exception e) {
             this(new ArrayList<String>(), asList(e));
         }
 
-        public InitResult(List<String> errors, List<Exception> exceptions) {
+        public CloneResult(List<String> errors, List<Exception> exceptions) {
             this.errors = errors;
             this.exceptions = exceptions;
         }
 
-        public InitResult(List<String> errors) {
+        public CloneResult(List<String> errors) {
             this(errors, new ArrayList<Exception>());
         }
 
-        @Override public InitResult mergeWith(InitResult result) {
+        @Override public CloneResult mergeWith(CloneResult result) {
             List<String> newErrors = new ArrayList<String>(errors);
             List<Exception> newExceptions = new ArrayList<Exception>(exceptions);
             newErrors.addAll(result.errors);
             newExceptions.addAll(result.exceptions);
-            return new InitResult(newErrors, newExceptions);
+            return new CloneResult(newErrors, newExceptions);
         }
 
         public List<String> errors() {
