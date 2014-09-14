@@ -9,6 +9,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static vcsreader.vcs.svn.SvnInfo.Result.unknownRoot;
+import static vcsreader.vcs.svn.SvnShellCommand.createShellCommand;
 import static vcsreader.vcs.svn.SvnShellCommand.isSuccessful;
 
 
@@ -39,7 +40,7 @@ class SvnInfo implements VcsCommand<SvnInfo.Result> {
     }
 
     static ShellCommand svnInfo(String svnPath, String repositoryUrl) {
-        return new ShellCommand(svnPath, "info", repositoryUrl).execute();
+        return createShellCommand(svnPath, "info", repositoryUrl);
     }
 
     @Nullable private static String parse(String stdout) {

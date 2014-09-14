@@ -10,6 +10,7 @@ import java.util.*;
 
 import static java.util.Arrays.asList;
 import static vcsreader.VcsProject.LogResult;
+import static vcsreader.vcs.svn.SvnShellCommand.createShellCommand;
 import static vcsreader.vcs.svn.SvnShellCommand.isSuccessful;
 
 class SvnLog implements VcsCommand<LogResult> {
@@ -45,7 +46,7 @@ class SvnLog implements VcsCommand<LogResult> {
 
     static ShellCommand svnLog(String pathToSvn, String repositoryUrl, Date fromDate, Date toDate, boolean useMergeHistory) {
         String mergeHistory = (useMergeHistory ? "--use-merge-history" : "");
-        return new ShellCommand(
+        return createShellCommand(
                 pathToSvn, "log",
                 repositoryUrl,
                 "-r", dateRange(fromDate, toDate),

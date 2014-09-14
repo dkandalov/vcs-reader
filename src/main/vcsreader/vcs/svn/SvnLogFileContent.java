@@ -7,6 +7,7 @@ import vcsreader.vcs.infrastructure.ShellCommand;
 import java.nio.charset.Charset;
 
 import static vcsreader.VcsProject.LogContentResult;
+import static vcsreader.vcs.svn.SvnShellCommand.createShellCommand;
 import static vcsreader.vcs.svn.SvnShellCommand.isSuccessful;
 
 class SvnLogFileContent implements VcsCommand<LogContentResult> {
@@ -37,7 +38,7 @@ class SvnLogFileContent implements VcsCommand<LogContentResult> {
 
     static ShellCommand svnLogFileContent(String pathToSvn, String repositoryRoot, String filePath, String revision, Charset charset) {
         String fileRevisionUrl = repositoryRoot + "/" + filePath + "@" + revision;
-        return new ShellCommand(pathToSvn, "cat", fileRevisionUrl).withCharset(charset);
+        return createShellCommand(pathToSvn, "cat", fileRevisionUrl).withCharset(charset);
     }
 
     @NotNull private static String trimLastNewLine(String s) {
