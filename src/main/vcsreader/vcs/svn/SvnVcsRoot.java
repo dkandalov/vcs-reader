@@ -8,8 +8,8 @@ import java.util.Date;
 import static vcsreader.VcsProject.*;
 
 public class SvnVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
-    private final String repositoryUrl;
-    private final SvnSettings settings;
+    public final String repositoryUrl;
+    public final SvnSettings settings;
     private String repositoryRoot;
     private transient VcsCommandExecutor executor;
 

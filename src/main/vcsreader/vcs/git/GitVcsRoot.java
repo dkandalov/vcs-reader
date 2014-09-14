@@ -8,9 +8,9 @@ import java.util.Date;
 import static vcsreader.VcsProject.*;
 
 public class GitVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
-    private final String pathToProject;
-    private final String repositoryUrl;
-    private final GitSettings settings;
+    public final String pathToProject;
+    public final String repositoryUrl;
+    public final GitSettings settings;
     private transient VcsCommandExecutor executor;
 
     public GitVcsRoot(String pathToProject, String repositoryUrl, GitSettings settings) {
