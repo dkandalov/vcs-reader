@@ -11,21 +11,44 @@ import static java.nio.charset.Charset.forName;
 
 public class ShellCommand {
     private static final File currentDirectory = null;
-    private static final int exitValueBeforeFinished = -123;
-    private static final int exitValueOnException = -1;
+    private static final int exitCodeBeforeFinished = -123;
+    private static final int exitCodeOnException = -1;
 
     private final String[] command;
 
     private final StringBuilder stdout = new StringBuilder();
     private final StringBuilder stderr = new StringBuilder();
-    private int exitValue = exitValueBeforeFinished;
+    private final AtomicReference<Process> processRef = new AtomicReference<Process>();
+    private int exitCode = exitCodeBeforeFinished;
     private File workingDirectory = currentDirectory;
     private Charset outputCharset = forName("UTF-8");
-    private final AtomicReference<Process> processRef = new AtomicReference<Process>();
 
     public ShellCommand(String... commandAndArgs) {
         checkForNulls(commandAndArgs);
         this.command = commandAndArgs;
+    }
+
+    private static String asString(Exception e) {
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        e.printStackTrace(printWriter);
+        return stringWriter.getBuffer().toString();
+    }
+
+    private static void checkForNulls(String[] command) {
+        for (String arg : command) {
+            if (arg == null) {
+                throw new IllegalStateException("Shell command cannot have null as inputs, but was: " + Arrays.toString(command));
+            }
+        }
+    }
+
+    private static void close(Reader reader) {
+        if (reader == null) return;
+        try {
+            reader.close();
+        } catch (IOException ignored) {
+        }
     }
 
     public ShellCommand workingDir(String path) {
@@ -61,14 +84,14 @@ public class ShellCommand {
             stderrReader.close();
 
             process.destroy();
-            exitValue = process.exitValue();
+            exitCode = process.exitValue();
 
         } catch (IOException e) {
             stderr.append("\n").append(asString(e));
-            exitValue = exitValueOnException;
+            exitCode = exitCodeOnException;
         } catch (InterruptedException e) {
             stderr.append("\n").append(asString(e));
-            exitValue = exitValueOnException;
+            exitCode = exitCodeOnException;
         } finally {
             close(stdoutReader);
             close(stderrReader);
@@ -91,8 +114,8 @@ public class ShellCommand {
         return stderr.toString();
     }
 
-    public int exitValue() {
-        return exitValue;
+    public int exitCode() {
+        return exitCode;
     }
 
     public String describe() {
@@ -105,28 +128,5 @@ public class ShellCommand {
             result += " (running in " + workingDirectory + ")";
         }
         return result;
-    }
-
-    private static String asString(Exception e) {
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(stringWriter);
-        e.printStackTrace(printWriter);
-        return stringWriter.getBuffer().toString();
-    }
-
-    private static void checkForNulls(String[] command) {
-        for (String arg : command) {
-            if (arg == null) {
-                throw new IllegalStateException("Shell command cannot have null as inputs, but was: " + Arrays.toString(command));
-            }
-        }
-    }
-
-    private static void close(Reader reader) {
-        if (reader == null) return;
-        try {
-            reader.close();
-        } catch (IOException ignored) {
-        }
     }
 }

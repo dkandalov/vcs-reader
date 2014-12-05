@@ -94,20 +94,20 @@ public class VcsProject {
     public static class LogContentResult {
         private final String text;
         private final String stderr;
-        private final int exitValue;
+        private final int exitCode;
 
         public LogContentResult(@NotNull String text) {
             this(text, "", 0);
         }
 
-        public LogContentResult(@NotNull String stderr, int exitValue) {
-            this("", stderr, exitValue);
+        public LogContentResult(@NotNull String stderr, int exitCode) {
+            this("", stderr, exitCode);
         }
 
-        private LogContentResult(@NotNull String text, @NotNull String stderr, int exitValue) {
+        private LogContentResult(@NotNull String text, @NotNull String stderr, int exitCode) {
             this.text = text;
             this.stderr = stderr;
-            this.exitValue = exitValue;
+            this.exitCode = exitCode;
         }
 
         @NotNull public String text() {
@@ -115,7 +115,7 @@ public class VcsProject {
         }
 
         public boolean isSuccessful() {
-            return stderr.isEmpty() && exitValue == 0;
+            return stderr.isEmpty() && exitCode == 0;
         }
     }
 

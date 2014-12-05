@@ -8,14 +8,14 @@ class ShellCommandTest {
         def shellCommand = new ShellCommand("ls").execute()
         assert shellCommand.stderr().empty
         assert !shellCommand.stdout().empty
-        assert shellCommand.exitValue() == 0
+        assert shellCommand.exitCode() == 0
     }
 
     @Test void "failed shell command execution"() {
         def shellCommand = new ShellCommand("fake-command").execute()
         assert shellCommand.stdout().empty
         assert !shellCommand.stderr().empty
-        assert shellCommand.exitValue() == -1
+        assert shellCommand.exitCode() == -1
     }
 
     @Test(timeout = 1000L) void "kill hanging shell command"() {
@@ -27,7 +27,7 @@ class ShellCommandTest {
         }
         shellCommand.execute()
 
-        assert shellCommand.exitValue() == -1
+        assert shellCommand.exitCode() == -1
     }
 
     @Test void "shell command description"() {

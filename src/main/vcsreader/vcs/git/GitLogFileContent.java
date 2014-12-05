@@ -30,15 +30,6 @@ class GitLogFileContent implements VcsCommand<LogContentResult> {
         this.shellCommand = gitLogFileContent(gitPath, folder, filePath, revision, charset);
     }
 
-    @Override public LogContentResult execute() {
-        shellCommand.execute();
-        if (isSuccessful(shellCommand)) {
-            return new LogContentResult(trimLastNewLine(shellCommand.stdout()));
-        } else {
-            return new LogContentResult(shellCommand.stderr(), shellCommand.exitValue());
-        }
-    }
-
     static ShellCommand gitLogFileContent(String pathToGit, String folder, String filePath, String revision, Charset charset) {
         return new ShellCommand(pathToGit, "show", revision + ":" + filePath).withCharset(charset).workingDir(folder);
     }
@@ -46,6 +37,15 @@ class GitLogFileContent implements VcsCommand<LogContentResult> {
     private static String trimLastNewLine(String s) {
         if (s.endsWith("\r\n")) return s.substring(0, s.length() - 2);
         else return s.endsWith("\n") || s.endsWith("\r") ? s.substring(0, s.length() - 1) : s;
+    }
+
+    @Override public LogContentResult execute() {
+        shellCommand.execute();
+        if (isSuccessful(shellCommand)) {
+            return new LogContentResult(trimLastNewLine(shellCommand.stdout()));
+        } else {
+            return new LogContentResult(shellCommand.stderr(), shellCommand.exitCode());
+        }
     }
 
     @Override public String describe() {
