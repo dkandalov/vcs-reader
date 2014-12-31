@@ -17,11 +17,12 @@ public class Change {
     @NotNull public final String revision;
     @NotNull public final String revisionBefore;
     private final AtomicReference<VcsRoot> vcsRoot = new AtomicReference<VcsRoot>();
+
+
     public Change(Change change) {
         this(change.type, change.filePath, change.filePathBefore, change.revision, change.revisionBefore);
         setVcsRoot(change.vcsRoot.get());
     }
-
 
     public Change(@NotNull Type type, @NotNull String filePath, @NotNull String revision) {
         this(type, filePath, noFilePath, revision, noRevision);
