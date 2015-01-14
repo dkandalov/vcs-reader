@@ -11,7 +11,7 @@ dependencies {
 
     testCompile "org.hamcrest:hamcrest-all:1.3"
     testCompile "junit:junit:4.11"
-    testCompile "org.codehaus.groovy:groovy-all:2.2.2"
+    testCompile "org.codehaus.groovy:groovy-all:2.2.1"
     testCompile "org.mockito:mockito-all:1.9.5"
 }
 
