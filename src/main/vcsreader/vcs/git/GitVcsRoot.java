@@ -8,31 +8,31 @@ import java.util.Date;
 import static vcsreader.VcsProject.*;
 
 public class GitVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
-    public final String pathToProject;
+    public final String vcsRootPath;
     public final String repositoryUrl;
     public final GitSettings settings;
     private transient VcsCommandExecutor executor;
 
-    public GitVcsRoot(String pathToProject, String repositoryUrl, GitSettings settings) {
-        this.pathToProject = pathToProject;
+    public GitVcsRoot(String vcsRootPath, String repositoryUrl, GitSettings settings) {
+        this.vcsRootPath = vcsRootPath;
         this.repositoryUrl = repositoryUrl;
         this.settings = settings;
     }
 
     @Override public CloneResult cloneToLocal() {
-        return executor.execute(new GitClone(settings.gitPath, repositoryUrl, pathToProject));
+        return executor.execute(new GitClone(settings.gitPath, repositoryUrl, vcsRootPath));
     }
 
     @Override public UpdateResult update() {
-        return executor.execute(new GitUpdate(settings.gitPath, pathToProject));
+        return executor.execute(new GitUpdate(settings.gitPath, vcsRootPath));
     }
 
     @Override public LogResult log(Date fromDate, Date toDate) {
-        return executor.execute(new GitLog(settings.gitPath, pathToProject, fromDate, toDate));
+        return executor.execute(new GitLog(settings.gitPath, vcsRootPath, fromDate, toDate));
     }
 
     @Override public LogContentResult contentOf(String filePath, String revision) {
-        return executor.execute(new GitLogFileContent(settings.gitPath, pathToProject, filePath, revision, settings.filesCharset));
+        return executor.execute(new GitLogFileContent(settings.gitPath, vcsRootPath, filePath, revision, settings.filesCharset));
     }
 
     @Override public void setExecutor(VcsCommandExecutor commandExecutor) {
@@ -46,7 +46,7 @@ public class GitVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
 
         GitVcsRoot that = (GitVcsRoot) o;
 
-        if (pathToProject != null ? !pathToProject.equals(that.pathToProject) : that.pathToProject != null)
+        if (vcsRootPath != null ? !vcsRootPath.equals(that.vcsRootPath) : that.vcsRootPath != null)
             return false;
         if (repositoryUrl != null ? !repositoryUrl.equals(that.repositoryUrl) : that.repositoryUrl != null)
             return false;
@@ -56,7 +56,7 @@ public class GitVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
     }
 
     @Override public int hashCode() {
-        int result = pathToProject != null ? pathToProject.hashCode() : 0;
+        int result = vcsRootPath != null ? vcsRootPath.hashCode() : 0;
         result = 31 * result + (repositoryUrl != null ? repositoryUrl.hashCode() : 0);
         result = 31 * result + (settings != null ? settings.hashCode() : 0);
         return result;
@@ -66,7 +66,7 @@ public class GitVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
         return "GitVcsRoot{" +
                 "settings=" + settings +
                 ", repositoryUrl='" + repositoryUrl + '\'' +
-                ", pathToProject='" + pathToProject + '\'' +
+                ", vcsRootPath='" + vcsRootPath + '\'' +
                 '}';
     }
 }
