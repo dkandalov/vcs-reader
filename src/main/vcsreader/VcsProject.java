@@ -28,7 +28,7 @@ public class VcsProject {
     }
 
     public CloneResult cloneToLocal() {
-        Accumulator<CloneResult> accumulator = new Accumulator<CloneResult>();
+        Accumulator<CloneResult> accumulator = new Accumulator<CloneResult>(new CloneResult());
         for (VcsRoot vcsRoot : vcsRoots) {
             try {
 
@@ -43,7 +43,7 @@ public class VcsProject {
     }
 
     public UpdateResult update() {
-        Accumulator<UpdateResult> accumulator = new Accumulator<UpdateResult>();
+        Accumulator<UpdateResult> accumulator = new Accumulator<UpdateResult>(new UpdateResult());
         for (VcsRoot vcsRoot : vcsRoots) {
             try {
 
@@ -58,7 +58,7 @@ public class VcsProject {
     }
 
     public LogResult log(Date fromDate, Date toDate) {
-        Accumulator<LogResult> accumulator = new Accumulator<LogResult>();
+        Accumulator<LogResult> accumulator = new Accumulator<LogResult>(new LogResult());
         for (VcsRoot vcsRoot : vcsRoots) {
             try {
 
@@ -80,6 +80,10 @@ public class VcsProject {
 
     private static class Accumulator<T extends Mergeable<T>> {
         private T mergedResult;
+
+        public Accumulator(T mergedResult) {
+            this.mergedResult = mergedResult;
+        }
 
         public void update(T result) {
             if (mergedResult == null) {

@@ -8,8 +8,10 @@ import vcsreader.lang.VcsCommandExecutor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import static java.util.Collections.emptyList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static vcsreader.VcsProject.LogResult;
@@ -36,6 +38,21 @@ public class VcsProjectTest {
                 new GitClone("/usr/bin/git", "git://some/url", "/local/path"),
                 new GitClone("/usr/bin/git", "git://some/url", "/local/path2")
         )));
+        assertThat(cloneResult.errors().size(), equalTo(0));
+        assertThat(cloneResult.exceptions().size(), equalTo(0));
+    }
+
+    @Test public void successfulProjectCloneWithNoVcsRoots() {
+        // given
+        List<VcsRoot> vcsRoots = emptyList();
+        VcsProject project = new VcsProject(vcsRoots, fakeExecutor);
+        fakeExecutor.completeAllCallsWith(new VcsProject.CloneResult());
+
+        // when
+        VcsProject.CloneResult cloneResult = project.cloneToLocal();
+
+        // then
+        assertThat(fakeExecutor.commands, equalTo(Collections.<VcsCommand>emptyList()));
         assertThat(cloneResult.errors().size(), equalTo(0));
         assertThat(cloneResult.exceptions().size(), equalTo(0));
     }
