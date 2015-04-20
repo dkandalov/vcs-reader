@@ -13,6 +13,7 @@ public class Commit {
     @NotNull public final Date commitDate;
     @NotNull public final String authorName;
     @NotNull public final String comment;
+    // note that order of changes is specified by VCS (and may be random e.g. in case of svn)
     @NotNull public final List<Change> changes;
 
     public Commit(@NotNull String revision, @NotNull String revisionBefore, @NotNull Date commitDate,

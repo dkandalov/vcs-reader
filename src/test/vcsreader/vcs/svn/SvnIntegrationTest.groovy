@@ -1,5 +1,4 @@
 package vcsreader.vcs.svn
-
 import org.junit.BeforeClass
 import org.junit.Test
 import vcsreader.Change
@@ -11,6 +10,7 @@ import static vcsreader.Change.noRevision
 import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.lang.DateTimeUtil.dateTime
 import static vcsreader.vcs.TestUtil.assertEqualCommits
+import static vcsreader.vcs.TestUtil.withSortedChanges
 import static vcsreader.vcs.svn.SvnIntegrationTestConfig.*
 
 class SvnIntegrationTest {
@@ -154,10 +154,10 @@ class SvnIntegrationTest {
     @Test void "log content of modified file"() {
         def logResult = project.log(date("12/08/2014"), date("13/08/2014"))
 
-        def change = logResult.commits.first().changes.first()
+        def change = withSortedChanges(logResult.commits).first().changes.first()
         assert change.type == MODIFICATION
-        assert change.content() == "file3 new content"
-        assert change.contentBefore() == "file3 content"
+        assert change.content() == "file2 new content"
+        assert change.contentBefore() == "file2 content"
         assert logResult.errors() == []
         assert logResult.isSuccessful()
     }
@@ -165,9 +165,9 @@ class SvnIntegrationTest {
     @Test void "log content of new file"() {
         def logResult = project.log(date("11/08/2014"), date("12/08/2014"))
 
-        def change = logResult.commits.first().changes.first()
+        def change = withSortedChanges(logResult.commits).first().changes.first()
         assert change.type == NEW
-        assert change.content() == "file3 content"
+        assert change.content() == "file2 content"
         assert change.contentBefore() == ""
         assert logResult.errors() == []
         assert logResult.isSuccessful()
