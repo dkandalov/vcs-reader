@@ -15,7 +15,7 @@ dependencies {
     compile "com.intellij:annotations:12.0"
     testCompile "org.hamcrest:hamcrest-all:1.3"
     testCompile "junit:junit:4.11"
-    testCompile "org.codehaus.groovy:groovy-all:2.2.1"
+    testCompile "org.codehaus.groovy:groovy-all:2.3.9"
     testCompile "org.mockito:mockito-all:1.9.5"
 }
 
