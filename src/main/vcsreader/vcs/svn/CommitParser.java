@@ -17,7 +17,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static vcsreader.Change.Type.MOVED;
+import static vcsreader.Change.Type.*;
 import static vcsreader.Change.noFilePath;
 
 class CommitParser {
@@ -116,17 +116,27 @@ class CommitParser {
 
         @Override public void endElement(String uri, String localName, @NotNull String name) throws SAXException {
             if (name.equals("logentry")) {
+                Iterator<Change> i = changes.iterator();
+                while (i.hasNext()) {
+                    Change change = i.next();
+                    if (change.type == DELETED && movedPaths.contains(change.filePathBefore)) {
+                        i.remove();
+                    }
+                }
+
                 commits.add(new Commit(revision, revisionBefore, commitDate, author, comment, new ArrayList<Change>(changes)));
                 changes.clear();
+                movedPaths.clear();
+
             } else if (name.equals("path")) {
                 expectFileName = false;
-                if (isFileChange && !movedPaths.contains(filePath)) {
+                if (isFileChange) {
                     if (isCopy) {
                         changes.add(new Change(MOVED, filePath, copyFromFilePath, revision, copyFromRevision));
                         movedPaths.add(copyFromFilePath);
-                    } else if (changeType == Change.Type.NEW) {
+                    } else if (changeType == NEW) {
                         changes.add(new Change(changeType, filePath, revision));
-                    } else if (changeType == Change.Type.DELETED) {
+                    } else if (changeType == DELETED) {
                         changes.add(new Change(changeType, noFilePath, filePath, revision, revisionBefore));
                     } else {
                         changes.add(new Change(changeType, filePath, filePath, revision, revisionBefore));
@@ -149,9 +159,9 @@ class CommitParser {
         }
 
         private static Change.Type asChangeType(String action) {
-            if (action.equals("A")) return Change.Type.NEW;
-            else if (action.equals("D")) return Change.Type.DELETED;
-            else if (action.equals("M")) return Change.Type.MODIFICATION;
+            if (action.equals("A")) return NEW;
+            else if (action.equals("D")) return DELETED;
+            else if (action.equals("M")) return MODIFICATION;
             else throw new IllegalStateException("Unknown svn action: " + action);
         }
 

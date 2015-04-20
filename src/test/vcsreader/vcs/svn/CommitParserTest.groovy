@@ -4,6 +4,9 @@ import org.junit.Test
 import vcsreader.Change
 import vcsreader.Commit
 
+import static org.hamcrest.CoreMatchers.equalTo
+import static org.junit.Assert.assertThat
+import static vcsreader.Change.Type.MOVED
 import static vcsreader.Change.Type.NEW
 import static vcsreader.Change.noRevision
 import static vcsreader.lang.DateTimeUtil.dateTime
@@ -84,4 +87,43 @@ class CommitParserTest {
                 "- Fix a few \"bugs\" found with Findbugs\n" +
                 "- Switch to JDK 8 to run the tests."
     }
+
+    @Test void "should skip deletion change when file is moved"() {
+        def xml = """<?xml version="1.0" encoding="UTF-8"?>
+			<log>
+			<logentry revision="4">
+				<author>Some Author</author>
+				<date>2014-08-13T15:00:00.000000Z</date>
+				<paths>
+					<path kind="dir"
+					   action="A"
+					   prop-mods="false"
+					   text-mods="false">/folder1</path>
+					<path action="D"
+					   prop-mods="false"
+					   text-mods="false"
+					   kind="file">/file1.txt</path>
+					<path action="A"
+					   prop-mods="false"
+					   text-mods="false"
+					   kind="file"
+					   copyfrom-path="/file1.txt"
+					   copyfrom-rev="1">/folder1/file1.txt</path>
+				</paths>
+				<msg>moved file1</msg>
+			</logentry>
+			</log>
+        """.trim()
+
+        assertThat(CommitParser.parseCommits(xml)[0], equalTo(
+		        new Commit(
+				        "4", "3",
+				        dateTime("15:00:00 13/08/2014"),
+				        "Some Author",
+				        "moved file1",
+				        [new Change(MOVED, "folder1/file1.txt", "file1.txt", "4", "1")]
+		        )
+        ))
+    }
+
 }
