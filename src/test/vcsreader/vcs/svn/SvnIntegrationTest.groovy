@@ -21,13 +21,13 @@ class SvnIntegrationTest {
         def project = new VcsProject(vcsRoots)
 
         def cloneResult = project.cloneToLocal()
-        assert cloneResult.errors() == []
+        assert cloneResult.errors().empty
         assert cloneResult.isSuccessful()
     }
 
     @Test void "update project"() {
         def updateResult = project.update()
-        assert updateResult.errors() == []
+        assert updateResult.errors().empty
         assert updateResult.isSuccessful()
     }
 
@@ -35,7 +35,7 @@ class SvnIntegrationTest {
         def logResult = project.log(date("01/08/2014"), date("02/08/2014"))
 
         assert logResult.commits.empty
-        assert logResult.errors() == []
+        assert logResult.errors().empty
         assert logResult.isSuccessful()
     }
 
@@ -158,7 +158,7 @@ class SvnIntegrationTest {
         assert change.type == MODIFICATION
         assert change.content() == "file2 new content"
         assert change.contentBefore() == "file2 content"
-        assert logResult.errors() == []
+        assert logResult.errors().empty
         assert logResult.isSuccessful()
     }
 
@@ -169,7 +169,7 @@ class SvnIntegrationTest {
         assert change.type == NEW
         assert change.content() == "file2 content"
         assert change.contentBefore() == ""
-        assert logResult.errors() == []
+        assert logResult.errors().empty
         assert logResult.isSuccessful()
     }
 
@@ -180,7 +180,7 @@ class SvnIntegrationTest {
         assert change.type == DELETED
         assert change.content() == ""
         assert change.contentBefore() == "file1 content"
-        assert logResult.errors() == []
+        assert logResult.errors().empty
         assert logResult.isSuccessful()
     }
 
