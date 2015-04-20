@@ -14,10 +14,11 @@ import static vcsreader.vcs.TestUtil.withSortedChanges
 import static vcsreader.vcs.svn.SvnIntegrationTestConfig.*
 
 class SvnIntegrationTest {
-    private final project = new VcsProject([new SvnVcsRoot(repositoryUrl, SvnSettings.defaults())])
+	private final svnSettings = SvnSettings.defaults().withSvnPath(pathToSvn)
+    private final project = new VcsProject([new SvnVcsRoot(repositoryUrl, svnSettings)])
 
     @Test void "clone project always succeed"() {
-        def vcsRoots = [new SvnVcsRoot(nonExistentUrl, SvnSettings.defaults())]
+        def vcsRoots = [new SvnVcsRoot(nonExistentUrl, svnSettings)]
         def project = new VcsProject(vcsRoots)
 
         def cloneResult = project.cloneToLocal()
@@ -185,7 +186,7 @@ class SvnIntegrationTest {
     }
 
     @Test void "show only commits for the path when project is not root in svn repo"() {
-        def nonRootProject = new VcsProject([new SvnVcsRoot(repositoryUrl + "/folder2", SvnSettings.defaults())])
+        def nonRootProject = new VcsProject([new SvnVcsRoot(repositoryUrl + "/folder2", svnSettings)])
 
         def logResult = nonRootProject.log(date("01/08/2014"), date("01/09/2014"))
         assertEqualCommits(logResult, [
@@ -200,7 +201,7 @@ class SvnIntegrationTest {
     }
 
     @Test void "content of commits in project which is not root in svn repo"() {
-        def nonRootProject = new VcsProject([new SvnVcsRoot(repositoryUrl + "/folder2", SvnSettings.defaults())])
+        def nonRootProject = new VcsProject([new SvnVcsRoot(repositoryUrl + "/folder2", svnSettings)])
 
         def logResult = nonRootProject.log(date("01/08/2014"), date("01/09/2014"))
         assert logResult.commits[0].comment == "moved and renamed file1"

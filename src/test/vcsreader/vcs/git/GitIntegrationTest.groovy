@@ -14,7 +14,8 @@ import static vcsreader.vcs.TestUtil.assertEqualCommits
 import static vcsreader.vcs.git.GitIntegrationTestConfig.*
 
 class GitIntegrationTest {
-    private final vcsRoots = [new GitVcsRoot(projectFolder, referenceProject, GitSettings.defaults())]
+	private final gitSettings = GitSettings.defaults().withGitPath(pathToGit)
+    private final vcsRoots = [new GitVcsRoot(projectFolder, referenceProject, gitSettings)]
     private final project = new VcsProject(vcsRoots)
 
     @Test void "clone project"() {
@@ -24,7 +25,7 @@ class GitIntegrationTest {
     }
 
     @Test void "clone project failure"() {
-        def vcsRoots = [new GitVcsRoot(projectFolder, nonExistentPath, GitSettings.defaults())]
+        def vcsRoots = [new GitVcsRoot(projectFolder, nonExistentPath, gitSettings)]
         def project = new VcsProject(vcsRoots)
 
         def cloneResult = project.cloneToLocal()
