@@ -26,8 +26,8 @@ class GitIntegrationTestConfig {
         revisions = config["revisions"] as List
 
         if (!new File(pathToGit).exists())
-            throw new FileNotFoundException("Cannot find " + pathToGit + ". Please check content of " + configFile.absolutePath)
+            throw new FileNotFoundException("Cannot find '" + pathToGit + "'. Please check content of '" + configFile.absolutePath + "'")
         if (!new File(referenceProject).exists())
-            throw new FileNotFoundException("Cannot find " + referenceProject + ". Please run git-create-repo.rb")
+            throw new FileNotFoundException("Cannot find '" + referenceProject + "'. Please run git-create-repo.rb")
     }
 }
