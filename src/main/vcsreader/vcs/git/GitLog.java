@@ -2,8 +2,8 @@ package vcsreader.vcs.git;
 
 import vcsreader.Change;
 import vcsreader.Commit;
-import vcsreader.lang.VcsCommand;
-import vcsreader.vcs.infrastructure.ShellCommand;
+import vcsreader.lang.ShellCommand;
+import vcsreader.vcs.common.VcsCommand;
 
 import java.util.ArrayList;
 import java.util.Date;

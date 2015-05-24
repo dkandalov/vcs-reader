@@ -1,4 +1,4 @@
-package vcsreader.vcs.infrastructure;
+package vcsreader.lang;
 
 import org.jetbrains.annotations.NotNull;
 

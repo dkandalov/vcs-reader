@@ -1,6 +1,6 @@
 package vcsreader.vcs.svn;
 
-import vcsreader.vcs.infrastructure.ShellCommand;
+import vcsreader.lang.ShellCommand;
 
 class SvnShellCommand {
 

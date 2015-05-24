@@ -1,7 +1,7 @@
 package vcsreader.vcs.svn;
 
 import vcsreader.VcsRoot;
-import vcsreader.lang.VcsCommandExecutor;
+import vcsreader.vcs.common.VcsCommandExecutor;
 
 import java.util.Date;
 

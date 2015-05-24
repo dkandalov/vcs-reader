@@ -1,7 +1,7 @@
 package vcsreader;
 
 import org.jetbrains.annotations.NotNull;
-import vcsreader.lang.VcsCommandExecutor;
+import vcsreader.vcs.common.VcsCommandExecutor;
 
 import java.util.ArrayList;
 import java.util.Comparator;

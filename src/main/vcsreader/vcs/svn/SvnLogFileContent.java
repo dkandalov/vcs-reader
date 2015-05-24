@@ -1,8 +1,8 @@
 package vcsreader.vcs.svn;
 
 import org.jetbrains.annotations.NotNull;
-import vcsreader.lang.VcsCommand;
-import vcsreader.vcs.infrastructure.ShellCommand;
+import vcsreader.lang.ShellCommand;
+import vcsreader.vcs.common.VcsCommand;
 
 import java.nio.charset.Charset;
 

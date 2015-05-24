@@ -2,8 +2,8 @@ package vcsreader.vcs.svn;
 
 import vcsreader.Change;
 import vcsreader.Commit;
-import vcsreader.lang.VcsCommand;
-import vcsreader.vcs.infrastructure.ShellCommand;
+import vcsreader.lang.ShellCommand;
+import vcsreader.vcs.common.VcsCommand;
 
 import java.text.SimpleDateFormat;
 import java.util.*;

@@ -8,6 +8,13 @@ import java.util.concurrent.atomic.AtomicReference;
 import static vcsreader.VcsProject.LogContentResult;
 
 public class Change {
+    public enum Type {
+        MODIFICATION,
+        NEW,
+        DELETED,
+        MOVED
+    }
+
     public static final String noRevision = "noRevision";
     public static final String noFilePath = "";
     public static final String failedToLoadContent = null;
@@ -80,12 +87,5 @@ public class Change {
         result = 31 * result + (revision.hashCode());
         result = 31 * result + (revisionBefore.hashCode());
         return result;
-    }
-
-    public enum Type {
-        MODIFICATION,
-        NEW,
-        DELETED,
-        MOVED
     }
 }

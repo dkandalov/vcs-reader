@@ -3,8 +3,8 @@ package vcsreader.vcs.git;
 import org.junit.Test;
 import vcsreader.VcsProject;
 import vcsreader.VcsRoot;
-import vcsreader.lang.VcsCommand;
-import vcsreader.lang.VcsCommandExecutor;
+import vcsreader.vcs.common.VcsCommand;
+import vcsreader.vcs.common.VcsCommandExecutor;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,8 +1,8 @@
 package vcsreader.vcs.git;
 
 import vcsreader.VcsProject;
-import vcsreader.lang.VcsCommand;
-import vcsreader.vcs.infrastructure.ShellCommand;
+import vcsreader.lang.ShellCommand;
+import vcsreader.vcs.common.VcsCommand;
 
 import static java.util.Arrays.asList;
 import static vcsreader.vcs.git.GitShellCommand.isSuccessful;

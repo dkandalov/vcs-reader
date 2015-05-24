@@ -1,10 +1,13 @@
-package vcsreader.lang;
+package vcsreader.vcs.common;
 
 public class VcsCommandExecutor {
+    private static final Listener dummyListener = new Listener() {
+        @Override public void onFunctionCall(VcsCommand command) {}
+    };
     private final Listener listener;
 
     public VcsCommandExecutor() {
-        this(dummyListener());
+        this(dummyListener);
     }
 
     public VcsCommandExecutor(Listener listener) {
@@ -14,12 +17,6 @@ public class VcsCommandExecutor {
     public <T> T execute(final VcsCommand<T> command) {
         listener.onFunctionCall(command);
         return command.execute();
-    }
-
-    private static Listener dummyListener() {
-        return new Listener() {
-            @Override public void onFunctionCall(VcsCommand command) {}
-        };
     }
 
     public interface Listener {

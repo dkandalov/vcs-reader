@@ -1,12 +1,10 @@
-package vcsreader;
+package vcsreader.vcs.common;
 
 import org.junit.Test;
-import vcsreader.lang.VcsCommand;
-import vcsreader.lang.VcsCommandExecutor;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
-import static vcsreader.lang.VcsCommandExecutor.Listener;
+import static vcsreader.vcs.common.VcsCommandExecutor.Listener;
 
 public class VcsCommandExecutorTest {
     @Test public void notifyListenerAboutFunctions() {

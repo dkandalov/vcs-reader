@@ -1,6 +1,6 @@
 package vcsreader.vcs.git;
 
-import vcsreader.vcs.infrastructure.ShellCommand;
+import vcsreader.lang.ShellCommand;
 
 class GitShellCommand {
     public static boolean isSuccessful(ShellCommand shellCommand) {
