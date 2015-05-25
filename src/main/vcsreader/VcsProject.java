@@ -3,10 +3,7 @@ package vcsreader;
 import org.jetbrains.annotations.NotNull;
 import vcsreader.vcs.common.VcsCommandExecutor;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.sort;
@@ -25,6 +22,10 @@ public class VcsProject {
                 ((VcsRoot.WithExecutor) vcsRoot).setExecutor(commandExecutor);
             }
         }
+    }
+
+    public List<VcsRoot> vcsRoots() {
+        return Collections.unmodifiableList(vcsRoots);
     }
 
     public CloneResult cloneToLocal() {

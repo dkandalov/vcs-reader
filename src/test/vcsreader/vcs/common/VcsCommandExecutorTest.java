@@ -10,7 +10,7 @@ public class VcsCommandExecutorTest {
     @Test public void notifyListenerAboutFunctions() {
         final VcsCommand[] vcsCommand = new VcsCommand[1];
         VcsCommandExecutor executor = new VcsCommandExecutor(new Listener() {
-            @Override public void onFunctionCall(VcsCommand function) {
+            @Override public void onCommand(VcsCommand function) {
                 vcsCommand[0] = function;
             }
         });
