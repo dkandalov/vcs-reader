@@ -11,7 +11,7 @@ public class SvnVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
     public final String repositoryUrl;
     public final SvnSettings settings;
     private String repositoryRoot;
-    private transient VcsCommandExecutor executor;
+    private VcsCommandExecutor executor;
 
     public SvnVcsRoot(String repositoryUrl, SvnSettings settings) {
         this.repositoryUrl = repositoryUrl;

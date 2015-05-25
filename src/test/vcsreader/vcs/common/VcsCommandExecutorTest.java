@@ -9,7 +9,7 @@ import static vcsreader.vcs.common.VcsCommandExecutor.Listener;
 public class VcsCommandExecutorTest {
     @Test public void notifyListenerAboutFunctions() {
         final VcsCommand[] vcsCommand = new VcsCommand[1];
-        VcsCommandExecutor executor = new VcsCommandExecutor(new Listener() {
+        VcsCommandExecutor executor = new VcsCommandExecutor().add(new Listener() {
             @Override public void onCommand(VcsCommand function) {
                 vcsCommand[0] = function;
             }

@@ -1,21 +1,20 @@
 package vcsreader.vcs.common;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class VcsCommandExecutor {
-    public static final Listener dummyListener = new Listener() {
-        @Override public void onCommand(VcsCommand command) {}
-    };
-    private final Listener listener;
+    private final List<Listener> listeners = new ArrayList<Listener>();
 
-    public VcsCommandExecutor() {
-        this(dummyListener);
-    }
-
-    public VcsCommandExecutor(Listener listener) {
-        this.listener = listener;
+    public VcsCommandExecutor add(Listener listener) {
+        listeners.add(listener);
+        return this;
     }
 
     public <T> T execute(final VcsCommand<T> command) {
-        listener.onCommand(command);
+        for (Listener listener : listeners) {
+            listener.onCommand(command);
+        }
         return command.execute();
     }
 

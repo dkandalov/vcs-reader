@@ -10,6 +10,7 @@ import static java.util.Collections.sort;
 
 public class VcsProject {
     private final List<VcsRoot> vcsRoots;
+    private final VcsCommandExecutor commandExecutor;
 
     public VcsProject(List<VcsRoot> vcsRoots) {
         this(vcsRoots, new VcsCommandExecutor());
@@ -17,11 +18,17 @@ public class VcsProject {
 
     public VcsProject(List<VcsRoot> vcsRoots, VcsCommandExecutor commandExecutor) {
         this.vcsRoots = vcsRoots;
+        this.commandExecutor = commandExecutor;
         for (VcsRoot vcsRoot : vcsRoots) {
             if (vcsRoot instanceof VcsRoot.WithExecutor) {
                 ((VcsRoot.WithExecutor) vcsRoot).setExecutor(commandExecutor);
             }
         }
+    }
+
+    public VcsProject addListener(VcsCommandExecutor.Listener listener) {
+        commandExecutor.add(listener);
+        return this;
     }
 
     public List<VcsRoot> vcsRoots() {

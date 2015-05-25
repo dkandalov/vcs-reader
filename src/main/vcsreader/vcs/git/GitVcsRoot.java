@@ -11,7 +11,7 @@ public class GitVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
     public final String vcsRootPath;
     public final String repositoryUrl;
     public final GitSettings settings;
-    private transient VcsCommandExecutor executor;
+    private VcsCommandExecutor executor;
 
     public GitVcsRoot(String vcsRootPath, String repositoryUrl, GitSettings settings) {
         this.vcsRootPath = vcsRootPath;
