@@ -81,6 +81,10 @@ public class VcsProject {
         return accumulator.mergedResult;
     }
 
+    @Override public String toString() {
+        return "VcsProject{" + vcsRoots + '}';
+    }
+
 
     private interface Mergeable<T extends Mergeable<T>> {
         T mergeWith(T result);
