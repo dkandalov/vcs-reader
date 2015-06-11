@@ -52,6 +52,10 @@ class SvnRepositoryCreator
       puts `echo 123 > "\\"file with spaces.txt\\""`
       add "\\\"file with spaces.txt\\\""
       commit "added file with spaces and quotes", "2014-08-16T15:00:00.000000Z", @author
+
+      puts `echo "non-ascii содержимое" > "non-ascii.txt"`
+      add "non-ascii.txt"
+      commit "non-ascii комментарий", "2014-08-17T16:00:00.000000Z", @author
     end
 
     update_test_config

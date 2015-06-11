@@ -1,5 +1,4 @@
 package vcsreader.vcs.svn
-
 import org.junit.BeforeClass
 import org.junit.Test
 
@@ -56,7 +55,20 @@ class ShellCommands_SvnIntegrationTest {
         assert command.exitCode() == 1
     }
 
-    @BeforeClass static void setupConfig() {
+	@Test void "svn log with non-ascii characters"() {
+		def command = svnLog(pathToSvn, repositoryUrl, date("01/01/2013"), date("01/01/2023"), useMergeHistory).execute()
+		assert command.stderr() == ""
+		assert command.stdout().contains("non-ascii комментарий")
+		assert command.exitCode() == 0
+
+		def revision = "8"
+		command = svnLogFileContent(pathToSvn, repositoryUrl, "non-ascii.txt", revision, utf8).execute()
+		assert command.stderr() == ""
+		assert command.stdout().trim() == "non-ascii содержимое"
+		assert command.exitCode() == 0
+	}
+
+	@BeforeClass static void setupConfig() {
         initTestConfig()
     }
 
