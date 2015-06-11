@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static java.nio.charset.Charset.forName;
 import static java.util.Arrays.asList;
 import static vcsreader.Change.Type.DELETED;
 import static vcsreader.Change.Type.NEW;
@@ -53,7 +54,9 @@ class GitLog implements VcsCommand<LogResult> {
         String from = "--after=" + Long.toString(fromDate.getTime() / 1000);
         String to = "--before=" + Long.toString(toDate.getTime() / 1000);
         String showFileStatus = "--name-status"; // see --diff-filter at https://www.kernel.org/pub/software/scm/git/docs/git-log.html
-        return new ShellCommand(gitPath, "log", logFormat(), from, to, showFileStatus, "--encoding=UTF-8").workingDir(folder);
+        String forceUTF8ForCommitMessages = "--encoding=UTF-8";
+        ShellCommand command = new ShellCommand(gitPath, "log", logFormat(), from, to, showFileStatus, forceUTF8ForCommitMessages);
+        return command.workingDir(folder).withCharset(forName("UTF-8"));
     }
 
     static ShellCommand gitLogRenames(String gitPath, String folder, String revision) {

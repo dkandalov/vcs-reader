@@ -7,8 +7,6 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static java.nio.charset.Charset.forName;
-
 public class ShellCommand {
     private static final File currentDirectory = null;
     private static final int exitCodeBeforeFinished = -123;
@@ -21,7 +19,7 @@ public class ShellCommand {
     private final AtomicReference<Process> processRef = new AtomicReference<Process>();
     private int exitCode = exitCodeBeforeFinished;
     private File workingDirectory = currentDirectory;
-    private Charset outputCharset = forName("UTF-8");
+    private Charset outputCharset = Charset.defaultCharset();
 
     public ShellCommand(String... commandAndArgs) {
         checkForNulls(commandAndArgs);

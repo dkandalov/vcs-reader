@@ -5,9 +5,11 @@ import vcsreader.Commit;
 import vcsreader.lang.ShellCommand;
 import vcsreader.vcs.common.VcsCommand;
 
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static java.nio.charset.Charset.forName;
 import static java.util.Arrays.asList;
 import static vcsreader.VcsProject.LogResult;
 import static vcsreader.vcs.svn.SvnShellCommand.createShellCommand;
@@ -46,6 +48,7 @@ class SvnLog implements VcsCommand<LogResult> {
 
     static ShellCommand svnLog(String pathToSvn, String repositoryUrl, Date fromDate, Date toDate, boolean useMergeHistory) {
         String mergeHistory = (useMergeHistory ? "--use-merge-history" : "");
+        Charset svnXmlCharset = forName("UTF-8"); // see http://subversion.tigris.org/issues/show_bug.cgi?id=2938
         return createShellCommand(
                 pathToSvn, "log",
                 repositoryUrl,
@@ -53,7 +56,7 @@ class SvnLog implements VcsCommand<LogResult> {
                 mergeHistory,
                 "--verbose",
                 "--xml"
-        );
+        ).withCharset(svnXmlCharset);
     }
 
     private static String dateRange(Date fromDate, Date toDate) {
