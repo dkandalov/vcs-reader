@@ -42,6 +42,9 @@ class GitRepositoryCreator
       puts `echo 123 > "\\"file with spaces.txt\\""`
       commit "added file with spaces and quotes", "Aug 16 15:00:00 2014 +0100", @author
 
+      puts `echo "non-ascii содержимое" > "non-ascii.txt"`
+      commit "non-ascii комментарий", "Aug 17 16:00:00 2014 +0100", @author
+
       @commit_hashes = log_commit_hashes
     end
     update_test_config(@commit_hashes)

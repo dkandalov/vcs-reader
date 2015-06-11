@@ -94,7 +94,19 @@ class ShellCommands_GitIntegrationTest {
         assert command.exitCode() == 1
     }
 
-    @Before void setup() {
+	@Test void "git log with non-ascii characters"() {
+		def command = gitLog(pathToGit, referenceProject, date("01/01/2013"), date("01/01/2023")).execute()
+		assert command.stderr() == ""
+		assert command.stdout().contains("non-ascii комментарий")
+		assert command.exitCode() == 0
+
+		command = gitLogFileContent(pathToGit, referenceProject, "non-ascii.txt", revision(8), utf8).execute()
+		assert command.stderr() == ""
+		assert command.stdout().trim() == "non-ascii содержимое"
+		assert command.exitCode() == 0
+	}
+
+	@Before void setup() {
         new File(projectFolder).deleteDir()
         new File(projectFolder).mkdirs()
         new File(projectFolder2).deleteDir()
