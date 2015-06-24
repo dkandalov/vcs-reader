@@ -21,32 +21,10 @@ public class ShellCommand {
     private File workingDirectory = currentDirectory;
     private Charset outputCharset = Charset.defaultCharset();
 
+
     public ShellCommand(String... commandAndArgs) {
         checkForNulls(commandAndArgs);
         this.command = commandAndArgs;
-    }
-
-    private static String asString(Exception e) {
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(stringWriter);
-        e.printStackTrace(printWriter);
-        return stringWriter.getBuffer().toString();
-    }
-
-    private static void checkForNulls(String[] command) {
-        for (String arg : command) {
-            if (arg == null) {
-                throw new IllegalStateException("Shell command cannot have null as inputs, but was: " + Arrays.toString(command));
-            }
-        }
-    }
-
-    private static void close(Reader reader) {
-        if (reader == null) return;
-        try {
-            reader.close();
-        } catch (IOException ignored) {
-        }
     }
 
     public ShellCommand workingDir(String path) {
@@ -85,10 +63,12 @@ public class ShellCommand {
             exitCode = process.exitValue();
 
         } catch (IOException e) {
-            stderr.append("\n").append(asString(e));
+            if (stderr.length() > 0) stderr.append("\n");
+            stderr.append(e.getMessage());
             exitCode = exitCodeOnException;
         } catch (InterruptedException e) {
-            stderr.append("\n").append(asString(e));
+            if (stderr.length() > 0) stderr.append("\n");
+            stderr.append(e.getMessage());
             exitCode = exitCodeOnException;
         } finally {
             close(stdoutReader);
@@ -126,5 +106,21 @@ public class ShellCommand {
             result += " (running in " + workingDirectory + ")";
         }
         return result;
+    }
+
+    private static void checkForNulls(String[] command) {
+        for (String arg : command) {
+            if (arg == null) {
+                throw new IllegalStateException("Shell command cannot have null as inputs, but was: " + Arrays.toString(command));
+            }
+        }
+    }
+
+    private static void close(Reader reader) {
+        if (reader == null) return;
+        try {
+            reader.close();
+        } catch (IOException ignored) {
+        }
     }
 }
