@@ -12,7 +12,7 @@ public class ShellCommand {
     private static final int exitCodeBeforeFinished = -123;
     private static final int exitCodeOnException = -1;
 
-    private final String[] command;
+    private final String[] commandAndArgs;
 
     private final StringBuilder stdout = new StringBuilder();
     private final StringBuilder stderr = new StringBuilder();
@@ -24,7 +24,7 @@ public class ShellCommand {
 
     public ShellCommand(String... commandAndArgs) {
         checkForNulls(commandAndArgs);
-        this.command = commandAndArgs;
+        this.commandAndArgs = commandAndArgs;
     }
 
     public ShellCommand workingDir(String path) {
@@ -42,7 +42,7 @@ public class ShellCommand {
         BufferedReader stderrReader = null;
         try {
 
-            Process process = new ProcessBuilder(command).directory(workingDirectory).start();
+            Process process = new ProcessBuilder(commandAndArgs).directory(workingDirectory).start();
             processRef.set(process);
             stdoutReader = new BufferedReader(new InputStreamReader(process.getInputStream(), outputCharset));
             stderrReader = new BufferedReader(new InputStreamReader(process.getErrorStream(), outputCharset));
@@ -98,9 +98,9 @@ public class ShellCommand {
 
     public String describe() {
         String result = "";
-        for (int i = 0; i < command.length; i++) {
-            result += command[i];
-            if (i < command.length - 1) result += " ";
+        for (int i = 0; i < commandAndArgs.length; i++) {
+            result += commandAndArgs[i];
+            if (i < commandAndArgs.length - 1) result += " ";
         }
         if (workingDirectory != null) {
             result += " (running in " + workingDirectory + ")";
