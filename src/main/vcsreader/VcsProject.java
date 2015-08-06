@@ -12,6 +12,10 @@ public class VcsProject {
     private final List<VcsRoot> vcsRoots;
     private final VcsCommandExecutor commandExecutor;
 
+    public VcsProject(VcsRoot... vcsRoots) {
+        this(asList(vcsRoots), new VcsCommandExecutor());
+    }
+
     public VcsProject(List<VcsRoot> vcsRoots) {
         this(vcsRoots, new VcsCommandExecutor());
     }
