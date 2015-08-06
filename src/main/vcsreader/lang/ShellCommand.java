@@ -11,20 +11,29 @@ public class ShellCommand {
     private static final File currentDirectory = null;
     private static final int exitCodeBeforeFinished = -123;
     private static final int exitCodeOnException = -1;
+    private static final int defaultBufferSize = 8192;
 
     private final String[] commandAndArgs;
-
-    private final StringBuilder stdout = new StringBuilder();
-    private final StringBuilder stderr = new StringBuilder();
-    private final AtomicReference<Process> processRef = new AtomicReference<Process>();
+    private final StringBuilder stdout;
+    private final StringBuilder stderr;
     private int exitCode = exitCodeBeforeFinished;
+
+    private int inputBufferSize = defaultBufferSize;
     private File workingDirectory = currentDirectory;
     private Charset outputCharset = Charset.defaultCharset();
 
+    private final AtomicReference<Process> processRef = new AtomicReference<Process>();
+
 
     public ShellCommand(String... commandAndArgs) {
-        checkForNulls(commandAndArgs);
-        this.commandAndArgs = commandAndArgs;
+        this(defaultBufferSize, commandAndArgs);
+    }
+
+    public ShellCommand(int inputBufferSize, String... commandAndArgs) {
+        this.inputBufferSize = inputBufferSize;
+        this.commandAndArgs = checkForNulls(commandAndArgs);
+        this.stdout = new StringBuilder(inputBufferSize);
+        this.stderr = new StringBuilder(inputBufferSize);
     }
 
     public ShellCommand workingDir(String path) {
@@ -44,8 +53,8 @@ public class ShellCommand {
 
             Process process = new ProcessBuilder(commandAndArgs).directory(workingDirectory).start();
             processRef.set(process);
-            stdoutReader = new BufferedReader(new InputStreamReader(process.getInputStream(), outputCharset));
-            stderrReader = new BufferedReader(new InputStreamReader(process.getErrorStream(), outputCharset));
+            stdoutReader = new BufferedReader(new InputStreamReader(process.getInputStream(), outputCharset), inputBufferSize);
+            stderrReader = new BufferedReader(new InputStreamReader(process.getErrorStream(), outputCharset), inputBufferSize);
 
             int i;
             while ((i = stdoutReader.read()) != -1) {
@@ -108,12 +117,13 @@ public class ShellCommand {
         return result;
     }
 
-    private static void checkForNulls(String[] command) {
+    private static String[] checkForNulls(String[] command) {
         for (String arg : command) {
             if (arg == null) {
                 throw new IllegalStateException("Shell command cannot have null as inputs, but was: " + Arrays.toString(command));
             }
         }
+        return command;
     }
 
     private static void close(Reader reader) {
