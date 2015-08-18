@@ -141,7 +141,7 @@ public class VcsProject {
 
     public static class LogResult implements Mergeable<LogResult> {
         private final List<Commit> commits;
-        private final List<String> vcsErrors; // TODO rename to vcsErrors?
+        private final List<String> vcsErrors;
         private final List<Exception> exceptions;
 
         public LogResult() {
