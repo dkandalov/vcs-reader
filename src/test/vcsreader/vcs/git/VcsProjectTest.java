@@ -1,91 +1,75 @@
 package vcsreader.vcs.git;
 
 import org.junit.Test;
+import vcsreader.Change;
+import vcsreader.Commit;
 import vcsreader.VcsProject;
+import vcsreader.VcsProject.CloneResult;
 import vcsreader.VcsRoot;
-import vcsreader.vcs.common.VcsCommand;
-import vcsreader.vcs.common.VcsCommandExecutor;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-import static java.util.Collections.emptyList;
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static vcsreader.VcsProject.LogResult;
 import static vcsreader.lang.DateTimeUtil.date;
 
 public class VcsProjectTest {
-    private final GitSettings settings = GitSettings.defaults();
-    private final FakeVcsCommandExecutor fakeExecutor = new FakeVcsCommandExecutor();
+    private final VcsRoot root1 = mock(GitVcsRoot.class);
+    private final VcsRoot root2 = mock(GitVcsRoot.class);
 
-    @Test public void successfulProjectClone() {
+    @Test public void mergeResultsOfProjectClone() {
         // given
-        List<VcsRoot> vcsRoots = Arrays.<VcsRoot>asList(
-                new GitVcsRoot("/local/path", "git://some/url", settings),
-                new GitVcsRoot("/local/path2", "git://some/url", settings)
-        );
-        VcsProject project = new VcsProject(vcsRoots, fakeExecutor);
-        fakeExecutor.completeAllCallsWith(new VcsProject.CloneResult());
+        when(root1.cloneToLocal()).thenReturn(new CloneResult(asList("error1")));
+        when(root2.cloneToLocal()).thenReturn(new CloneResult(asList("error2")));
+        VcsProject project = new VcsProject(asList(root1, root2));
 
         // when
-        VcsProject.CloneResult cloneResult = project.cloneToLocal();
+        CloneResult cloneResult = project.cloneToLocal();
 
         // then
-        assertThat(fakeExecutor.commands, equalTo(Arrays.<VcsCommand>asList(
-                new GitClone("/usr/bin/git", "git://some/url", "/local/path"),
-                new GitClone("/usr/bin/git", "git://some/url", "/local/path2")
-        )));
-        assertThat(cloneResult.vcsErrors().size(), equalTo(0));
+        assertThat(cloneResult.vcsErrors(), equalTo(asList("error1", "error2")));
         assertThat(cloneResult.exceptions().size(), equalTo(0));
     }
 
     @Test public void successfulProjectCloneWithNoVcsRoots() {
         // given
-        List<VcsRoot> vcsRoots = emptyList();
-        VcsProject project = new VcsProject(vcsRoots, fakeExecutor);
-        fakeExecutor.completeAllCallsWith(new VcsProject.CloneResult());
+        VcsProject project = new VcsProject(Collections.<VcsRoot>emptyList());
 
         // when
-        VcsProject.CloneResult cloneResult = project.cloneToLocal();
+        CloneResult cloneResult = project.cloneToLocal();
 
         // then
-        assertThat(fakeExecutor.commands, equalTo(Collections.<VcsCommand>emptyList()));
         assertThat(cloneResult.vcsErrors().size(), equalTo(0));
         assertThat(cloneResult.exceptions().size(), equalTo(0));
     }
 
     @Test public void successfulLogProjectHistory() {
         // given
-        List<VcsRoot> vcsRoots = Arrays.<VcsRoot>asList(
-                new GitVcsRoot("/local/path", "git://some/url", settings),
-                new GitVcsRoot("/local/path2", "git://some/url", settings)
-        );
-        VcsProject project = new VcsProject(vcsRoots, fakeExecutor);
-        fakeExecutor.completeAllCallsWith(new LogResult());
+        final Commit commit1 = new Commit("1", "", new Date(0), "", "", new ArrayList<Change>());
+        final Commit commit2 = new Commit("2", "", new Date(0), "", "", new ArrayList<Change>());
+        when(root1.log(any(Date.class), any(Date.class))).thenReturn(new LogResult(asList(commit1), asList("some error")));
+        when(root2.log(any(Date.class), any(Date.class))).thenReturn(new LogResult(asList(commit2), new ArrayList<String>()));
+        VcsProject project = new VcsProject(asList(root1, root2));
 
         // when
         LogResult logResult = project.log(date("01/07/2014"), date("08/07/2014"));
 
         // then
-        assertThat(fakeExecutor.commands, equalTo(Arrays.<VcsCommand>asList(
-                new GitLog("/usr/bin/git", "/local/path", date("01/07/2014"), date("08/07/2014")),
-                new GitLog("/usr/bin/git", "/local/path2", date("01/07/2014"), date("08/07/2014"))
-        )));
-        assertThat(logResult.vcsErrors().size(), equalTo(0));
+        assertThat(logResult.getCommits(), equalTo(asList(commit1, commit2)));
+        assertThat(logResult.vcsErrors(), equalTo(asList("some error")));
         assertThat(logResult.exceptions().size(), equalTo(0));
     }
 
     @Test public void failedLogProjectHistory() {
         // given
-        List<VcsRoot> vcsRoots = Arrays.<VcsRoot>asList(
-                new GitVcsRoot("/local/path", "git://some/url", settings),
-                new GitVcsRoot("/local/path2", "git://some/url", settings)
-        );
-        VcsProject project = new VcsProject(vcsRoots, fakeExecutor);
-        fakeExecutor.failAllCallsWith(new Exception());
+        when(root1.log(any(Date.class), any(Date.class))).thenThrow(new IllegalStateException());
+        when(root2.log(any(Date.class), any(Date.class))).thenThrow(new IllegalStateException());
+        VcsProject project = new VcsProject(asList(root1, root2));
 
         // when
         LogResult logResult = project.log(date("01/07/2014"), date("08/07/2014"));
@@ -93,29 +77,5 @@ public class VcsProjectTest {
         // then
         assertThat(logResult.vcsErrors().size(), equalTo(0));
         assertThat(logResult.exceptions().size(), equalTo(2));
-    }
-
-
-    private static class FakeVcsCommandExecutor extends VcsCommandExecutor {
-        public final List<VcsCommand> commands = new ArrayList<VcsCommand>();
-        private Object completeWithResult;
-        private Exception failWithException;
-
-        @SuppressWarnings("unchecked")
-        @Override public Object execute(VcsCommand command) {
-            commands.add(command);
-
-            if (completeWithResult != null) return completeWithResult;
-            if (failWithException != null) return failWithException;
-            throw new IllegalStateException();
-        }
-
-        public void completeAllCallsWith(Object result) {
-            completeWithResult = result;
-        }
-
-        public void failAllCallsWith(Exception e) {
-            failWithException = e;
-        }
     }
 }
