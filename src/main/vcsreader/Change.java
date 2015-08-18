@@ -18,6 +18,7 @@ public class Change {
     public static final String noRevision = "noRevision";
     public static final String noFilePath = "";
     public static final String failedToLoadContent = null;
+
     @NotNull public final Type type;
     @NotNull public final String filePath;
     @NotNull public final String filePathBefore;
