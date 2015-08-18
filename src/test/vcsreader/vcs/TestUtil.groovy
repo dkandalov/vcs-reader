@@ -8,7 +8,7 @@ import static org.junit.Assert.assertThat
 
 class TestUtil {
     static assertEqualCommits(LogResult logResult, List<Commit> expected) {
-        assert logResult.errors() == []
+        assert logResult.vcsErrors() == []
         assert logResult.successful
         assertEqualCommits(withSortedChanges(logResult.commits), withSortedChanges(expected))
     }

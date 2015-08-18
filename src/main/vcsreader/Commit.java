@@ -10,17 +10,17 @@ import static java.util.Collections.unmodifiableList;
 public class Commit {
     @NotNull public final String revision;
     @NotNull public final String revisionBefore;
-    @NotNull public final Date commitDate;
+    @NotNull public final Date commitTime;
     @NotNull public final String authorName;
     @NotNull public final String comment;
     // note that order of changes is specified by VCS (and may be random e.g. in case of svn)
     @NotNull public final List<Change> changes;
 
-    public Commit(@NotNull String revision, @NotNull String revisionBefore, @NotNull Date commitDate,
+    public Commit(@NotNull String revision, @NotNull String revisionBefore, @NotNull Date commitTime,
                   @NotNull String authorName, @NotNull String comment, @NotNull List<Change> changes) {
         this.revision = revision;
         this.revisionBefore = revisionBefore;
-        this.commitDate = commitDate;
+        this.commitTime = commitTime;
         this.authorName = authorName;
         this.comment = comment;
         this.changes = unmodifiableList(changes);
@@ -33,14 +33,14 @@ public class Commit {
     }
 
     public Commit withChanges(List<Change> newChanges) {
-        return new Commit(revision, revisionBefore, commitDate, authorName, comment, newChanges);
+        return new Commit(revision, revisionBefore, commitTime, authorName, comment, newChanges);
     }
 
     @Override public String toString() {
         return "Commit{" +
                 revision + ',' +
                 revisionBefore + ',' +
-                commitDate + ',' +
+                commitTime + ',' +
                 authorName + ',' +
                 comment + ',' +
                 changes +
@@ -57,7 +57,7 @@ public class Commit {
         if (!authorName.equals(commit.authorName)) return false;
         if (!changes.equals(commit.changes)) return false;
         if (!comment.equals(commit.comment)) return false;
-        if (!commitDate.equals(commit.commitDate)) return false;
+        if (!commitTime.equals(commit.commitTime)) return false;
         if (!revision.equals(commit.revision)) return false;
         if (!revisionBefore.equals(commit.revisionBefore))
             return false;
@@ -68,7 +68,7 @@ public class Commit {
     @Override public int hashCode() {
         int result = revision.hashCode();
         result = 31 * result + (revisionBefore.hashCode());
-        result = 31 * result + (commitDate.hashCode());
+        result = 31 * result + (commitTime.hashCode());
         result = 31 * result + (authorName.hashCode());
         result = 31 * result + (comment.hashCode());
         result = 31 * result + (changes.hashCode());

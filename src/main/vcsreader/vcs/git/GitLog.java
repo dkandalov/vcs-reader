@@ -74,7 +74,7 @@ class GitLog implements VcsCommand<LogResult> {
 
                 if (isSuccessful(shellCommand)) {
                     List<Change> updatedChanges = parseListOfChanges(shellCommand.stdout(), commit.revision, commit.revisionBefore);
-                    commit = new Commit(commit.revision, commit.revisionBefore, commit.commitDate, commit.authorName, commit.comment, updatedChanges);
+                    commit = new Commit(commit.revision, commit.revisionBefore, commit.commitTime, commit.authorName, commit.comment, updatedChanges);
                 }
             }
             result.add(commit);

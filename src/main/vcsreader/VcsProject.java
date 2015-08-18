@@ -141,7 +141,7 @@ public class VcsProject {
 
     public static class LogResult implements Mergeable<LogResult> {
         private final List<Commit> commits;
-        private final List<String> errors;
+        private final List<String> vcsErrors; // TODO rename to vcsErrors?
         private final List<Exception> exceptions;
 
         public LogResult() {
@@ -152,32 +152,32 @@ public class VcsProject {
             this(new ArrayList<Commit>(), new ArrayList<String>(), asList(e));
         }
 
-        public LogResult(List<Commit> commits, List<String> errors) {
-            this(commits, errors, new ArrayList<Exception>());
+        public LogResult(List<Commit> commits, List<String> vcsErrors) {
+            this(commits, vcsErrors, new ArrayList<Exception>());
         }
 
-        public LogResult(List<Commit> commits, List<String> errors, List<Exception> exceptions) {
+        public LogResult(List<Commit> commits, List<String> vcsErrors, List<Exception> exceptions) {
             this.commits = commits;
-            this.errors = errors;
+            this.vcsErrors = vcsErrors;
             this.exceptions = exceptions;
         }
 
         public LogResult mergeWith(LogResult result) {
             List<Commit> newCommits = new ArrayList<Commit>(commits);
-            List<String> newErrors = new ArrayList<String>(errors);
+            List<String> newErrors = new ArrayList<String>(vcsErrors);
             List<Exception> newExceptions = new ArrayList<Exception>(exceptions);
             newCommits.addAll(result.commits);
-            newErrors.addAll(result.errors);
+            newErrors.addAll(result.vcsErrors);
             newExceptions.addAll(result.exceptions);
             return new LogResult(newCommits, newErrors, newExceptions);
         }
 
         public boolean isSuccessful() {
-            return errors.isEmpty() && exceptions.isEmpty();
+            return vcsErrors.isEmpty() && exceptions.isEmpty();
         }
 
-        public List<String> errors() {
-            return errors;
+        public List<String> vcsErrors() {
+            return vcsErrors;
         }
 
         public List<Exception> exceptions() {
@@ -188,7 +188,7 @@ public class VcsProject {
             List<Commit> commits = new ArrayList<Commit>(this.commits);
             sort(commits, new Comparator<Commit>() {
                 @Override public int compare(@NotNull Commit commit1, @NotNull Commit commit2) {
-                    return new Long(commit1.commitDate.getTime()).compareTo(commit2.commitDate.getTime());
+                    return new Long(commit1.commitTime.getTime()).compareTo(commit2.commitTime.getTime());
                 }
             });
             return commits;
@@ -203,7 +203,7 @@ public class VcsProject {
     }
 
     public static class UpdateResult implements Mergeable<UpdateResult> {
-        private final List<String> errors;
+        private final List<String> vcsErrors;
         private final List<Exception> exceptions;
 
         public UpdateResult() {
@@ -214,8 +214,8 @@ public class VcsProject {
             this(new ArrayList<String>(), asList(e));
         }
 
-        public UpdateResult(List<String> errors, List<Exception> exceptions) {
-            this.errors = errors;
+        public UpdateResult(List<String> vcsErrors, List<Exception> exceptions) {
+            this.vcsErrors = vcsErrors;
             this.exceptions = exceptions;
         }
 
@@ -224,15 +224,15 @@ public class VcsProject {
         }
 
         @Override public UpdateResult mergeWith(UpdateResult result) {
-            List<String> newErrors = new ArrayList<String>(errors);
+            List<String> newErrors = new ArrayList<String>(vcsErrors);
             List<Exception> newExceptions = new ArrayList<Exception>(exceptions);
-            newErrors.addAll(result.errors);
+            newErrors.addAll(result.vcsErrors);
             newExceptions.addAll(result.exceptions);
             return new UpdateResult(newErrors, newExceptions);
         }
 
-        public List<String> errors() {
-            return errors;
+        public List<String> vcsErrors() {
+            return vcsErrors;
         }
 
         public List<Exception> exceptions() {
@@ -240,12 +240,12 @@ public class VcsProject {
         }
 
         public boolean isSuccessful() {
-            return errors.isEmpty() && exceptions.isEmpty();
+            return vcsErrors.isEmpty() && exceptions.isEmpty();
         }
     }
 
     public static class CloneResult implements Mergeable<CloneResult> {
-        private final List<String> errors;
+        private final List<String> vcsErrors;
         private final List<Exception> exceptions;
 
         public CloneResult() {
@@ -256,25 +256,25 @@ public class VcsProject {
             this(new ArrayList<String>(), asList(e));
         }
 
-        public CloneResult(List<String> errors, List<Exception> exceptions) {
-            this.errors = errors;
+        public CloneResult(List<String> vcsErrors, List<Exception> exceptions) {
+            this.vcsErrors = vcsErrors;
             this.exceptions = exceptions;
         }
 
-        public CloneResult(List<String> errors) {
-            this(errors, new ArrayList<Exception>());
+        public CloneResult(List<String> vcsErrors) {
+            this(vcsErrors, new ArrayList<Exception>());
         }
 
         @Override public CloneResult mergeWith(CloneResult result) {
-            List<String> newErrors = new ArrayList<String>(errors);
+            List<String> newErrors = new ArrayList<String>(vcsErrors);
             List<Exception> newExceptions = new ArrayList<Exception>(exceptions);
-            newErrors.addAll(result.errors);
+            newErrors.addAll(result.vcsErrors);
             newExceptions.addAll(result.exceptions);
             return new CloneResult(newErrors, newExceptions);
         }
 
-        public List<String> errors() {
-            return errors;
+        public List<String> vcsErrors() {
+            return vcsErrors;
         }
 
         public List<Exception> exceptions() {
@@ -282,7 +282,7 @@ public class VcsProject {
         }
 
         public boolean isSuccessful() {
-            return errors.isEmpty() && exceptions.isEmpty();
+            return vcsErrors.isEmpty() && exceptions.isEmpty();
         }
     }
 }

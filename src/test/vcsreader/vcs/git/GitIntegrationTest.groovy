@@ -20,7 +20,7 @@ class GitIntegrationTest {
 
     @Test void "clone project"() {
         def cloneResult = project.cloneToLocal()
-        assert cloneResult.errors().empty
+        assert cloneResult.vcsErrors().empty
         assert cloneResult.isSuccessful()
     }
 
@@ -31,13 +31,13 @@ class GitIntegrationTest {
         def cloneResult = project.cloneToLocal()
 
         assert !cloneResult.isSuccessful()
-        assert cloneResult.errors().size() == 1
+        assert cloneResult.vcsErrors().size() == 1
     }
 
     @Test void "update project"() {
         project.cloneToLocal()
         def updateResult = project.update()
-        assert updateResult.errors().empty
+        assert updateResult.vcsErrors().empty
         assert updateResult.isSuccessful()
     }
 
@@ -47,7 +47,7 @@ class GitIntegrationTest {
 
         def updateResult = project.update()
         assert !updateResult.isSuccessful()
-        assert updateResult.errors() != []
+        assert updateResult.vcsErrors() != []
     }
 
     @Test void "log empty list of commits from project history"() {
@@ -55,7 +55,7 @@ class GitIntegrationTest {
         def logResult = project.log(date("01/08/2014"), date("02/08/2014"))
 
         assert logResult.commits.empty
-        assert logResult.errors().empty
+        assert logResult.vcsErrors().empty
         assert logResult.isSuccessful()
     }
 
@@ -185,7 +185,7 @@ class GitIntegrationTest {
         assert change.type == MODIFICATION
         assert change.content() == "file2 new content"
         assert change.contentBefore() == "file2 content"
-        assert logResult.errors().empty
+        assert logResult.vcsErrors().empty
         assert logResult.isSuccessful()
     }
 
@@ -197,7 +197,7 @@ class GitIntegrationTest {
         assert change.type == NEW
         assert change.content() == "file2 content"
         assert change.contentBefore() == ""
-        assert logResult.errors().empty
+        assert logResult.vcsErrors().empty
         assert logResult.isSuccessful()
     }
 
@@ -209,7 +209,7 @@ class GitIntegrationTest {
         assert change.type == DELETED
         assert change.content() == ""
         assert change.contentBefore() == "file1 content"
-        assert logResult.errors().empty
+        assert logResult.vcsErrors().empty
         assert logResult.isSuccessful()
     }
 

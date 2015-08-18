@@ -38,7 +38,7 @@ public class VcsProjectTest {
                 new GitClone("/usr/bin/git", "git://some/url", "/local/path"),
                 new GitClone("/usr/bin/git", "git://some/url", "/local/path2")
         )));
-        assertThat(cloneResult.errors().size(), equalTo(0));
+        assertThat(cloneResult.vcsErrors().size(), equalTo(0));
         assertThat(cloneResult.exceptions().size(), equalTo(0));
     }
 
@@ -53,7 +53,7 @@ public class VcsProjectTest {
 
         // then
         assertThat(fakeExecutor.commands, equalTo(Collections.<VcsCommand>emptyList()));
-        assertThat(cloneResult.errors().size(), equalTo(0));
+        assertThat(cloneResult.vcsErrors().size(), equalTo(0));
         assertThat(cloneResult.exceptions().size(), equalTo(0));
     }
 
@@ -74,7 +74,7 @@ public class VcsProjectTest {
                 new GitLog("/usr/bin/git", "/local/path", date("01/07/2014"), date("08/07/2014")),
                 new GitLog("/usr/bin/git", "/local/path2", date("01/07/2014"), date("08/07/2014"))
         )));
-        assertThat(logResult.errors().size(), equalTo(0));
+        assertThat(logResult.vcsErrors().size(), equalTo(0));
         assertThat(logResult.exceptions().size(), equalTo(0));
     }
 
@@ -91,7 +91,7 @@ public class VcsProjectTest {
         LogResult logResult = project.log(date("01/07/2014"), date("08/07/2014"));
 
         // then
-        assertThat(logResult.errors().size(), equalTo(0));
+        assertThat(logResult.vcsErrors().size(), equalTo(0));
         assertThat(logResult.exceptions().size(), equalTo(2));
     }
 
