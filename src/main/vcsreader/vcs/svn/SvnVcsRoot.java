@@ -1,17 +1,17 @@
 package vcsreader.vcs.svn;
 
 import vcsreader.VcsRoot;
-import vcsreader.vcs.common.VcsCommandExecutor;
+import vcsreader.vcs.commandlistener.VcsCommandObserver;
 
 import java.util.Date;
 
 import static vcsreader.VcsProject.*;
 
-public class SvnVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
+public class SvnVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
     public final String repositoryUrl;
     public final SvnSettings settings;
     private String repositoryRoot;
-    private VcsCommandExecutor executor;
+    private VcsCommandObserver observer;
 
     public SvnVcsRoot(String repositoryUrl, SvnSettings settings) {
         this.repositoryUrl = repositoryUrl;
@@ -28,14 +28,14 @@ public class SvnVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
 
     @Override public LogResult log(Date fromDate, Date toDate) {
         if (repositoryRoot == null) {
-            SvnInfo.Result result = executor.execute(new SvnInfo(settings.svnPath, repositoryUrl));
+            SvnInfo.Result result = observer.executeAndObserve(new SvnInfo(settings.svnPath, repositoryUrl));
             repositoryRoot = result.repositoryRoot;
         }
-        return executor.execute(new SvnLog(settings.svnPath, repositoryUrl, repositoryRoot, fromDate, toDate, settings.useMergeHistory));
+        return observer.executeAndObserve(new SvnLog(settings.svnPath, repositoryUrl, repositoryRoot, fromDate, toDate, settings.useMergeHistory));
     }
 
     @Override public LogContentResult contentOf(String filePath, String revision) {
-        return executor.execute(new SvnLogFileContent(
+        return observer.executeAndObserve(new SvnLogFileContent(
                 settings.svnPath,
                 repositoryUrl,
                 filePath,
@@ -44,8 +44,8 @@ public class SvnVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
         ));
     }
 
-    @Override public void setExecutor(VcsCommandExecutor commandExecutor) {
-        this.executor = commandExecutor;
+    @Override public void setObserver(VcsCommandObserver observer) {
+        this.observer = observer;
     }
 
     @Override public String toString() {

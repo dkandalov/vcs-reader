@@ -3,7 +3,7 @@ package vcsreader.vcs.svn;
 import vcsreader.Change;
 import vcsreader.Commit;
 import vcsreader.lang.ShellCommand;
-import vcsreader.vcs.common.VcsCommand;
+import vcsreader.vcs.commandlistener.VcsCommand;
 
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;

@@ -2,7 +2,7 @@ package vcsreader.vcs.git;
 
 import vcsreader.VcsProject;
 import vcsreader.lang.ShellCommand;
-import vcsreader.vcs.common.VcsCommand;
+import vcsreader.vcs.commandlistener.VcsCommand;
 
 import static java.util.Arrays.asList;
 import static vcsreader.vcs.git.GitShellCommand.isSuccessful;

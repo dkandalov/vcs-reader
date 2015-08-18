@@ -1,7 +1,7 @@
 package vcsreader.vcs.git;
 
 import vcsreader.lang.ShellCommand;
-import vcsreader.vcs.common.VcsCommand;
+import vcsreader.vcs.commandlistener.VcsCommand;
 
 import static vcsreader.VcsProject.UpdateResult;
 import static vcsreader.vcs.git.GitShellCommand.isSuccessful;

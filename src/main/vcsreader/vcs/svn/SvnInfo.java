@@ -2,7 +2,7 @@ package vcsreader.vcs.svn;
 
 import org.jetbrains.annotations.Nullable;
 import vcsreader.lang.ShellCommand;
-import vcsreader.vcs.common.VcsCommand;
+import vcsreader.vcs.commandlistener.VcsCommand;
 
 import java.util.ArrayList;
 import java.util.List;

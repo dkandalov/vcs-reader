@@ -1,17 +1,17 @@
 package vcsreader.vcs.git;
 
 import vcsreader.VcsRoot;
-import vcsreader.vcs.common.VcsCommandExecutor;
+import vcsreader.vcs.commandlistener.VcsCommandObserver;
 
 import java.util.Date;
 
 import static vcsreader.VcsProject.*;
 
-public class GitVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
+public class GitVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
     public final String vcsRootPath;
     public final String repositoryUrl;
     public final GitSettings settings;
-    private VcsCommandExecutor executor;
+    private VcsCommandObserver observer;
 
     public GitVcsRoot(String vcsRootPath, String repositoryUrl) {
         this(vcsRootPath, repositoryUrl, GitSettings.defaults());
@@ -24,23 +24,23 @@ public class GitVcsRoot implements VcsRoot, VcsRoot.WithExecutor {
     }
 
     @Override public CloneResult cloneToLocal() {
-        return executor.execute(new GitClone(settings.gitPath, repositoryUrl, vcsRootPath));
+        return observer.executeAndObserve(new GitClone(settings.gitPath, repositoryUrl, vcsRootPath));
     }
 
     @Override public UpdateResult update() {
-        return executor.execute(new GitUpdate(settings.gitPath, vcsRootPath));
+        return observer.executeAndObserve(new GitUpdate(settings.gitPath, vcsRootPath));
     }
 
     @Override public LogResult log(Date fromDate, Date toDate) {
-        return executor.execute(new GitLog(settings.gitPath, vcsRootPath, fromDate, toDate));
+        return observer.executeAndObserve(new GitLog(settings.gitPath, vcsRootPath, fromDate, toDate));
     }
 
     @Override public LogContentResult contentOf(String filePath, String revision) {
-        return executor.execute(new GitLogFileContent(settings.gitPath, vcsRootPath, filePath, revision, settings.filesCharset));
+        return observer.executeAndObserve(new GitLogFileContent(settings.gitPath, vcsRootPath, filePath, revision, settings.filesCharset));
     }
 
-    @Override public void setExecutor(VcsCommandExecutor commandExecutor) {
-        this.executor = commandExecutor;
+    @Override public void setObserver(VcsCommandObserver observer) {
+        this.observer = observer;
     }
 
     @SuppressWarnings("RedundantIfStatement")

@@ -1,6 +1,6 @@
 package vcsreader;
 
-import vcsreader.vcs.common.VcsCommandExecutor;
+import vcsreader.vcs.commandlistener.VcsCommandObserver;
 
 import java.util.Date;
 
@@ -15,7 +15,7 @@ public interface VcsRoot {
 
     LogContentResult contentOf(String filePath, String revision);
 
-    interface WithExecutor {
-        void setExecutor(VcsCommandExecutor commandExecutor);
+    interface WithCommandObserver {
+        void setObserver(VcsCommandObserver commandExecutor);
     }
 }

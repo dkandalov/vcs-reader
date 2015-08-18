@@ -1,7 +1,8 @@
 package vcsreader;
 
 import org.jetbrains.annotations.NotNull;
-import vcsreader.vcs.common.VcsCommandExecutor;
+import vcsreader.vcs.commandlistener.VcsCommandListener;
+import vcsreader.vcs.commandlistener.VcsCommandObserver;
 
 import java.util.*;
 
@@ -10,28 +11,28 @@ import static java.util.Collections.sort;
 
 public class VcsProject {
     private final List<VcsRoot> vcsRoots;
-    private final VcsCommandExecutor commandExecutor;
+    private final VcsCommandObserver commandObserver;
 
     public VcsProject(VcsRoot... vcsRoots) {
-        this(asList(vcsRoots), new VcsCommandExecutor());
+        this(asList(vcsRoots), new VcsCommandObserver());
     }
 
     public VcsProject(List<VcsRoot> vcsRoots) {
-        this(vcsRoots, new VcsCommandExecutor());
+        this(vcsRoots, new VcsCommandObserver());
     }
 
-    public VcsProject(List<VcsRoot> vcsRoots, VcsCommandExecutor commandExecutor) {
+    private VcsProject(List<VcsRoot> vcsRoots, VcsCommandObserver commandObserver) {
         this.vcsRoots = vcsRoots;
-        this.commandExecutor = commandExecutor;
+        this.commandObserver = commandObserver;
         for (VcsRoot vcsRoot : vcsRoots) {
-            if (vcsRoot instanceof VcsRoot.WithExecutor) {
-                ((VcsRoot.WithExecutor) vcsRoot).setExecutor(commandExecutor);
+            if (vcsRoot instanceof VcsRoot.WithCommandObserver) {
+                ((VcsRoot.WithCommandObserver) vcsRoot).setObserver(commandObserver);
             }
         }
     }
 
-    public VcsProject addListener(VcsCommandExecutor.Listener listener) {
-        commandExecutor.add(listener);
+    public VcsProject addListener(VcsCommandListener listener) {
+        commandObserver.add(listener);
         return this;
     }
 
