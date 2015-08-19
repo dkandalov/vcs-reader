@@ -183,8 +183,8 @@ class GitIntegrationTest {
 
         def change = logResult.commits.first().changes.first()
         assert change.type == MODIFICATION
-        assert change.content() == "file2 new content"
-        assert change.contentBefore() == "file2 content"
+        assert change.content().text == "file2 new content"
+        assert change.contentBefore().text == "file2 content"
         assert logResult.vcsErrors().empty
         assert logResult.isSuccessful()
     }
@@ -195,8 +195,8 @@ class GitIntegrationTest {
 
         def change = logResult.commits.first().changes.first()
         assert change.type == NEW
-        assert change.content() == "file2 content"
-        assert change.contentBefore() == ""
+        assert change.content().text == "file2 content"
+        assert change.contentBefore() == Change.Content.none
         assert logResult.vcsErrors().empty
         assert logResult.isSuccessful()
     }
@@ -207,8 +207,8 @@ class GitIntegrationTest {
 
         def change = logResult.commits.first().changes.first()
         assert change.type == DELETED
-        assert change.content() == ""
-        assert change.contentBefore() == "file1 content"
+        assert change.content() == Change.Content.none
+        assert change.contentBefore().text == "file1 content"
         assert logResult.vcsErrors().empty
         assert logResult.isSuccessful()
     }

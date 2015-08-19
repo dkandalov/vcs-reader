@@ -17,7 +17,6 @@ public class Change {
 
     public static final String noRevision = "noRevision";
     public static final String noFilePath = "";
-    public static final String failedToLoadContent = null;
 
     @NotNull public final Type type;
     @NotNull public final String filePath;
@@ -45,16 +44,16 @@ public class Change {
         this.revisionBefore = revisionBefore;
     }
 
-    @Nullable public String content() {
-        if (filePath.equals(noFilePath)) return "";
+    @Nullable public Content content() {
+        if (filePath.equals(noFilePath)) return Content.none;
         LogContentResult logContentResult = vcsRoot.get().contentOf(filePath, revision);
-        return logContentResult.isSuccessful() ? logContentResult.text() : failedToLoadContent;
+        return logContentResult.isSuccessful() ? new Content(logContentResult.text()) : Content.failedToLoad;
     }
 
-    @Nullable public String contentBefore() {
-        if (filePathBefore.equals(noFilePath)) return "";
+    @Nullable public Content contentBefore() {
+        if (filePathBefore.equals(noFilePath)) return Content.none;
         LogContentResult logContentResult = vcsRoot.get().contentOf(filePathBefore, revisionBefore);
-        return logContentResult.isSuccessful() ? logContentResult.text() : failedToLoadContent;
+        return logContentResult.isSuccessful() ? new Content(logContentResult.text()) : Content.failedToLoad;
     }
 
     public void setVcsRoot(VcsRoot vcsRoot) {
@@ -88,5 +87,24 @@ public class Change {
         result = 31 * result + (revision.hashCode());
         result = 31 * result + (revisionBefore.hashCode());
         return result;
+    }
+
+    public static class Content {
+        public final static Content failedToLoad = new Content(null) {
+            @Override public String toString() {
+                return "ContentFailedToLoad";
+            }
+        };
+        public final static Content none = new Content(null) {
+            @Override public String toString() {
+                return "NoContent";
+            }
+        };
+
+        public final String text;
+
+        public Content(String text) {
+            this.text = text;
+        }
     }
 }

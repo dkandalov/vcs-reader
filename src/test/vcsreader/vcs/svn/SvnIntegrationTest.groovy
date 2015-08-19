@@ -157,8 +157,8 @@ class SvnIntegrationTest {
 
         def change = withSortedChanges(logResult.commits).first().changes.first()
         assert change.type == MODIFICATION
-        assert change.content() == "file2 new content"
-        assert change.contentBefore() == "file2 content"
+        assert change.content().text == "file2 new content"
+        assert change.contentBefore().text == "file2 content"
         assert logResult.vcsErrors().empty
         assert logResult.isSuccessful()
     }
@@ -168,8 +168,8 @@ class SvnIntegrationTest {
 
         def change = withSortedChanges(logResult.commits).first().changes.first()
         assert change.type == NEW
-        assert change.content() == "file2 content"
-        assert change.contentBefore() == ""
+        assert change.content().text == "file2 content"
+        assert change.contentBefore() == Change.Content.none
         assert logResult.vcsErrors().empty
         assert logResult.isSuccessful()
     }
@@ -179,8 +179,8 @@ class SvnIntegrationTest {
 
         def change = logResult.commits.first().changes.first()
         assert change.type == DELETED
-        assert change.content() == ""
-        assert change.contentBefore() == "file1 content"
+        assert change.content() == Change.Content.none
+        assert change.contentBefore().text == "file1 content"
         assert logResult.vcsErrors().empty
         assert logResult.isSuccessful()
     }
@@ -205,11 +205,11 @@ class SvnIntegrationTest {
 
         def logResult = nonRootProject.log(date("01/08/2014"), date("01/09/2014"))
         assert logResult.commits[0].comment == "moved and renamed file1"
-        assert logResult.commits[0].changes[0].contentBefore() == "" // no content because file was moved from outside of project root
-        assert logResult.commits[0].changes[0].content() == "file1 content"
+        assert logResult.commits[0].changes[0].contentBefore() == Change.Content.none // no content because file was moved from outside of project root
+        assert logResult.commits[0].changes[0].content().text == "file1 content"
         assert logResult.commits[1].comment == "deleted file1"
-        assert logResult.commits[1].changes[0].contentBefore() == "file1 content"
-        assert logResult.commits[1].changes[0].content() == ""
+        assert logResult.commits[1].changes[0].contentBefore().text == "file1 content"
+        assert logResult.commits[1].changes[0].content() == Change.Content.none
     }
 
     @Test void "get repository root"() {
