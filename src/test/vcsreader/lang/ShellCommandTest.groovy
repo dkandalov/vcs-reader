@@ -32,6 +32,6 @@ class ShellCommandTest {
 
     @Test void "shell command description"() {
         assert new ShellCommand("ls", "-l").describe() == "ls -l"
-        assert new ShellCommand("ls", "-l").workingDir("/").describe() == "ls -l (running in /)"
+        assert new ShellCommand("ls", "-l").workingDir("/").describe() == "ls -l (working directory '/')"
     }
 }
