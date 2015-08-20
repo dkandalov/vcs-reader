@@ -112,7 +112,7 @@ public class ShellCommand {
             if (i < commandAndArgs.length - 1) result += " ";
         }
         if (workingDirectory != null) {
-            result += " (running in " + workingDirectory + ")";
+            result += " (working directory '" + workingDirectory + "')";
         }
         return result;
     }
