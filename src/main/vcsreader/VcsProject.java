@@ -14,16 +14,12 @@ public class VcsProject {
     private final VcsCommandObserver commandObserver;
 
     public VcsProject(VcsRoot... vcsRoots) {
-        this(asList(vcsRoots), new VcsCommandObserver());
+        this(asList(vcsRoots));
     }
 
     public VcsProject(List<VcsRoot> vcsRoots) {
-        this(vcsRoots, new VcsCommandObserver());
-    }
-
-    private VcsProject(List<VcsRoot> vcsRoots, VcsCommandObserver commandObserver) {
         this.vcsRoots = vcsRoots;
-        this.commandObserver = commandObserver;
+        this.commandObserver = new VcsCommandObserver();
         for (VcsRoot vcsRoot : vcsRoots) {
             if (vcsRoot instanceof VcsRoot.WithCommandObserver) {
                 ((VcsRoot.WithCommandObserver) vcsRoot).setObserver(commandObserver);
@@ -33,6 +29,11 @@ public class VcsProject {
 
     public VcsProject addListener(VcsCommandListener listener) {
         commandObserver.add(listener);
+        return this;
+    }
+
+    public VcsProject removeListener(VcsCommandListener listener) {
+        commandObserver.remove(listener);
         return this;
     }
 
