@@ -186,7 +186,7 @@ public class VcsProject {
             return exceptions;
         }
 
-        public List<Commit> getCommits() {
+        public List<Commit> commits() {
             List<Commit> commits = new ArrayList<Commit>(this.commits);
             sort(commits, new Comparator<Commit>() {
                 @Override public int compare(@NotNull Commit commit1, @NotNull Commit commit2) {

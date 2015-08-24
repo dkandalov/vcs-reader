@@ -35,7 +35,7 @@ class SvnIntegrationTest {
     @Test void "log empty list of commits from project history"() {
         def logResult = project.log(date("01/08/2014"), date("02/08/2014"))
 
-        assert logResult.commits.empty
+        assert logResult.commits().empty
         assert logResult.vcsErrors().empty
         assert logResult.isSuccessful()
     }
@@ -155,7 +155,7 @@ class SvnIntegrationTest {
     @Test void "log content of modified file"() {
         def logResult = project.log(date("12/08/2014"), date("13/08/2014"))
 
-        def change = withSortedChanges(logResult.commits).first().changes.first()
+        def change = withSortedChanges(logResult.commits()).first().changes.first()
         assert change.type == MODIFICATION
         assert change.content().text == "file2 new content"
         assert change.contentBefore().text == "file2 content"
@@ -166,7 +166,7 @@ class SvnIntegrationTest {
     @Test void "log content of new file"() {
         def logResult = project.log(date("11/08/2014"), date("12/08/2014"))
 
-        def change = withSortedChanges(logResult.commits).first().changes.first()
+        def change = withSortedChanges(logResult.commits()).first().changes.first()
         assert change.type == NEW
         assert change.content().text == "file2 content"
         assert change.contentBefore() == Change.Content.none
@@ -177,7 +177,7 @@ class SvnIntegrationTest {
     @Test void "log content of deleted file"() {
         def logResult = project.log(date("15/08/2014"), date("16/08/2014"))
 
-        def change = logResult.commits.first().changes.first()
+        def change = logResult.commits().first().changes.first()
         assert change.type == DELETED
         assert change.content() == Change.Content.none
         assert change.contentBefore().text == "file1 content"
@@ -204,12 +204,12 @@ class SvnIntegrationTest {
         def nonRootProject = new VcsProject([new SvnVcsRoot(repositoryUrl + "/folder2", svnSettings)])
 
         def logResult = nonRootProject.log(date("01/08/2014"), date("01/09/2014"))
-        assert logResult.commits[0].comment == "moved and renamed file1"
-        assert logResult.commits[0].changes[0].contentBefore() == Change.Content.none // no content because file was moved from outside of project root
-        assert logResult.commits[0].changes[0].content().text == "file1 content"
-        assert logResult.commits[1].comment == "deleted file1"
-        assert logResult.commits[1].changes[0].contentBefore().text == "file1 content"
-        assert logResult.commits[1].changes[0].content() == Change.Content.none
+        assert logResult.commits()[0].comment == "moved and renamed file1"
+        assert logResult.commits()[0].changes[0].contentBefore() == Change.Content.none // no content because file was moved from outside of project root
+        assert logResult.commits()[0].changes[0].content().text == "file1 content"
+        assert logResult.commits()[1].comment == "deleted file1"
+        assert logResult.commits()[1].changes[0].contentBefore().text == "file1 content"
+        assert logResult.commits()[1].changes[0].content() == Change.Content.none
     }
 
     @Test void "get repository root"() {

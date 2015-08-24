@@ -60,7 +60,7 @@ public class VcsProjectTest {
         LogResult logResult = project.log(date("01/07/2014"), date("08/07/2014"));
 
         // then
-        assertThat(logResult.getCommits(), equalTo(asList(commit1, commit2)));
+        assertThat(logResult.commits(), equalTo(asList(commit1, commit2)));
         assertThat(logResult.vcsErrors(), equalTo(asList("some error")));
         assertThat(logResult.exceptions().size(), equalTo(0));
     }

@@ -54,7 +54,7 @@ class GitIntegrationTest {
         project.cloneToLocal()
         def logResult = project.log(date("01/08/2014"), date("02/08/2014"))
 
-        assert logResult.commits.empty
+        assert logResult.commits().empty
         assert logResult.vcsErrors().empty
         assert logResult.isSuccessful()
     }
@@ -181,7 +181,7 @@ class GitIntegrationTest {
         project.cloneToLocal()
         def logResult = project.log(date("12/08/2014"), date("13/08/2014"))
 
-        def change = logResult.commits.first().changes.first()
+        def change = logResult.commits().first().changes.first()
         assert change.type == MODIFICATION
         assert change.content().text == "file2 new content"
         assert change.contentBefore().text == "file2 content"
@@ -193,7 +193,7 @@ class GitIntegrationTest {
         project.cloneToLocal()
         def logResult = project.log(date("11/08/2014"), date("12/08/2014"))
 
-        def change = logResult.commits.first().changes.first()
+        def change = logResult.commits().first().changes.first()
         assert change.type == NEW
         assert change.content().text == "file2 content"
         assert change.contentBefore() == Change.Content.none
@@ -205,7 +205,7 @@ class GitIntegrationTest {
         project.cloneToLocal()
         def logResult = project.log(date("15/08/2014"), date("16/08/2014"))
 
-        def change = logResult.commits.first().changes.first()
+        def change = logResult.commits().first().changes.first()
         assert change.type == DELETED
         assert change.content() == Change.Content.none
         assert change.contentBefore().text == "file1 content"

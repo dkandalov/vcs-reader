@@ -10,7 +10,7 @@ class TestUtil {
     static assertEqualCommits(LogResult logResult, List<Commit> expected) {
         assert logResult.vcsErrors() == []
         assert logResult.successful
-        assertEqualCommits(withSortedChanges(logResult.commits), withSortedChanges(expected))
+        assertEqualCommits(withSortedChanges(logResult.commits()), withSortedChanges(expected))
     }
 
     static assertEqualCommits(List<Commit> actual, List<Commit> expected) {
