@@ -19,6 +19,7 @@ import java.util.*;
 
 import static vcsreader.Change.Type.*;
 import static vcsreader.Change.noFilePath;
+import static vcsreader.Change.noRevision;
 
 class CommitParser {
     static List<Commit> parseCommits(String xml) {
@@ -52,7 +53,7 @@ class CommitParser {
         private List<Change> changes = new ArrayList<Change>();
 
         private String filePath;
-        private Change.Type changeType;
+        private SvnChangeType changeType;
 
         private boolean expectAuthor;
         private boolean expectDate;
@@ -71,8 +72,8 @@ class CommitParser {
             dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         }
 
-        @Override
-        public void startElement(String uri, String localName, @NotNull String name, Attributes attributes) throws SAXException {
+        @Override public void startElement(@NotNull String uri, @NotNull String localName,
+                                           @NotNull String name, @NotNull Attributes attributes) throws SAXException {
             if (name.equals("logentry")) {
                 revision = attributes.getValue("revision");
                 revisionBefore = previous(revision);
@@ -114,7 +115,7 @@ class CommitParser {
             return path.charAt(0) == '/' ? path.substring(1) : null;
         }
 
-        @Override public void endElement(String uri, String localName, @NotNull String name) throws SAXException {
+        @Override public void endElement(String uri, @NotNull String localName, @NotNull String name) throws SAXException {
             if (name.equals("logentry")) {
                 Iterator<Change> i = changes.iterator();
                 while (i.hasNext()) {
@@ -134,12 +135,19 @@ class CommitParser {
                     if (isCopy) {
                         changes.add(new Change(MOVED, filePath, copyFromFilePath, revision, copyFromRevision));
                         movedPaths.add(copyFromFilePath);
-                    } else if (changeType == NEW) {
-                        changes.add(new Change(changeType, filePath, revision));
-                    } else if (changeType == DELETED) {
-                        changes.add(new Change(changeType, noFilePath, filePath, revision, revisionBefore));
+
+                    } else if (changeType == SvnChangeType.NEW) {
+                        changes.add(new Change(NEW, filePath, revision));
+
+                    } else if (changeType == SvnChangeType.DELETED) {
+                        changes.add(new Change(DELETED, noFilePath, filePath, revision, revisionBefore));
+
+                    } else if (changeType == SvnChangeType.REPLACED) {
+                        changes.add(new Change(DELETED, noFilePath, filePath, revision, revisionBefore));
+                        changes.add(new Change(NEW, filePath, revision));
+
                     } else {
-                        changes.add(new Change(changeType, filePath, filePath, revision, revisionBefore));
+                        changes.add(new Change(MODIFICATION, filePath, filePath, revision, revisionBefore));
                     }
                 }
             } else if (name.equals("path")) {
@@ -158,20 +166,28 @@ class CommitParser {
             }
         }
 
-        private static Change.Type asChangeType(String action) {
-            if (action.equals("A")) return NEW;
-            else if (action.equals("D")) return DELETED;
-            else if (action.equals("M")) return MODIFICATION;
+        private static SvnChangeType asChangeType(String action) {
+            if (action.equals("A")) return SvnChangeType.NEW;
+            else if (action.equals("D")) return SvnChangeType.DELETED;
+            else if (action.equals("M")) return SvnChangeType.MODIFICATION;
+            else if (action.equals("R")) return SvnChangeType.REPLACED;
             else throw new IllegalStateException("Unknown svn action: " + action);
         }
 
         private static String previous(String revision) {
             try {
                 Integer i = Integer.valueOf(revision);
-                return i == 1 ? Change.noRevision : String.valueOf(i - 1);
+                return i == 1 ? noRevision : String.valueOf(i - 1);
             } catch (NumberFormatException e) {
                 return "";
             }
+        }
+
+        public enum SvnChangeType {
+            NEW,
+            DELETED,
+            REPLACED,
+            MODIFICATION
         }
     }
 

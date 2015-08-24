@@ -18,6 +18,8 @@ class SvnRepositoryCreator
       raise("#{it} already exists") if Dir.exist?(it)
       FileUtils.mkpath(it)
     }
+    puts "Svn repo: '#{@repo_path}'"
+    puts "Svn project: '#{@project_path}'"
 
     puts `#{@svn_admin} create #{@repo_path}`
     create_dummy_hook("#{@repo_path}/hooks/pre-revprop-change")
@@ -55,7 +57,16 @@ class SvnRepositoryCreator
 
       puts `echo "non-ascii содержимое" > "non-ascii.txt"`
       add "non-ascii.txt"
-      commit "non-ascii комментарий", "2014-08-17T16:00:00.000000Z", @author
+      commit "non-ascii комментарий", "2014-08-17T15:00:00.000000Z", @author
+
+      puts `echo "text" > replaced-file.txt`
+      add "replaced-file.txt"
+      commit "added file to be replaced", "2014-08-18T15:00:00.000000Z", @author
+
+      rm "replaced-file.txt"
+      puts `echo "replaced text" > replaced-file.txt`
+      add "replaced-file.txt"
+      commit "replaced file", "2014-08-19T15:00:00.000000Z", @author
     end
 
     update_test_config

@@ -152,6 +152,28 @@ class SvnIntegrationTest {
         ])
     }
 
+    @Test void "log replaced file"() {
+        def logResult = project.log(date("18/08/2014"), date("20/08/2014"))
+
+        assertEqualCommits(logResult, [
+                new Commit(
+                        revision(9), revision(8),
+                        dateTime("15:00:00 18/08/2014"),
+                        author,
+                        "added file to be replaced",
+                        [new Change(NEW, "replaced-file.txt", "", revision(9), noRevision)]
+                ),
+                new Commit(
+                        revision(10), revision(9),
+                        dateTime("15:00:00 19/08/2014"),
+                        author,
+                        "replaced file",
+		                [new Change(DELETED, "", "replaced-file.txt", revision(10), revision(9)),
+				         new Change(NEW, "replaced-file.txt", "", revision(10), noRevision)]
+                )
+        ])
+    }
+
     @Test void "log content of modified file"() {
         def logResult = project.log(date("12/08/2014"), date("13/08/2014"))
 

@@ -52,14 +52,14 @@ class SvnLog implements VcsCommand<LogResult> {
         return createShellCommand(
                 pathToSvn, "log",
                 repositoryUrl,
-                "-r", dateRange(fromDate, toDate),
+                "-r", svnDateRange(fromDate, toDate),
                 mergeHistory,
                 "--verbose",
                 "--xml"
         ).withCharset(svnXmlCharset);
     }
 
-    private static String dateRange(Date fromDate, Date toDate) {
+    private static String svnDateRange(Date fromDate, Date toDate) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         return "{" + dateFormat.format(fromDate) + "}:{" + dateFormat.format(toDate) + "}";
     }
