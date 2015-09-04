@@ -177,6 +177,21 @@ class GitIntegrationTest {
         ])
     }
 
+    @Test void "log commit with non-ascii message and file content"() {
+        project.cloneToLocal()
+        def logResult = project.log(date("17/08/2014"), date("18/08/2014"))
+
+        assertEqualCommits(logResult, [
+                new Commit(
+                        revision(8), revision(7),
+                        dateTime("15:00:00 17/08/2014"),
+                        author,
+                        "non-ascii комментарий",
+                        [new Change(NEW, "non-ascii.txt", "", revision(8), noRevision)]
+                )
+        ])
+    }
+
     @Test void "log content of modified file"() {
         project.cloneToLocal()
         def logResult = project.log(date("12/08/2014"), date("13/08/2014"))
