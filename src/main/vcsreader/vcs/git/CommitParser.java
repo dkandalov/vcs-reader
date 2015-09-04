@@ -15,8 +15,8 @@ class CommitParser {
     static List<Commit> parseListOfCommits(String stdout) {
         List<Commit> commits = new ArrayList<Commit>();
 
-        String commitStartSeparator = "\u0011\u0012\u0013\n";
-        String commitFieldsSeparator = "\u0010\u0011\u0012\n";
+        String commitStartSeparator = "\u0015\u0016\u0017\u0018\u0019";
+        String commitFieldsSeparator = "\u0019\u0018\u0017\u0016\u0015";
 
         List<String> commitsAsString = split(stdout, commitStartSeparator);
 

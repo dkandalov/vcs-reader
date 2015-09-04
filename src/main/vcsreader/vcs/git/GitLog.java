@@ -100,8 +100,8 @@ class GitLog implements VcsCommand<LogResult> {
         String authorName = "%an"; // see http://stackoverflow.com/questions/18750808/difference-between-author-and-committer-in-git
         String rawBody = "%s%n%n%-b"; // based on git4idea.checkin.GitCheckinEnvironment.GitCheckinOptions.getLastCommitMessage()
 
-        String commitStartSeparator = "%x11%x12%x13%n";
-        String fieldSeparator = "%x10%x11%x12%n";
+        String commitStartSeparator = "%x15%x16%x17%x18%x19";
+        String fieldSeparator = "%x19%x18%x17%x16%x15";
 
         return "--pretty=format:" +
                 commitStartSeparator +
