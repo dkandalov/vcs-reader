@@ -10,10 +10,10 @@ public class VcsCommandObserverTest {
         final VcsCommand[] onBeforeCommands = new VcsCommand[1];
         final VcsCommand[] onAfterCommands = new VcsCommand[1];
         VcsCommandObserver observer = new VcsCommandObserver().add(new VcsCommandListener() {
-            @Override public void beforeCommand(VcsCommand command) {
+            @Override public void beforeCommand(VcsCommand<?> command) {
                 onBeforeCommands[0] = command;
             }
-            @Override public void afterCommand(VcsCommand command) {
+            @Override public void afterCommand(VcsCommand<?> command) {
                 onAfterCommands[0] = command;
             }
         });
