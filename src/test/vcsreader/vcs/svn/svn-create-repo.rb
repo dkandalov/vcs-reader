@@ -59,14 +59,21 @@ class SvnRepositoryCreator
       add "non-ascii.txt"
       commit "non-ascii комментарий", "2014-08-17T15:00:00.000000Z", @author
 
+      puts `echo "commit with no comment" > file4.txt`
+      add "file4.txt"
+      commit "", "2014-08-18T16:00:00.000000Z", @author
+
+      `#{@svn} propset dummyproperty 1 file4.txt`
+      commit "commit with no changes", "2014-08-19T17:00:00.000000Z", @author
+
       puts `echo "text" > replaced-file.txt`
       add "replaced-file.txt"
-      commit "added file to be replaced", "2014-08-18T15:00:00.000000Z", @author
+      commit "added file to be replaced", "2014-08-20T15:00:00.000000Z", @author
 
       rm "replaced-file.txt"
       puts `echo "replaced text" > replaced-file.txt`
       add "replaced-file.txt"
-      commit "replaced file", "2014-08-19T15:00:00.000000Z", @author
+      commit "replaced file", "2014-08-21T15:00:00.000000Z", @author
     end
 
     update_test_config
@@ -74,6 +81,7 @@ class SvnRepositoryCreator
 
   private
 
+  # need this to allow svn property changes
   def create_dummy_hook(file_path)
     puts `echo "#!/bin/sh\nexit 0" > #{file_path}`
     puts `chmod +x #{file_path}`
@@ -108,7 +116,7 @@ class SvnRepositoryCreator
   def update_test_config
     revisions_literal = (1..@revisions).to_a.join(",")
     replace(
-        /"revisions": \[.*\]/,
+        /"revisions": \[.*\]/m,
         "\"revisions\": [#{revisions_literal}]",
         @path_to_config
     )

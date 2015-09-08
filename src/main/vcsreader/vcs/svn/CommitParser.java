@@ -60,6 +60,7 @@ class CommitParser {
         private boolean expectComment;
         private boolean expectFileName;
         private boolean isFileChange;
+        private boolean isTextModification;
         private boolean isCopy;
         private String copyFromFilePath;
         private String copyFromRevision;
@@ -95,6 +96,7 @@ class CommitParser {
                 copyFromRevision = attributes.getValue("copyfrom-rev");
                 filePath = "";
                 expectFileName = true;
+                isTextModification = Boolean.parseBoolean(attributes.getValue("text-mods"));
             }
         }
 
@@ -147,7 +149,9 @@ class CommitParser {
                         changes.add(new Change(NEW, filePath, revision));
 
                     } else {
-                        changes.add(new Change(MODIFICATION, filePath, filePath, revision, revisionBefore));
+                        if (isTextModification) { // ignore svn properties modifications
+                            changes.add(new Change(MODIFICATION, filePath, filePath, revision, revisionBefore));
+                        }
                     }
                 }
             } else if (name.equals("path")) {

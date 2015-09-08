@@ -152,29 +152,74 @@ class SvnIntegrationTest {
         ])
     }
 
-    @Test void "log replaced file"() {
-        def logResult = project.log(date("18/08/2014"), date("20/08/2014"))
+	@Test void "log commit with non-ascii message and file content"() {
+		project.cloneToLocal()
+		def logResult = project.log(date("17/08/2014"), date("18/08/2014"))
+
+		assertEqualCommits(logResult, [
+				new Commit(
+						revision(8), revision(7),
+						dateTime("15:00:00 17/08/2014"),
+						author,
+						"non-ascii комментарий",
+						[new Change(NEW, "non-ascii.txt", "", revision(8), noRevision)]
+				)
+		])
+	}
+
+	@Test void "log commit with empty message"() {
+		project.cloneToLocal()
+		def logResult = project.log(date("18/08/2014"), date("19/08/2014"))
+
+		assertEqualCommits(logResult, [
+				new Commit(
+						revision(9), revision(8),
+						dateTime("16:00:00 18/08/2014"),
+						author,
+						"",
+						[new Change(NEW, "file4.txt", "", revision(9), noRevision)]
+				)
+		])
+	}
+
+	@Test void "log commit with no changes"() {
+		project.cloneToLocal()
+		def logResult = project.log(date("19/08/2014"), date("20/08/2014"))
+
+		assertEqualCommits(logResult, [
+				new Commit(
+						revision(10), revision(9),
+						dateTime("17:00:00 19/08/2014"),
+						author,
+						"commit with no changes",
+						[]
+				)
+		])
+	}
+
+	@Test void "log replaced file"() {
+        def logResult = project.log(date("20/08/2014"), date("22/08/2014"))
 
         assertEqualCommits(logResult, [
                 new Commit(
-                        revision(9), revision(8),
-                        dateTime("15:00:00 18/08/2014"),
+                        revision(11), revision(10),
+                        dateTime("15:00:00 20/08/2014"),
                         author,
                         "added file to be replaced",
-                        [new Change(NEW, "replaced-file.txt", "", revision(9), noRevision)]
+                        [new Change(NEW, "replaced-file.txt", "", revision(11), noRevision)]
                 ),
                 new Commit(
-                        revision(10), revision(9),
-                        dateTime("15:00:00 19/08/2014"),
+                        revision(12), revision(11),
+                        dateTime("15:00:00 21/08/2014"),
                         author,
                         "replaced file",
-		                [new Change(DELETED, "", "replaced-file.txt", revision(10), revision(9)),
-				         new Change(NEW, "replaced-file.txt", "", revision(10), noRevision)]
+		                [new Change(DELETED, "", "replaced-file.txt", revision(12), revision(11)),
+				         new Change(NEW, "replaced-file.txt", "", revision(12), noRevision)]
                 )
         ])
     }
 
-    @Test void "log content of modified file"() {
+	@Test void "log content of modified file"() {
         def logResult = project.log(date("12/08/2014"), date("13/08/2014"))
 
         def change = withSortedChanges(logResult.commits()).first().changes.first()
