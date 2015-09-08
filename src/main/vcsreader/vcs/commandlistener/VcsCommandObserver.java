@@ -11,7 +11,12 @@ public class VcsCommandObserver {
             listener.beforeCommand(command);
         }
 
-        T result = command.execute();
+        T result;
+        try {
+            result = command.execute();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to execute " + command.describe(), e);
+        }
 
         for (VcsCommandListener listener : listeners) {
             listener.afterCommand(command);
