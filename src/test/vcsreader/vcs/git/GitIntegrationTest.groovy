@@ -207,6 +207,21 @@ class GitIntegrationTest {
         ])
     }
 
+    @Test void "log commit with no changes"() {
+        project.cloneToLocal()
+        def logResult = project.log(date("19/08/2014"), date("20/08/2014"))
+
+        assertEqualCommits(logResult, [
+                new Commit(
+                        revision(10), revision(9),
+                        dateTime("17:00:00 19/08/2014"),
+                        author,
+                        "commit with no changes",
+                        []
+                )
+        ])
+    }
+
     @Test void "log content of modified file"() {
         project.cloneToLocal()
         def logResult = project.log(date("12/08/2014"), date("13/08/2014"))

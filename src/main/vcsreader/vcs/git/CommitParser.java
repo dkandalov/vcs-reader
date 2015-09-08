@@ -4,6 +4,7 @@ import vcsreader.Change;
 import vcsreader.Commit;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -42,7 +43,11 @@ class CommitParser {
         Date commitDate = parseDate(values.get(2));
         String authorName = values.get(3);
         String comment = trim(values.get(4), " \r\n\t");
-        List<Change> changes = parseListOfChanges(values.get(5), revision, revisionBefore);
+
+        boolean hasNoChanges = values.size() < 6; // e.g. for commits with --allow-empty flag
+        List<Change> changes = hasNoChanges ?
+                Collections.<Change>emptyList() :
+                parseListOfChanges(values.get(5), revision, revisionBefore);
 
         return new Commit(revision, revisionBefore, commitDate, authorName, comment, changes);
     }

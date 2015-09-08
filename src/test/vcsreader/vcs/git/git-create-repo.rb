@@ -48,6 +48,8 @@ class GitRepositoryCreator
       puts `echo "commit with no comment" > file4.txt`
       commit "", "Aug 18 16:00:00 2014 +0000", @author
 
+      commit "commit with no changes", "Aug 19 17:00:00 2014 +0000", @author
+
       @commit_hashes = log_commit_hashes
     end
     update_test_config(@commit_hashes)
@@ -56,15 +58,16 @@ class GitRepositoryCreator
   private
 
   def commit(message, date, author)
+    args = "--allow-empty-message --allow-empty" # this is to test commits with empty message and no changes
     puts `#{@git} add --all .`
-    puts `#{@git} commit --allow-empty-message -m "#{message}"`
-    puts `GIT_COMMITTER_DATE="#{date}" #{@git} commit --allow-empty-message --amend --author "#{author}" --date "#{date}" -m "#{message}"`
+    puts `#{@git} commit #{args} -m "#{message}"`
+    puts `GIT_COMMITTER_DATE="#{date}" #{@git} commit #{args} --amend --author "#{author}" --date "#{date}" -m "#{message}"`
   end
 
   def log_commit_hashes
     log = `#{@git} log`
     log.split("\n").
-        delete_if { |line| not line.include?("commit ") }.
+        delete_if { |line| not line.start_with?("commit ") }.
         collect { |line| line.gsub(/commit /, "") }.
         reverse
   end
