@@ -16,20 +16,6 @@ import static vcsreader.vcs.git.GitUpdate.gitUpdate
 
 class ShellCommands_GitIntegrationTest {
 
-    @Test void "git log file content"() {
-        def command = gitLogFileContent(pathToGit, referenceProject, "file1.txt", revision(1), utf8).execute()
-        assert command.stderr() == ""
-        assert command.stdout().trim() == "file1 content"
-        assert command.exitCode() == 0
-    }
-
-    @Test void "failed git log file content"() {
-        def command = gitLogFileContent(pathToGit, referenceProject, "non-existent file", revision(1), utf8).execute()
-        assert command.stdout() == ""
-        assert command.stderr().startsWith("fatal: Path 'non-existent file' does not exist")
-        assert command.exitCode() == 128
-    }
-
     @Test void "git log"() {
         def command = gitLog(pathToGit, referenceProject, date("01/01/2013"), date("01/01/2023")).execute()
         assert command.stderr() == ""
@@ -37,7 +23,21 @@ class ShellCommands_GitIntegrationTest {
         assert command.exitCode() == 0
     }
 
-    @Test void "git log renames"() {
+	@Test void "git log file content"() {
+		def command = gitLogFileContent(pathToGit, referenceProject, "file1.txt", revision(1), utf8).execute()
+		assert command.stderr() == ""
+		assert command.stdout().trim() == "file1 content"
+		assert command.exitCode() == 0
+	}
+
+	@Test void "failed git log file content"() {
+		def command = gitLogFileContent(pathToGit, referenceProject, "non-existent file", revision(1), utf8).execute()
+		assert command.stdout() == ""
+		assert command.stderr().startsWith("fatal: Path 'non-existent file' does not exist")
+		assert command.exitCode() == 128
+	}
+
+	@Test void "git log renames"() {
         def command = gitLogRenames(pathToGit, referenceProject, revision(4)).execute()
         assert command.stderr() == ""
         assert command.stdout().contains("R100")
