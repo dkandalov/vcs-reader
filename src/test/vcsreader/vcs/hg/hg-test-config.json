@@ -1,0 +1,7 @@
+{
+  "pathToHg": "/usr/local/Cellar/mercurial/3.5/bin/hg",
+  "author": "Some Author",
+  "authorWithEmail": "Some Author <some.author@mail.com>",
+  "referenceProject": "/tmp/reference-repos/hg-repo",
+  "revisions": ["4455201f02f7","2d6e2635b698","7e0624b4b0c9"]
+}
