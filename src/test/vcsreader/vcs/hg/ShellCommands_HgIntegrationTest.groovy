@@ -1,14 +1,14 @@
 package vcsreader.vcs.hg
+
+import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
 
 import java.nio.charset.Charset
 
 import static vcsreader.lang.DateTimeUtil.date
-import static vcsreader.vcs.hg.HgIntegrationTestConfig.getPathToHg
-import static vcsreader.vcs.hg.HgIntegrationTestConfig.initTestConfig
-import static vcsreader.vcs.hg.HgIntegrationTestConfig.referenceProject
-import static vcsreader.vcs.hg.HgIntegrationTestConfig.revision
+import static vcsreader.vcs.hg.HgClone.hgClone
+import static vcsreader.vcs.hg.HgIntegrationTestConfig.*
 import static vcsreader.vcs.hg.HgLog.hgLog
 import static vcsreader.vcs.hg.HgLogFileContent.hgLogFileContent
 
@@ -27,9 +27,22 @@ class ShellCommands_HgIntegrationTest {
 		assert command.exitCode() == 0
 	}
 
+	@Test void "clone repository"() {
+		def command = hgClone(pathToHg, "file://" + referenceProject, projectFolder).execute()
+		assert command.stdout() != ""
+		assert command.stderr().trim() == ""
+		assert command.exitCode() == 0
+	}
+
+	@Before void setup() {
+		new File(projectFolder).deleteDir()
+		new File(projectFolder).mkdirs()
+	}
+
 	@BeforeClass static void setupConfig() {
 		initTestConfig()
 	}
 
 	private static final Charset utf8 = Charset.forName("UTF-8")
+	private static final String projectFolder = "/tmp/hg-commands-test/hg-repo-${ShellCommands_HgIntegrationTest.simpleName}"
 }
