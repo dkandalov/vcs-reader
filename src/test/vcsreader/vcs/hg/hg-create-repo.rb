@@ -28,26 +28,26 @@ class HgRepositoryCreator
       puts `echo "file3 new content" > file3.txt`
       commit "modified file2, file3", "Aug 12 14:00:00 2014 +0000", @author
 
-      # puts `mkdir folder1`
-      # puts `mv file1.txt folder1/file1.txt`
-      # commit "moved file1", "Aug 13 14:00:00 2014 +0000", @author
-      #
-      # puts `mkdir folder2`
-      # puts `mv folder1/file1.txt folder2/renamed_file1.txt`
-      # commit "moved and renamed file1", "Aug 14 14:00:00 2014 +0000", @author
+      puts `mkdir folder1`
+      move "file1.txt", "folder1/file1.txt"
+      commit "moved file1", "Aug 13 14:00:00 2014 +0000", @author
 
-      # puts `rm folder2/renamed_file1.txt`
-      # commit "deleted file1", "Aug 15 14:00:00 2014 +0000", @author
-      #
-      # puts `echo 123 > "\\"file with spaces.txt\\""`
-      # commit "added file with spaces and quotes", "Aug 16 14:00:00 2014 +0000", @author
-      #
-      # puts `echo "non-ascii содержимое" > "non-ascii.txt"`
-      # commit "non-ascii комментарий", "Aug 17 15:00:00 2014 +0000", @author
-      #
+      puts `mkdir folder2`
+      move "folder1/file1.txt", "folder2/renamed_file1.txt"
+      commit "moved and renamed file1", "Aug 14 14:00:00 2014 +0000", @author
+
+      rm "folder2/renamed_file1.txt"
+      commit "deleted file1", "Aug 15 14:00:00 2014 +0000", @author
+
+      puts `echo 123 > "\\"file with spaces.txt\\""`
+      commit "added file with spaces and quotes", "Aug 16 14:00:00 2014 +0000", @author
+
+      puts `echo "non-ascii содержимое" > "non-ascii.txt"`
+      commit "non-ascii комментарий", "Aug 17 15:00:00 2014 +0000", @author
+
+      # Mercurial doesn't seem to support empty commits and empty commit messages
       # puts `echo "commit with no comment" > file4.txt`
       # commit "", "Aug 18 16:00:00 2014 +0000", @author
-      #
       # commit "commit with no changes", "Aug 19 17:00:00 2014 +0000", @author
 
       @commit_hashes = log_commit_hashes
@@ -57,10 +57,17 @@ class HgRepositoryCreator
 
   private
 
+  def rm(file)
+    puts `#{@hg} rm #{file}`
+  end
+
+  def move(from, to)
+    puts `#{@hg} mv #{from} #{to}`
+  end
+
   def commit(message, date, author)
-    args = "" # TODO "--allow-empty-message --allow-empty" # this is to test commits with empty message and no changes
     puts `#{@hg} add`
-    puts `#{@hg} commit #{args} -d '#{date}' -u '#{author}' -m "#{message}"`
+    puts `#{@hg} commit -d '#{date}' -u '#{author}' -m "#{message}"`
   end
 
   def log_commit_hashes
