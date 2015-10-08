@@ -23,6 +23,13 @@ class ShellCommands_GitIntegrationTest {
         assert command.exitCode() == 0
     }
 
+	@Test void "failed git log"() {
+		def command = gitLog(pathToGit, nonExistentPath, date("01/01/2013"), date("01/01/2023")).execute()
+		assert command.stdout() == ""
+		assert command.stderr() != ""
+		assert command.exitCode() != 0
+	}
+
 	@Test void "git log file content"() {
 		def command = gitLogFileContent(pathToGit, referenceProject, "file1.txt", revision(1), utf8).execute()
 		assert command.stderr() == ""
@@ -43,13 +50,6 @@ class ShellCommands_GitIntegrationTest {
         assert command.stdout().contains("R100")
         assert command.stdout().contains("folder1/file1.txt")
         assert command.exitCode() == 0
-    }
-
-    @Test void "failed git log"() {
-        def command = gitLog(pathToGit, nonExistentPath, date("01/01/2013"), date("01/01/2023")).execute()
-        assert command.stdout() == ""
-        assert command.stderr() != ""
-        assert command.exitCode() != 0
     }
 
     @Test void "clone repository"() {

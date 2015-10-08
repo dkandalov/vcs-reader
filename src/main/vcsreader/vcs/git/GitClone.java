@@ -30,8 +30,8 @@ class GitClone implements VcsCommand<VcsProject.CloneResult> {
         }
     }
 
-    static ShellCommand gitClone(String pathToGit, String repositoryUrl, String localPath) {
-        return new ShellCommand(pathToGit, "clone", "-v", repositoryUrl, localPath);
+    static ShellCommand gitClone(String pathToGit, String repositoryUrl, String targetPath) {
+        return new ShellCommand(pathToGit, "clone", "-v", repositoryUrl, targetPath);
     }
 
     @Override public String describe() {
