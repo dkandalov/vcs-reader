@@ -1,5 +1,4 @@
 package vcsreader.vcs.hg
-
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
@@ -11,6 +10,7 @@ import static vcsreader.vcs.hg.HgClone.hgClone
 import static vcsreader.vcs.hg.HgIntegrationTestConfig.*
 import static vcsreader.vcs.hg.HgLog.hgLog
 import static vcsreader.vcs.hg.HgLogFileContent.hgLogFileContent
+import static vcsreader.vcs.hg.HgUpdate.hgUpdate
 
 class ShellCommands_HgIntegrationTest {
 	@Test void "hg log"() {
@@ -29,8 +29,16 @@ class ShellCommands_HgIntegrationTest {
 
 	@Test void "clone repository"() {
 		def command = hgClone(pathToHg, "file://" + referenceProject, projectFolder).execute()
+		assert command.stderr() == ""
 		assert command.stdout() != ""
-		assert command.stderr().trim() == ""
+		assert command.exitCode() == 0
+	}
+
+	@Test void "update repository"() {
+		hgClone(pathToHg, "file://" + referenceProject, projectFolder).execute()
+		def command = hgUpdate(pathToHg, projectFolder).execute()
+		assert command.stderr() == ""
+		assert command.stdout().contains("pulling from")
 		assert command.exitCode() == 0
 	}
 
