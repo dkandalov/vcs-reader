@@ -96,7 +96,7 @@ class CommitParser {
                 copyFromRevision = attributes.getValue("copyfrom-rev");
                 filePath = "";
                 expectFileName = true;
-                isTextModification = Boolean.parseBoolean(attributes.getValue("text-mods"));
+                isTextModification = attributes.getValue("text-mods") == null || Boolean.parseBoolean(attributes.getValue("text-mods"));
             }
         }
 
