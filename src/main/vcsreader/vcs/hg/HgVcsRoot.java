@@ -23,7 +23,7 @@ public class HgVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
     }
 
     @Override public VcsProject.UpdateResult update() {
-        return null;
+        return observer.executeAndObserve(new HgUpdate(settings.hgPath, vcsRootPath));
     }
 
     @Override public VcsProject.LogResult log(Date fromDate, Date toDate) {

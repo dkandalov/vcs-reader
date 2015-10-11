@@ -14,7 +14,24 @@ class HgIntegrationTest {
         assert cloneResult.isSuccessful()
     }
 
-    @Before void setup() {
+	@Test void "clone project failure"() {
+		def vcsRoots = [new HgVcsRoot(projectFolder, nonExistentPath, hgSettings)]
+		def project = new VcsProject(vcsRoots)
+
+		def cloneResult = project.cloneToLocal()
+
+		assert !cloneResult.isSuccessful()
+		assert cloneResult.vcsErrors().size() == 1
+	}
+
+	@Test void "update project"() {
+		project.cloneToLocal()
+		def updateResult = project.update()
+		assert updateResult.vcsErrors().empty
+		assert updateResult.isSuccessful()
+	}
+
+	@Before void setup() {
         new File(projectFolder).deleteDir()
         new File(projectFolder).mkdirs()
     }
@@ -23,7 +40,7 @@ class HgIntegrationTest {
         initTestConfig()
     }
 
-	private static final String projectFolder = "/tmp/hg-commands-test/git-repo-${HgIntegrationTest.simpleName}/"
+	private static final String projectFolder = "/tmp/hg-commands-test/hg-repo-${HgIntegrationTest.simpleName}/"
 
 	private final hgSettings = HgSettings.defaults().withHgPath(pathToHg)
 	private final vcsRoots = [new HgVcsRoot(projectFolder, referenceProject, hgSettings)]
