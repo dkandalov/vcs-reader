@@ -71,11 +71,8 @@ class HgRepositoryCreator
   end
 
   def log_commit_hashes
-    log = `#{@hg} log`
-    log.split("\n").
-        select { |line| line.start_with?("changeset:") }.
-        collect { |line| line.gsub(/changeset:.*:/, "") }.
-        reverse
+    log = `#{@hg} log --template "{node}\n"`
+    log.split("\n").reverse
   end
 
   def update_test_config(commit_hashes)

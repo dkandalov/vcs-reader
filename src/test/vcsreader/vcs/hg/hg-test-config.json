@@ -3,5 +3,14 @@
   "author": "Some Author",
   "authorWithEmail": "Some Author <some.author@mail.com>",
   "referenceProject": "/tmp/reference-repos/hg-repo",
-  "revisions": ["4455201f02f7","2d6e2635b698","7e0624b4b0c9","b8a2bdc96689","04ba0b346ea8","e520d255a415","0e63c9b30410","798ffbff44b7"]
+  "revisions": [
+    "4455201f02f73cf2f13f3e4768900fbacdf7637d",
+    "2d6e2635b69815fbcdae9c0237368f438566e924",
+    "7e0624b4b0c9d08fc061f4ed54e5a38dd939d650",
+    "b8a2bdc966897b29adf614e6993c80620c3408cd",
+    "04ba0b346ea8043ed225248aaf3d822181703a47",
+    "e520d255a415b89c0bb18afaf9faffc05f137d22",
+    "0e63c9b3041059cf86ed5edb4574606dd1e8fabf",
+    "798ffbff44b7b147e7b9145b00b92617783cddb0"
+  ]
 }
