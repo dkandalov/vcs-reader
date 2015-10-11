@@ -17,6 +17,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static java.lang.Boolean.parseBoolean;
 import static vcsreader.Change.Type.*;
 import static vcsreader.Change.noFilePath;
 import static vcsreader.Change.noRevision;
@@ -96,7 +97,11 @@ class CommitParser {
                 copyFromRevision = attributes.getValue("copyfrom-rev");
                 filePath = "";
                 expectFileName = true;
-                isTextModification = attributes.getValue("text-mods") == null || Boolean.parseBoolean(attributes.getValue("text-mods"));
+
+                boolean isPropertiesModification = parseBoolean(attributes.getValue("prop-mods"));
+                isTextModification =
+                        (attributes.getValue("text-mods") == null && !isPropertiesModification) ||
+                        parseBoolean(attributes.getValue("text-mods"));
             }
         }
 
@@ -149,7 +154,8 @@ class CommitParser {
                         changes.add(new Change(NEW, filePath, revision));
 
                     } else {
-                        if (isTextModification) { // ignore svn properties modifications
+                        // check for text modification because there can also be svn properties modifications
+                        if (isTextModification) {
                             changes.add(new Change(MODIFICATION, filePath, filePath, revision, revisionBefore));
                         }
                     }

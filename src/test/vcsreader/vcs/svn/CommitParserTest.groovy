@@ -6,6 +6,7 @@ import vcsreader.Commit
 
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
+import static vcsreader.Change.Type.MODIFICATION
 import static vcsreader.Change.Type.MOVED
 import static vcsreader.Change.Type.NEW
 import static vcsreader.Change.noRevision
@@ -126,4 +127,27 @@ class CommitParserTest {
         ))
     }
 
+	@Test void "if 'text-mods' attribute is missing assume it's text change"() {
+		def xml = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <log>
+                <logentry revision="1">
+                <author>Some Author</author>
+                <date>2014-08-10T15:00:00.000000Z</date>
+                <paths><path kind="" action="M">/some/file</path></paths>
+                <msg>commit message</msg>
+                </logentry>
+            </log>
+        """.trim()
+
+		assertEqualCommits(CommitParser.parseCommits(xml), [
+				new Commit(
+						"1", noRevision,
+						dateTime("15:00:00 10/08/2014"),
+						"Some Author",
+						"commit message",
+						[new Change(MODIFICATION, "some/file", "some/file", "1", noRevision)]
+				)
+		])
+	}
 }
