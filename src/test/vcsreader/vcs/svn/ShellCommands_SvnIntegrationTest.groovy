@@ -11,21 +11,21 @@ import static vcsreader.vcs.svn.SvnLog.svnLog
 import static vcsreader.vcs.svn.SvnLogFileContent.svnLogFileContent
 
 class ShellCommands_SvnIntegrationTest {
-    @Test void "svn log"() {
+    @Test void "basic log"() {
         def command = svnLog(pathToSvn, repositoryUrl, date("01/01/2013"), date("01/01/2023"), useMergeHistory).execute()
         assert command.stderr() == ""
         assert command.stdout().contains("initial commit")
         assert command.exitCode() == 0
     }
 
-    @Test void "failed svn log"() {
+    @Test void "failed log"() {
         def command = svnLog(pathToSvn, nonExistentUrl, date("01/01/2013"), date("01/01/2023"), useMergeHistory).execute()
         assert !command.stdout().contains("logentry")
         assert command.stderr().contains("Unable to connect to a repository")
         assert command.exitCode() == 1
     }
 
-    @Test void "svn log file content"() {
+    @Test void "log file content"() {
         def revision = "1"
         def command = svnLogFileContent(pathToSvn, repositoryUrl, "file1.txt", revision, utf8).execute()
         assert command.stderr() == ""
@@ -33,7 +33,7 @@ class ShellCommands_SvnIntegrationTest {
         assert command.exitCode() == 0
     }
 
-    @Test void "failed svn log file content"() {
+    @Test void "failed log file content"() {
         def revision = "1"
         def command = svnLogFileContent(pathToSvn, repositoryUrl, "non-existent-file", revision, utf8).execute()
         assert command.stdout() == ""
@@ -55,7 +55,7 @@ class ShellCommands_SvnIntegrationTest {
         assert command.exitCode() == 1
     }
 
-	@Test void "svn log with non-ascii characters"() {
+	@Test void "log with non-ascii characters"() {
 		def command = svnLog(pathToSvn, repositoryUrl, date("01/01/2013"), date("01/01/2023"), useMergeHistory).execute()
 		assert command.stderr() == ""
 		assert command.stdout().contains("non-ascii комментарий")

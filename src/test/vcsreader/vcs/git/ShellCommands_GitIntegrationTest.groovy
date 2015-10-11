@@ -16,35 +16,35 @@ import static vcsreader.vcs.git.GitUpdate.gitUpdate
 
 class ShellCommands_GitIntegrationTest {
 
-    @Test void "git log"() {
+    @Test void "basic log"() {
         def command = gitLog(pathToGit, referenceProject, date("01/01/2013"), date("01/01/2023")).execute()
         assert command.stderr() == ""
         assert command.stdout().contains("initial commit")
         assert command.exitCode() == 0
     }
 
-	@Test void "failed git log"() {
+	@Test void "failed log"() {
 		def command = gitLog(pathToGit, nonExistentPath, date("01/01/2013"), date("01/01/2023")).execute()
 		assert command.stdout() == ""
 		assert command.stderr() != ""
 		assert command.exitCode() != 0
 	}
 
-	@Test void "git log file content"() {
+	@Test void "log file content"() {
 		def command = gitLogFileContent(pathToGit, referenceProject, "file1.txt", revision(1), utf8).execute()
 		assert command.stderr() == ""
 		assert command.stdout().trim() == "file1 content"
 		assert command.exitCode() == 0
 	}
 
-	@Test void "failed git log file content"() {
+	@Test void "failed log file content"() {
 		def command = gitLogFileContent(pathToGit, referenceProject, "non-existent file", revision(1), utf8).execute()
 		assert command.stdout() == ""
 		assert command.stderr().startsWith("fatal: Path 'non-existent file' does not exist")
 		assert command.exitCode() == 128
 	}
 
-	@Test void "git log renames"() {
+	@Test void "log renames"() {
         def command = gitLogRenames(pathToGit, referenceProject, revision(4)).execute()
         assert command.stderr() == ""
         assert command.stdout().contains("R100")
@@ -84,7 +84,7 @@ class ShellCommands_GitIntegrationTest {
     }
 
     @Test void "failed update without upstream repository"() {
-        gitClone(pathToGit, "file://" + referenceProject, projectFolder + "").execute()
+        gitClone(pathToGit, "file://" + referenceProject, projectFolder).execute()
         gitClone(pathToGit, "file://" + projectFolder, projectFolder2).execute()
         new File(projectFolder).deleteDir()
 
@@ -94,7 +94,7 @@ class ShellCommands_GitIntegrationTest {
         assert command.exitCode() == 1
     }
 
-	@Test void "git log with non-ascii characters"() {
+	@Test void "log with non-ascii characters"() {
 		def command = gitLog(pathToGit, referenceProject, date("01/01/2013"), date("01/01/2023")).execute()
 		assert command.stderr() == ""
 		assert command.stdout().contains("non-ascii комментарий")
@@ -119,5 +119,5 @@ class ShellCommands_GitIntegrationTest {
 
     private static final Charset utf8 = Charset.forName("UTF-8")
     private static final String projectFolder = "/tmp/git-commands-test/git-repo-${ShellCommands_GitIntegrationTest.simpleName}"
-    private static final String projectFolder2 = "/tmp/git-commands-test/git-repo-${ShellCommands_GitIntegrationTest.simpleName}-2"
+    private static final String projectFolder2 = "/tmp/git-commands-test/git-repo-2-${ShellCommands_GitIntegrationTest.simpleName}"
 }
