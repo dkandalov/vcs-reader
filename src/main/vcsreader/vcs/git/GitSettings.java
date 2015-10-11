@@ -36,8 +36,7 @@ public class GitSettings {
         return true;
     }
 
-    @Override
-    public int hashCode() {
+    @Override public int hashCode() {
         int result = gitPath != null ? gitPath.hashCode() : 0;
         result = 31 * result + (filesCharset != null ? filesCharset.hashCode() : 0);
         return result;

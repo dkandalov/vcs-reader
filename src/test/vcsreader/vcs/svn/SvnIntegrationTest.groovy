@@ -32,7 +32,7 @@ class SvnIntegrationTest {
         assert updateResult.isSuccessful()
     }
 
-    @Test void "log empty list of commits from project history"() {
+    @Test void "log project history interval with no commits"() {
         def logResult = project.log(date("01/08/2014"), date("02/08/2014"))
 
         assert logResult.commits().empty

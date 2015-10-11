@@ -16,8 +16,8 @@ import static vcsreader.Change.Type.NEW;
 import static vcsreader.VcsProject.LogResult;
 import static vcsreader.vcs.git.CommitParser.parseListOfChanges;
 import static vcsreader.vcs.git.CommitParser.parseListOfCommits;
-import static vcsreader.vcs.git.GitShellCommand.isSuccessful;
 
+@SuppressWarnings("Duplicates") // because it's similar to HgLog
 class GitLog implements VcsCommand<LogResult> {
     private final String gitPath;
     private final String folder;
@@ -39,7 +39,7 @@ class GitLog implements VcsCommand<LogResult> {
     @Override public LogResult execute() {
         shellCommand.execute();
 
-        if (isSuccessful(shellCommand)) {
+        if (GitShellCommand.isSuccessful(shellCommand)) {
             List<Commit> commits = parseListOfCommits(shellCommand.stdout());
             commits = handleFileRenamesIn(commits);
 
@@ -72,7 +72,7 @@ class GitLog implements VcsCommand<LogResult> {
                 shellSubCommands.add(shellCommand);
                 shellCommand.execute();
 
-                if (isSuccessful(shellCommand)) {
+                if (GitShellCommand.isSuccessful(shellCommand)) {
                     List<Change> updatedChanges = parseListOfChanges(shellCommand.stdout(), commit.revision, commit.revisionBefore);
                     commit = new Commit(commit.revision, commit.revisionBefore, commit.commitTime, commit.authorName, commit.comment, updatedChanges);
                 }
