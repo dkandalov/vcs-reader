@@ -13,12 +13,13 @@ import static vcsreader.lang.StringUtil.split;
 import static vcsreader.lang.StringUtil.trim;
 
 class CommitParser {
-    static List<Commit> parseListOfCommits(String stdout) {
+    public static final String commitStartSeparatorFormat = "%x15%x16%x17%x18%x19";
+    public static final String commitFieldSeparatorFormat = "%x19%x18%x17%x16%x15";
+    private static final String commitStartSeparator = "\u0015\u0016\u0017\u0018\u0019";
+    private static final String commitFieldsSeparator = "\u0019\u0018\u0017\u0016\u0015";
+
+    public static List<Commit> parseListOfCommits(String stdout) {
         List<Commit> commits = new ArrayList<Commit>();
-
-        String commitStartSeparator = "\u0015\u0016\u0017\u0018\u0019";
-        String commitFieldsSeparator = "\u0019\u0018\u0017\u0016\u0015";
-
         List<String> commitsAsString = split(stdout, commitStartSeparator);
 
         for (String s : commitsAsString) {
@@ -30,8 +31,8 @@ class CommitParser {
         return commits;
     }
 
-    private static Commit parseCommit(String s, String commitFieldsSeparator) {
-        List<String> values = split(s, commitFieldsSeparator);
+    private static Commit parseCommit(String s, String fieldsSeparator) {
+        List<String> values = split(s, fieldsSeparator);
 
         List<String> previousRevision = split(values.get(1), " ");
         boolean isFirstCommit = previousRevision.size() == 0;
@@ -41,7 +42,7 @@ class CommitParser {
         String revision = values.get(0);
         String revisionBefore = (isFirstCommit ? Change.noRevision : previousRevision.get(0));
         Date commitDate = parseDate(values.get(2));
-        String authorName = values.get(3);
+        String author = values.get(3);
         String comment = trim(values.get(4), " \r\n\t");
 
         boolean hasNoChanges = values.size() < 6; // e.g. for commits with --allow-empty flag
@@ -49,7 +50,7 @@ class CommitParser {
                 Collections.<Change>emptyList() :
                 parseListOfChanges(values.get(5), revision, revisionBefore);
 
-        return new Commit(revision, revisionBefore, commitDate, authorName, comment, changes);
+        return new Commit(revision, revisionBefore, commitDate, author, comment, changes);
     }
 
     static List<Change> parseListOfChanges(String changesAsString, String revision, String revisionBefore) {

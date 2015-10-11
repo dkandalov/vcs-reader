@@ -14,8 +14,7 @@ import static java.util.Arrays.asList;
 import static vcsreader.Change.Type.DELETED;
 import static vcsreader.Change.Type.NEW;
 import static vcsreader.VcsProject.LogResult;
-import static vcsreader.vcs.git.CommitParser.parseListOfChanges;
-import static vcsreader.vcs.git.CommitParser.parseListOfCommits;
+import static vcsreader.vcs.git.CommitParser.*;
 
 @SuppressWarnings("Duplicates") // because it's similar to HgLog
 class GitLog implements VcsCommand<LogResult> {
@@ -100,16 +99,13 @@ class GitLog implements VcsCommand<LogResult> {
         String authorName = "%an"; // see http://stackoverflow.com/questions/18750808/difference-between-author-and-committer-in-git
         String rawBody = "%s%n%n%-b"; // based on git4idea.checkin.GitCheckinEnvironment.GitCheckinOptions.getLastCommitMessage()
 
-        String commitStartSeparator = "%x15%x16%x17%x18%x19";
-        String fieldSeparator = "%x19%x18%x17%x16%x15";
-
         return "--pretty=format:" +
-                commitStartSeparator +
-                commitHash + fieldSeparator +
-                parentHashes + fieldSeparator +
-                commitDate + fieldSeparator +
-                authorName + fieldSeparator +
-                rawBody + fieldSeparator;
+                commitStartSeparatorFormat +
+                commitHash + commitFieldSeparatorFormat +
+                parentHashes + commitFieldSeparatorFormat +
+                commitDate + commitFieldSeparatorFormat +
+                authorName + commitFieldSeparatorFormat +
+                rawBody + commitFieldSeparatorFormat;
     }
 
     @Override public String describe() {
