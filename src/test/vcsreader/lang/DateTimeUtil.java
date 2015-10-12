@@ -25,7 +25,8 @@ public class DateTimeUtil {
         List<SimpleDateFormat> formats = asList(
                 new SimpleDateFormat("kk:mm dd/MM/yyyy"),
                 new SimpleDateFormat("kk:mm:ss dd/MM/yyyy"),
-                new SimpleDateFormat("kk:mm:ss.SSS dd/MM/yyyy")
+                new SimpleDateFormat("kk:mm:ss.SSS dd/MM/yyyy"),
+                new SimpleDateFormat("E MMM dd kk:mm:ss Z yyyy")
         );
         for (SimpleDateFormat format : formats) {
             try {

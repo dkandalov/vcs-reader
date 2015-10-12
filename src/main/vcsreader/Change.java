@@ -61,7 +61,7 @@ public class Change {
     }
 
     @Override public String toString() {
-        return "Change{" + type + ',' + filePath + ',' + filePathBefore + ',' + revision + ',' + revisionBefore + '}';
+        return "Change(" + type + ',' + filePath + ',' + filePathBefore + ',' + revision + ',' + revisionBefore + ')';
     }
 
     @SuppressWarnings({"RedundantIfStatement"})

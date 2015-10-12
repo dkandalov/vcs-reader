@@ -37,14 +37,14 @@ public class Commit {
     }
 
     @Override public String toString() {
-        return "Commit{" +
+        return "Commit(" +
                 revision + ',' +
                 revisionBefore + ',' +
                 commitTime + ',' +
                 authorName + ',' +
                 comment + ',' +
                 changes +
-        '}';
+        ')';
     }
 
     @SuppressWarnings("RedundantIfStatement")
