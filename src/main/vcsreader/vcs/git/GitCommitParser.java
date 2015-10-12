@@ -12,7 +12,7 @@ import static vcsreader.Change.Type.*;
 import static vcsreader.lang.StringUtil.split;
 import static vcsreader.lang.StringUtil.trim;
 
-class CommitParser {
+class GitCommitParser {
     public static final String commitStartSeparatorFormat = "%x15%x16%x17%x18%x19";
     public static final String commitFieldSeparatorFormat = "%x19%x18%x17%x16%x15";
     private static final String commitStartSeparator = "\u0015\u0016\u0017\u0018\u0019";

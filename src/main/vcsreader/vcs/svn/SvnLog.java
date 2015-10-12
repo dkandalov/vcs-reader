@@ -38,7 +38,7 @@ class SvnLog implements VcsCommand<LogResult> {
         shellCommand.execute();
 
         if (isSuccessful(shellCommand)) {
-            List<Commit> allCommits = CommitParser.parseCommits(shellCommand.stdout());
+            List<Commit> allCommits = SvnCommitParser.parseCommits(shellCommand.stdout());
             List<Commit> commits = transformToSubPathCommits(deleteCommitsBefore(fromDate, allCommits));
             return new LogResult(commits, new ArrayList<String>());
         } else {

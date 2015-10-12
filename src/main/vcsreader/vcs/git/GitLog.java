@@ -14,7 +14,7 @@ import static java.util.Arrays.asList;
 import static vcsreader.Change.Type.DELETED;
 import static vcsreader.Change.Type.NEW;
 import static vcsreader.VcsProject.LogResult;
-import static vcsreader.vcs.git.CommitParser.*;
+import static vcsreader.vcs.git.GitCommitParser.*;
 
 @SuppressWarnings("Duplicates") // because it's similar to HgLog
 class GitLog implements VcsCommand<LogResult> {

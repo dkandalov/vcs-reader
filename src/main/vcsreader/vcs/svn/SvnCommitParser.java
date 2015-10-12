@@ -22,7 +22,7 @@ import static vcsreader.Change.Type.*;
 import static vcsreader.Change.noFilePath;
 import static vcsreader.Change.noRevision;
 
-class CommitParser {
+class SvnCommitParser {
     static List<Commit> parseCommits(String xml) {
         try {
             CommitReadingHandler commitReadingHandler = new CommitReadingHandler();

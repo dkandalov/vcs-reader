@@ -11,9 +11,9 @@ import java.util.List;
 
 import static java.nio.charset.Charset.forName;
 import static java.util.Arrays.asList;
-import static vcsreader.vcs.hg.CommitParser.commitFieldSeparatorFormat;
-import static vcsreader.vcs.hg.CommitParser.commitStartSeparatorFormat;
-import static vcsreader.vcs.hg.CommitParser.fileSeparatorFormat;
+import static vcsreader.vcs.hg.HgCommitParser.commitFieldSeparatorFormat;
+import static vcsreader.vcs.hg.HgCommitParser.commitStartSeparatorFormat;
+import static vcsreader.vcs.hg.HgCommitParser.fileSeparatorFormat;
 
 @SuppressWarnings("Duplicates") // because it's similar to GitLog
     class HgLog implements VcsCommand<VcsProject.LogResult> {
@@ -36,7 +36,7 @@ import static vcsreader.vcs.hg.CommitParser.fileSeparatorFormat;
         shellCommand.execute();
 
         if (HgShellCommand.isSuccessful(shellCommand)) {
-            List<Commit> commits = CommitParser.parseListOfCommits(shellCommand.stdout());
+            List<Commit> commits = HgCommitParser.parseListOfCommits(shellCommand.stdout());
             List<String> errors = (shellCommand.stderr().trim().isEmpty() ? new ArrayList<String>() : asList(shellCommand.stderr()));
             return new VcsProject.LogResult(commits, errors);
         } else {
