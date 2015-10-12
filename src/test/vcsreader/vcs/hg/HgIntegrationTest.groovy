@@ -1,12 +1,13 @@
 package vcsreader.vcs.hg
 import org.junit.Before
 import org.junit.BeforeClass
+import org.junit.Ignore
 import org.junit.Test
 import vcsreader.Change
 import vcsreader.Commit
 import vcsreader.VcsProject
 
-import static vcsreader.Change.Type.NEW
+import static vcsreader.Change.Type.*
 import static vcsreader.Change.noRevision
 import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.lang.DateTimeUtil.dateTime
@@ -67,6 +68,65 @@ class HgIntegrationTest {
 						author,
 						"initial commit",
 						[new Change(NEW, "file1.txt", revision(1))]
+				)
+		])
+	}
+
+	@Test void "log several commits from project history"() {
+		project.cloneToLocal()
+		def logResult = project.log(date("10/08/2014"), date("12/08/2014"))
+
+		assertEqualCommits(logResult, [
+				new Commit(
+						revision(1), noRevision,
+						dateTime("14:00:00 10/08/2014"),
+						author,
+						"initial commit",
+						[new Change(NEW, "file1.txt", revision(1))]
+				),
+				new Commit(
+						revision(2), revision(1),
+						dateTime("14:00:00 11/08/2014"),
+						author,
+						"added file2, file3",
+						[
+								new Change(NEW, "file2.txt", "", revision(2), noRevision),
+								new Change(NEW, "file3.txt", "", revision(2), noRevision)
+						]
+				)
+		])
+	}
+
+	@Test void "log modification commit"() {
+		project.cloneToLocal()
+		def logResult = project.log(date("12/08/2014"), date("13/08/2014"))
+
+		assertEqualCommits(logResult, [
+				new Commit(
+						revision(3), revision(2),
+						dateTime("14:00:00 12/08/2014"),
+						author,
+						"modified file2, file3",
+						[
+								new Change(MODIFICATION, "file2.txt", "file2.txt", revision(3), revision(2)),
+								new Change(MODIFICATION, "file3.txt", "file3.txt", revision(3), revision(2))
+						]
+				)
+		])
+	}
+
+	@Ignore
+	@Test void "log moved file commit"() {
+		project.cloneToLocal()
+		def logResult = project.log(date("13/08/2014"), date("14/08/2014"))
+
+		assertEqualCommits(logResult, [
+				new Commit(
+						revision(4), revision(3),
+						dateTime("14:00:00 13/08/2014"),
+						author,
+						"moved file1",
+						[new Change(MOVED, "folder1/file1.txt", "file1.txt", revision(4), revision(3))]
 				)
 		])
 	}

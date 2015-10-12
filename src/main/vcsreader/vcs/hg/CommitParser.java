@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static vcsreader.Change.Type.*;
 import static vcsreader.lang.StringUtil.split;
 
 class CommitParser {
@@ -42,11 +43,31 @@ class CommitParser {
 
         List<Change> filesAdded = new ArrayList<Change>();
         for (String filePath : values.get(5).split(fileSeparator)) {
-            filesAdded.add(new Change(Change.Type.NEW, filePath, revision));
+            if (filePath.isEmpty()) continue;
+            filesAdded.add(new Change(NEW, filePath, revision));
+        }
+        List<Change> filesDeleted = new ArrayList<Change>();
+        for (String filePath : values.get(6).split(fileSeparator)) {
+            if (filePath.isEmpty()) continue;
+            filesDeleted.add(new Change(DELETED, filePath, revision));
+        }
+        List<Change> filesMoved = new ArrayList<Change>();
+        for (String filePath : values.get(7).split(fileSeparator)) {
+            if (filePath.isEmpty()) continue;
+            String filePathBefore = ""; // TODO
+            filesMoved.add(new Change(MOVED, filePath, filePathBefore, revision, revisionBefore));
+        }
+        List<Change> filesModified = new ArrayList<Change>();
+        for (String filePath : values.get(8).split(fileSeparator)) {
+            if (filePath.isEmpty()) continue;
+            filesModified.add(new Change(MODIFICATION, filePath, filePath, revision, revisionBefore));
         }
 
         List<Change> changes = new ArrayList<Change>();
         changes.addAll(filesAdded);
+        changes.addAll(filesDeleted);
+        changes.addAll(filesMoved);
+        changes.addAll(filesModified);
 
         return new Commit(revision, revisionBefore, commitDate, author, comment, changes);
     }

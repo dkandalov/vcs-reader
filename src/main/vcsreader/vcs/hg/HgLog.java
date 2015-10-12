@@ -72,6 +72,7 @@ class HgLog implements VcsCommand<VcsProject.LogResult> {
         String filesAdded = "{join(file_adds,'" + fileSeparatorFormat + "')}";
         String filesDeleted = "{join(file_dels,'" + fileSeparatorFormat + "')}";
         String filesCopied = "{join(file_copies,'" + fileSeparatorFormat + "')}";
+        String filesModified = "{join(file_mods,'" + fileSeparatorFormat + "')}";
 
         return "" + commitStartSeparatorFormat +
                 commitNode + commitFieldSeparatorFormat +
@@ -82,6 +83,7 @@ class HgLog implements VcsCommand<VcsProject.LogResult> {
                 filesAdded + commitFieldSeparatorFormat +
                 filesDeleted + commitFieldSeparatorFormat +
                 filesCopied + commitFieldSeparatorFormat +
+                filesModified + commitFieldSeparatorFormat +
                 "";
     }
 
