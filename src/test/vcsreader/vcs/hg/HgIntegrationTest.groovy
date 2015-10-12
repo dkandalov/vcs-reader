@@ -1,7 +1,6 @@
 package vcsreader.vcs.hg
 import org.junit.Before
 import org.junit.BeforeClass
-import org.junit.Ignore
 import org.junit.Test
 import vcsreader.Change
 import vcsreader.Commit
@@ -57,7 +56,6 @@ class HgIntegrationTest {
 		assert logResult.isSuccessful()
 	}
 
-	@Ignore
 	@Test void "log single commit from project history"() {
 		project.cloneToLocal()
 		def logResult = project.log(date("10/08/2014"), date("11/08/2014"))

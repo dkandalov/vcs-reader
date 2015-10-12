@@ -11,7 +11,11 @@ import java.util.List;
 
 import static java.nio.charset.Charset.forName;
 import static java.util.Arrays.asList;
+import static vcsreader.vcs.hg.CommitParser.commitFieldSeparatorFormat;
+import static vcsreader.vcs.hg.CommitParser.commitStartSeparatorFormat;
+import static vcsreader.vcs.hg.CommitParser.fileSeparatorFormat;
 
+@SuppressWarnings("Duplicates") // because it's similar to GitLog
 class HgLog implements VcsCommand<VcsProject.LogResult> {
     private final String hgPath;
     private final String folder;
@@ -32,7 +36,7 @@ class HgLog implements VcsCommand<VcsProject.LogResult> {
         shellCommand.execute();
 
         if (HgShellCommand.isSuccessful(shellCommand)) {
-            List<Commit> commits = parseListOfCommits(shellCommand.stdout());
+            List<Commit> commits = CommitParser.parseListOfCommits(shellCommand.stdout());
             List<String> errors = (shellCommand.stderr().trim().isEmpty() ? new ArrayList<String>() : asList(shellCommand.stderr()));
             return new VcsProject.LogResult(commits, errors);
         } else {
@@ -40,17 +44,45 @@ class HgLog implements VcsCommand<VcsProject.LogResult> {
         }
     }
 
-    private List<Commit> parseListOfCommits(String stdout) {
-        return new ArrayList<Commit>();
-    }
-
     @Override public String describe() {
         return shellCommand.describe();
     }
 
     static ShellCommand hgLog(String hgPath, String folder, Date fromDate, Date toDate) {
-        ShellCommand command = new ShellCommand(hgPath, "log", "--encoding", "UTF-8");
+        ShellCommand command = new ShellCommand(
+                hgPath, "log",
+                "--encoding", "UTF-8",
+                "-r", "date(\"" + asHgDate(fromDate) + " to " + asHgDate(toDate) + "\")",
+                "--template", logTemplate()
+        );
         return command.workingDir(folder).withCharset(forName("UTF-8"));
+    }
+
+    private static String asHgDate(Date date) {
+        return Long.toString(date.getTime() / 1000) + " 0";
+    }
+
+    private static String logTemplate() {
+        // see https://www.selenic.com/mercurial/hg.1.html#templates
+        String commitNode = "{node}";
+        String commitParentNode = "{p1node}";
+        String commitDate = "{date}";
+        String author = "{person(author)}"; // use person() because author can also include email
+        String description = "{desc}";
+        String filesAdded = "{join(file_adds,'" + fileSeparatorFormat + "')}";
+        String filesDeleted = "{join(file_dels,'" + fileSeparatorFormat + "')}";
+        String filesCopied = "{join(file_copies,'" + fileSeparatorFormat + "')}";
+
+        return "" + commitStartSeparatorFormat +
+                commitNode + commitFieldSeparatorFormat +
+                commitParentNode + commitFieldSeparatorFormat +
+                commitDate + commitFieldSeparatorFormat +
+                author + commitFieldSeparatorFormat +
+                description + commitFieldSeparatorFormat +
+                filesAdded + commitFieldSeparatorFormat +
+                filesDeleted + commitFieldSeparatorFormat +
+                filesCopied + commitFieldSeparatorFormat +
+                "";
     }
 
     @SuppressWarnings("SimplifiableIfStatement")
@@ -66,7 +98,6 @@ class HgLog implements VcsCommand<VcsProject.LogResult> {
         return !(toDate != null ? !toDate.equals(hgLog.toDate) : hgLog.toDate != null);
     }
 
-    @SuppressWarnings("Duplicates")
     @Override public int hashCode() {
         int result = hgPath != null ? hgPath.hashCode() : 0;
         result = 31 * result + (folder != null ? folder.hashCode() : 0);
