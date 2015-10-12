@@ -129,6 +129,67 @@ class HgIntegrationTest {
 		])
 	}
 
+	@Test void "log moved and renamed file commit"() {
+		project.cloneToLocal()
+		def logResult = project.log(date("14/08/2014"), date("15/08/2014"))
+
+		assertEqualCommits(logResult, [
+				new Commit(
+						revision(5), revision(4),
+						dateTime("14:00:00 14/08/2014"),
+						author,
+						"moved and renamed file1",
+						[new Change(MOVED, "folder2/renamed_file1.txt", "folder1/file1.txt", revision(5), revision(4))]
+				)
+		])
+	}
+
+	@Test void "log deleted file"() {
+		project.cloneToLocal()
+		def logResult = project.log(date("15/08/2014"), date("16/08/2014"))
+
+		assertEqualCommits(logResult, [
+				new Commit(
+						revision(6), revision(5),
+						dateTime("14:00:00 15/08/2014"),
+						author,
+						"deleted file1",
+						[new Change(DELETED, "", "folder2/renamed_file1.txt", revision(6), revision(5))]
+				)
+		])
+	}
+
+	@Test void "log file with spaces and quotes in its name"() {
+		project.cloneToLocal()
+		def logResult = project.log(date("16/08/2014"), date("17/08/2014"))
+
+		assertEqualCommits(logResult, [
+				new Commit(
+						revision(7), revision(6),
+						dateTime("14:00:00 16/08/2014"),
+						author,
+						"added file with spaces and quotes",
+						[new Change(NEW, "\"file with spaces.txt\"", "", revision(7), noRevision)]
+				)
+		])
+	}
+
+	@Test void "log commit with non-ascii message and file content"() {
+		project.cloneToLocal()
+		def logResult = project.log(date("17/08/2014"), date("18/08/2014"))
+
+		assertEqualCommits(logResult, [
+				new Commit(
+						revision(8), revision(7),
+						dateTime("15:00:00 17/08/2014"),
+						author,
+						"non-ascii комментарий",
+						[new Change(NEW, "non-ascii.txt", "", revision(8), noRevision)]
+				)
+		])
+	}
+
+
 	@Before void setup() {
         new File(projectFolder).deleteDir()
         new File(projectFolder).mkdirs()

@@ -52,7 +52,7 @@ class CommitParser {
         List<Change> filesDeleted = new ArrayList<Change>();
         for (String filePath : values.get(6).split(fileSeparator)) {
             if (filePath.isEmpty()) continue;
-            filesDeleted.add(new Change(DELETED, noFilePath, filePath, noRevision, revision));
+            filesDeleted.add(new Change(DELETED, noFilePath, filePath, revision, revisionBefore));
         }
         List<Change> filesMoved = new ArrayList<Change>();
         for (String newAndOldFilePath : values.get(7).split(fileSeparator)) {
