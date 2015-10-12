@@ -1,17 +1,3 @@
-### VCS Reader
-This is minimal Java API to read commits from version control systems.
-It uses native VCS commands to clone/update/log commits and currently supports 
-[Git](https://git-scm.com/), 
-[Mercurial](https://www.mercurial-scm.org/) and 
-[Subversion](https://subversion.apache.org/).
-
-
-### Why?
-Analysing code history is fun but there seems to be no simple java libraries to do this.
-
-
-### Example
-```groovy
 package vcsreader
 
 import vcsreader.vcs.git.GitSettings
@@ -41,4 +27,3 @@ assert commit.authorName == "Stefan Birkner"
 assert commit.comment == "Override toString() with meaningful implementation.\n\nThe new implementation provides more useful information."
 assert commit.changes.first().type == MODIFICATION
 assert commit.changes.first().filePath == "src/main/java/org/junit/runners/model/FrameworkField.java"
-```
