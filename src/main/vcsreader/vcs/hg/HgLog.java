@@ -66,7 +66,7 @@ import static vcsreader.vcs.hg.CommitParser.fileSeparatorFormat;
         // see https://www.selenic.com/mercurial/hg.1.html#templates
         String commitNode = "{node}";
         String commitParentNode = "{p1node}";
-        String commitDate = "{date}";
+        String commitDate = "{date|isodatesec}";
         String author = "{person(author)}"; // use person() because author can also include email
         String description = "{desc}";
         String filesAdded = "{join(file_adds,'" + fileSeparatorFormat + "')}";

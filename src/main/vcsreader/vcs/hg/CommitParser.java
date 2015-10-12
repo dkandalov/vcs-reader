@@ -3,6 +3,8 @@ package vcsreader.vcs.hg;
 import vcsreader.Change;
 import vcsreader.Commit;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -21,6 +23,7 @@ class CommitParser {
     private static final String commitFieldsSeparator = "\u0019\u0018\u0017\u0016\u0015";
     private static final String fileSeparator = "\u0017\u0016\u0015\u0019\u0018";
     private static final String hgNoRevision = "0000000000000000000000000000000000000000";
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
 
     public static List<Commit> parseListOfCommits(String stdout) {
         ArrayList<Commit> commits = new ArrayList<Commit>();
@@ -102,6 +105,10 @@ class CommitParser {
     }
 
     private static Date parseDate(String s) {
-        return new Date((long) (Double.parseDouble(s) * 1000));
+        try {
+            return dateFormat.parse(s);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
