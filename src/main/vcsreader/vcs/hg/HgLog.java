@@ -16,7 +16,7 @@ import static vcsreader.vcs.hg.CommitParser.commitStartSeparatorFormat;
 import static vcsreader.vcs.hg.CommitParser.fileSeparatorFormat;
 
 @SuppressWarnings("Duplicates") // because it's similar to GitLog
-class HgLog implements VcsCommand<VcsProject.LogResult> {
+    class HgLog implements VcsCommand<VcsProject.LogResult> {
     private final String hgPath;
     private final String folder;
     private final Date fromDate;

@@ -30,4 +30,9 @@ public class StringUtil {
         while (end > start && chars.indexOf(s.charAt(end - 1)) != -1) end--;
         return s.substring(start, end);
     }
+
+    public static String trimLastNewLine(String s) {
+        if (s.endsWith("\r\n")) return s.substring(0, s.length() - 2);
+        else return s.endsWith("\n") || s.endsWith("\r") ? s.substring(0, s.length() - 1) : s;
+    }
 }

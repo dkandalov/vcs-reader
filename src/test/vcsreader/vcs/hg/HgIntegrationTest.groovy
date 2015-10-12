@@ -189,6 +189,41 @@ class HgIntegrationTest {
 		])
 	}
 
+	@Test void "log content of modified file"() {
+		project.cloneToLocal()
+		def logResult = project.log(date("12/08/2014"), date("13/08/2014"))
+
+		def change = logResult.commits().first().changes.first()
+		assert change.type == MODIFICATION
+		assert change.content().text == "file2 new content"
+		assert change.contentBefore().text == "file2 content"
+		assert logResult.vcsErrors().empty
+		assert logResult.isSuccessful()
+	}
+
+	@Test void "log content of new file"() {
+		project.cloneToLocal()
+		def logResult = project.log(date("11/08/2014"), date("12/08/2014"))
+
+		def change = logResult.commits().first().changes.first()
+		assert change.type == NEW
+		assert change.content().text == "file2 content"
+		assert change.contentBefore() == Change.Content.none
+		assert logResult.vcsErrors().empty
+		assert logResult.isSuccessful()
+	}
+
+	@Test void "log content of deleted file"() {
+		project.cloneToLocal()
+		def logResult = project.log(date("15/08/2014"), date("16/08/2014"))
+
+		def change = logResult.commits().first().changes.first()
+		assert change.type == DELETED
+		assert change.content() == Change.Content.none
+		assert change.contentBefore().text == "file1 content"
+		assert logResult.vcsErrors().empty
+		assert logResult.isSuccessful()
+	}
 
 	@Before void setup() {
         new File(projectFolder).deleteDir()

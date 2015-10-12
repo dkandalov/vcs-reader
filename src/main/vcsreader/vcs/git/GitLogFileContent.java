@@ -6,6 +6,7 @@ import vcsreader.vcs.commandlistener.VcsCommand;
 import java.nio.charset.Charset;
 
 import static vcsreader.VcsProject.LogContentResult;
+import static vcsreader.lang.StringUtil.trimLastNewLine;
 import static vcsreader.vcs.git.GitShellCommand.isSuccessful;
 
 /**
@@ -13,6 +14,7 @@ import static vcsreader.vcs.git.GitShellCommand.isSuccessful;
  * (http://stackoverflow.com/questions/610208/how-to-retrieve-a-single-file-from-specific-revision-in-git).
  * The assumption is that nobody uses it anymore.
  */
+@SuppressWarnings("Duplicates") // because it's similar to HgLogFileContent
 class GitLogFileContent implements VcsCommand<LogContentResult> {
     private final String gitPath;
     private final String folder;
@@ -32,11 +34,6 @@ class GitLogFileContent implements VcsCommand<LogContentResult> {
 
     static ShellCommand gitLogFileContent(String pathToGit, String folder, String filePath, String revision, Charset charset) {
         return new ShellCommand(pathToGit, "show", revision + ":" + filePath).withCharset(charset).workingDir(folder);
-    }
-
-    private static String trimLastNewLine(String s) {
-        if (s.endsWith("\r\n")) return s.substring(0, s.length() - 2);
-        else return s.endsWith("\n") || s.endsWith("\r") ? s.substring(0, s.length() - 1) : s;
     }
 
     @Override public LogContentResult execute() {
