@@ -13,7 +13,7 @@ import static vcsreader.Change.noRevision
 import static vcsreader.lang.DateTimeUtil.dateTime
 import static vcsreader.vcs.TestUtil.assertEqualCommits
 
-class CommitParserTest {
+class SvnCommitParserTest {
     @Test void "parse commit with single change"() {
         def xml = """
             <?xml version="1.0" encoding="UTF-8"?>
@@ -29,7 +29,7 @@ class CommitParserTest {
             </log>
         """.trim()
 
-        assertEqualCommits(CommitParser.parseCommits(xml), [
+        assertEqualCommits(SvnCommitParser.parseCommits(xml), [
                 new Commit(
                         "1", noRevision,
                         dateTime("15:00:00 10/08/2014"),
@@ -56,7 +56,7 @@ class CommitParserTest {
             </log>
         """.trim()
 
-        assertEqualCommits(CommitParser.parseCommits(xml), [
+        assertEqualCommits(SvnCommitParser.parseCommits(xml), [
                 new Commit(
                         "1", noRevision,
                         dateTime("19:35:02 21/12/2013"),
@@ -82,7 +82,7 @@ class CommitParserTest {
             </log>
         """.trim()
 
-        String comment = CommitParser.parseCommits(xml)[0].comment
+        String comment = SvnCommitParser.parseCommits(xml)[0].comment
         assert comment ==
                 "- Update the product version to 5.0 beta\n" +
                 "- Fix a few \"bugs\" found with Findbugs\n" +
@@ -116,7 +116,7 @@ class CommitParserTest {
 			</log>
         """.trim()
 
-        assertThat(CommitParser.parseCommits(xml)[0], equalTo(
+        assertThat(SvnCommitParser.parseCommits(xml)[0], equalTo(
 		        new Commit(
 				        "4", "3",
 				        dateTime("15:00:00 13/08/2014"),
@@ -140,7 +140,7 @@ class CommitParserTest {
             </log>
         """.trim()
 
-		assertEqualCommits(CommitParser.parseCommits(xml), [
+		assertEqualCommits(SvnCommitParser.parseCommits(xml), [
 				new Commit(
 						"1", noRevision,
 						dateTime("15:00:00 10/08/2014"),
