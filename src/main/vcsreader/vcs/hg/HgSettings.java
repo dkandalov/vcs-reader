@@ -12,7 +12,7 @@ public class HgSettings {
     }
 
     public static HgSettings defaults() {
-        return new HgSettings("/usr/bin/hg", Charset.forName("UTF-8"));
+        return new HgSettings("/usr/local/bin/hg", Charset.forName("UTF-8"));
     }
 
     public HgSettings withHgPath(String value) {
