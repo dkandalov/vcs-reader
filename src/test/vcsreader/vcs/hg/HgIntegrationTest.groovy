@@ -1,7 +1,6 @@
 package vcsreader.vcs.hg
 import org.junit.Before
 import org.junit.BeforeClass
-import org.junit.Ignore
 import org.junit.Test
 import vcsreader.Change
 import vcsreader.Commit
@@ -115,7 +114,6 @@ class HgIntegrationTest {
 		])
 	}
 
-	@Ignore
 	@Test void "log moved file commit"() {
 		project.cloneToLocal()
 		def logResult = project.log(date("13/08/2014"), date("14/08/2014"))

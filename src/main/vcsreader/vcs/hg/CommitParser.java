@@ -5,9 +5,12 @@ import vcsreader.Commit;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import static vcsreader.Change.Type.*;
+import static vcsreader.Change.noFilePath;
+import static vcsreader.Change.noRevision;
 import static vcsreader.lang.StringUtil.split;
 
 class CommitParser {
@@ -35,7 +38,7 @@ class CommitParser {
         String revision = values.get(0);
         String revisionBefore = values.get(1);
         if (revisionBefore.equals(hgNoRevision)) {
-            revisionBefore = Change.noRevision;
+            revisionBefore = noRevision;
         }
         Date commitDate = parseDate(values.get(2));
         String author = values.get(3);
@@ -49,13 +52,39 @@ class CommitParser {
         List<Change> filesDeleted = new ArrayList<Change>();
         for (String filePath : values.get(6).split(fileSeparator)) {
             if (filePath.isEmpty()) continue;
-            filesDeleted.add(new Change(DELETED, filePath, revision));
+            filesDeleted.add(new Change(DELETED, noFilePath, filePath, noRevision, revision));
         }
         List<Change> filesMoved = new ArrayList<Change>();
-        for (String filePath : values.get(7).split(fileSeparator)) {
-            if (filePath.isEmpty()) continue;
-            String filePathBefore = ""; // TODO
+        for (String newAndOldFilePath : values.get(7).split(fileSeparator)) {
+            if (newAndOldFilePath.isEmpty()) continue;
+            String[] parts = newAndOldFilePath.split("\\s+\\(");
+            String filePath;
+            String filePathBefore;
+            if (parts.length == 2) {
+                filePath = parts[0];
+                filePathBefore = parts[1].substring(0, parts[1].length() - 1);
+            } else {
+                filePath = newAndOldFilePath;
+                filePathBefore = noFilePath;
+            }
             filesMoved.add(new Change(MOVED, filePath, filePathBefore, revision, revisionBefore));
+
+            Iterator<Change> addedIterator = filesAdded.iterator();
+            while (addedIterator.hasNext()) {
+                Change change = addedIterator.next();
+                if (change.filePath.equals(filePath)) {
+                    addedIterator.remove();
+                    break;
+                }
+            }
+            Iterator<Change> deletedIterator = filesDeleted.iterator();
+            while (deletedIterator.hasNext()) {
+                Change change = deletedIterator.next();
+                if (change.filePathBefore.equals(filePathBefore)) {
+                    deletedIterator.remove();
+                    break;
+                }
+            }
         }
         List<Change> filesModified = new ArrayList<Change>();
         for (String filePath : values.get(8).split(fileSeparator)) {
