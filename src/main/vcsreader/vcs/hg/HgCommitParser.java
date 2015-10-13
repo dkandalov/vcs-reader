@@ -16,9 +16,9 @@ import static vcsreader.Change.noRevision;
 import static vcsreader.lang.StringUtil.split;
 
 class HgCommitParser {
-    public static final String commitStartSeparatorFormat = "\\x15\\x16\\x17\\x18\\x19";
-    public static final String commitFieldSeparatorFormat = "\\x19\\x18\\x17\\x16\\x15";
-    public static final String fileSeparatorFormat = "\\x17\\x16\\x15\\x19\\x18";
+    private static final String commitStartSeparatorFormat = "\\x15\\x16\\x17\\x18\\x19";
+    private static final String commitFieldSeparatorFormat = "\\x19\\x18\\x17\\x16\\x15";
+    private static final String fileSeparatorFormat = "\\x17\\x16\\x15\\x19\\x18";
     private static final String commitStartSeparator = "\u0015\u0016\u0017\u0018\u0019";
     private static final String commitFieldsSeparator = "\u0019\u0018\u0017\u0016\u0015";
     private static final String fileSeparator = "\u0017\u0016\u0015\u0019\u0018";
@@ -110,5 +110,30 @@ class HgCommitParser {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static String logTemplate() {
+        // see https://www.selenic.com/mercurial/hg.1.html#templates
+        String commitNode = "{node}";
+        String commitParentNode = "{p1node}";
+        String commitDate = "{date|isodatesec}";
+        String author = "{person(author)}"; // use person() because author can also include email
+        String description = "{desc}";
+        String filesAdded = "{join(file_adds,'" + fileSeparatorFormat + "')}";
+        String filesDeleted = "{join(file_dels,'" + fileSeparatorFormat + "')}";
+        String filesCopied = "{join(file_copies,'" + fileSeparatorFormat + "')}";
+        String filesModified = "{join(file_mods,'" + fileSeparatorFormat + "')}";
+
+        return "" + commitStartSeparatorFormat +
+                commitNode + commitFieldSeparatorFormat +
+                commitParentNode + commitFieldSeparatorFormat +
+                commitDate + commitFieldSeparatorFormat +
+                author + commitFieldSeparatorFormat +
+                description + commitFieldSeparatorFormat +
+                filesAdded + commitFieldSeparatorFormat +
+                filesDeleted + commitFieldSeparatorFormat +
+                filesCopied + commitFieldSeparatorFormat +
+                filesModified + commitFieldSeparatorFormat +
+                "";
     }
 }

@@ -11,9 +11,6 @@ import java.util.List;
 
 import static java.nio.charset.Charset.forName;
 import static java.util.Arrays.asList;
-import static vcsreader.vcs.hg.HgCommitParser.commitFieldSeparatorFormat;
-import static vcsreader.vcs.hg.HgCommitParser.commitStartSeparatorFormat;
-import static vcsreader.vcs.hg.HgCommitParser.fileSeparatorFormat;
 
 @SuppressWarnings("Duplicates") // because it's similar to GitLog
     class HgLog implements VcsCommand<VcsProject.LogResult> {
@@ -53,38 +50,13 @@ import static vcsreader.vcs.hg.HgCommitParser.fileSeparatorFormat;
                 hgPath, "log",
                 "--encoding", "UTF-8",
                 "-r", "date(\"" + asHgDate(fromDate) + " to " + asHgDate(toDate) + "\")",
-                "--template", logTemplate()
+                "--template", HgCommitParser.logTemplate()
         );
         return command.workingDir(folder).withCharset(forName("UTF-8"));
     }
 
     private static String asHgDate(Date date) {
         return Long.toString(date.getTime() / 1000) + " 0";
-    }
-
-    private static String logTemplate() {
-        // see https://www.selenic.com/mercurial/hg.1.html#templates
-        String commitNode = "{node}";
-        String commitParentNode = "{p1node}";
-        String commitDate = "{date|isodatesec}";
-        String author = "{person(author)}"; // use person() because author can also include email
-        String description = "{desc}";
-        String filesAdded = "{join(file_adds,'" + fileSeparatorFormat + "')}";
-        String filesDeleted = "{join(file_dels,'" + fileSeparatorFormat + "')}";
-        String filesCopied = "{join(file_copies,'" + fileSeparatorFormat + "')}";
-        String filesModified = "{join(file_mods,'" + fileSeparatorFormat + "')}";
-
-        return "" + commitStartSeparatorFormat +
-                commitNode + commitFieldSeparatorFormat +
-                commitParentNode + commitFieldSeparatorFormat +
-                commitDate + commitFieldSeparatorFormat +
-                author + commitFieldSeparatorFormat +
-                description + commitFieldSeparatorFormat +
-                filesAdded + commitFieldSeparatorFormat +
-                filesDeleted + commitFieldSeparatorFormat +
-                filesCopied + commitFieldSeparatorFormat +
-                filesModified + commitFieldSeparatorFormat +
-                "";
     }
 
     @SuppressWarnings("SimplifiableIfStatement")

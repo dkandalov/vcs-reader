@@ -91,23 +91,6 @@ class GitLog implements VcsCommand<LogResult> {
         return hasDeletions && hasAdditions;
     }
 
-    private static String logFormat() {
-        // see "PRETTY FORMATS" at https://www.kernel.org/pub/software/scm/git/docs/git-log.html
-        String commitHash = "%H";
-        String parentHashes = "%P";
-        String commitDate = "%ct";
-        String authorName = "%an"; // see http://stackoverflow.com/questions/18750808/difference-between-author-and-committer-in-git
-        String rawBody = "%s%n%n%-b"; // based on git4idea.checkin.GitCheckinEnvironment.GitCheckinOptions.getLastCommitMessage()
-
-        return "--pretty=format:" +
-                commitStartSeparatorFormat +
-                commitHash + commitFieldSeparatorFormat +
-                parentHashes + commitFieldSeparatorFormat +
-                commitDate + commitFieldSeparatorFormat +
-                authorName + commitFieldSeparatorFormat +
-                rawBody + commitFieldSeparatorFormat;
-    }
-
     @Override public String describe() {
         String result = shellCommand.describe();
         for (ShellCommand shellSubCommand : shellSubCommands) {

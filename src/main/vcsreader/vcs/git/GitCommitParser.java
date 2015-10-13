@@ -13,8 +13,8 @@ import static vcsreader.lang.StringUtil.split;
 import static vcsreader.lang.StringUtil.trim;
 
 class GitCommitParser {
-    public static final String commitStartSeparatorFormat = "%x15%x16%x17%x18%x19";
-    public static final String commitFieldSeparatorFormat = "%x19%x18%x17%x16%x15";
+    private static final String commitStartSeparatorFormat = "%x15%x16%x17%x18%x19";
+    private static final String commitFieldSeparatorFormat = "%x19%x18%x17%x16%x15";
     private static final String commitStartSeparator = "\u0015\u0016\u0017\u0018\u0019";
     private static final String commitFieldsSeparator = "\u0019\u0018\u0017\u0016\u0015";
 
@@ -123,5 +123,22 @@ class GitCommitParser {
 
     private static Date parseDate(String s) {
         return new Date(Long.parseLong(s) * 1000);
+    }
+
+    public static String logFormat() {
+        // see "PRETTY FORMATS" at https://www.kernel.org/pub/software/scm/git/docs/git-log.html
+        String commitHash = "%H";
+        String parentHashes = "%P";
+        String commitDate = "%ct";
+        String authorName = "%an"; // see http://stackoverflow.com/questions/18750808/difference-between-author-and-committer-in-git
+        String rawBody = "%s%n%n%-b"; // based on git4idea.checkin.GitCheckinEnvironment.GitCheckinOptions.getLastCommitMessage()
+
+        return "--pretty=format:" +
+                commitStartSeparatorFormat +
+                commitHash + commitFieldSeparatorFormat +
+                parentHashes + commitFieldSeparatorFormat +
+                commitDate + commitFieldSeparatorFormat +
+                authorName + commitFieldSeparatorFormat +
+                rawBody + commitFieldSeparatorFormat;
     }
 }
