@@ -7,10 +7,10 @@ It uses native VCS commands to clone/update/log commits and currently supports
 
 
 ### Why?
-Analysing code history is fun but there seems to be no simple java libraries to do this.
+I didn't find any similar libraries to read commit history.
 
 
-### Example
+### API Example
 ```groovy
 package vcsreader
 
@@ -42,3 +42,23 @@ assert commit.comment == "Override toString() with meaningful implementation.\n\
 assert commit.changes.first().type == MODIFICATION
 assert commit.changes.first().filePath == "src/main/java/org/junit/runners/model/FrameworkField.java"
 ```
+
+
+### How to build?
+Use [gradle](http://gradle.org/). 
+For example, ```gradle jar``` in project folder.
+All dependencies are available in ```lib``` folder.
+
+There are several VCS integration tests which require temporary repositories with predefined commit history.
+Use ruby scripts to generate them:
+ - src/test/vcsreader/vcs/git/git-create-repo.rb
+ - src/test/vcsreader/vcs/hg/hg-create-repo.rb
+ - src/test/vcsreader/vcs/svn/svn-create-repo.rb
+ 
+
+### Things to do
+ - support for branches
+ - ability to cancel VCS commands by killing underlying process (e.g. if log takes very long time)
+ - rewrite ruby scripts for generating test repositories in jvm language so that it's easier to use them in CI 
+ - optional support to log merge commits (currently merge commits are not logged, only original commit from another branch is logged)
+ 
