@@ -76,8 +76,8 @@ class ShellCommands_HgIntegrationTest {
 		new File(projectFolder).deleteDir()
 
 		def command = hgUpdate(pathToHg, projectFolder2).execute()
-		assert command.stdout().trim() == "pulling from ${projectFolder}"
-		assert command.stderr().contains("abort: repository ${projectFolder} not found!")
+		assert command.stdout().startsWith("pulling from")
+		assert command.stderr().trim().matches("abort: repository .* not found!")
 		assert command.exitCode() == 255
 	}
 
