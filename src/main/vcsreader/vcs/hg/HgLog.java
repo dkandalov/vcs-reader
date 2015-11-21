@@ -13,7 +13,7 @@ import static java.nio.charset.Charset.forName;
 import static java.util.Arrays.asList;
 
 @SuppressWarnings("Duplicates") // because it's similar to GitLog
-    class HgLog implements VcsCommand<VcsProject.LogResult> {
+class HgLog implements VcsCommand<VcsProject.LogResult> {
     private final String hgPath;
     private final String folder;
     private final Date fromDate;
@@ -56,7 +56,10 @@ import static java.util.Arrays.asList;
     }
 
     private static String asHgDate(Date date) {
-        return Long.toString(date.getTime() / 1000) + " 0";
+        // see 'hg help dates'
+        String secondsSinceEpoch = Long.toString(date.getTime() / 1000);
+        String utc = "0";
+        return secondsSinceEpoch + " " + utc;
     }
 
     @SuppressWarnings("SimplifiableIfStatement")
