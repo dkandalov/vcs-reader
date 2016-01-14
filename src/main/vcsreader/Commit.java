@@ -11,17 +11,17 @@ public class Commit {
     @NotNull public final String revision;
     @NotNull public final String revisionBefore;
     @NotNull public final Date commitTime;
-    @NotNull public final String authorName;
+    @NotNull public final String author;
     @NotNull public final String comment;
     // note that order of changes is specified by VCS (and may be random e.g. in case of svn)
     @NotNull public final List<Change> changes;
 
     public Commit(@NotNull String revision, @NotNull String revisionBefore, @NotNull Date commitTime,
-                  @NotNull String authorName, @NotNull String comment, @NotNull List<Change> changes) {
+                  @NotNull String author, @NotNull String comment, @NotNull List<Change> changes) {
         this.revision = revision;
         this.revisionBefore = revisionBefore;
         this.commitTime = commitTime;
-        this.authorName = authorName;
+        this.author = author;
         this.comment = comment;
         this.changes = unmodifiableList(changes);
     }
@@ -33,7 +33,7 @@ public class Commit {
     }
 
     public Commit withChanges(List<Change> newChanges) {
-        return new Commit(revision, revisionBefore, commitTime, authorName, comment, newChanges);
+        return new Commit(revision, revisionBefore, commitTime, author, comment, newChanges);
     }
 
     @Override public String toString() {
@@ -41,7 +41,7 @@ public class Commit {
                 revision + ',' +
                 revisionBefore + ',' +
                 commitTime + ',' +
-                authorName + ',' +
+		        author + ',' +
                 comment + ',' +
                 changes +
         ')';
@@ -54,7 +54,7 @@ public class Commit {
 
         Commit commit = (Commit) o;
 
-        if (!authorName.equals(commit.authorName)) return false;
+        if (!author.equals(commit.author)) return false;
         if (!changes.equals(commit.changes)) return false;
         if (!comment.equals(commit.comment)) return false;
         if (!commitTime.equals(commit.commitTime)) return false;
@@ -69,7 +69,7 @@ public class Commit {
         int result = revision.hashCode();
         result = 31 * result + (revisionBefore.hashCode());
         result = 31 * result + (commitTime.hashCode());
-        result = 31 * result + (authorName.hashCode());
+        result = 31 * result + (author.hashCode());
         result = 31 * result + (comment.hashCode());
         result = 31 * result + (changes.hashCode());
         return result;
