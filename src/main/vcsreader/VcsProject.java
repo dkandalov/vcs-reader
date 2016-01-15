@@ -9,6 +9,10 @@ import java.util.*;
 import static java.util.Arrays.asList;
 import static java.util.Collections.sort;
 
+/**
+ * Represents a project as a set of {@link VcsRoot}s.
+ * This is the main entry point for reading version control history.
+ */
 public class VcsProject {
     private final List<VcsRoot> vcsRoots;
     private final VcsCommandObserver commandObserver;
@@ -27,7 +31,66 @@ public class VcsProject {
         }
     }
 
-    public VcsProject addListener(VcsCommandListener listener) {
+	/**
+	 * For distributes VCS clones {@link VcsRoot}s to local file system and must be called before querying commits.
+	 * Does nothing for centralized VCS because commit history can be queried from server.
+	 */
+	public CloneResult cloneToLocal() {
+		Accumulator<CloneResult> accumulator = new Accumulator<CloneResult>(new CloneResult());
+		for (VcsRoot vcsRoot : vcsRoots) {
+			try {
+
+				CloneResult cloneResult = vcsRoot.cloneToLocal();
+
+				accumulator.update(cloneResult);
+			} catch (Exception e) {
+				accumulator.update(new CloneResult(e));
+			}
+		}
+		return accumulator.mergedResult;
+	}
+
+	/**
+	 * For distributes VCS pulls updates from upstream for all {@link VcsRoot}s
+	 * Does nothing for centralized VCS because commit history can be queried from server.
+	 */
+	public UpdateResult update() {
+		Accumulator<UpdateResult> accumulator = new Accumulator<UpdateResult>(new UpdateResult());
+		for (VcsRoot vcsRoot : vcsRoots) {
+			try {
+
+				UpdateResult updateResult = vcsRoot.update();
+
+				accumulator.update(updateResult);
+			} catch (Exception e) {
+				accumulator.update(new UpdateResult(e));
+			}
+		}
+		return accumulator.mergedResult;
+	}
+
+	/**
+	 * Requests commits from VCS for all {@link VcsRoot}s for specified date range.
+	 * @param fromDate TODO
+	 * @param toDate TODO
+	 */
+	public LogResult log(Date fromDate, Date toDate) {
+		Accumulator<LogResult> accumulator = new Accumulator<LogResult>(new LogResult());
+		for (VcsRoot vcsRoot : vcsRoots) {
+			try {
+
+				LogResult logResult = vcsRoot.log(fromDate, toDate);
+				logResult = (logResult != null ? logResult.setVcsRoot(vcsRoot) : null);
+
+				accumulator.update(logResult);
+			} catch (Exception e) {
+				accumulator.update(new LogResult(e));
+			}
+		}
+		return accumulator.mergedResult;
+	}
+
+	public VcsProject addListener(VcsCommandListener listener) {
         commandObserver.add(listener);
         return this;
     }
@@ -39,52 +102,6 @@ public class VcsProject {
 
     public List<VcsRoot> vcsRoots() {
         return Collections.unmodifiableList(vcsRoots);
-    }
-
-    public CloneResult cloneToLocal() {
-        Accumulator<CloneResult> accumulator = new Accumulator<CloneResult>(new CloneResult());
-        for (VcsRoot vcsRoot : vcsRoots) {
-            try {
-
-                CloneResult cloneResult = vcsRoot.cloneToLocal();
-
-                accumulator.update(cloneResult);
-            } catch (Exception e) {
-                accumulator.update(new CloneResult(e));
-            }
-        }
-        return accumulator.mergedResult;
-    }
-
-    public UpdateResult update() {
-        Accumulator<UpdateResult> accumulator = new Accumulator<UpdateResult>(new UpdateResult());
-        for (VcsRoot vcsRoot : vcsRoots) {
-            try {
-
-                UpdateResult updateResult = vcsRoot.update();
-
-                accumulator.update(updateResult);
-            } catch (Exception e) {
-                accumulator.update(new UpdateResult(e));
-            }
-        }
-        return accumulator.mergedResult;
-    }
-
-    public LogResult log(Date fromDate, Date toDate) {
-        Accumulator<LogResult> accumulator = new Accumulator<LogResult>(new LogResult());
-        for (VcsRoot vcsRoot : vcsRoots) {
-            try {
-
-                LogResult logResult = vcsRoot.log(fromDate, toDate);
-                logResult = (logResult != null ? logResult.setVcsRoot(vcsRoot) : null);
-
-                accumulator.update(logResult);
-            } catch (Exception e) {
-                accumulator.update(new LogResult(e));
-            }
-        }
-        return accumulator.mergedResult;
     }
 
     @Override public String toString() {
@@ -187,6 +204,7 @@ public class VcsProject {
         }
 
         public List<Commit> commits() {
+	        // TODO sort in constructor?
             List<Commit> commits = new ArrayList<Commit>(this.commits);
             sort(commits, new Comparator<Commit>() {
                 @Override public int compare(@NotNull Commit commit1, @NotNull Commit commit2) {
