@@ -37,18 +37,18 @@ public class VcsProject {
 	 * Does nothing for centralized VCS because commit history can be queried from server.
 	 */
 	public CloneResult cloneToLocal() {
-		Accumulator<CloneResult> accumulator = new Accumulator<CloneResult>(new CloneResult());
+		Aggregator<CloneResult> aggregator = new Aggregator<CloneResult>(new CloneResult());
 		for (VcsRoot vcsRoot : vcsRoots) {
 			try {
 
 				CloneResult cloneResult = vcsRoot.cloneToLocal();
 
-				accumulator.update(cloneResult);
+				aggregator.aggregate(cloneResult);
 			} catch (Exception e) {
-				accumulator.update(new CloneResult(e));
+				aggregator.aggregate(new CloneResult(e));
 			}
 		}
-		return accumulator.mergedResult;
+		return aggregator.result;
 	}
 
 	/**
@@ -56,18 +56,18 @@ public class VcsProject {
 	 * Does nothing for centralized VCS because commit history can be queried from server.
 	 */
 	public UpdateResult update() {
-		Accumulator<UpdateResult> accumulator = new Accumulator<UpdateResult>(new UpdateResult());
+		Aggregator<UpdateResult> aggregator = new Aggregator<UpdateResult>(new UpdateResult());
 		for (VcsRoot vcsRoot : vcsRoots) {
 			try {
 
 				UpdateResult updateResult = vcsRoot.update();
 
-				accumulator.update(updateResult);
+				aggregator.aggregate(updateResult);
 			} catch (Exception e) {
-				accumulator.update(new UpdateResult(e));
+				aggregator.aggregate(new UpdateResult(e));
 			}
 		}
-		return accumulator.mergedResult;
+		return aggregator.result;
 	}
 
 	/**
@@ -86,19 +86,19 @@ public class VcsProject {
 					"From: " + dateFormat.format(from) + ", to: " + dateFormat.format(to) + ".");
 		}
 
-		Accumulator<LogResult> accumulator = new Accumulator<LogResult>(new LogResult());
+		Aggregator<LogResult> aggregator = new Aggregator<LogResult>(new LogResult());
 		for (VcsRoot vcsRoot : vcsRoots) {
 			try {
 
 				LogResult logResult = vcsRoot.log(from, to);
 				logResult = (logResult != null ? logResult.setVcsRoot(vcsRoot) : null);
 
-				accumulator.update(logResult);
+				aggregator.aggregate(logResult);
 			} catch (Exception e) {
-				accumulator.update(new LogResult(e));
+				aggregator.aggregate(new LogResult(e));
 			}
 		}
-		return accumulator.mergedResult;
+		return aggregator.result;
 	}
 
 	public VcsProject addListener(VcsCommandListener listener) {
@@ -120,22 +120,22 @@ public class VcsProject {
     }
 
 
-    private interface Mergeable<T extends Mergeable<T>> {
-        T mergeWith(T result);
+    private interface Aggregatable<T extends Aggregatable<T>> {
+        T aggregateWith(T result);
     }
 
-    private static class Accumulator<T extends Mergeable<T>> {
-        private T mergedResult;
+    private static class Aggregator<T extends Aggregatable<T>> {
+        private T result;
 
-        public Accumulator(T mergedResult) {
-            this.mergedResult = mergedResult;
+        public Aggregator(T result) {
+            this.result = result;
         }
 
-        public void update(T result) {
-            if (mergedResult == null) {
-                mergedResult = result;
+        public void aggregate(T result) {
+            if (this.result == null) {
+                this.result = result;
             } else {
-                mergedResult = mergedResult.mergeWith(result);
+                this.result = this.result.aggregateWith(result);
             }
         }
     }
@@ -169,7 +169,7 @@ public class VcsProject {
         }
     }
 
-    public static class LogResult implements Mergeable<LogResult> {
+    public static class LogResult implements Aggregatable<LogResult> {
         private final List<Commit> commits;
         private final List<String> vcsErrors;
         private final List<Exception> exceptions;
@@ -192,7 +192,7 @@ public class VcsProject {
             this.exceptions = exceptions;
         }
 
-        public LogResult mergeWith(LogResult result) {
+        public LogResult aggregateWith(LogResult result) {
             List<Commit> newCommits = new ArrayList<Commit>(commits);
             List<String> newErrors = new ArrayList<String>(vcsErrors);
             List<Exception> newExceptions = new ArrayList<Exception>(exceptions);
@@ -232,7 +232,7 @@ public class VcsProject {
         }
     }
 
-    public static class UpdateResult implements Mergeable<UpdateResult> {
+    public static class UpdateResult implements Aggregatable<UpdateResult> {
         private final List<String> vcsErrors;
         private final List<Exception> exceptions;
 
@@ -253,7 +253,7 @@ public class VcsProject {
             this(asList(error), new ArrayList<Exception>());
         }
 
-        @Override public UpdateResult mergeWith(UpdateResult result) {
+        @Override public UpdateResult aggregateWith(UpdateResult result) {
             List<String> newErrors = new ArrayList<String>(vcsErrors);
             List<Exception> newExceptions = new ArrayList<Exception>(exceptions);
             newErrors.addAll(result.vcsErrors);
@@ -274,7 +274,7 @@ public class VcsProject {
         }
     }
 
-    public static class CloneResult implements Mergeable<CloneResult> {
+    public static class CloneResult implements Aggregatable<CloneResult> {
         private final List<String> vcsErrors;
         private final List<Exception> exceptions;
 
@@ -295,7 +295,7 @@ public class VcsProject {
             this(vcsErrors, new ArrayList<Exception>());
         }
 
-        @Override public CloneResult mergeWith(CloneResult result) {
+        @Override public CloneResult aggregateWith(CloneResult result) {
             List<String> newErrors = new ArrayList<String>(vcsErrors);
             List<Exception> newExceptions = new ArrayList<Exception>(exceptions);
             newErrors.addAll(result.vcsErrors);
