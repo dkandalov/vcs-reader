@@ -7,6 +7,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static vcsreader.VcsProject.LogContentResult;
 
+/**
+ * Contains data about file modification in a {@link Commit}.
+ */
 public class Change {
     public enum Type {
         MODIFICATION,

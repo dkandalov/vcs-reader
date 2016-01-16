@@ -7,10 +7,14 @@ import java.util.List;
 
 import static java.util.Collections.unmodifiableList;
 
+/**
+ * Contains data for single VCS commit.
+ * See also {@link Change}.
+ */
 public class Commit {
     @NotNull public final String revision;
     @NotNull public final String revisionBefore;
-    @NotNull public final Date commitTime;
+    @NotNull public final Date commitTime; // TODO rename to "time"
     @NotNull public final String author;
     @NotNull public final String comment;
     // note that order of changes is specified by VCS (and may be random e.g. in case of svn)

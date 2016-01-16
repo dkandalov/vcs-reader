@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import vcsreader.vcs.commandlistener.VcsCommandListener;
 import vcsreader.vcs.commandlistener.VcsCommandObserver;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static java.util.Arrays.asList;
@@ -70,16 +71,26 @@ public class VcsProject {
 	}
 
 	/**
-	 * Requests commits from VCS for all {@link VcsRoot}s for specified date range.
-	 * @param fromDate TODO
-	 * @param toDate TODO
+	 * Request commits from VCS for all {@link VcsRoot}s within specified date range.
+	 * For distributed VCS commits are read from currently checked out branch.
+	 * Merge commits are not logged, the commit which was merged into branch is logged instead.
+	 *
+	 * @param from the date and time from which to request commits (inclusive, one second resolution)
+	 * @param to the date and time until which to request commits (exclusive, one second resolution)
 	 */
-	public LogResult log(Date fromDate, Date toDate) {
+	public LogResult log(Date from, Date to) {
+		if (to.getTime() < from.getTime()) {
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+			dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+			throw new IllegalArgumentException("Invalid date range. " +
+					"From: " + dateFormat.format(from) + ", to: " + dateFormat.format(to) + ".");
+		}
+
 		Accumulator<LogResult> accumulator = new Accumulator<LogResult>(new LogResult());
 		for (VcsRoot vcsRoot : vcsRoots) {
 			try {
 
-				LogResult logResult = vcsRoot.log(fromDate, toDate);
+				LogResult logResult = vcsRoot.log(from, to);
 				logResult = (logResult != null ? logResult.setVcsRoot(vcsRoot) : null);
 
 				accumulator.update(logResult);
@@ -188,7 +199,13 @@ public class VcsProject {
             newCommits.addAll(result.commits);
             newErrors.addAll(result.vcsErrors);
             newExceptions.addAll(result.exceptions);
-            return new LogResult(newCommits, newErrors, newExceptions);
+	        sort(newCommits, new Comparator<Commit>() {
+		        @Override public int compare(@NotNull Commit commit1, @NotNull Commit commit2) {
+			        return new Long(commit1.commitTime.getTime()).compareTo(commit2.commitTime.getTime());
+		        }
+	        });
+
+	        return new LogResult(newCommits, newErrors, newExceptions);
         }
 
         public boolean isSuccessful() {
@@ -204,13 +221,6 @@ public class VcsProject {
         }
 
         public List<Commit> commits() {
-	        // TODO sort in constructor?
-            List<Commit> commits = new ArrayList<Commit>(this.commits);
-            sort(commits, new Comparator<Commit>() {
-                @Override public int compare(@NotNull Commit commit1, @NotNull Commit commit2) {
-                    return new Long(commit1.commitTime.getTime()).compareTo(commit2.commitTime.getTime());
-                }
-            });
             return commits;
         }
 
