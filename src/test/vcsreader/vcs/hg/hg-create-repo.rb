@@ -18,11 +18,11 @@ class HgRepositoryCreator
       puts `#{@hg} init`
 
       puts `echo "file1 content" > file1.txt`
-      commit "initial commit", "Aug 10 14:00:00 2014 +0000", @author
+      commit "initial commit", "Aug 10 00:00:00 2014 +0000", @author
 
       puts `echo "file2 content" > file2.txt`
       puts `echo "file3 content" > file3.txt`
-      commit "added file2, file3", "Aug 11 14:00:00 2014 +0000", @author
+      commit "added file2, file3", "Aug 11 00:00:00 2014 +0000", @author
 
       puts `echo "file2 new content" > file2.txt`
       puts `echo "file3 new content" > file3.txt`

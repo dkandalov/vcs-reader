@@ -3,14 +3,5 @@
   "author": "Some Author",
   "authorWithEmail": "Some Author <some.author@mail.com>",
   "referenceProject": "/tmp/reference-repos/hg-repo",
-  "revisions": [
-    "4455201f02f73cf2f13f3e4768900fbacdf7637d",
-    "2d6e2635b69815fbcdae9c0237368f438566e924",
-    "7e0624b4b0c9d08fc061f4ed54e5a38dd939d650",
-    "b8a2bdc966897b29adf614e6993c80620c3408cd",
-    "04ba0b346ea8043ed225248aaf3d822181703a47",
-    "e520d255a415b89c0bb18afaf9faffc05f137d22",
-    "0e63c9b3041059cf86ed5edb4574606dd1e8fabf",
-    "798ffbff44b7b147e7b9145b00b92617783cddb0"
-  ]
+  "revisions": ["a833bc984e5aa64fd365709c5465d7f4e4c8e1cd","3698f849577d268c789f99cfb4467d5cd0ff3ba0","92fb61bb93009a0d4efeef3d68ed2dd8d651743b","066210ab410d9eba370e62cd6cf525dad69a6cde","6b0be3b4678bc311e4fd3cf10b4e894be44e1bd3","58b9567657247dffe633f0e00b80d1353336c4d6","e97abc3a7574f415ebff163fcb6905fabbe1adb7","ecba9d458e90086b586650a90e4252202ce23e8c"]
 }

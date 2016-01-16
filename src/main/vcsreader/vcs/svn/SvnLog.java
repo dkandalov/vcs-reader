@@ -49,7 +49,7 @@ class SvnLog implements VcsCommand<LogResult> {
     static ShellCommand svnLog(String pathToSvn, String repositoryUrl, Date fromDate, Date toDate, boolean useMergeHistory) {
         String mergeHistory = (useMergeHistory ? "--use-merge-history" : "");
         Charset svnXmlCharset = forName("UTF-8"); // see http://subversion.tigris.org/issues/show_bug.cgi?id=2938
-        return createShellCommand(
+	    return createShellCommand(
                 pathToSvn, "log",
                 repositoryUrl,
                 "-r", svnDateRange(fromDate, toDate),
@@ -60,13 +60,16 @@ class SvnLog implements VcsCommand<LogResult> {
     }
 
     private static String svnDateRange(Date fromDate, Date toDate) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	    // TODO escape curly braces?
+	    toDate = new Date(toDate.getTime() - 1000);
+	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+	    dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         return "{" + dateFormat.format(fromDate) + "}:{" + dateFormat.format(toDate) + "}";
     }
 
     /**
      * Delete commits because "Subversion will find the most recent revision of the repository as of the date you give".
-     * See http://svnbook.red-bean.com/en/1.7/svn.tour.revs.specifiers.html#svn.tour.revs.keywords
+     * See http://svnbook.red-bean.com/en/1.8/svn.tour.revs.specifiers.html#svn.tour.revs.keywords
      */
     private static List<Commit> deleteCommitsBefore(Date date, List<Commit> commits) {
         Iterator<Commit> iterator = commits.iterator();

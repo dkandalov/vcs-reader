@@ -57,7 +57,7 @@ class HgLog implements VcsCommand<VcsProject.LogResult> {
 
     private static String asHgDate(Date date) {
         // see 'hg help dates'
-        String secondsSinceEpoch = Long.toString(date.getTime() / 1000);
+        String secondsSinceEpoch = Long.toString((date.getTime() / 1000) - 1);
         String utc = "0";
         return secondsSinceEpoch + " " + utc;
     }

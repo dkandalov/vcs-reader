@@ -28,12 +28,12 @@ class SvnRepositoryCreator
     Dir.chdir(@project_path) do
       puts `echo "file1 content" > file1.txt`
       add "file1.txt"
-      commit "initial commit", "2014-08-10T15:00:00.000000Z", @author
+      commit "initial commit", "2014-08-10T00:00:00.000000Z", @author
 
       puts `echo "file2 content" > file2.txt`
       puts `echo "file3 content" > file3.txt`
       add "file2.txt", "file3.txt"
-      commit "added file2, file3", "2014-08-11T15:00:00.000000Z", @author
+      commit "added file2, file3", "2014-08-11T00:00:00.000000Z", @author
 
       puts `echo "file2 new content" > file2.txt`
       puts `echo "file3 new content" > file3.txt`

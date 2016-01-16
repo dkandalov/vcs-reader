@@ -3,16 +3,5 @@
   "author": "Some Author",
   "authorWithEmail": "Some Author <some.author@mail.com>",
   "referenceProject": "/tmp/reference-repos/git-repo",
-  "revisions": [
-    "49abf32dd15afd2d542b17f203a502692a74d824",
-    "4d7d9447e1c2c5f58ac3935c44460a19fda4be4f",
-    "dd6e6791f6549cf05978d3a9a9f8a399284d3d7e",
-    "0e2bab69249b455cdd4eb39b4575e1318416bc03",
-    "ba99fec7bc608adffee0fccfc48b0b9b29fdbe08",
-    "d3cadf20276a5a47d2617a358ae7e6f851f58ded",
-    "ff845bc790fa8a6762bc7b88342d212dd907273f",
-    "70a1eb7f0198de30243962b65294eeb57f83403b",
-    "a8bada47299b699cb34db45077443b5ccd2105bb",
-    "05f3945b0c21ae8d0e07ba9c565043d79fd16163"
-  ]
+  "revisions": ["7f34324625af46afbdbf572a5167c40cc5e2e5d6","00a9db4ac4e25ede50bd478ae4b2ee123f1d099e","2a87e01ebb82d9e0f4faa45adda276c77f5a4259","99a13f97cf16ca9221f4dcb062bad9710560a655","cc0287be1cca2fe47812604afce9d0d36e4b2d79","1b19f96b9b3116885361830046b057ea897664c4","30a2f75864a47290a4829466dd421ed3fb6b506f","14a12ad2bc32774e5d0274d2ccc3f94aaf534fd5","8a0247627a5178135a8384ff2d15e061f55229b5","86dcd56caae797a22eecb726347f0394862cbf07"]
 }

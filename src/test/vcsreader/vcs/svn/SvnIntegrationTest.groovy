@@ -4,6 +4,8 @@ import org.junit.Test
 import vcsreader.Change
 import vcsreader.Commit
 import vcsreader.VcsProject
+import vcsreader.vcs.commandlistener.VcsCommand
+import vcsreader.vcs.commandlistener.VcsCommandListener
 
 import static vcsreader.Change.Type.*
 import static vcsreader.Change.noRevision
@@ -16,6 +18,10 @@ import static vcsreader.vcs.svn.SvnIntegrationTestConfig.*
 class SvnIntegrationTest {
 	private final svnSettings = SvnSettings.defaults().withSvnPath(pathToSvn)
     private final project = new VcsProject([new SvnVcsRoot(repositoryUrl, svnSettings)])
+		    .addListener(new VcsCommandListener() {
+			    @Override void beforeCommand(VcsCommand<?> command) { println(command.describe()) }
+	            @Override void afterCommand(VcsCommand<?> command) {}
+    })
 
     @Test void "clone project always succeed"() {
         def vcsRoots = [new SvnVcsRoot(nonExistentUrl, svnSettings)]
@@ -32,7 +38,7 @@ class SvnIntegrationTest {
         assert updateResult.isSuccessful()
     }
 
-    @Test void "log project history interval with no commits"() {
+    @Test void "log no commits for empty project history interval"() {
         def logResult = project.log(date("01/08/2014"), date("02/08/2014"))
 
         assert logResult.commits().empty
@@ -40,13 +46,13 @@ class SvnIntegrationTest {
         assert logResult.isSuccessful()
     }
 
-    @Test void "log single commit from project history"() {
+    @Test void "log single commit from project history (start date is inclusive)"() {
         def logResult = project.log(date("10/08/2014"), date("11/08/2014"))
 
         assertEqualCommits(logResult, [
                 new Commit(
                         revision(1), noRevision,
-                        dateTime("15:00:00 10/08/2014"),
+                        dateTime("00:00:00 10/08/2014"),
                         author,
                         "initial commit",
                         [new Change(NEW, "file1.txt", revision(1))]
@@ -60,14 +66,14 @@ class SvnIntegrationTest {
         assertEqualCommits(logResult, [
                 new Commit(
                         revision(1), noRevision,
-                        dateTime("15:00:00 10/08/2014"),
+                        dateTime("00:00:00 10/08/2014"),
                         author,
                         "initial commit",
                         [new Change(NEW, "file1.txt", revision(1))]
                 ),
                 new Commit(
                         revision(2), revision(1),
-                        dateTime("15:00:00 11/08/2014"),
+                        dateTime("00:00:00 11/08/2014"),
                         author,
                         "added file2, file3",
                         [

@@ -50,7 +50,7 @@ class GitIntegrationTest {
         assert updateResult.vcsErrors() != []
     }
 
-    @Test void "log project history interval with no commits"() {
+    @Test void "log no commits for empty project history interval"() {
         project.cloneToLocal()
         def logResult = project.log(date("01/08/2014"), date("02/08/2014"))
 
@@ -59,14 +59,14 @@ class GitIntegrationTest {
         assert logResult.isSuccessful()
     }
 
-    @Test void "log single commit from project history"() {
+    @Test void "log single commit from project history (start date is inclusive, end date is exclusive)"() {
         project.cloneToLocal()
         def logResult = project.log(date("10/08/2014"), date("11/08/2014"))
 
         assertEqualCommits(logResult, [
                 new Commit(
                         revision(1), noRevision,
-                        dateTime("14:00:00 10/08/2014"),
+                        dateTime("00:00:00 10/08/2014"),
                         author,
                         "initial commit",
                         [new Change(NEW, "file1.txt", revision(1))]
@@ -81,14 +81,14 @@ class GitIntegrationTest {
         assertEqualCommits(logResult, [
                 new Commit(
                         revision(1), noRevision,
-                        dateTime("14:00:00 10/08/2014"),
+                        dateTime("00:00:00 10/08/2014"),
                         author,
                         "initial commit",
                         [new Change(NEW, "file1.txt", revision(1))]
                 ),
                 new Commit(
                         revision(2), revision(1),
-                        dateTime("14:00:00 11/08/2014"),
+                        dateTime("00:00:00 11/08/2014"),
                         author,
                         "added file2, file3",
                         [

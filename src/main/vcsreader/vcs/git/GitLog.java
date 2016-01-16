@@ -16,6 +16,9 @@ import static vcsreader.Change.Type.NEW;
 import static vcsreader.VcsProject.LogResult;
 import static vcsreader.vcs.git.GitCommitParser.*;
 
+/**
+ * See https://git-scm.com/docs/git-log
+ */
 @SuppressWarnings("Duplicates") // because it's similar to HgLog
 class GitLog implements VcsCommand<LogResult> {
     private final String gitPath;
@@ -51,7 +54,7 @@ class GitLog implements VcsCommand<LogResult> {
 
     static ShellCommand gitLog(String gitPath, String folder, Date fromDate, Date toDate) {
         String from = "--after=" + Long.toString(fromDate.getTime() / 1000);
-        String to = "--before=" + Long.toString(toDate.getTime() / 1000);
+        String to = "--before=" + Long.toString((toDate.getTime() / 1000) - 1);
         String showFileStatus = "--name-status"; // see --diff-filter at https://www.kernel.org/pub/software/scm/git/docs/git-log.html
         String forceUTF8ForCommitMessages = "--encoding=UTF-8";
         ShellCommand command = new ShellCommand(gitPath, "log", logFormat(), from, to, showFileStatus, forceUTF8ForCommitMessages);
