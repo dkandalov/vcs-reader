@@ -59,6 +59,6 @@ Use ruby scripts to generate them:
 ### Things to do
  - support for branches
  - ability to cancel VCS commands by killing underlying process (e.g. if log takes very long time)
- - rewrite ruby scripts for generating test repositories in jvm language so that it's easier to use them in CI 
+ - rewrite ruby scripts for generating test repositories in a JVM language so that it's easier to use them in CI
  - optional support to log merge commits (currently merge commits are not logged, only original commit from another branch is logged)
  

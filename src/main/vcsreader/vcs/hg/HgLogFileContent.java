@@ -10,6 +10,9 @@ import static vcsreader.lang.StringUtil.trimLastNewLine;
 import static vcsreader.vcs.hg.HgShellCommand.isSuccessful;
 
 
+/**
+ * See https://selenic.com/hg/help/cat
+ */
 @SuppressWarnings("Duplicates") // because it's similar to GitLogFileContent
 class HgLogFileContent implements VcsCommand<VcsProject.LogFileContentResult> {
     private final String pathToHg;

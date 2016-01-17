@@ -10,8 +10,8 @@ import static java.util.Collections.unmodifiableList;
 /**
  * Contains data for single VCS commit.
  * See also {@link Change}.
-
- * This class is effectively immutable (even though some fields are editable).
+ *
+ * This class is effectively immutable (even though some fields are modifiable).
  */
 public class Commit {
 	/**

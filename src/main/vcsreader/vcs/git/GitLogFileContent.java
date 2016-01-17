@@ -10,9 +10,10 @@ import static vcsreader.lang.StringUtil.trimLastNewLine;
 import static vcsreader.vcs.git.GitShellCommand.isSuccessful;
 
 /**
+ * See https://git-scm.com/docs/git-show
+ *
  * Note that this class is only compatible with git > 1.5 because "git show" seems to work only since 1.5.x
  * (http://stackoverflow.com/questions/610208/how-to-retrieve-a-single-file-from-specific-revision-in-git).
- * The assumption is that nobody uses it anymore.
  */
 @SuppressWarnings("Duplicates") // because it's similar to HgLogFileContent
 class GitLogFileContent implements VcsCommand<LogFileContentResult> {

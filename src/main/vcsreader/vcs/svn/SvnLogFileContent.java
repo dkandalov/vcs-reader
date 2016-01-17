@@ -10,6 +10,9 @@ import static vcsreader.VcsProject.LogFileContentResult;
 import static vcsreader.vcs.svn.SvnShellCommand.createShellCommand;
 import static vcsreader.vcs.svn.SvnShellCommand.isSuccessful;
 
+/**
+ * See http://svnbook.red-bean.com/en/1.8/svn.ref.svn.c.cat.html
+ */
 class SvnLogFileContent implements VcsCommand<LogFileContentResult> {
     private final String svnPath;
     private final String repositoryRoot;

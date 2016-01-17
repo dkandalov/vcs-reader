@@ -8,6 +8,9 @@ import static vcsreader.VcsProject.LogFileContentResult;
 
 /**
  * Contains data about file modification in a {@link Commit}.
+ * See {@link FileContent}.
+ *
+ * This class is effectively immutable (even though some fields are modifiable).
  */
 public class Change {
     public enum Type {
@@ -131,6 +134,9 @@ public class Change {
 	        }
         };
 
+	    /**
+	     * Content of file as logged by VCS.
+	     */
 	    @NotNull public final String value;
 
 
@@ -139,7 +145,8 @@ public class Change {
         }
 
 	    @Override public String toString() {
-		    return "Content{text='" + value.substring(0, Math.min(value.length(), 100)) + "'}";
+		    String text = value.length() <= 100 ? value : value.substring(0, 100) + "[...]";
+		    return "Content{value='" + text + "'}";
 	    }
 
 	    @Override public boolean equals(Object o) {
