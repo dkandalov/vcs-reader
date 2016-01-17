@@ -59,7 +59,7 @@ class SvnRepositoryCreator
       add "non-ascii.txt"
       commit "non-ascii комментарий", "2014-08-17T15:00:00.000000Z", @author
 
-      puts `echo "commit with no comment" > file4.txt`
+      puts `echo "commit with no message" > file4.txt`
       add "file4.txt"
       commit "", "2014-08-18T16:00:00.000000Z", @author
 

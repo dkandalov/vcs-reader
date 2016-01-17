@@ -43,14 +43,14 @@ class GitCommitParser {
         String revisionBefore = (isFirstCommit ? Change.noRevision : previousRevision.get(0));
         Date commitDate = parseDate(values.get(2));
         String author = values.get(3);
-        String comment = trim(values.get(4), " \r\n\t");
+        String message = trim(values.get(4), " \r\n\t");
 
         boolean hasNoChanges = values.size() < 6; // e.g. for commits with --allow-empty flag
         List<Change> changes = hasNoChanges ?
                 Collections.<Change>emptyList() :
                 parseListOfChanges(values.get(5), revision, revisionBefore);
 
-        return new Commit(revision, revisionBefore, commitDate, author, comment, changes);
+        return new Commit(revision, revisionBefore, commitDate, author, message, changes);
     }
 
     static List<Change> parseListOfChanges(String changesAsString, String revision, String revisionBefore) {

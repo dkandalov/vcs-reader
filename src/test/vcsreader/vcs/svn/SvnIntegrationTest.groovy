@@ -277,10 +277,10 @@ class SvnIntegrationTest {
         def nonRootProject = new VcsProject([new SvnVcsRoot(repositoryUrl + "/folder2", svnSettings)])
 
         def logResult = nonRootProject.log(date("01/08/2014"), date("01/09/2014"))
-        assert logResult.commits()[0].comment == "moved and renamed file1"
+        assert logResult.commits()[0].message == "moved and renamed file1"
         assert logResult.commits()[0].changes[0].contentBefore() == Change.Content.none // no content because file was moved from outside of project root
         assert logResult.commits()[0].changes[0].content().text == "file1 content"
-        assert logResult.commits()[1].comment == "deleted file1"
+        assert logResult.commits()[1].message == "deleted file1"
         assert logResult.commits()[1].changes[0].contentBefore().text == "file1 content"
         assert logResult.commits()[1].changes[0].content() == Change.Content.none
     }

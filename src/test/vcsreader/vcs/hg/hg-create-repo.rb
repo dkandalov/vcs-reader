@@ -46,7 +46,7 @@ class HgRepositoryCreator
       commit "non-ascii комментарий", "Aug 17 15:00:00 2014 +0000", @author
 
       # Mercurial doesn't seem to support empty commits and empty commit messages
-      # puts `echo "commit with no comment" > file4.txt`
+      # puts `echo "commit with no message" > file4.txt`
       # commit "", "Aug 18 16:00:00 2014 +0000", @author
       # commit "commit with no changes", "Aug 19 17:00:00 2014 +0000", @author
 

@@ -82,7 +82,7 @@ class SvnCommitParserTest {
             </log>
         """.trim()
 
-        String comment = SvnCommitParser.parseCommits(xml)[0].comment
+        String comment = SvnCommitParser.parseCommits(xml)[0].message
         assert comment ==
                 "- Update the product version to 5.0 beta\n" +
                 "- Fix a few \"bugs\" found with Findbugs\n" +
