@@ -30,7 +30,7 @@ public class HgVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
         return observer.executeAndObserve(new HgLog(settings.hgPath, vcsRootPath, fromDate, toDate));
     }
 
-    @Override public VcsProject.LogContentResult contentOf(String filePath, String revision) {
+    @Override public VcsProject.LogFileContentResult contentOf(String filePath, String revision) {
         return observer.executeAndObserve(new HgLogFileContent(settings.hgPath, vcsRootPath, filePath, revision, settings.filesCharset));
     }
 

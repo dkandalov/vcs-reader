@@ -5,7 +5,7 @@ import vcsreader.vcs.commandlistener.VcsCommand;
 
 import java.nio.charset.Charset;
 
-import static vcsreader.VcsProject.LogContentResult;
+import static vcsreader.VcsProject.LogFileContentResult;
 import static vcsreader.lang.StringUtil.trimLastNewLine;
 import static vcsreader.vcs.git.GitShellCommand.isSuccessful;
 
@@ -15,7 +15,7 @@ import static vcsreader.vcs.git.GitShellCommand.isSuccessful;
  * The assumption is that nobody uses it anymore.
  */
 @SuppressWarnings("Duplicates") // because it's similar to HgLogFileContent
-class GitLogFileContent implements VcsCommand<LogContentResult> {
+class GitLogFileContent implements VcsCommand<LogFileContentResult> {
     private final String gitPath;
     private final String folder;
     private final String filePath;
@@ -36,12 +36,12 @@ class GitLogFileContent implements VcsCommand<LogContentResult> {
         return new ShellCommand(pathToGit, "show", revision + ":" + filePath).withCharset(charset).workingDir(folder);
     }
 
-    @Override public LogContentResult execute() {
+    @Override public LogFileContentResult execute() {
         shellCommand.execute();
         if (isSuccessful(shellCommand)) {
-            return new LogContentResult(trimLastNewLine(shellCommand.stdout()));
+            return new LogFileContentResult(trimLastNewLine(shellCommand.stdout()));
         } else {
-            return new LogContentResult(shellCommand.stderr(), shellCommand.exitCode());
+            return new LogFileContentResult(shellCommand.stderr(), shellCommand.exitCode());
         }
     }
 

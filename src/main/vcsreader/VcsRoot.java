@@ -13,7 +13,7 @@ public interface VcsRoot {
 
     LogResult log(Date fromDate, Date toDate);
 
-    LogContentResult contentOf(String filePath, String revision);
+    LogFileContentResult contentOf(String filePath, String revision);
 
     interface WithCommandObserver {
         void setObserver(VcsCommandObserver commandExecutor);

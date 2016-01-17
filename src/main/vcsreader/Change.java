@@ -1,11 +1,10 @@
 package vcsreader;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import static vcsreader.VcsProject.LogContentResult;
+import static vcsreader.VcsProject.LogFileContentResult;
 
 /**
  * Contains data about file modification in a {@link Commit}.
@@ -59,21 +58,21 @@ public class Change {
     }
 
 	/**
-	 * @return content of modified file after the change.
+	 * Requests content of modified file after the change.
 	 */
-    @Nullable public Content content() {
-        if (filePath.equals(noFilePath)) return Content.none;
-        LogContentResult logContentResult = vcsRoot.get().contentOf(filePath, revision);
-        return logContentResult.isSuccessful() ? new Content(logContentResult.text()) : Content.failedToLoad;
+	@NotNull public FileContent fileContent() {
+        if (filePath.equals(noFilePath)) return FileContent.none;
+        LogFileContentResult logFileContentResult = vcsRoot.get().contentOf(filePath, revision);
+        return logFileContentResult.isSuccessful() ? new FileContent(logFileContentResult.text()) : FileContent.failedToLoad;
     }
 
 	/**
-	 * @return content of modified file before the change.
+	 * Requests content of modified file before the change.
 	 */
-    @Nullable public Content contentBefore() {
-        if (filePathBefore.equals(noFilePath)) return Content.none;
-        LogContentResult logContentResult = vcsRoot.get().contentOf(filePathBefore, revisionBefore);
-        return logContentResult.isSuccessful() ? new Content(logContentResult.text()) : Content.failedToLoad;
+    @NotNull public FileContent fileContentBefore() {
+        if (filePathBefore.equals(noFilePath)) return FileContent.none;
+        LogFileContentResult logFileContentResult = vcsRoot.get().contentOf(filePathBefore, revisionBefore);
+        return logFileContentResult.isSuccessful() ? new FileContent(logFileContentResult.text()) : FileContent.failedToLoad;
     }
 
 	public Change withTypeAndPaths(Type type, String filePath, String filePathBefore) {
@@ -113,22 +112,47 @@ public class Change {
         return result;
     }
 
-    public static class Content {
-        public final static Content failedToLoad = new Content(null) {
+
+    public static class FileContent {
+        public final static FileContent failedToLoad = new FileContent("") {
             @Override public String toString() {
                 return "ContentFailedToLoad";
             }
+	        @Override public boolean equals(Object o) {
+		        return this == o;
+	        }
         };
-        public final static Content none = new Content(null) {
+        public final static FileContent none = new FileContent("") {
             @Override public String toString() {
                 return "NoContent";
             }
+	        @Override public boolean equals(Object o) {
+		        return this == o;
+	        }
         };
 
-        public final String text;
+	    @NotNull public final String value;
 
-        public Content(String text) {
-            this.text = text;
+
+        public FileContent(@NotNull String value) {
+            this.value = value;
         }
+
+	    @Override public String toString() {
+		    return "Content{text='" + value.substring(0, Math.min(value.length(), 100)) + "'}";
+	    }
+
+	    @Override public boolean equals(Object o) {
+		    if (this == o) return true;
+		    if (o == null || getClass() != o.getClass()) return false;
+
+		    FileContent fileContent = (FileContent) o;
+
+		    return value.equals(fileContent.value);
+	    }
+
+	    @Override public int hashCode() {
+		    return value.hashCode();
+	    }
     }
 }

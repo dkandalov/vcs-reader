@@ -195,8 +195,8 @@ class HgIntegrationTest {
 
 		def change = logResult.commits().first().changes.first()
 		assert change.type == MODIFICATION
-		assert change.content().text == "file2 new content"
-		assert change.contentBefore().text == "file2 content"
+		assert change.fileContent().value == "file2 new content"
+		assert change.fileContentBefore().value == "file2 content"
 		assert logResult.vcsErrors().empty
 		assert logResult.isSuccessful()
 	}
@@ -207,8 +207,8 @@ class HgIntegrationTest {
 
 		def change = logResult.commits().first().changes.first()
 		assert change.type == NEW
-		assert change.content().text == "file2 content"
-		assert change.contentBefore() == Change.Content.none
+		assert change.fileContent().value == "file2 content"
+		assert change.fileContentBefore() == Change.FileContent.none
 		assert logResult.vcsErrors().empty
 		assert logResult.isSuccessful()
 	}
@@ -219,8 +219,8 @@ class HgIntegrationTest {
 
 		def change = logResult.commits().first().changes.first()
 		assert change.type == DELETED
-		assert change.content() == Change.Content.none
-		assert change.contentBefore().text == "file1 content"
+		assert change.fileContent() == Change.FileContent.none
+		assert change.fileContentBefore().value == "file1 content"
 		assert logResult.vcsErrors().empty
 		assert logResult.isSuccessful()
 	}

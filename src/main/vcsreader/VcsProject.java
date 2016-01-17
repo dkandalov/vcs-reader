@@ -143,20 +143,20 @@ public class VcsProject {
     }
 
 
-    public static class LogContentResult {
+    public static class LogFileContentResult {
         private final String text;
         private final String stderr;
         private final int exitCode;
 
-        public LogContentResult(@NotNull String text) {
+        public LogFileContentResult(@NotNull String text) {
             this(text, "", 0);
         }
 
-        public LogContentResult(@NotNull String stderr, int exitCode) {
+        public LogFileContentResult(@NotNull String stderr, int exitCode) {
             this("", stderr, exitCode);
         }
 
-        private LogContentResult(@NotNull String text, @NotNull String stderr, int exitCode) {
+        private LogFileContentResult(@NotNull String text, @NotNull String stderr, int exitCode) {
             this.text = text;
             this.stderr = stderr;
             this.exitCode = exitCode;

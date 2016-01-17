@@ -34,7 +34,7 @@ public class SvnVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
         return observer.executeAndObserve(new SvnLog(settings.svnPath, repositoryUrl, repositoryRoot, fromDate, toDate, settings.useMergeHistory));
     }
 
-    @Override public LogContentResult contentOf(String filePath, String revision) {
+    @Override public LogFileContentResult contentOf(String filePath, String revision) {
         return observer.executeAndObserve(new SvnLogFileContent(
                 settings.svnPath,
                 repositoryUrl,

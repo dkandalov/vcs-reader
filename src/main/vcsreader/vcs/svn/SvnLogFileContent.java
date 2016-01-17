@@ -6,11 +6,11 @@ import vcsreader.vcs.commandlistener.VcsCommand;
 
 import java.nio.charset.Charset;
 
-import static vcsreader.VcsProject.LogContentResult;
+import static vcsreader.VcsProject.LogFileContentResult;
 import static vcsreader.vcs.svn.SvnShellCommand.createShellCommand;
 import static vcsreader.vcs.svn.SvnShellCommand.isSuccessful;
 
-class SvnLogFileContent implements VcsCommand<LogContentResult> {
+class SvnLogFileContent implements VcsCommand<LogFileContentResult> {
     private final String svnPath;
     private final String repositoryRoot;
     private final String filePath;
@@ -37,12 +37,12 @@ class SvnLogFileContent implements VcsCommand<LogContentResult> {
         else return s.endsWith("\n") || s.endsWith("\r") ? s.substring(0, s.length() - 1) : s;
     }
 
-    @Override public LogContentResult execute() {
+    @Override public LogFileContentResult execute() {
         shellCommand.execute();
         if (isSuccessful(shellCommand)) {
-            return new LogContentResult(trimLastNewLine(shellCommand.stdout()));
+            return new LogFileContentResult(trimLastNewLine(shellCommand.stdout()));
         } else {
-            return new LogContentResult(shellCommand.stderr(), shellCommand.exitCode());
+            return new LogFileContentResult(shellCommand.stderr(), shellCommand.exitCode());
         }
     }
 
