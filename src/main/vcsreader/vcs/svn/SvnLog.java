@@ -15,6 +15,9 @@ import static vcsreader.VcsProject.LogResult;
 import static vcsreader.vcs.svn.SvnShellCommand.createShellCommand;
 import static vcsreader.vcs.svn.SvnShellCommand.isSuccessful;
 
+/**
+ * See http://svnbook.red-bean.com/en/1.8/svn.ref.svn.c.log.html
+ */
 class SvnLog implements VcsCommand<LogResult> {
     private final String pathToSvn;
     private final String repositoryUrl;
@@ -60,10 +63,12 @@ class SvnLog implements VcsCommand<LogResult> {
     }
 
     private static String svnDateRange(Date fromDate, Date toDate) {
-	    // TODO escape curly braces?
-	    toDate = new Date(toDate.getTime() - 1000);
+	    toDate = new Date(toDate.getTime() - 1000); // make toDate exclusive
+
+	    // svn supports any ISO 8601 date format (https://en.wikipedia.org/wiki/ISO_8601)
 	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 	    dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+
         return "{" + dateFormat.format(fromDate) + "}:{" + dateFormat.format(toDate) + "}";
     }
 
