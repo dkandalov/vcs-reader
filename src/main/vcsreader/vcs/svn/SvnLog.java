@@ -97,12 +97,10 @@ class SvnLog implements VcsCommand<LogResult> {
         for (Commit commit : commits) {
             List<Change> modifiedChanges = new ArrayList<Change>();
             for (Change change : commit.changes) {
-                modifiedChanges.add(new Change(
+                modifiedChanges.add(change.withTypeAndPaths(
                         changeTypeConsideringSubPath(subPath, change),
                         useSubPathAsRoot(subPath, change.filePath),
-                        useSubPathAsRoot(subPath, change.filePathBefore),
-                        change.revision,
-                        change.revisionBefore
+                        useSubPathAsRoot(subPath, change.filePathBefore)
                 ));
             }
             result.add(commit.withChanges(modifiedChanges));

@@ -17,15 +17,26 @@ public class Change {
         DELETED,
         MOVED
     }
-
     public static final String noRevision = "noRevision";
     public static final String noFilePath = "";
 
+	/**
+	 * Type of file change.
+	 */
     @NotNull public final Type type;
+	/**
+	 * File path after commit relative to {@link VcsRoot} path.
+	 * {@link #noFilePath} if file was deleted.
+	 */
     @NotNull public final String filePath;
+	/**
+	 * File path before commit relative to {@link VcsRoot} path.
+	 * {@link #noFilePath} if file didn't exist.
+	 */
     @NotNull public final String filePathBefore;
-    @NotNull public final String revision;
-    @NotNull public final String revisionBefore;
+
+	private final String revision;
+    private final String revisionBefore;
     private final AtomicReference<VcsRoot> vcsRoot = new AtomicReference<VcsRoot>();
 
 
@@ -47,17 +58,27 @@ public class Change {
         this.revisionBefore = revisionBefore;
     }
 
+	/**
+	 * @return content of modified file after the change.
+	 */
     @Nullable public Content content() {
         if (filePath.equals(noFilePath)) return Content.none;
         LogContentResult logContentResult = vcsRoot.get().contentOf(filePath, revision);
         return logContentResult.isSuccessful() ? new Content(logContentResult.text()) : Content.failedToLoad;
     }
 
+	/**
+	 * @return content of modified file before the change.
+	 */
     @Nullable public Content contentBefore() {
         if (filePathBefore.equals(noFilePath)) return Content.none;
         LogContentResult logContentResult = vcsRoot.get().contentOf(filePathBefore, revisionBefore);
         return logContentResult.isSuccessful() ? new Content(logContentResult.text()) : Content.failedToLoad;
     }
+
+	public Change withTypeAndPaths(Type type, String filePath, String filePathBefore) {
+		return new Change(type, filePath, filePathBefore, revision, revisionBefore);
+	}
 
     public void setVcsRoot(VcsRoot vcsRoot) {
         this.vcsRoot.set(vcsRoot);

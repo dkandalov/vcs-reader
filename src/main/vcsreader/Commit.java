@@ -10,15 +10,39 @@ import static java.util.Collections.unmodifiableList;
 /**
  * Contains data for single VCS commit.
  * See also {@link Change}.
+
+ * This class is effectively immutable (even though some fields are editable).
  */
 public class Commit {
+	/**
+	 * Revision id as returned by VCS.
+	 */
     @NotNull public final String revision;
+	/**
+	 * Previous revision id as return by VCS ({@link Change#noRevision} for the first commit).
+	 */
     @NotNull public final String revisionBefore;
+	/**
+	 * Time of commit.
+	 */
     @NotNull public final Date time;
+	/**
+	 * Commit author (it might be different from committer).
+	 * Note that it might also include email (e.g. for git commits).
+	 */
     @NotNull public final String author;
+	/**
+	 * Commit message.
+	 */
     @NotNull public final String message;
-    // note that order of changes is specified by VCS (and may be random e.g. in case of svn)
+	/**
+	 * List of changes made in the commit.
+	 * Only the changes made under current {@link VcsRoot} are included.
+	 * The order of changes is specified by VCS (it may be unstable e.g. in case of svn).
+	 * Note that list of changes can be empty (e.g. git, svn support commits with no changes).
+	 */
     @NotNull public final List<Change> changes;
+
 
     public Commit(@NotNull String revision, @NotNull String revisionBefore, @NotNull Date time,
                   @NotNull String author, @NotNull String message, @NotNull List<Change> changes) {
