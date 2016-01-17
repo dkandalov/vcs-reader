@@ -80,7 +80,7 @@ class SvnLog implements VcsCommand<LogResult> {
         Iterator<Commit> iterator = commits.iterator();
         while (iterator.hasNext()) {
             Commit commit = iterator.next();
-            if (commit.commitTime.before(date)) iterator.remove();
+            if (commit.time.before(date)) iterator.remove();
         }
         return commits;
     }

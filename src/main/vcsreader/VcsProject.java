@@ -73,7 +73,9 @@ public class VcsProject {
 	/**
 	 * Request commits from VCS for all {@link VcsRoot}s within specified date range.
 	 * For distributed VCS commits are read from currently checked out branch.
+	 *
 	 * Merge commits are not logged, the commit which was merged into branch is logged instead.
+	 * Therefore, it's possible to see commit with time outside of requested time range.
 	 *
 	 * @param from the date and time from which to request commits (inclusive, one second resolution)
 	 * @param to the date and time until which to request commits (exclusive, one second resolution)
@@ -201,7 +203,7 @@ public class VcsProject {
             newExceptions.addAll(result.exceptions);
 	        sort(newCommits, new Comparator<Commit>() {
 		        @Override public int compare(@NotNull Commit commit1, @NotNull Commit commit2) {
-			        return new Long(commit1.commitTime.getTime()).compareTo(commit2.commitTime.getTime());
+			        return new Long(commit1.time.getTime()).compareTo(commit2.time.getTime());
 		        }
 	        });
 
