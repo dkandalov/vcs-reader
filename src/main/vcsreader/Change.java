@@ -65,7 +65,7 @@ public class Change {
 	 */
 	@NotNull public FileContent fileContent() {
         if (filePath.equals(noFilePath)) return FileContent.none;
-        LogFileContentResult logFileContentResult = vcsRoot.get().contentOf(filePath, revision);
+        LogFileContentResult logFileContentResult = vcsRoot.get().logFileContent(filePath, revision);
         return logFileContentResult.isSuccessful() ? new FileContent(logFileContentResult.text()) : FileContent.failedToLoad;
     }
 
@@ -74,7 +74,7 @@ public class Change {
 	 */
     @NotNull public FileContent fileContentBefore() {
         if (filePathBefore.equals(noFilePath)) return FileContent.none;
-        LogFileContentResult logFileContentResult = vcsRoot.get().contentOf(filePathBefore, revisionBefore);
+        LogFileContentResult logFileContentResult = vcsRoot.get().logFileContent(filePathBefore, revisionBefore);
         return logFileContentResult.isSuccessful() ? new FileContent(logFileContentResult.text()) : FileContent.failedToLoad;
     }
 

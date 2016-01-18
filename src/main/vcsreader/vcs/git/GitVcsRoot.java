@@ -35,7 +35,7 @@ public class GitVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
         return observer.executeAndObserve(new GitLog(settings.gitPath, vcsRootPath, fromDate, toDate));
     }
 
-    @Override public LogFileContentResult contentOf(String filePath, String revision) {
+    @Override public LogFileContentResult logFileContent(String filePath, String revision) {
         return observer.executeAndObserve(new GitLogFileContent(settings.gitPath, vcsRootPath, filePath, revision, settings.filesCharset));
     }
 
