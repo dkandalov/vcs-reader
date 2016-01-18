@@ -1,14 +1,14 @@
 package vcsreader.vcs.svn;
 
 import org.jetbrains.annotations.NotNull;
-import vcsreader.lang.ShellCommand;
+import vcsreader.lang.ExternalCommand;
 import vcsreader.vcs.commandlistener.VcsCommand;
 
 import java.nio.charset.Charset;
 
 import static vcsreader.VcsProject.LogFileContentResult;
-import static vcsreader.vcs.svn.SvnShellCommand.createShellCommand;
-import static vcsreader.vcs.svn.SvnShellCommand.isSuccessful;
+import static vcsreader.vcs.svn.SvnExternalCommand.newExternalCommand;
+import static vcsreader.vcs.svn.SvnExternalCommand.isSuccessful;
 
 /**
  * See http://svnbook.red-bean.com/en/1.8/svn.ref.svn.c.cat.html
@@ -19,7 +19,7 @@ class SvnLogFileContent implements VcsCommand<LogFileContentResult> {
     private final String filePath;
     private final String revision;
     private final Charset charset;
-    private final ShellCommand shellCommand;
+    private final ExternalCommand externalCommand;
 
     SvnLogFileContent(String svnPath, String repositoryRoot, String filePath, String revision, Charset charset) {
         this.svnPath = svnPath;
@@ -27,12 +27,12 @@ class SvnLogFileContent implements VcsCommand<LogFileContentResult> {
         this.filePath = filePath;
         this.revision = revision;
         this.charset = charset;
-        this.shellCommand = svnLogFileContent(svnPath, repositoryRoot, filePath, revision, charset);
+        this.externalCommand = svnLogFileContent(svnPath, repositoryRoot, filePath, revision, charset);
     }
 
-    static ShellCommand svnLogFileContent(String pathToSvn, String repositoryRoot, String filePath, String revision, Charset charset) {
+    static ExternalCommand svnLogFileContent(String pathToSvn, String repositoryRoot, String filePath, String revision, Charset charset) {
         String fileRevisionUrl = repositoryRoot + "/" + filePath + "@" + revision;
-        return createShellCommand(pathToSvn, "cat", fileRevisionUrl).outputCharset(charset).charsetAutoDetect(true);
+        return newExternalCommand(pathToSvn, "cat", fileRevisionUrl).outputCharset(charset).charsetAutoDetect(true);
     }
 
     @NotNull private static String trimLastNewLine(String s) {
@@ -41,16 +41,16 @@ class SvnLogFileContent implements VcsCommand<LogFileContentResult> {
     }
 
     @Override public LogFileContentResult execute() {
-        shellCommand.execute();
-        if (isSuccessful(shellCommand)) {
-            return new LogFileContentResult(trimLastNewLine(shellCommand.stdout()));
+        externalCommand.execute();
+        if (isSuccessful(externalCommand)) {
+            return new LogFileContentResult(trimLastNewLine(externalCommand.stdout()));
         } else {
-            return new LogFileContentResult(shellCommand.stderr() + shellCommand.exceptionStacktrace(), shellCommand.exitCode());
+            return new LogFileContentResult(externalCommand.stderr() + externalCommand.exceptionStacktrace(), externalCommand.exitCode());
         }
     }
 
     @Override public String describe() {
-        return shellCommand.describe();
+        return externalCommand.describe();
     }
 
     @SuppressWarnings("RedundantIfStatement")

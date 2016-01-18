@@ -8,8 +8,7 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
-// TODO rename because it's not really "shell" command
-public class ShellCommand {
+public class ExternalCommand {
     private static final File currentDirectory = null;
     private static final int exitCodeBeforeFinished = -123;
 	private static final int defaultBufferSize = 8192;
@@ -31,33 +30,33 @@ public class ShellCommand {
     private final AtomicReference<Process> processRef = new AtomicReference<Process>();
 
 
-	public ShellCommand(String... commandAndArgs) {
+	public ExternalCommand(String... commandAndArgs) {
         this(defaultBufferSize, commandAndArgs);
     }
 
-    public ShellCommand(int inputBufferSize, String... commandAndArgs) {
+    public ExternalCommand(int inputBufferSize, String... commandAndArgs) {
         this.inputBufferSize = inputBufferSize;
         this.commandAndArgs = checkForNulls(commandAndArgs);
 	    this.stdoutBytes = new byte[0];
 	    this.stderrBytes = new byte[0];
     }
 
-    public ShellCommand workingDir(String path) {
+    public ExternalCommand workingDir(String path) {
         workingDirectory = new File(path);
         return this;
     }
 
-    public ShellCommand outputCharset(@NotNull Charset charset) {
+    public ExternalCommand outputCharset(@NotNull Charset charset) {
         outputCharset = charset;
         return this;
     }
 
-	public ShellCommand charsetAutoDetect(boolean value) {
+	public ExternalCommand charsetAutoDetect(boolean value) {
 		charsetAutoDetect = value;
 		return this;
 	}
 
-    public ShellCommand execute() {
+    public ExternalCommand execute() {
 	    InputStream stdoutInputStream = null;
         InputStream stderrInputStream = null;
         try {
@@ -171,7 +170,7 @@ public class ShellCommand {
     private static String[] checkForNulls(String[] command) {
         for (String arg : command) {
             if (arg == null) {
-                throw new IllegalStateException("Shell command cannot have null as inputs, but was: " + Arrays.toString(command));
+                throw new IllegalStateException("Command cannot have null as inputs, but was: " + Arrays.toString(command));
             }
         }
         return command;

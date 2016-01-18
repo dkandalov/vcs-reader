@@ -14,7 +14,7 @@ import static vcsreader.vcs.git.GitLog.gitLogRenames
 import static vcsreader.vcs.git.GitLogFileContent.gitLogFileContent
 import static vcsreader.vcs.git.GitUpdate.gitUpdate
 
-class ShellCommands_GitIntegrationTest {
+class ExternalCommands_GitIntegrationTest {
 
     @Test void "basic log"() {
         def command = gitLog(pathToGit, referenceProject, date("01/01/2013"), date("01/01/2023")).execute()
@@ -121,6 +121,6 @@ class ShellCommands_GitIntegrationTest {
     }
 
     private static final Charset utf8 = Charset.forName("UTF-8")
-    private static final String projectFolder = "/tmp/git-commands-test/git-repo-${ShellCommands_GitIntegrationTest.simpleName}"
-    private static final String projectFolder2 = "/tmp/git-commands-test/git-repo-2-${ShellCommands_GitIntegrationTest.simpleName}"
+    private static final String projectFolder = "/tmp/git-commands-test/git-repo-${ExternalCommands_GitIntegrationTest.simpleName}"
+    private static final String projectFolder2 = "/tmp/git-commands-test/git-repo-2-${ExternalCommands_GitIntegrationTest.simpleName}"
 }

@@ -12,7 +12,7 @@ import static vcsreader.vcs.hg.HgLog.hgLog
 import static vcsreader.vcs.hg.HgLogFileContent.hgLogFileContent
 import static vcsreader.vcs.hg.HgUpdate.hgUpdate
 
-class ShellCommands_HgIntegrationTest {
+class ExternalCommands_HgIntegrationTest {
 	@Test void "basic log"() {
 		def command = hgLog(pathToHg, referenceProject, date("01/01/2013"), date("01/01/2023")).execute()
 		assert command.stdout().contains("initial commit")
@@ -105,6 +105,6 @@ class ShellCommands_HgIntegrationTest {
 	}
 
 	private static final Charset utf8 = Charset.forName("UTF-8")
-	private static final String projectFolder = "/tmp/hg-commands-test/hg-repo-${ShellCommands_HgIntegrationTest.simpleName}"
-	private static final String projectFolder2 = "/tmp/hg-commands-test/hg-repo-2-${ShellCommands_HgIntegrationTest.simpleName}"
+	private static final String projectFolder = "/tmp/hg-commands-test/hg-repo-${ExternalCommands_HgIntegrationTest.simpleName}"
+	private static final String projectFolder2 = "/tmp/hg-commands-test/hg-repo-2-${ExternalCommands_HgIntegrationTest.simpleName}"
 }

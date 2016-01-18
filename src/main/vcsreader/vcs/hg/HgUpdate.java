@@ -1,35 +1,37 @@
 package vcsreader.vcs.hg;
 
 import vcsreader.VcsProject;
-import vcsreader.lang.ShellCommand;
+import vcsreader.lang.ExternalCommand;
 import vcsreader.vcs.commandlistener.VcsCommand;
+
+import static vcsreader.vcs.hg.HgExternalCommand.isSuccessful;
 
 class HgUpdate implements VcsCommand<VcsProject.UpdateResult> {
     private final String hgPath;
     private final String folder;
-    private final ShellCommand shellCommand;
+    private final ExternalCommand externalCommand;
 
     public HgUpdate(String hgPath, String folder) {
         this.hgPath = hgPath;
         this.folder = folder;
-        this.shellCommand = hgUpdate(hgPath, folder);
+        this.externalCommand = hgUpdate(hgPath, folder);
     }
 
     @Override public VcsProject.UpdateResult execute() {
-        shellCommand.execute();
-        if (HgShellCommand.isSuccessful(shellCommand)) {
+        externalCommand.execute();
+        if (isSuccessful(externalCommand)) {
             return new VcsProject.UpdateResult();
         } else {
-            return new VcsProject.UpdateResult(shellCommand.stderr() + shellCommand.exceptionStacktrace());
+            return new VcsProject.UpdateResult(externalCommand.stderr() + externalCommand.exceptionStacktrace());
         }
     }
 
-    static ShellCommand hgUpdate(String pathToHg, String folder) {
-        return new ShellCommand(pathToHg, "pull").workingDir(folder);
+    static ExternalCommand hgUpdate(String pathToHg, String folder) {
+        return new ExternalCommand(pathToHg, "pull").workingDir(folder);
     }
 
     @Override public String describe() {
-        return shellCommand.describe();
+        return externalCommand.describe();
     }
 
     @Override public boolean equals(Object o) {

@@ -2,7 +2,7 @@ package vcsreader.vcs.svn;
 
 import vcsreader.Change;
 import vcsreader.Commit;
-import vcsreader.lang.ShellCommand;
+import vcsreader.lang.ExternalCommand;
 import vcsreader.vcs.commandlistener.VcsCommand;
 
 import java.nio.charset.Charset;
@@ -12,8 +12,8 @@ import java.util.*;
 import static java.nio.charset.Charset.forName;
 import static java.util.Arrays.asList;
 import static vcsreader.VcsProject.LogResult;
-import static vcsreader.vcs.svn.SvnShellCommand.createShellCommand;
-import static vcsreader.vcs.svn.SvnShellCommand.isSuccessful;
+import static vcsreader.vcs.svn.SvnExternalCommand.newExternalCommand;
+import static vcsreader.vcs.svn.SvnExternalCommand.isSuccessful;
 
 /**
  * See http://svnbook.red-bean.com/en/1.8/svn.ref.svn.c.log.html
@@ -25,7 +25,7 @@ class SvnLog implements VcsCommand<LogResult> {
     private final Date fromDate;
     private final Date toDate;
     private final boolean useMergeHistory;
-    private final ShellCommand shellCommand;
+    private final ExternalCommand externalCommand;
 
     public SvnLog(String pathToSvn, String repositoryUrl, String repositoryRoot, Date fromDate, Date toDate, boolean useMergeHistory) {
         this.pathToSvn = pathToSvn;
@@ -34,25 +34,25 @@ class SvnLog implements VcsCommand<LogResult> {
         this.fromDate = fromDate;
         this.toDate = toDate;
         this.useMergeHistory = useMergeHistory;
-        this.shellCommand = svnLog(pathToSvn, repositoryUrl, fromDate, toDate, useMergeHistory);
+        this.externalCommand = svnLog(pathToSvn, repositoryUrl, fromDate, toDate, useMergeHistory);
     }
 
     @Override public LogResult execute() {
-        shellCommand.execute();
+        externalCommand.execute();
 
-        if (isSuccessful(shellCommand)) {
-            List<Commit> allCommits = SvnCommitParser.parseCommits(shellCommand.stdout());
+        if (isSuccessful(externalCommand)) {
+            List<Commit> allCommits = SvnCommitParser.parseCommits(externalCommand.stdout());
             List<Commit> commits = transformToSubPathCommits(deleteCommitsBefore(fromDate, allCommits));
             return new LogResult(commits, new ArrayList<String>());
         } else {
-            return new LogResult(Collections.<Commit>emptyList(), asList(shellCommand.stderr() + shellCommand.exceptionStacktrace()));
+            return new LogResult(Collections.<Commit>emptyList(), asList(externalCommand.stderr() + externalCommand.exceptionStacktrace()));
         }
     }
 
-    static ShellCommand svnLog(String pathToSvn, String repositoryUrl, Date fromDate, Date toDate, boolean useMergeHistory) {
+    static ExternalCommand svnLog(String pathToSvn, String repositoryUrl, Date fromDate, Date toDate, boolean useMergeHistory) {
         String mergeHistory = (useMergeHistory ? "--use-merge-history" : "");
         Charset svnXmlCharset = forName("UTF-8"); // see http://subversion.tigris.org/issues/show_bug.cgi?id=2938
-	    return createShellCommand(
+	    return newExternalCommand(
                 pathToSvn, "log",
                 repositoryUrl,
                 "-r", svnDateRange(fromDate, toDate),
@@ -145,7 +145,7 @@ class SvnLog implements VcsCommand<LogResult> {
     }
 
     @Override public String describe() {
-        return shellCommand.describe();
+        return externalCommand.describe();
     }
 
     @SuppressWarnings("RedundantIfStatement")

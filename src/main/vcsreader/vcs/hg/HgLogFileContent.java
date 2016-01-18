@@ -1,13 +1,13 @@
 package vcsreader.vcs.hg;
 
 import vcsreader.VcsProject;
-import vcsreader.lang.ShellCommand;
+import vcsreader.lang.ExternalCommand;
 import vcsreader.vcs.commandlistener.VcsCommand;
 
 import java.nio.charset.Charset;
 
 import static vcsreader.lang.StringUtil.trimLastNewLine;
-import static vcsreader.vcs.hg.HgShellCommand.isSuccessful;
+import static vcsreader.vcs.hg.HgExternalCommand.isSuccessful;
 
 
 /**
@@ -20,7 +20,7 @@ class HgLogFileContent implements VcsCommand<VcsProject.LogFileContentResult> {
     private final String filePath;
     private final String revision;
     private final Charset charset;
-    private final ShellCommand shellCommand;
+    private final ExternalCommand externalCommand;
 
     public HgLogFileContent(String pathToHg, String folder, String filePath, String revision, Charset charset) {
         this.pathToHg = pathToHg;
@@ -28,24 +28,24 @@ class HgLogFileContent implements VcsCommand<VcsProject.LogFileContentResult> {
         this.filePath = filePath;
         this.revision = revision;
         this.charset = charset;
-        this.shellCommand = hgLogFileContent(pathToHg, folder, filePath, revision, charset);
+        this.externalCommand = hgLogFileContent(pathToHg, folder, filePath, revision, charset);
     }
 
     @Override public VcsProject.LogFileContentResult execute() {
-        shellCommand.execute();
-        if (isSuccessful(shellCommand)) {
-            return new VcsProject.LogFileContentResult(trimLastNewLine(shellCommand.stdout()));
+        externalCommand.execute();
+        if (isSuccessful(externalCommand)) {
+            return new VcsProject.LogFileContentResult(trimLastNewLine(externalCommand.stdout()));
         } else {
-            return new VcsProject.LogFileContentResult(shellCommand.stderr() + shellCommand.exceptionStacktrace(), shellCommand.exitCode());
+            return new VcsProject.LogFileContentResult(externalCommand.stderr() + externalCommand.exceptionStacktrace(), externalCommand.exitCode());
         }
     }
 
     @Override public String describe() {
-        return shellCommand.describe();
+        return externalCommand.describe();
     }
 
-    static ShellCommand hgLogFileContent(String pathToHg, String folder, String filePath, String revision, Charset charset) {
-        ShellCommand command = new ShellCommand(pathToHg, "cat", "-r " + revision, filePath);
+    static ExternalCommand hgLogFileContent(String pathToHg, String folder, String filePath, String revision, Charset charset) {
+        ExternalCommand command = new ExternalCommand(pathToHg, "cat", "-r " + revision, filePath);
         return command.workingDir(folder).outputCharset(charset).charsetAutoDetect(true);
     }
 

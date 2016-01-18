@@ -1,41 +1,41 @@
 package vcsreader.vcs.hg;
 
 import vcsreader.VcsProject;
-import vcsreader.lang.ShellCommand;
+import vcsreader.lang.ExternalCommand;
 import vcsreader.vcs.commandlistener.VcsCommand;
 
 import static java.util.Arrays.asList;
-import static vcsreader.vcs.hg.HgShellCommand.isSuccessful;
+import static vcsreader.vcs.hg.HgExternalCommand.isSuccessful;
 
 class HgClone implements VcsCommand<VcsProject.CloneResult> {
     private final String pathToHg;
     private final String repositoryUrl;
     private final String localPath;
-    private final ShellCommand shellCommand;
+    private final ExternalCommand externalCommand;
 
     public HgClone(String pathToHg, String repositoryUrl, String localPath) {
         this.pathToHg = pathToHg;
         this.repositoryUrl = repositoryUrl;
         this.localPath = localPath;
-        this.shellCommand = hgClone(pathToHg, repositoryUrl, localPath);
+        this.externalCommand = hgClone(pathToHg, repositoryUrl, localPath);
     }
 
     @Override public VcsProject.CloneResult execute() {
-        shellCommand.execute();
+        externalCommand.execute();
 
-        if (isSuccessful(shellCommand)) {
+        if (isSuccessful(externalCommand)) {
             return new VcsProject.CloneResult();
         } else {
-            return new VcsProject.CloneResult(asList(shellCommand.stderr() + shellCommand.exceptionStacktrace()));
+            return new VcsProject.CloneResult(asList(externalCommand.stderr() + externalCommand.exceptionStacktrace()));
         }
     }
 
-    static ShellCommand hgClone(String pathToHg, String repositoryUrl, String targetPath) {
-        return new ShellCommand(pathToHg, "clone", "-v", repositoryUrl, targetPath);
+    static ExternalCommand hgClone(String pathToHg, String repositoryUrl, String targetPath) {
+        return new ExternalCommand(pathToHg, "clone", "-v", repositoryUrl, targetPath);
     }
 
     @Override public String describe() {
-        return shellCommand.describe();
+        return externalCommand.describe();
     }
 
     @SuppressWarnings("SimplifiableIfStatement")

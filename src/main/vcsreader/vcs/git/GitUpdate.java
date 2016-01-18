@@ -1,37 +1,37 @@
 package vcsreader.vcs.git;
 
-import vcsreader.lang.ShellCommand;
+import vcsreader.lang.ExternalCommand;
 import vcsreader.vcs.commandlistener.VcsCommand;
 
 import static vcsreader.VcsProject.UpdateResult;
-import static vcsreader.vcs.git.GitShellCommand.isSuccessful;
+import static vcsreader.vcs.git.GitExternalCommand.isSuccessful;
 
 class GitUpdate implements VcsCommand<UpdateResult> {
     private final String gitPath;
     private final String folder;
-    private final ShellCommand shellCommand;
+    private final ExternalCommand command;
 
     public GitUpdate(String gitPath, String folder) {
         this.gitPath = gitPath;
         this.folder = folder;
-        this.shellCommand = gitUpdate(gitPath, folder);
+        this.command = gitUpdate(gitPath, folder);
     }
 
     @Override public UpdateResult execute() {
-        shellCommand.execute();
-        if (isSuccessful(shellCommand)) {
+        command.execute();
+        if (isSuccessful(command)) {
             return new UpdateResult();
         } else {
-            return new UpdateResult(shellCommand.stderr() + shellCommand.exceptionStacktrace());
+            return new UpdateResult(command.stderr() + command.exceptionStacktrace());
         }
     }
 
-    static ShellCommand gitUpdate(String pathToGit, String folder) {
-        return new ShellCommand(pathToGit, "pull", "origin").workingDir(folder);
+    static ExternalCommand gitUpdate(String pathToGit, String folder) {
+        return new ExternalCommand(pathToGit, "pull", "origin").workingDir(folder);
     }
 
     @Override public String describe() {
-        return shellCommand.describe();
+        return command.describe();
     }
 
     @SuppressWarnings("RedundantIfStatement")

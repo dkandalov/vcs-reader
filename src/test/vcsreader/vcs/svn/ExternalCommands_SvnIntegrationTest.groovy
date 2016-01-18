@@ -10,7 +10,7 @@ import static vcsreader.vcs.svn.SvnIntegrationTestConfig.*
 import static vcsreader.vcs.svn.SvnLog.svnLog
 import static vcsreader.vcs.svn.SvnLogFileContent.svnLogFileContent
 
-class ShellCommands_SvnIntegrationTest {
+class ExternalCommands_SvnIntegrationTest {
     @Test void "basic log"() {
         def command = svnLog(pathToSvn, repositoryUrl, date("01/01/2013"), date("01/01/2023"), useMergeHistory).execute()
         assert command.stderr() == ""
