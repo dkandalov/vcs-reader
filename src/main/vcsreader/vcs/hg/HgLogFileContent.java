@@ -36,7 +36,7 @@ class HgLogFileContent implements VcsCommand<VcsProject.LogFileContentResult> {
         if (isSuccessful(shellCommand)) {
             return new VcsProject.LogFileContentResult(trimLastNewLine(shellCommand.stdout()));
         } else {
-            return new VcsProject.LogFileContentResult(shellCommand.stderr(), shellCommand.exitCode());
+            return new VcsProject.LogFileContentResult(shellCommand.stderr() + shellCommand.exceptionStacktrace(), shellCommand.exitCode());
         }
     }
 
@@ -46,7 +46,7 @@ class HgLogFileContent implements VcsCommand<VcsProject.LogFileContentResult> {
 
     static ShellCommand hgLogFileContent(String pathToHg, String folder, String filePath, String revision, Charset charset) {
         ShellCommand command = new ShellCommand(pathToHg, "cat", "-r " + revision, filePath);
-        return command.workingDir(folder).withCharset(charset);
+        return command.workingDir(folder).outputCharset(charset).charsetAutoDetect(true);
     }
 
     @SuppressWarnings("SimplifiableIfStatement")

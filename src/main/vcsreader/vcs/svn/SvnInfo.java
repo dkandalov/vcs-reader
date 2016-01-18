@@ -35,7 +35,7 @@ class SvnInfo implements VcsCommand<SvnInfo.Result> {
                 return new Result(repositoryRoot);
             }
         } else {
-            return new Result(unknownRoot, asList(shellCommand.stdout()));
+            return new Result(unknownRoot, asList(shellCommand.stdout() + shellCommand.exceptionStacktrace()));
         }
     }
 

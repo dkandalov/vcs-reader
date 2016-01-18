@@ -15,15 +15,17 @@ import static vcsreader.vcs.hg.HgUpdate.hgUpdate
 class ShellCommands_HgIntegrationTest {
 	@Test void "basic log"() {
 		def command = hgLog(pathToHg, referenceProject, date("01/01/2013"), date("01/01/2023")).execute()
-		assert command.stderr() == ""
 		assert command.stdout().contains("initial commit")
+		assert command.stderr() == ""
+		assert command.exceptionStacktrace() == ""
 		assert command.exitCode() == 0
 	}
 
 	@Test void "failed log"() {
 		def command = hgLog(pathToHg, nonExistentPath, date("01/01/2013"), date("01/01/2023")).execute()
 		assert command.stdout() == ""
-		assert command.stderr() != ""
+		assert command.stderr() == ""
+		assert command.exceptionStacktrace().matches(/(?s).*java.io.IOException.*No such file or directory.*/)
 		assert command.exitCode() != 0
 	}
 
@@ -66,8 +68,8 @@ class ShellCommands_HgIntegrationTest {
 	@Test void "failed update of non-existing repository"() {
 		def command = hgUpdate(pathToHg, nonExistentPath).execute()
 		assert command.stdout() == ""
-		assert command.stderr() != ""
-		assert command.exitCode() != 0
+		assert command.stderr() == ""
+		assert command.exceptionStacktrace().matches(/(?s).*java.io.IOException.*No such file or directory.*/)
 	}
 
 	@Test void "failed update without upstream repository"() {

@@ -26,7 +26,7 @@ class HgClone implements VcsCommand<VcsProject.CloneResult> {
         if (isSuccessful(shellCommand)) {
             return new VcsProject.CloneResult();
         } else {
-            return new VcsProject.CloneResult(asList(shellCommand.stderr()));
+            return new VcsProject.CloneResult(asList(shellCommand.stderr() + shellCommand.exceptionStacktrace()));
         }
     }
 

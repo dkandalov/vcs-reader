@@ -20,7 +20,7 @@ class HgUpdate implements VcsCommand<VcsProject.UpdateResult> {
         if (HgShellCommand.isSuccessful(shellCommand)) {
             return new VcsProject.UpdateResult();
         } else {
-            return new VcsProject.UpdateResult(shellCommand.stderr());
+            return new VcsProject.UpdateResult(shellCommand.stderr() + shellCommand.exceptionStacktrace());
         }
     }
 

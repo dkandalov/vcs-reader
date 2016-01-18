@@ -45,7 +45,7 @@ class SvnLog implements VcsCommand<LogResult> {
             List<Commit> commits = transformToSubPathCommits(deleteCommitsBefore(fromDate, allCommits));
             return new LogResult(commits, new ArrayList<String>());
         } else {
-            return new LogResult(Collections.<Commit>emptyList(), asList(shellCommand.stderr()));
+            return new LogResult(Collections.<Commit>emptyList(), asList(shellCommand.stderr() + shellCommand.exceptionStacktrace()));
         }
     }
 
@@ -59,7 +59,7 @@ class SvnLog implements VcsCommand<LogResult> {
                 mergeHistory,
                 "--verbose",
                 "--xml"
-        ).withCharset(svnXmlCharset);
+        ).outputCharset(svnXmlCharset);
     }
 
     private static String svnDateRange(Date fromDate, Date toDate) {

@@ -10,7 +10,7 @@ class SvnShellCommand {
     }
 
     public static boolean isSuccessful(ShellCommand shellCommand) {
-        return shellCommand.stderr().trim().isEmpty() && shellCommand.exitCode() == 0;
+        return shellCommand.stderr().trim().isEmpty() && shellCommand.exitCode() == 0 && shellCommand.hasNoExceptions();
     }
 
     private static String[] concat(String[] array1, String[] array2) {

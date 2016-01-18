@@ -32,7 +32,7 @@ class SvnLogFileContent implements VcsCommand<LogFileContentResult> {
 
     static ShellCommand svnLogFileContent(String pathToSvn, String repositoryRoot, String filePath, String revision, Charset charset) {
         String fileRevisionUrl = repositoryRoot + "/" + filePath + "@" + revision;
-        return createShellCommand(pathToSvn, "cat", fileRevisionUrl).withCharset(charset);
+        return createShellCommand(pathToSvn, "cat", fileRevisionUrl).outputCharset(charset).charsetAutoDetect(true);
     }
 
     @NotNull private static String trimLastNewLine(String s) {
@@ -45,7 +45,7 @@ class SvnLogFileContent implements VcsCommand<LogFileContentResult> {
         if (isSuccessful(shellCommand)) {
             return new LogFileContentResult(trimLastNewLine(shellCommand.stdout()));
         } else {
-            return new LogFileContentResult(shellCommand.stderr(), shellCommand.exitCode());
+            return new LogFileContentResult(shellCommand.stderr() + shellCommand.exceptionStacktrace(), shellCommand.exitCode());
         }
     }
 

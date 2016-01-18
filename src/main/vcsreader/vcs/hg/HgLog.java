@@ -37,7 +37,7 @@ class HgLog implements VcsCommand<VcsProject.LogResult> {
             List<String> errors = (shellCommand.stderr().trim().isEmpty() ? new ArrayList<String>() : asList(shellCommand.stderr()));
             return new VcsProject.LogResult(commits, errors);
         } else {
-            return new VcsProject.LogResult(new ArrayList<Commit>(), asList(shellCommand.stderr()));
+            return new VcsProject.LogResult(new ArrayList<Commit>(), asList(shellCommand.stderr() + shellCommand.exceptionStacktrace()));
         }
     }
 
@@ -52,7 +52,7 @@ class HgLog implements VcsCommand<VcsProject.LogResult> {
                 "-r", "date(\"" + asHgDate(fromDate) + " to " + asHgDate(toDate) + "\")",
                 "--template", HgCommitParser.logTemplate()
         );
-        return command.workingDir(folder).withCharset(forName("UTF-8"));
+        return command.workingDir(folder).outputCharset(forName("UTF-8"));
     }
 
     private static String asHgDate(Date date) {

@@ -58,7 +58,7 @@ class GitLog implements VcsCommand<LogResult> {
         String showFileStatus = "--name-status"; // see --diff-filter at https://www.kernel.org/pub/software/scm/git/docs/git-log.html
         String forceUTF8ForCommitMessages = "--encoding=UTF-8";
         ShellCommand command = new ShellCommand(gitPath, "log", logFormat(), from, to, showFileStatus, forceUTF8ForCommitMessages);
-        return command.workingDir(folder).withCharset(forName("UTF-8"));
+        return command.workingDir(folder).outputCharset(forName("UTF-8"));
     }
 
     static ShellCommand gitLogRenames(String gitPath, String folder, String revision) {

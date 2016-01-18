@@ -34,7 +34,8 @@ class GitLogFileContent implements VcsCommand<LogFileContentResult> {
     }
 
     static ShellCommand gitLogFileContent(String pathToGit, String folder, String filePath, String revision, Charset charset) {
-        return new ShellCommand(pathToGit, "show", revision + ":" + filePath).withCharset(charset).workingDir(folder);
+	    ShellCommand command = new ShellCommand(pathToGit, "show", revision + ":" + filePath);
+	    return command.workingDir(folder).outputCharset(charset).charsetAutoDetect(true);
     }
 
     @Override public LogFileContentResult execute() {
@@ -42,7 +43,7 @@ class GitLogFileContent implements VcsCommand<LogFileContentResult> {
         if (isSuccessful(shellCommand)) {
             return new LogFileContentResult(trimLastNewLine(shellCommand.stdout()));
         } else {
-            return new LogFileContentResult(shellCommand.stderr(), shellCommand.exitCode());
+            return new LogFileContentResult(shellCommand.stderr() + shellCommand.exceptionStacktrace(), shellCommand.exitCode());
         }
     }
 
