@@ -14,7 +14,7 @@ public class SvnSettings {
     }
 
     public static SvnSettings defaults() {
-        return new SvnSettings("/usr/bin/svn", Charset.forName("UTF-8"), true);
+        return new SvnSettings("svn", Charset.forName("UTF-8"), true);
     }
 
     public SvnSettings withSvnPath(String value) {

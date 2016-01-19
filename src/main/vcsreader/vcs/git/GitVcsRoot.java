@@ -8,35 +8,41 @@ import java.util.Date;
 import static vcsreader.VcsProject.*;
 
 public class GitVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
-    public final String vcsRootPath;
+    public final String localPath;
     public final String repositoryUrl;
     public final GitSettings settings;
     private VcsCommandObserver observer;
 
-    public GitVcsRoot(String vcsRootPath, String repositoryUrl) {
-        this(vcsRootPath, repositoryUrl, GitSettings.defaults());
+
+    public GitVcsRoot(String localPath, String repositoryUrl) {
+        this(localPath, repositoryUrl, GitSettings.defaults());
     }
 
-    public GitVcsRoot(String vcsRootPath, String repositoryUrl, GitSettings settings) {
-        this.vcsRootPath = vcsRootPath;
+	/**
+	 * @param localPath path to folder with repository clone
+	 *                  (if folder doesn't exit, it will be created on {@link #cloneToLocal()}.
+	 * @param repositoryUrl url to remote repository (only required for {@link #cloneToLocal()})
+	 */
+    public GitVcsRoot(String localPath, String repositoryUrl, GitSettings settings) {
+        this.localPath = localPath;
         this.repositoryUrl = repositoryUrl;
         this.settings = settings;
     }
 
     @Override public CloneResult cloneToLocal() {
-        return observer.executeAndObserve(new GitClone(settings.gitPath, repositoryUrl, vcsRootPath));
+        return observer.executeAndObserve(new GitClone(settings.gitPath, repositoryUrl, localPath));
     }
 
     @Override public UpdateResult update() {
-        return observer.executeAndObserve(new GitUpdate(settings.gitPath, vcsRootPath));
+        return observer.executeAndObserve(new GitUpdate(settings.gitPath, localPath));
     }
 
     @Override public LogResult log(Date fromDate, Date toDate) {
-        return observer.executeAndObserve(new GitLog(settings.gitPath, vcsRootPath, fromDate, toDate));
+        return observer.executeAndObserve(new GitLog(settings.gitPath, localPath, fromDate, toDate));
     }
 
     @Override public LogFileContentResult logFileContent(String filePath, String revision) {
-        return observer.executeAndObserve(new GitLogFileContent(settings.gitPath, vcsRootPath, filePath, revision, settings.filesCharset));
+        return observer.executeAndObserve(new GitLogFileContent(settings.gitPath, localPath, filePath, revision, settings.filesCharset));
     }
 
     @Override public void setObserver(VcsCommandObserver observer) {
@@ -50,7 +56,7 @@ public class GitVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
 
         GitVcsRoot that = (GitVcsRoot) o;
 
-        if (vcsRootPath != null ? !vcsRootPath.equals(that.vcsRootPath) : that.vcsRootPath != null)
+        if (localPath != null ? !localPath.equals(that.localPath) : that.localPath != null)
             return false;
         if (repositoryUrl != null ? !repositoryUrl.equals(that.repositoryUrl) : that.repositoryUrl != null)
             return false;
@@ -60,7 +66,7 @@ public class GitVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
     }
 
     @Override public int hashCode() {
-        int result = vcsRootPath != null ? vcsRootPath.hashCode() : 0;
+        int result = localPath != null ? localPath.hashCode() : 0;
         result = 31 * result + (repositoryUrl != null ? repositoryUrl.hashCode() : 0);
         result = 31 * result + (settings != null ? settings.hashCode() : 0);
         return result;
@@ -68,9 +74,9 @@ public class GitVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
 
     @Override public String toString() {
         return "GitVcsRoot{" +
-                "settings=" + settings +
+		        "localPath='" + localPath + '\'' +
                 ", repositoryUrl='" + repositoryUrl + '\'' +
-                ", vcsRootPath='" + vcsRootPath + '\'' +
+		        ", settings=" + settings +
                 '}';
     }
 }

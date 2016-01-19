@@ -136,6 +136,8 @@ public class Change {
 
 	    /**
 	     * Content of file as logged by VCS.
+	     * Encoding of the file is auto-detected or looked up in {@code VcsRoot} configuration
+	     * and then decoded into java string UTF-16.
 	     */
 	    @NotNull public final String value;
 

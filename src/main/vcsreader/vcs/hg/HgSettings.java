@@ -6,13 +6,18 @@ public class HgSettings {
     public final String hgPath;
     public final Charset filesCharset;
 
+	/**
+	 * @param hgPath path to hg executable
+	 * @param filesCharset default charset of files in repository
+	 *                     (it will be used if charset could not be determined from file content)
+	 */
     public HgSettings(String hgPath, Charset filesCharset) {
         this.hgPath = hgPath;
         this.filesCharset = filesCharset;
     }
 
     public static HgSettings defaults() {
-        return new HgSettings("/usr/local/bin/hg", Charset.forName("UTF-8"));
+        return new HgSettings("hg", Charset.forName("UTF-8"));
     }
 
     public HgSettings withHgPath(String value) {

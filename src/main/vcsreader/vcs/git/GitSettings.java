@@ -6,13 +6,18 @@ public class GitSettings {
     public final String gitPath;
     public final Charset filesCharset;
 
+	/**
+	 * @param gitPath path to git executable
+	 * @param filesCharset default charset of files in repository
+	 *                     (it will be used if charset could not be determined from file content)
+	 */
     public GitSettings(String gitPath, Charset filesCharset) {
         this.gitPath = gitPath;
         this.filesCharset = filesCharset;
     }
 
     public static GitSettings defaults() {
-        return new GitSettings("/usr/bin/git", Charset.forName("UTF-8"));
+        return new GitSettings("git", Charset.forName("UTF-8"));
     }
 
     public GitSettings withGitPath(String value) {

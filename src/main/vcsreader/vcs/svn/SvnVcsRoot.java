@@ -14,7 +14,12 @@ public class SvnVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
 	private boolean quoteDateRange = false;
     private VcsCommandObserver observer;
 
-    public SvnVcsRoot(String repositoryUrl, SvnSettings settings) {
+
+	public SvnVcsRoot(String repositoryUrl) {
+		this(repositoryUrl, SvnSettings.defaults());
+	}
+
+	public SvnVcsRoot(String repositoryUrl, SvnSettings settings) {
         this.repositoryUrl = repositoryUrl;
         this.settings = settings;
     }
