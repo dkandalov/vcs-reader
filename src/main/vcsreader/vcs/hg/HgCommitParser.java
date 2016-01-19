@@ -50,7 +50,7 @@ class HgCommitParser {
         List<Change> filesAdded = new ArrayList<Change>();
         for (String filePath : values.get(5).split(fileSeparator)) {
             if (filePath.isEmpty()) continue;
-            filesAdded.add(new Change(NEW, filePath, revision));
+            filesAdded.add(new Change(ADDED, filePath, revision));
         }
         List<Change> filesDeleted = new ArrayList<Change>();
         for (String filePath : values.get(6).split(fileSeparator)) {
@@ -92,7 +92,7 @@ class HgCommitParser {
         List<Change> filesModified = new ArrayList<Change>();
         for (String filePath : values.get(8).split(fileSeparator)) {
             if (filePath.isEmpty()) continue;
-            filesModified.add(new Change(MODIFICATION, filePath, filePath, revision, revisionBefore));
+            filesModified.add(new Change(MODIFIED, filePath, filePath, revision, revisionBefore));
         }
 
         List<Change> changes = new ArrayList<Change>();

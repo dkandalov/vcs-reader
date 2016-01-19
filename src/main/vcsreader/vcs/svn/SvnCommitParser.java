@@ -144,19 +144,19 @@ class SvnCommitParser {
                         movedPaths.add(copyFromFilePath);
 
                     } else if (changeType == SvnChangeType.NEW) {
-                        changes.add(new Change(NEW, filePath, revision));
+                        changes.add(new Change(ADDED, filePath, revision));
 
                     } else if (changeType == SvnChangeType.DELETED) {
                         changes.add(new Change(DELETED, noFilePath, filePath, revision, revisionBefore));
 
                     } else if (changeType == SvnChangeType.REPLACED) {
                         changes.add(new Change(DELETED, noFilePath, filePath, revision, revisionBefore));
-                        changes.add(new Change(NEW, filePath, revision));
+                        changes.add(new Change(ADDED, filePath, revision));
 
                     } else {
                         // check for text modification because there can also be svn properties modifications
                         if (isTextModification) {
-                            changes.add(new Change(MODIFICATION, filePath, filePath, revision, revisionBefore));
+                            changes.add(new Change(MODIFIED, filePath, filePath, revision, revisionBefore));
                         }
                     }
                 }

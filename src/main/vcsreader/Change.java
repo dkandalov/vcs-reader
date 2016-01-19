@@ -14,8 +14,8 @@ import static vcsreader.VcsProject.LogFileContentResult;
  */
 public class Change {
     public enum Type {
-        MODIFICATION,
-        NEW,
+	    ADDED,
+	    MODIFIED,
         DELETED,
         MOVED
     }

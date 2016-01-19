@@ -76,7 +76,7 @@ class GitCommitParser {
         String filePath = unescapeQuotes(hasRenames ? values.get(2) : values.get(1));
         String filePathBefore = unescapeQuotes(hasRenames ? values.get(1) : filePath);
 
-        if (changeType == NEW) {
+        if (changeType == ADDED) {
             filePathBefore = Change.noFilePath;
             revisionBefore = Change.noRevision;
         } else if (changeType == DELETED) {
@@ -109,9 +109,9 @@ class GitCommitParser {
 
         char c = s.charAt(0);
         if (c == added || c == copied) {
-            return NEW;
+            return ADDED;
         } else if (c == modified || c == typeChanged || c == unmerged || c == unknown) {
-            return MODIFICATION;
+            return MODIFIED;
         } else if (c == deleted) {
             return DELETED;
         } else if (c == renamed) {

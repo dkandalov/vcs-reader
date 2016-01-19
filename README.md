@@ -16,7 +16,7 @@ package vcsreader
 
 import vcsreader.vcs.git.GitSettings
 import vcsreader.vcs.git.GitVcsRoot
-import static vcsreader.Change.Type.MODIFICATION
+import static MODIFIED
 import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.lang.DateTimeUtil.dateTime
 

@@ -6,9 +6,9 @@ import vcsreader.Commit
 
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
-import static vcsreader.Change.Type.MODIFICATION
+import static vcsreader.Change.Type.MODIFIED
 import static vcsreader.Change.Type.MOVED
-import static vcsreader.Change.Type.NEW
+import static vcsreader.Change.Type.ADDED
 import static vcsreader.Change.noRevision
 import static vcsreader.lang.DateTimeUtil.dateTime
 import static vcsreader.vcs.TestUtil.assertEqualCommits
@@ -35,7 +35,7 @@ class SvnCommitParserTest {
                         dateTime("15:00:00 10/08/2014"),
                         "Some Author",
                         "initial commit",
-                        [new Change(NEW, "file1.txt", "1")]
+                        [new Change(ADDED, "file1.txt", "1")]
                 )
         ])
     }
@@ -62,7 +62,7 @@ class SvnCommitParserTest {
                         dateTime("19:35:02 21/12/2013"),
                         "Some Author",
                         "commit message",
-                        [new Change(NEW, "file.txt", "1")]
+                        [new Change(ADDED, "file.txt", "1")]
                 )
         ])
     }
@@ -146,7 +146,7 @@ class SvnCommitParserTest {
 						dateTime("15:00:00 10/08/2014"),
 						"Some Author",
 						"commit message",
-						[new Change(MODIFICATION, "some/file", "some/file", "1", noRevision)]
+						[new Change(MODIFIED, "some/file", "some/file", "1", noRevision)]
 				)
 		])
 	}
