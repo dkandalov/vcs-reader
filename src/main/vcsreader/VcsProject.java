@@ -12,7 +12,7 @@ import static java.util.Collections.sort;
 
 /**
  * Represents a project as a set of {@link VcsRoot}s.
- * This is the main entry point for reading version control history.
+ * This class is the main entry point for reading version control history.
  */
 public class VcsProject {
     private final List<VcsRoot> vcsRoots;
@@ -126,6 +126,7 @@ public class VcsProject {
         T aggregateWith(T result);
     }
 
+
     private static class Aggregator<T extends Aggregatable<T>> {
         private T result;
 
@@ -170,6 +171,7 @@ public class VcsProject {
             return stderr.isEmpty() && exitCode == 0;
         }
     }
+
 
     public static class LogResult implements Aggregatable<LogResult> {
         private final List<Commit> commits;
@@ -234,6 +236,7 @@ public class VcsProject {
         }
     }
 
+
     public static class UpdateResult implements Aggregatable<UpdateResult> {
         private final List<String> vcsErrors;
         private final List<Exception> exceptions;
@@ -275,6 +278,7 @@ public class VcsProject {
             return vcsErrors.isEmpty() && exceptions.isEmpty();
         }
     }
+
 
     public static class CloneResult implements Aggregatable<CloneResult> {
         private final List<String> vcsErrors;

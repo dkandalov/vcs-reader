@@ -6,6 +6,11 @@ import java.util.Date;
 
 import static vcsreader.VcsProject.*;
 
+/**
+ * Represents repository url (and local cloned folder for distributed VCS).
+ *
+ * For reading VCS history please use {@link VcsProject} API.
+ */
 public interface VcsRoot {
     CloneResult cloneToLocal();
 
