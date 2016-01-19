@@ -25,16 +25,19 @@ class SvnLog implements VcsCommand<LogResult> {
     private final Date fromDate;
     private final Date toDate;
     private final boolean useMergeHistory;
-    private final ExternalCommand externalCommand;
+	private final boolean quoteDateRange;
+	private final ExternalCommand externalCommand;
 
-    public SvnLog(String pathToSvn, String repositoryUrl, String repositoryRoot, Date fromDate, Date toDate, boolean useMergeHistory) {
+    public SvnLog(String pathToSvn, String repositoryUrl, String repositoryRoot, Date fromDate, Date toDate,
+                  boolean useMergeHistory, boolean quoteDateRange) {
         this.pathToSvn = pathToSvn;
         this.repositoryUrl = repositoryUrl;
         this.repositoryRoot = repositoryRoot;
         this.fromDate = fromDate;
         this.toDate = toDate;
         this.useMergeHistory = useMergeHistory;
-        this.externalCommand = svnLog(pathToSvn, repositoryUrl, fromDate, toDate, useMergeHistory);
+	    this.quoteDateRange = quoteDateRange;
+	    this.externalCommand = svnLog(pathToSvn, repositoryUrl, fromDate, toDate, useMergeHistory, quoteDateRange);
     }
 
     @Override public LogResult execute() {
@@ -49,27 +52,32 @@ class SvnLog implements VcsCommand<LogResult> {
         }
     }
 
-    static ExternalCommand svnLog(String pathToSvn, String repositoryUrl, Date fromDate, Date toDate, boolean useMergeHistory) {
+    static ExternalCommand svnLog(String pathToSvn, String repositoryUrl, Date fromDate, Date toDate,
+                                  boolean useMergeHistory, boolean quoteDateRange) {
         String mergeHistory = (useMergeHistory ? "--use-merge-history" : "");
         Charset svnXmlCharset = forName("UTF-8"); // see http://subversion.tigris.org/issues/show_bug.cgi?id=2938
 	    return newExternalCommand(
                 pathToSvn, "log",
                 repositoryUrl,
-                "-r", svnDateRange(fromDate, toDate),
+                "-r", svnDateRange(fromDate, toDate, quoteDateRange),
                 mergeHistory,
                 "--verbose",
                 "--xml"
         ).outputCharset(svnXmlCharset);
     }
 
-    private static String svnDateRange(Date fromDate, Date toDate) {
+    private static String svnDateRange(Date fromDate, Date toDate, boolean quoteDateRange) {
 	    toDate = new Date(toDate.getTime() - 1000); // make toDate exclusive
 
 	    // svn supports any ISO 8601 date format (https://en.wikipedia.org/wiki/ISO_8601)
 	    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 	    dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        return "{" + dateFormat.format(fromDate) + "}:{" + dateFormat.format(toDate) + "}";
+	    String result = "{" + dateFormat.format(fromDate) + "}:{" + dateFormat.format(toDate) + "}";
+	    if (quoteDateRange) {
+		    result = "'" + result + "'";
+	    }
+	    return result;
     }
 
     /**
@@ -156,6 +164,7 @@ class SvnLog implements VcsCommand<LogResult> {
         SvnLog svnLog = (SvnLog) o;
 
         if (useMergeHistory != svnLog.useMergeHistory) return false;
+        if (quoteDateRange != svnLog.quoteDateRange) return false;
         if (!fromDate.equals(svnLog.fromDate)) return false;
         if (!pathToSvn.equals(svnLog.pathToSvn)) return false;
         if (!repositoryRoot.equals(svnLog.repositoryRoot)) return false;
@@ -172,6 +181,7 @@ class SvnLog implements VcsCommand<LogResult> {
         result = 31 * result + fromDate.hashCode();
         result = 31 * result + toDate.hashCode();
         result = 31 * result + (useMergeHistory ? 1 : 0);
+        result = 31 * result + (quoteDateRange ? 1 : 0);
         return result;
     }
 
@@ -183,6 +193,7 @@ class SvnLog implements VcsCommand<LogResult> {
                 ", fromDate=" + fromDate +
                 ", toDate=" + toDate +
                 ", useMergeHistory=" + useMergeHistory +
+                ", quoteDateRange=" + quoteDateRange +
                 '}';
     }
 }
