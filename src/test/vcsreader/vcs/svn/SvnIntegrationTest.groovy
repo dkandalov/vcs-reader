@@ -225,6 +225,19 @@ class SvnIntegrationTest {
         ])
     }
 
+	@Test void "log added empty dir"() {
+		def logResult = project.log(date("22/08/2014"), date("23/08/2014"))
+		assertEqualCommits(logResult, [
+			new Commit(
+					revision(13), revision(12),
+					dateTime("Fri Aug 22 16:00:00 BST 2014"),
+					author,
+					"added empty dir",
+					[]
+			)
+		])
+	}
+
 	@Test void "log content of modified file"() {
         def logResult = project.log(date("12/08/2014"), date("13/08/2014"))
 

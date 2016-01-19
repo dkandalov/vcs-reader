@@ -74,6 +74,10 @@ class SvnRepositoryCreator
       puts `echo "replaced text" > replaced-file.txt`
       add "replaced-file.txt"
       commit "replaced file", "2014-08-21T15:00:00.000000Z", @author
+
+      puts `mkdir empty-dir`
+      add "empty-dir"
+      commit "added empty dir", "2014-08-22T15:00:00.000000Z", @author
     end
 
     update_test_config
