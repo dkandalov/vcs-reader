@@ -4,8 +4,7 @@ import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
 
-import java.nio.charset.Charset
-
+import static vcsreader.lang.Charsets.UTF8
 import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.vcs.git.GitClone.gitClone
 import static vcsreader.vcs.git.GitIntegrationTestConfig.*
@@ -33,14 +32,14 @@ class ExternalCommands_GitIntegrationTest {
 	}
 
 	@Test void "log file content"() {
-		def command = gitLogFileContent(pathToGit, referenceProject, "file1.txt", revision(1), utf8).execute()
+		def command = gitLogFileContent(pathToGit, referenceProject, "file1.txt", revision(1), UTF8).execute()
 		assert command.stderr() == ""
 		assert command.stdout().trim() == "file1 content"
 		assert command.exitCode() == 0
 	}
 
 	@Test void "failed log file content"() {
-		def command = gitLogFileContent(pathToGit, referenceProject, "non-existent file", revision(1), utf8).execute()
+		def command = gitLogFileContent(pathToGit, referenceProject, "non-existent file", revision(1), UTF8).execute()
 		assert command.stdout() == ""
 		assert command.stderr().startsWith("fatal: Path 'non-existent file' does not exist")
 		assert command.exitCode() == 128
@@ -103,7 +102,7 @@ class ExternalCommands_GitIntegrationTest {
 		assert command.stdout().contains("non-ascii комментарий")
 		assert command.exitCode() == 0
 
-		command = gitLogFileContent(pathToGit, referenceProject, "non-ascii.txt", revision(8), utf8).execute()
+		command = gitLogFileContent(pathToGit, referenceProject, "non-ascii.txt", revision(8), UTF8).execute()
 		assert command.stderr() == ""
 		assert command.stdout().trim() == "non-ascii содержимое"
 		assert command.exitCode() == 0
@@ -120,7 +119,6 @@ class ExternalCommands_GitIntegrationTest {
         initTestConfig()
     }
 
-    private static final Charset utf8 = Charset.forName("UTF-8")
     private static final String projectFolder = "/tmp/git-commands-test/git-repo-${ExternalCommands_GitIntegrationTest.simpleName}"
     private static final String projectFolder2 = "/tmp/git-commands-test/git-repo-2-${ExternalCommands_GitIntegrationTest.simpleName}"
 }

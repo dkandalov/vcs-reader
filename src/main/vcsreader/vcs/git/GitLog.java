@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static java.nio.charset.Charset.forName;
 import static java.util.Arrays.asList;
 import static vcsreader.Change.Type.DELETED;
 import static vcsreader.Change.Type.NEW;
 import static vcsreader.VcsProject.LogResult;
+import static vcsreader.lang.Charsets.UTF8;
 import static vcsreader.vcs.git.GitCommitParser.*;
 import static vcsreader.vcs.git.GitExternalCommand.isSuccessful;
 
@@ -57,9 +57,9 @@ class GitLog implements VcsCommand<LogResult> {
         String from = "--after=" + Long.toString(fromDate.getTime() / 1000);
         String to = "--before=" + Long.toString((toDate.getTime() / 1000) - 1);
         String showFileStatus = "--name-status"; // see --diff-filter at https://www.kernel.org/pub/software/scm/git/docs/git-log.html
-        String forceUTF8ForCommitMessages = "--encoding=UTF-8";
+        String forceUTF8ForCommitMessages = "--encoding=" + UTF8.name();
         ExternalCommand command = new ExternalCommand(gitPath, "log", logFormat(), from, to, showFileStatus, forceUTF8ForCommitMessages);
-        return command.workingDir(folder).outputCharset(forName("UTF-8"));
+        return command.workingDir(folder).outputCharset(UTF8);
     }
 
     static ExternalCommand gitLogRenames(String gitPath, String folder, String revision) {

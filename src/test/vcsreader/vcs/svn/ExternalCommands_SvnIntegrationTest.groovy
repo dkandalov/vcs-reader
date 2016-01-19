@@ -1,10 +1,10 @@
 package vcsreader.vcs.svn
+
 import org.junit.BeforeClass
 import org.junit.Test
 
-import java.nio.charset.Charset
-
 import static SvnInfo.svnInfo
+import static vcsreader.lang.Charsets.UTF8
 import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.vcs.svn.SvnIntegrationTestConfig.*
 import static vcsreader.vcs.svn.SvnLog.svnLog
@@ -27,7 +27,7 @@ class ExternalCommands_SvnIntegrationTest {
 
     @Test void "log file content"() {
         def revision = "1"
-        def command = svnLogFileContent(pathToSvn, repositoryUrl, "file1.txt", revision, utf8).execute()
+        def command = svnLogFileContent(pathToSvn, repositoryUrl, "file1.txt", revision, UTF8).execute()
         assert command.stderr() == ""
         assert command.stdout().trim() == "file1 content"
         assert command.exitCode() == 0
@@ -35,7 +35,7 @@ class ExternalCommands_SvnIntegrationTest {
 
     @Test void "failed log file content"() {
         def revision = "1"
-        def command = svnLogFileContent(pathToSvn, repositoryUrl, "non-existent-file", revision, utf8).execute()
+        def command = svnLogFileContent(pathToSvn, repositoryUrl, "non-existent-file", revision, UTF8).execute()
         assert command.stdout() == ""
         assert command.stderr().contains("path not found")
         assert command.exitCode() == 1
@@ -62,7 +62,7 @@ class ExternalCommands_SvnIntegrationTest {
 		assert command.exitCode() == 0
 
 		def revision = "8"
-		command = svnLogFileContent(pathToSvn, repositoryUrl, "non-ascii.txt", revision, utf8).execute()
+		command = svnLogFileContent(pathToSvn, repositoryUrl, "non-ascii.txt", revision, UTF8).execute()
 		assert command.stderr() == ""
 		assert command.stdout().trim() == "non-ascii содержимое"
 		assert command.exitCode() == 0
@@ -72,7 +72,6 @@ class ExternalCommands_SvnIntegrationTest {
         initTestConfig()
     }
 
-    private static final utf8 = Charset.forName("UTF-8")
     private static final useMergeHistory = true
     private static final quoteDateRange = false
 }

@@ -1,5 +1,7 @@
 package vcsreader.vcs.git;
 
+import vcsreader.lang.Charsets;
+
 import java.nio.charset.Charset;
 
 public class GitSettings {
@@ -17,7 +19,7 @@ public class GitSettings {
     }
 
     public static GitSettings defaults() {
-        return new GitSettings("git", Charset.forName("UTF-8"));
+        return new GitSettings("git", Charsets.UTF8);
     }
 
     public GitSettings withGitPath(String value) {

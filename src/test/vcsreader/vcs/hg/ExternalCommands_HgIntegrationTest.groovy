@@ -1,10 +1,10 @@
 package vcsreader.vcs.hg
+
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
 
-import java.nio.charset.Charset
-
+import static vcsreader.lang.Charsets.UTF8
 import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.vcs.hg.HgClone.hgClone
 import static vcsreader.vcs.hg.HgIntegrationTestConfig.*
@@ -30,14 +30,14 @@ class ExternalCommands_HgIntegrationTest {
 	}
 
 	@Test void "log file content"() {
-		def command = hgLogFileContent(pathToHg, referenceProject, "file1.txt", revision(1), utf8).execute()
+		def command = hgLogFileContent(pathToHg, referenceProject, "file1.txt", revision(1), UTF8).execute()
 		assert command.stderr() == ""
 		assert command.stdout().trim() == "file1 content"
 		assert command.exitCode() == 0
 	}
 
 	@Test void "failed log file content"() {
-		def command = hgLogFileContent(pathToHg, referenceProject, "non-existent file", revision(1), utf8).execute()
+		def command = hgLogFileContent(pathToHg, referenceProject, "non-existent file", revision(1), UTF8).execute()
 		assert command.stdout() == ""
 		assert command.stderr().startsWith("non-existent file: no such file in rev")
 		assert command.exitCode() == 1
@@ -89,7 +89,7 @@ class ExternalCommands_HgIntegrationTest {
 		assert command.stdout().contains("non-ascii комментарий")
 		assert command.exitCode() == 0
 
-		command = hgLogFileContent(pathToHg, referenceProject, "non-ascii.txt", revision(8), utf8).execute()
+		command = hgLogFileContent(pathToHg, referenceProject, "non-ascii.txt", revision(8), UTF8).execute()
 		assert command.stderr() == ""
 		assert command.stdout().trim() == "non-ascii содержимое"
 		assert command.exitCode() == 0
@@ -104,7 +104,6 @@ class ExternalCommands_HgIntegrationTest {
 		initTestConfig()
 	}
 
-	private static final Charset utf8 = Charset.forName("UTF-8")
 	private static final String projectFolder = "/tmp/hg-commands-test/hg-repo-${ExternalCommands_HgIntegrationTest.simpleName}"
 	private static final String projectFolder2 = "/tmp/hg-commands-test/hg-repo-2-${ExternalCommands_HgIntegrationTest.simpleName}"
 }

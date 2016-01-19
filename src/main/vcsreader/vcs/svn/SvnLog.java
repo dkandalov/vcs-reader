@@ -2,6 +2,7 @@ package vcsreader.vcs.svn;
 
 import vcsreader.Change;
 import vcsreader.Commit;
+import vcsreader.lang.Charsets;
 import vcsreader.lang.ExternalCommand;
 import vcsreader.vcs.commandlistener.VcsCommand;
 
@@ -9,11 +10,10 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static java.nio.charset.Charset.forName;
 import static java.util.Arrays.asList;
 import static vcsreader.VcsProject.LogResult;
-import static vcsreader.vcs.svn.SvnExternalCommand.newExternalCommand;
 import static vcsreader.vcs.svn.SvnExternalCommand.isSuccessful;
+import static vcsreader.vcs.svn.SvnExternalCommand.newExternalCommand;
 
 /**
  * See http://svnbook.red-bean.com/en/1.8/svn.ref.svn.c.log.html
@@ -55,7 +55,7 @@ class SvnLog implements VcsCommand<LogResult> {
     static ExternalCommand svnLog(String pathToSvn, String repositoryUrl, Date fromDate, Date toDate,
                                   boolean useMergeHistory, boolean quoteDateRange) {
         String mergeHistory = (useMergeHistory ? "--use-merge-history" : "");
-        Charset svnXmlCharset = forName("UTF-8"); // see http://subversion.tigris.org/issues/show_bug.cgi?id=2938
+        Charset svnXmlCharset = Charsets.UTF8; // see http://subversion.tigris.org/issues/show_bug.cgi?id=2938
 	    return newExternalCommand(
                 pathToSvn, "log",
                 repositoryUrl,

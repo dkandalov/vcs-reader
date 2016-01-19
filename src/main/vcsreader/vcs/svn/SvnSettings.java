@@ -1,5 +1,7 @@
 package vcsreader.vcs.svn;
 
+import vcsreader.lang.Charsets;
+
 import java.nio.charset.Charset;
 
 public class SvnSettings {
@@ -14,7 +16,7 @@ public class SvnSettings {
     }
 
     public static SvnSettings defaults() {
-        return new SvnSettings("svn", Charset.forName("UTF-8"), true);
+        return new SvnSettings("svn", Charsets.UTF8, true);
     }
 
     public SvnSettings withSvnPath(String value) {

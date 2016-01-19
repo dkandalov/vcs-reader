@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static java.nio.charset.Charset.forName;
 import static java.util.Arrays.asList;
+import static vcsreader.lang.Charsets.UTF8;
 import static vcsreader.vcs.hg.HgExternalCommand.isSuccessful;
 
 @SuppressWarnings("Duplicates") // because it's similar to GitLog
@@ -49,11 +49,11 @@ class HgLog implements VcsCommand<VcsProject.LogResult> {
     static ExternalCommand hgLog(String hgPath, String folder, Date fromDate, Date toDate) {
         ExternalCommand command = new ExternalCommand(
                 hgPath, "log",
-                "--encoding", "UTF-8",
+                "--encoding", UTF8.name(),
                 "-r", "date(\"" + asHgDate(fromDate) + " to " + asHgDate(toDate) + "\")",
                 "--template", HgCommitParser.logTemplate()
         );
-        return command.workingDir(folder).outputCharset(forName("UTF-8"));
+        return command.workingDir(folder).outputCharset(UTF8);
     }
 
     private static String asHgDate(Date date) {
