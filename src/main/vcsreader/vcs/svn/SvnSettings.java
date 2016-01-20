@@ -1,17 +1,25 @@
 package vcsreader.vcs.svn;
 
+import org.jetbrains.annotations.NotNull;
 import vcsreader.lang.Charsets;
 
 import java.nio.charset.Charset;
 
 public class SvnSettings {
-    public final String svnPath;
-    public final Charset filesCharset;
+	@NotNull public final String svnPath;
+	@NotNull public final Charset defaultFileCharset;
     public final boolean useMergeHistory;
 
-    public SvnSettings(String svnPath, Charset filesCharset, boolean useMergeHistory) {
+	/**
+	 * @param svnPath path to svn executable
+	 * @param defaultFileCharset default charset of files in repository
+	 *                           (it will be used if charset could not be determined from file content)
+	 * @param useMergeHistory allows to see merge commits by using "--use-merge-history" flag,
+	 *                        should be enabled for svn >= 1.7
+	 */
+    public SvnSettings(@NotNull String svnPath, @NotNull Charset defaultFileCharset, boolean useMergeHistory) {
         this.svnPath = svnPath;
-        this.filesCharset = filesCharset;
+        this.defaultFileCharset = defaultFileCharset;
         this.useMergeHistory = useMergeHistory;
     }
 
@@ -20,15 +28,15 @@ public class SvnSettings {
     }
 
     public SvnSettings withSvnPath(String value) {
-        return new SvnSettings(value, filesCharset, useMergeHistory);
+        return new SvnSettings(value, defaultFileCharset, useMergeHistory);
     }
 
-    public SvnSettings withFilesCharset(Charset value) {
+    public SvnSettings withDefaultFileCharset(Charset value) {
         return new SvnSettings(svnPath, value, useMergeHistory);
     }
 
     public SvnSettings withMergeHistory(boolean value) {
-        return new SvnSettings(svnPath, filesCharset, value);
+        return new SvnSettings(svnPath, defaultFileCharset, value);
     }
 
     @SuppressWarnings("RedundantIfStatement")
@@ -39,15 +47,15 @@ public class SvnSettings {
         SvnSettings that = (SvnSettings) o;
 
         if (useMergeHistory != that.useMergeHistory) return false;
-        if (filesCharset != null ? !filesCharset.equals(that.filesCharset) : that.filesCharset != null) return false;
-        if (svnPath != null ? !svnPath.equals(that.svnPath) : that.svnPath != null) return false;
+        if (!defaultFileCharset.equals(that.defaultFileCharset)) return false;
+        if (!svnPath.equals(that.svnPath)) return false;
 
         return true;
     }
 
     @Override public int hashCode() {
-        int result = svnPath != null ? svnPath.hashCode() : 0;
-        result = 31 * result + (filesCharset != null ? filesCharset.hashCode() : 0);
+        int result = svnPath.hashCode();
+        result = 31 * result + (defaultFileCharset.hashCode());
         result = 31 * result + (useMergeHistory ? 1 : 0);
         return result;
     }
@@ -55,7 +63,7 @@ public class SvnSettings {
     @Override public String toString() {
         return "SvnSettings{" +
                 "svnPath='" + svnPath + '\'' +
-                ", filesCharset=" + filesCharset +
+                ", defaultFileCharset=" + defaultFileCharset +
                 ", useMergeHistory=" + useMergeHistory +
                 '}';
     }

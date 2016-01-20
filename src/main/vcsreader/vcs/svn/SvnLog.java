@@ -54,8 +54,13 @@ class SvnLog implements VcsCommand<LogResult> {
 
     static ExternalCommand svnLog(String pathToSvn, String repositoryUrl, Date fromDate, Date toDate,
                                   boolean useMergeHistory, boolean quoteDateRange) {
-        String mergeHistory = (useMergeHistory ? "--use-merge-history" : "");
-        Charset svnXmlCharset = Charsets.UTF8; // see http://subversion.tigris.org/issues/show_bug.cgi?id=2938
+        // see http://svnbook.red-bean.com/en/1.8/svn.branchmerge.advanced.html
+	    // see http://stackoverflow.com/questions/987337/preserving-history-when-merging-subversion-branches
+	    String mergeHistory = (useMergeHistory ? "--use-merge-history" : "");
+
+	    // see http://subversion.tigris.org/issues/show_bug.cgi?id=2938
+        Charset svnXmlCharset = Charsets.UTF8;
+
 	    return newExternalCommand(
                 pathToSvn, "log",
                 repositoryUrl,

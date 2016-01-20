@@ -1,21 +1,22 @@
 package vcsreader.vcs.git;
 
+import org.jetbrains.annotations.NotNull;
 import vcsreader.lang.Charsets;
 
 import java.nio.charset.Charset;
 
 public class GitSettings {
-    public final String gitPath;
-    public final Charset filesCharset;
+	@NotNull public final String gitPath;
+	@NotNull public final Charset defaultFileCharset;
 
 	/**
 	 * @param gitPath path to git executable
-	 * @param filesCharset default charset of files in repository
-	 *                     (it will be used if charset could not be determined from file content)
+	 * @param defaultFileCharset default charset of files in repository
+	 *                           (it will be used if charset could not be determined from file content)
 	 */
-    public GitSettings(String gitPath, Charset filesCharset) {
+    public GitSettings(@NotNull String gitPath, @NotNull Charset defaultFileCharset) {
         this.gitPath = gitPath;
-        this.filesCharset = filesCharset;
+        this.defaultFileCharset = defaultFileCharset;
     }
 
     public static GitSettings defaults() {
@@ -23,10 +24,10 @@ public class GitSettings {
     }
 
     public GitSettings withGitPath(String value) {
-        return new GitSettings(value, filesCharset);
+        return new GitSettings(value, defaultFileCharset);
     }
 
-    public GitSettings withFilesCharset(Charset value) {
+    public GitSettings withDefaultFileCharset(Charset value) {
         return new GitSettings(gitPath, value);
     }
 
@@ -37,22 +38,22 @@ public class GitSettings {
 
         GitSettings that = (GitSettings) o;
 
-        if (filesCharset != null ? !filesCharset.equals(that.filesCharset) : that.filesCharset != null) return false;
-        if (gitPath != null ? !gitPath.equals(that.gitPath) : that.gitPath != null) return false;
+        if (!defaultFileCharset.equals(that.defaultFileCharset)) return false;
+        if (!gitPath.equals(that.gitPath)) return false;
 
         return true;
     }
 
     @Override public int hashCode() {
-        int result = gitPath != null ? gitPath.hashCode() : 0;
-        result = 31 * result + (filesCharset != null ? filesCharset.hashCode() : 0);
+        int result = gitPath.hashCode();
+        result = 31 * result + (defaultFileCharset.hashCode());
         return result;
     }
 
     @Override public String toString() {
         return "GitSettings{" +
                 "gitPath='" + gitPath + '\'' +
-                ", filesCharset=" + filesCharset +
+                ", defaultFileCharset=" + defaultFileCharset +
                 '}';
     }
 }

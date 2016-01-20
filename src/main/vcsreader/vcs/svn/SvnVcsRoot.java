@@ -77,7 +77,7 @@ public class SvnVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
                 repositoryUrl,
                 filePath,
                 revision,
-                settings.filesCharset
+                settings.defaultFileCharset
         ));
     }
 

@@ -44,7 +44,7 @@ public class HgVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
     }
 
     @Override public LogFileContentResult logFileContent(String filePath, String revision) {
-        return observer.executeAndObserve(new HgLogFileContent(settings.hgPath, localPath, filePath, revision, settings.filesCharset));
+        return observer.executeAndObserve(new HgLogFileContent(settings.hgPath, localPath, filePath, revision, settings.defaultFileCharset));
     }
 
     @Override public void setObserver(VcsCommandObserver observer) {

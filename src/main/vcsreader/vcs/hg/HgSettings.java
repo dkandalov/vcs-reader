@@ -1,21 +1,22 @@
 package vcsreader.vcs.hg;
 
+import org.jetbrains.annotations.NotNull;
 import vcsreader.lang.Charsets;
 
 import java.nio.charset.Charset;
 
 public class HgSettings {
-    public final String hgPath;
-    public final Charset filesCharset;
+    @NotNull public final String hgPath;
+	@NotNull public final Charset defaultFileCharset;
 
 	/**
 	 * @param hgPath path to hg executable
-	 * @param filesCharset default charset of files in repository
-	 *                     (it will be used if charset could not be determined from file content)
+	 * @param defaultFileCharset default charset of files in repository
+	 *                           (it will be used if charset could not be determined from file content)
 	 */
-    public HgSettings(String hgPath, Charset filesCharset) {
+    public HgSettings(@NotNull String hgPath, @NotNull Charset defaultFileCharset) {
         this.hgPath = hgPath;
-        this.filesCharset = filesCharset;
+        this.defaultFileCharset = defaultFileCharset;
     }
 
     public static HgSettings defaults() {
@@ -23,10 +24,10 @@ public class HgSettings {
     }
 
     public HgSettings withHgPath(String value) {
-        return new HgSettings(value, filesCharset);
+        return new HgSettings(value, defaultFileCharset);
     }
 
-    public HgSettings withFilesCharset(Charset value) {
+    public HgSettings withDefaultFileCharset(Charset value) {
         return new HgSettings(hgPath, value);
     }
 
@@ -37,20 +38,20 @@ public class HgSettings {
 
         HgSettings that = (HgSettings) o;
 
-        if (hgPath != null ? !hgPath.equals(that.hgPath) : that.hgPath != null) return false;
-        return !(filesCharset != null ? !filesCharset.equals(that.filesCharset) : that.filesCharset != null);
+        if (!hgPath.equals(that.hgPath)) return false;
+        return !(!defaultFileCharset.equals(that.defaultFileCharset));
     }
 
     @Override public int hashCode() {
-        int result = hgPath != null ? hgPath.hashCode() : 0;
-        result = 31 * result + (filesCharset != null ? filesCharset.hashCode() : 0);
+        int result = hgPath.hashCode();
+        result = 31 * result + (defaultFileCharset.hashCode());
         return result;
     }
 
     @Override public String toString() {
         return "HgSettings{" +
                 "hgPath='" + hgPath + '\'' +
-                ", filesCharset=" + filesCharset +
+                ", defaultFileCharset=" + defaultFileCharset +
                 '}';
     }
 }
