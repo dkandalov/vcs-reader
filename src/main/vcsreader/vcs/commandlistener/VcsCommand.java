@@ -1,7 +1,7 @@
 package vcsreader.vcs.commandlistener;
 
 public interface VcsCommand<R> {
-    String describe();
+	String describe();
 
-    R execute();
+	R execute();
 }

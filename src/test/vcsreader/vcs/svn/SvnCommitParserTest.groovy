@@ -14,8 +14,8 @@ import static vcsreader.lang.DateTimeUtil.dateTime
 import static vcsreader.vcs.TestUtil.assertEqualCommits
 
 class SvnCommitParserTest {
-    @Test void "parse commit with single change"() {
-        def xml = """
+	@Test void "parse commit with single change"() {
+		def xml = """
             <?xml version="1.0" encoding="UTF-8"?>
             <log>
                 <logentry revision="1">
@@ -29,19 +29,19 @@ class SvnCommitParserTest {
             </log>
         """.trim()
 
-        assertEqualCommits(SvnCommitParser.parseCommits(xml), [
-                new Commit(
-                        "1", noRevision,
-                        dateTime("15:00:00 10/08/2014"),
-                        "Some Author",
-                        "initial commit",
-                        [new Change(ADDED, "file1.txt", "1")]
-                )
-        ])
-    }
+		assertEqualCommits(SvnCommitParser.parseCommits(xml), [
+				new Commit(
+						"1", noRevision,
+						dateTime("15:00:00 10/08/2014"),
+						"Some Author",
+						"initial commit",
+						[new Change(ADDED, "file1.txt", "1")]
+				)
+		])
+	}
 
-    @Test void "ignore commits with kind equal to 'folder'"() {
-        def xml = """
+	@Test void "ignore commits with kind equal to 'folder'"() {
+		def xml = """
             <?xml version="1.0" encoding="UTF-8"?>
             <log>
                 <logentry revision="1">
@@ -56,19 +56,19 @@ class SvnCommitParserTest {
             </log>
         """.trim()
 
-        assertEqualCommits(SvnCommitParser.parseCommits(xml), [
-                new Commit(
-                        "1", noRevision,
-                        dateTime("19:35:02 21/12/2013"),
-                        "Some Author",
-                        "commit message",
-                        [new Change(ADDED, "file.txt", "1")]
-                )
-        ])
-    }
+		assertEqualCommits(SvnCommitParser.parseCommits(xml), [
+				new Commit(
+						"1", noRevision,
+						dateTime("19:35:02 21/12/2013"),
+						"Some Author",
+						"commit message",
+						[new Change(ADDED, "file.txt", "1")]
+				)
+		])
+	}
 
-    @Test void "parse commit with long message"() {
-        def xml = """
+	@Test void "parse commit with long message"() {
+		def xml = """
             <?xml version="1.0" encoding="UTF-8"?>
             <log>
                 <logentry revision="1696">
@@ -82,15 +82,15 @@ class SvnCommitParserTest {
             </log>
         """.trim()
 
-        String comment = SvnCommitParser.parseCommits(xml)[0].message
-        assert comment ==
-                "- Update the product version to 5.0 beta\n" +
-                "- Fix a few \"bugs\" found with Findbugs\n" +
-                "- Switch to JDK 8 to run the tests."
-    }
+		String comment = SvnCommitParser.parseCommits(xml)[0].message
+		assert comment ==
+				"- Update the product version to 5.0 beta\n" +
+				"- Fix a few \"bugs\" found with Findbugs\n" +
+				"- Switch to JDK 8 to run the tests."
+	}
 
-    @Test void "should skip deletion change when file is moved"() {
-        def xml = """<?xml version="1.0" encoding="UTF-8"?>
+	@Test void "should skip deletion change when file is moved"() {
+		def xml = """<?xml version="1.0" encoding="UTF-8"?>
 			<log>
 			<logentry revision="4">
 				<author>Some Author</author>
@@ -116,16 +116,16 @@ class SvnCommitParserTest {
 			</log>
         """.trim()
 
-        assertThat(SvnCommitParser.parseCommits(xml)[0], equalTo(
-		        new Commit(
-				        "4", "3",
-				        dateTime("15:00:00 13/08/2014"),
-				        "Some Author",
-				        "moved file1",
-				        [new Change(MOVED, "folder1/file1.txt", "file1.txt", "4", "1")]
-		        )
-        ))
-    }
+		assertThat(SvnCommitParser.parseCommits(xml)[0], equalTo(
+				new Commit(
+						"4", "3",
+						dateTime("15:00:00 13/08/2014"),
+						"Some Author",
+						"moved file1",
+						[new Change(MOVED, "folder1/file1.txt", "file1.txt", "4", "1")]
+				)
+		))
+	}
 
 	@Test void "if 'text-mods' attribute is missing assume it's text change"() {
 		def xml = """

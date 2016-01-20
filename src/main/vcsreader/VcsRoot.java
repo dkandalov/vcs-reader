@@ -8,19 +8,19 @@ import static vcsreader.VcsProject.*;
 
 /**
  * Represents repository url (and local cloned folder for distributed VCS).
- *
+ * <p/>
  * For reading VCS history please use {@link VcsProject} API.
  */
 public interface VcsRoot {
-    CloneResult cloneToLocal();
+	CloneResult cloneToLocal();
 
-    UpdateResult update();
+	UpdateResult update();
 
-    LogResult log(Date fromDate, Date toDate);
+	LogResult log(Date fromDate, Date toDate);
 
-    LogFileContentResult logFileContent(String filePath, String revision);
+	LogFileContentResult logFileContent(String filePath, String revision);
 
-    interface WithCommandObserver {
-        void setObserver(VcsCommandObserver commandExecutor);
-    }
+	interface WithCommandObserver {
+		void setObserver(VcsCommandObserver commandExecutor);
+	}
 }

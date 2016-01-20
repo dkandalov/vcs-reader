@@ -10,10 +10,10 @@ import vcsreader.vcs.commandlistener.VcsCommandObserver;
 import java.util.Date;
 
 public class HgVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
-    public final String localPath;
-    public final String repositoryUrl;
-    public final HgSettings settings;
-    private VcsCommandObserver observer;
+	public final String localPath;
+	public final String repositoryUrl;
+	public final HgSettings settings;
+	private VcsCommandObserver observer;
 
 
 	public HgVcsRoot(String repositoryUrl, String localPath) {
@@ -21,35 +21,35 @@ public class HgVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
 	}
 
 	/**
-	 * @param localPath path to folder with repository clone
-	 *                  (if folder doesn't exit, it will be created on {@link #cloneToLocal()}.
+	 * @param localPath     path to folder with repository clone
+	 *                      (if folder doesn't exit, it will be created on {@link #cloneToLocal()}.
 	 * @param repositoryUrl url to remote repository (only required for {@link #cloneToLocal()})
 	 */
 	public HgVcsRoot(String localPath, String repositoryUrl, HgSettings settings) {
-        this.localPath = localPath;
-        this.repositoryUrl = repositoryUrl;
-        this.settings = settings;
-    }
+		this.localPath = localPath;
+		this.repositoryUrl = repositoryUrl;
+		this.settings = settings;
+	}
 
-    @Override public CloneResult cloneToLocal() {
-        return observer.executeAndObserve(new HgClone(settings.hgPath, repositoryUrl, localPath));
-    }
+	@Override public CloneResult cloneToLocal() {
+		return observer.executeAndObserve(new HgClone(settings.hgPath, repositoryUrl, localPath));
+	}
 
-    @Override public UpdateResult update() {
-        return observer.executeAndObserve(new HgUpdate(settings.hgPath, localPath));
-    }
+	@Override public UpdateResult update() {
+		return observer.executeAndObserve(new HgUpdate(settings.hgPath, localPath));
+	}
 
-    @Override public LogResult log(Date fromDate, Date toDate) {
-        return observer.executeAndObserve(new HgLog(settings.hgPath, localPath, fromDate, toDate));
-    }
+	@Override public LogResult log(Date fromDate, Date toDate) {
+		return observer.executeAndObserve(new HgLog(settings.hgPath, localPath, fromDate, toDate));
+	}
 
-    @Override public LogFileContentResult logFileContent(String filePath, String revision) {
-        return observer.executeAndObserve(new HgLogFileContent(settings.hgPath, localPath, filePath, revision, settings.defaultFileCharset));
-    }
+	@Override public LogFileContentResult logFileContent(String filePath, String revision) {
+		return observer.executeAndObserve(new HgLogFileContent(settings.hgPath, localPath, filePath, revision, settings.defaultFileCharset));
+	}
 
-    @Override public void setObserver(VcsCommandObserver observer) {
-        this.observer = observer;
-    }
+	@Override public void setObserver(VcsCommandObserver observer) {
+		this.observer = observer;
+	}
 
 	@SuppressWarnings("RedundantIfStatement")
 	@Override public boolean equals(Object o) {

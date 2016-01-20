@@ -8,11 +8,11 @@ import java.util.Date;
 import static vcsreader.VcsProject.*;
 
 public class SvnVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
-    public final String repositoryUrl;
-    public final SvnSettings settings;
-    private String repositoryRoot;
+	public final String repositoryUrl;
+	public final SvnSettings settings;
+	private String repositoryRoot;
 	private boolean quoteDateRange = false;
-    private VcsCommandObserver observer;
+	private VcsCommandObserver observer;
 
 
 	public SvnVcsRoot(String repositoryUrl) {
@@ -20,39 +20,39 @@ public class SvnVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
 	}
 
 	public SvnVcsRoot(String repositoryUrl, SvnSettings settings) {
-        this.repositoryUrl = repositoryUrl;
-        this.settings = settings;
-    }
+		this.repositoryUrl = repositoryUrl;
+		this.settings = settings;
+	}
 
-    @Override public CloneResult cloneToLocal() {
-        return new CloneResult();
-    }
+	@Override public CloneResult cloneToLocal() {
+		return new CloneResult();
+	}
 
-    @Override public UpdateResult update() {
-        return new UpdateResult();
-    }
+	@Override public UpdateResult update() {
+		return new UpdateResult();
+	}
 
-    @Override public LogResult log(Date fromDate, Date toDate) {
-        if (repositoryRoot == null) {
-            SvnInfo.Result result = observer.executeAndObserve(new SvnInfo(settings.svnPath, repositoryUrl));
-            repositoryRoot = result.repositoryRoot;
-        }
-	    LogResult logResult = observer.executeAndObserve(svnLog(fromDate, toDate));
-	    if (hasRevisionArgumentError(logResult)) {
-		    quoteDateRange = !quoteDateRange;
-		    logResult = observer.executeAndObserve(svnLog(fromDate, toDate));
-	    }
-	    return logResult;
-    }
+	@Override public LogResult log(Date fromDate, Date toDate) {
+		if (repositoryRoot == null) {
+			SvnInfo.Result result = observer.executeAndObserve(new SvnInfo(settings.svnPath, repositoryUrl));
+			repositoryRoot = result.repositoryRoot;
+		}
+		LogResult logResult = observer.executeAndObserve(svnLog(fromDate, toDate));
+		if (hasRevisionArgumentError(logResult)) {
+			quoteDateRange = !quoteDateRange;
+			logResult = observer.executeAndObserve(svnLog(fromDate, toDate));
+		}
+		return logResult;
+	}
 
 	private SvnLog svnLog(Date fromDate, Date toDate) {
 		return new SvnLog(
-			settings.svnPath,
-			repositoryUrl,
-			repositoryRoot,
-			fromDate, toDate,
-			settings.useMergeHistory,
-			quoteDateRange
+				settings.svnPath,
+				repositoryUrl,
+				repositoryRoot,
+				fromDate, toDate,
+				settings.useMergeHistory,
+				quoteDateRange
 		);
 	}
 
@@ -72,23 +72,23 @@ public class SvnVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
 	}
 
 	@Override public LogFileContentResult logFileContent(String filePath, String revision) {
-        return observer.executeAndObserve(new SvnLogFileContent(
-                settings.svnPath,
-                repositoryUrl,
-                filePath,
-                revision,
-                settings.defaultFileCharset
-        ));
-    }
+		return observer.executeAndObserve(new SvnLogFileContent(
+				settings.svnPath,
+				repositoryUrl,
+				filePath,
+				revision,
+				settings.defaultFileCharset
+		));
+	}
 
-    @Override public void setObserver(VcsCommandObserver observer) {
-        this.observer = observer;
-    }
+	@Override public void setObserver(VcsCommandObserver observer) {
+		this.observer = observer;
+	}
 
-    @Override public String toString() {
-        return "SvnVcsRoot{" +
-                "settings=" + settings +
-                ", repositoryUrl='" + repositoryUrl + '\'' +
-                '}';
-    }
+	@Override public String toString() {
+		return "SvnVcsRoot{" +
+				"settings=" + settings +
+				", repositoryUrl='" + repositoryUrl + '\'' +
+				'}';
+	}
 }

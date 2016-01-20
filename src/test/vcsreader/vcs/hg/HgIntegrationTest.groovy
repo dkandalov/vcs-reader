@@ -1,4 +1,5 @@
 package vcsreader.vcs.hg
+
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
@@ -15,11 +16,11 @@ import static vcsreader.vcs.hg.HgIntegrationTestConfig.*
 
 class HgIntegrationTest {
 
-    @Test void "clone project"() {
-        def cloneResult = project.cloneToLocal()
-        assert cloneResult.vcsErrors().empty
-        assert cloneResult.isSuccessful()
-    }
+	@Test void "clone project"() {
+		def cloneResult = project.cloneToLocal()
+		assert cloneResult.vcsErrors().empty
+		assert cloneResult.isSuccessful()
+	}
 
 	@Test void "clone project failure"() {
 		def vcsRoots = [new HgVcsRoot(projectFolder, nonExistentPath, hgSettings)]
@@ -226,13 +227,13 @@ class HgIntegrationTest {
 	}
 
 	@Before void setup() {
-        new File(projectFolder).deleteDir()
-        new File(projectFolder).mkdirs()
-    }
+		new File(projectFolder).deleteDir()
+		new File(projectFolder).mkdirs()
+	}
 
-    @BeforeClass static void setupConfig() {
-        initTestConfig()
-    }
+	@BeforeClass static void setupConfig() {
+		initTestConfig()
+	}
 
 	private static final String projectFolder = "/tmp/hg-commands-test/hg-repo-${HgIntegrationTest.simpleName}/"
 

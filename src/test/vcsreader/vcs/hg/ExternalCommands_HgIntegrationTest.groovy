@@ -104,6 +104,8 @@ class ExternalCommands_HgIntegrationTest {
 		initTestConfig()
 	}
 
-	private static final String projectFolder = "/tmp/hg-commands-test/hg-repo-${ExternalCommands_HgIntegrationTest.simpleName}"
-	private static final String projectFolder2 = "/tmp/hg-commands-test/hg-repo-2-${ExternalCommands_HgIntegrationTest.simpleName}"
+	private static
+	final String projectFolder = "/tmp/hg-commands-test/hg-repo-${ExternalCommands_HgIntegrationTest.simpleName}"
+	private static
+	final String projectFolder2 = "/tmp/hg-commands-test/hg-repo-2-${ExternalCommands_HgIntegrationTest.simpleName}"
 }

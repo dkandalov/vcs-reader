@@ -9,82 +9,82 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ExternalCommand {
-    private static final File currentDirectory = null;
-    private static final int exitCodeBeforeFinished = -123;
+	private static final File currentDirectory = null;
+	private static final int exitCodeBeforeFinished = -123;
 	private static final int defaultBufferSize = 8192;
 	private static final int maxBytesToUseForCharsetDetection = 8192;
 
 	private final String[] commandAndArgs;
-    private String stdout;
+	private String stdout;
 	private String stderr;
 	private byte[] stdoutBytes;
 	private byte[] stderrBytes;
 	private int exitCode = exitCodeBeforeFinished;
 	private Exception exception;
 
-    private int inputBufferSize = defaultBufferSize;
-    private File workingDirectory = currentDirectory;
-    private Charset outputCharset = Charset.defaultCharset();
-    private boolean charsetAutoDetect = false;
+	private int inputBufferSize = defaultBufferSize;
+	private File workingDirectory = currentDirectory;
+	private Charset outputCharset = Charset.defaultCharset();
+	private boolean charsetAutoDetect = false;
 
-    private final AtomicReference<Process> processRef = new AtomicReference<Process>();
+	private final AtomicReference<Process> processRef = new AtomicReference<Process>();
 
 
 	public ExternalCommand(String... commandAndArgs) {
-        this(defaultBufferSize, commandAndArgs);
-    }
+		this(defaultBufferSize, commandAndArgs);
+	}
 
-    public ExternalCommand(int inputBufferSize, String... commandAndArgs) {
-        this.inputBufferSize = inputBufferSize;
-        this.commandAndArgs = checkForNulls(commandAndArgs);
-	    this.stdoutBytes = new byte[0];
-	    this.stderrBytes = new byte[0];
-    }
+	public ExternalCommand(int inputBufferSize, String... commandAndArgs) {
+		this.inputBufferSize = inputBufferSize;
+		this.commandAndArgs = checkForNulls(commandAndArgs);
+		this.stdoutBytes = new byte[0];
+		this.stderrBytes = new byte[0];
+	}
 
-    public ExternalCommand workingDir(String path) {
-        workingDirectory = new File(path);
-        return this;
-    }
+	public ExternalCommand workingDir(String path) {
+		workingDirectory = new File(path);
+		return this;
+	}
 
-    public ExternalCommand outputCharset(@NotNull Charset charset) {
-        outputCharset = charset;
-        return this;
-    }
+	public ExternalCommand outputCharset(@NotNull Charset charset) {
+		outputCharset = charset;
+		return this;
+	}
 
 	public ExternalCommand charsetAutoDetect(boolean value) {
 		charsetAutoDetect = value;
 		return this;
 	}
 
-    public ExternalCommand execute() {
-	    InputStream stdoutInputStream = null;
-        InputStream stderrInputStream = null;
-        try {
+	public ExternalCommand execute() {
+		InputStream stdoutInputStream = null;
+		InputStream stderrInputStream = null;
+		try {
 
-            Process process = new ProcessBuilder(commandAndArgs).directory(workingDirectory).start();
-            processRef.set(process);
+			Process process = new ProcessBuilder(commandAndArgs).directory(workingDirectory).start();
+			processRef.set(process);
 
-	        stdoutInputStream = process.getInputStream();
-	        stderrInputStream = process.getErrorStream();
-	        stdoutBytes = readAsBytes(stdoutInputStream, inputBufferSize);
-	        stderrBytes = readAsBytes(stderrInputStream, inputBufferSize);
+			stdoutInputStream = process.getInputStream();
+			stderrInputStream = process.getErrorStream();
+			stdoutBytes = readAsBytes(stdoutInputStream, inputBufferSize);
+			stderrBytes = readAsBytes(stderrInputStream, inputBufferSize);
 
-            process.waitFor();
-	        stdoutInputStream.close();
-            stderrInputStream.close();
+			process.waitFor();
+			stdoutInputStream.close();
+			stderrInputStream.close();
 
-            process.destroy();
-            exitCode = process.exitValue();
+			process.destroy();
+			exitCode = process.exitValue();
 
-        } catch (Exception e) {
-	        exception = e;
-        } finally {
-            close(stdoutInputStream);
-            close(stderrInputStream);
-        }
+		} catch (Exception e) {
+			exception = e;
+		} finally {
+			close(stdoutInputStream);
+			close(stderrInputStream);
+		}
 
-        return this;
-    }
+		return this;
+	}
 
 	public void kill() {
 		if (processRef.get() != null) {
@@ -110,9 +110,9 @@ public class ExternalCommand {
 		return stderr;
 	}
 
-    public int exitCode() {
-        return exitCode;
-    }
+	public int exitCode() {
+		return exitCode;
+	}
 
 	public boolean hasNoExceptions() {
 		return exception == null;
@@ -167,20 +167,20 @@ public class ExternalCommand {
 		return charsetName == null ? null : Charset.forName(charsetName);
 	}
 
-    private static String[] checkForNulls(String[] command) {
-        for (String arg : command) {
-            if (arg == null) {
-                throw new IllegalStateException("Command cannot have null as inputs, but was: " + Arrays.toString(command));
-            }
-        }
-        return command;
-    }
+	private static String[] checkForNulls(String[] command) {
+		for (String arg : command) {
+			if (arg == null) {
+				throw new IllegalStateException("Command cannot have null as inputs, but was: " + Arrays.toString(command));
+			}
+		}
+		return command;
+	}
 
-    private static void close(Closeable reader) {
-        if (reader == null) return;
-        try {
-            reader.close();
-        } catch (IOException ignored) {
-        }
-    }
+	private static void close(Closeable reader) {
+		if (reader == null) return;
+		try {
+			reader.close();
+		} catch (IOException ignored) {
+		}
+	}
 }
