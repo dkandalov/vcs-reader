@@ -1,5 +1,5 @@
 ### VCS Reader
-This is minimal Java API to read commits from version control systems.
+This is a Java library with minimal API to read commits from version control systems (VCS).
 It uses native VCS commands to clone/update/log commits and currently supports 
 [Git](https://git-scm.com/), 
 [Mercurial](https://www.mercurial-scm.org/) and 
@@ -7,7 +7,7 @@ It uses native VCS commands to clone/update/log commits and currently supports
 
 
 ### Why?
-I didn't find any similar libraries to read commit history.
+No libraries with API to read commit history from different VCS.
 
 
 ### API Example
@@ -43,15 +43,14 @@ logResult.commits().last().with {
 
 
 ### How to build?
-Use [gradle](http://gradle.org/). 
-For example, ```gradle jar``` in project folder.
-All dependencies are available in ```lib``` folder.
+Use [gradle](http://gradle.org/) tasks, e.g. ``gradle jar``.
+For offline builds all dependencies are committed in ``lib`` folder.
 
 There are several VCS integration tests which require temporary repositories with predefined commit history.
 Use ruby scripts to generate them:
- - src/test/vcsreader/vcs/git/git-create-repo.rb
- - src/test/vcsreader/vcs/hg/hg-create-repo.rb
- - src/test/vcsreader/vcs/svn/svn-create-repo.rb
+ - ``src/test/vcsreader/vcs/git/git-create-repo.rb``
+ - ``src/test/vcsreader/vcs/hg/hg-create-repo.rb``
+ - ``src/test/vcsreader/vcs/svn/svn-create-repo.rb``
  
 
 ### Things to do
