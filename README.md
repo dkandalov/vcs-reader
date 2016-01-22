@@ -18,7 +18,7 @@ def gitSettings = GitSettings.defaults()
 def vcsRoot = new GitVcsRoot("/tmp/junit", "https://github.com/junit-team/junit", gitSettings)
 def vcsProject = new VcsProject(vcsRoot)
 
-// clone from GitHub (cloning is optional, already clone project can be used)
+// clone from GitHub (cloning is optional, already cloned project can be used)
 def cloneResult = vcsProject.cloneToLocal()
 assert cloneResult.isSuccessful()
 
