@@ -11,6 +11,7 @@ No libraries with API to read commit history from different VCS.
 
 
 ### API Example
+(Using Java API from Groovy)
 ```groovy
 // setup project
 def gitSettings = GitSettings.defaults()
