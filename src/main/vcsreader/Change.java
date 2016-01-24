@@ -38,8 +38,9 @@ public class Change {
 	 */
 	@NotNull public final String filePathBefore;
 
-	private final String revision;
-	private final String revisionBefore;
+	public final String revision;
+	public final String revisionBefore;
+
 	private final AtomicReference<VcsRoot> vcsRoot = new AtomicReference<VcsRoot>();
 
 
