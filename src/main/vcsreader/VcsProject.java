@@ -9,6 +9,7 @@ import java.util.*;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.sort;
+import static vcsreader.lang.StringUtil.shortened;
 
 /**
  * Represents a project as a set of {@link VcsRoot}s.
@@ -170,6 +171,32 @@ public class VcsProject {
 		public boolean isSuccessful() {
 			return stderr.isEmpty() && exitCode == 0;
 		}
+
+		@Override public String toString() {
+			return "LogFileContentResult{" +
+					"text='" + shortened(text, 100) + '\'' +
+					", stderr='" + shortened(stderr, 100) + '\'' +
+					", exitCode=" + exitCode +
+					'}';
+		}
+
+		@Override public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			LogFileContentResult that = (LogFileContentResult) o;
+
+			return exitCode == that.exitCode
+				&& text.equals(that.text)
+				&& stderr.equals(that.stderr);
+		}
+
+		@Override public int hashCode() {
+			int result = text.hashCode();
+			result = 31 * result + stderr.hashCode();
+			result = 31 * result + exitCode;
+			return result;
+		}
 	}
 
 
@@ -234,6 +261,32 @@ public class VcsProject {
 			}
 			return this;
 		}
+
+		@Override public String toString() {
+			return "LogResult{" +
+					"commits=" + commits.size() +
+					", vcsErrors=" + vcsErrors.size() +
+					", exceptions=" + exceptions.size() +
+					'}';
+		}
+
+		@Override public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			LogResult logResult = (LogResult) o;
+
+			return commits.equals(logResult.commits)
+				&& vcsErrors.equals(logResult.vcsErrors)
+				&& exceptions.equals(logResult.exceptions);
+		}
+
+		@Override public int hashCode() {
+			int result = commits.hashCode();
+			result = 31 * result + vcsErrors.hashCode();
+			result = 31 * result + exceptions.hashCode();
+			return result;
+		}
 	}
 
 
@@ -277,6 +330,28 @@ public class VcsProject {
 		public boolean isSuccessful() {
 			return vcsErrors.isEmpty() && exceptions.isEmpty();
 		}
+
+		@Override public String toString() {
+			return "UpdateResult{" +
+					"vcsErrors=" + vcsErrors.size() +
+					", exceptions=" + exceptions.size() +
+					'}';
+		}
+
+		@Override public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			UpdateResult that = (UpdateResult) o;
+
+			return vcsErrors.equals(that.vcsErrors) && exceptions.equals(that.exceptions);
+		}
+
+		@Override public int hashCode() {
+			int result = vcsErrors.hashCode();
+			result = 31 * result + exceptions.hashCode();
+			return result;
+		}
 	}
 
 
@@ -319,6 +394,28 @@ public class VcsProject {
 
 		public boolean isSuccessful() {
 			return vcsErrors.isEmpty() && exceptions.isEmpty();
+		}
+
+		@Override public String toString() {
+			return "CloneResult{" +
+					"vcsErrors=" + vcsErrors.size() +
+					", exceptions=" + exceptions.size() +
+					'}';
+		}
+
+		@Override public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			CloneResult that = (CloneResult) o;
+
+			return vcsErrors.equals(that.vcsErrors) && exceptions.equals(that.exceptions);
+		}
+
+		@Override public int hashCode() {
+			int result = vcsErrors.hashCode();
+			result = 31 * result + exceptions.hashCode();
+			return result;
 		}
 	}
 }

@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static vcsreader.VcsProject.LogFileContentResult;
+import static vcsreader.lang.StringUtil.shortened;
 
 /**
  * Contains data about file modification in a {@link Commit}.
@@ -151,8 +152,7 @@ public class Change {
 		}
 
 		@Override public String toString() {
-			String text = value.length() <= 100 ? value : value.substring(0, 100) + "[...]";
-			return "Content{value='" + text + "'}";
+			return "Content{value='" + shortened(value, 100) + "'}";
 		}
 
 		@Override public boolean equals(Object o) {

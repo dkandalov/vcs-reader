@@ -1,5 +1,7 @@
 package vcsreader.lang;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,5 +36,9 @@ public class StringUtil {
 	public static String trimLastNewLine(String s) {
 		if (s.endsWith("\r\n")) return s.substring(0, s.length() - 2);
 		else return s.endsWith("\n") || s.endsWith("\r") ? s.substring(0, s.length() - 1) : s;
+	}
+
+	@NotNull public static String shortened(@NotNull String s, int maxLength) {
+		return s.length() <= maxLength ? s : s.substring(0, maxLength) + "[...]";
 	}
 }
