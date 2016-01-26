@@ -50,6 +50,28 @@ class GitRepositoryCreator
 
 			commit "commit with no changes", "Aug 19 17:00:00 2014 +0000", @author
 
+			### branch rebase and merge
+			create_branch "a-branch"
+			checkout_branch "a-branch"
+			puts `echo "file1 branch content" > file1-branch.txt`
+			commit "added file1-branch.txt", "Aug 20 18:00:00 2014 +0000", @author
+
+			checkout_branch "master"
+			puts `echo "file1-master content" > file1-master.txt`
+			commit "added file1-master.txt", "Aug 20 18:10:00 2014 +0000", @author
+
+			checkout_branch "a-branch"
+			# simulate what happens on rebase when commit date changes but author date doesn't
+			rebase "master", "added file1-branch.txt", "Aug 20 18:20:00 2014 +0000"
+			puts `echo "file2 branch content" > file2-branch.txt`
+			commit "added file2-branch.txt", "Aug 21 19:00:00 2014 +0000", @author
+
+			checkout_branch "master"
+			puts `echo "file2-master content" > file2-master.txt`
+			commit "added file2-master.txt", "Aug 21 19:10:00 2014 +0000", @author
+			merge_branch "a-branch", "merged branch into master", "Aug 21 19:20:00 2014 +0000", @author
+			### end of branch rebase and merge
+
 			@commit_hashes = log_commit_hashes
 		end
 		update_test_config(@commit_hashes)
@@ -62,6 +84,24 @@ class GitRepositoryCreator
 		puts `#{@git} add --all .`
 		puts `#{@git} commit #{args} -m "#{message}"`
 		puts `GIT_COMMITTER_DATE="#{date}" #{@git} commit #{args} --amend --author "#{author}" --date "#{date}" -m "#{message}"`
+	end
+
+	def create_branch(branch_name)
+		puts `#{@git} branch #{branch_name}`
+	end
+
+	def checkout_branch(branch_name)
+		puts `#{@git} checkout #{branch_name}`
+	end
+
+	def rebase(branch_name, message, commit_date)
+		puts `#{@git} rebase #{branch_name}`
+		puts `GIT_COMMITTER_DATE="#{commit_date}" #{@git} commit --amend -m "#{message}"`
+	end
+
+	def merge_branch(branch_name, message, date, author)
+		puts `#{@git} merge #{branch_name} -m "#{message}"`
+		puts `GIT_COMMITTER_DATE="#{date}" #{@git} commit --amend --author "#{author}" --date "#{date}" -m "#{message}"`
 	end
 
 	def log_commit_hashes

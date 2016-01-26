@@ -129,7 +129,7 @@ class GitCommitParser {
 		// see "PRETTY FORMATS" at https://www.kernel.org/pub/software/scm/git/docs/git-log.html
 		String commitHash = "%H";
 		String parentHashes = "%P";
-		String commitDate = "%ct";
+		String authorDate = "%at";
 		String authorName = "%an"; // see http://stackoverflow.com/questions/18750808/difference-between-author-and-committer-in-git
 		String rawBody = "%s%n%n%-b"; // based on git4idea.checkin.GitCheckinEnvironment.GitCheckinOptions.getLastCommitMessage()
 
@@ -137,7 +137,7 @@ class GitCommitParser {
 				commitStartSeparatorFormat +
 				commitHash + commitFieldSeparatorFormat +
 				parentHashes + commitFieldSeparatorFormat +
-				commitDate + commitFieldSeparatorFormat +
+				authorDate + commitFieldSeparatorFormat +
 				authorName + commitFieldSeparatorFormat +
 				rawBody + commitFieldSeparatorFormat;
 	}
