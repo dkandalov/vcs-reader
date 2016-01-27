@@ -6,6 +6,8 @@ import org.junit.Test
 import vcsreader.Change
 import vcsreader.Commit
 import vcsreader.VcsProject
+import vcsreader.vcs.commandlistener.VcsCommand
+import vcsreader.vcs.commandlistener.VcsCommandListener
 
 import static vcsreader.Change.Type.*
 import static vcsreader.Change.noRevision
@@ -15,6 +17,14 @@ import static vcsreader.vcs.TestUtil.assertEqualCommits
 import static vcsreader.vcs.hg.HgIntegrationTestConfig.*
 
 class HgIntegrationTest {
+	private static final String projectFolder = "/tmp/hg-commands-test/hg-repo-${HgIntegrationTest.simpleName}/"
+
+	private final hgSettings = HgSettings.defaults().withHgPath(pathToHg)
+	private final vcsRoot = new HgVcsRoot(projectFolder, referenceProject, hgSettings)
+	private final project = new VcsProject([vcsRoot]).addListener(new VcsCommandListener() {
+		@Override void beforeCommand(VcsCommand<?> command) { println(command.describe()) }
+		@Override void afterCommand(VcsCommand<?> command) {}
+	})
 
 	@Test void "clone project"() {
 		def cloneResult = project.cloneToLocal()
@@ -234,10 +244,4 @@ class HgIntegrationTest {
 	@BeforeClass static void setupConfig() {
 		initTestConfig()
 	}
-
-	private static final String projectFolder = "/tmp/hg-commands-test/hg-repo-${HgIntegrationTest.simpleName}/"
-
-	private final hgSettings = HgSettings.defaults().withHgPath(pathToHg)
-	private final vcsRoots = [new HgVcsRoot(projectFolder, referenceProject, hgSettings)]
-	private final project = new VcsProject(vcsRoots)
 }

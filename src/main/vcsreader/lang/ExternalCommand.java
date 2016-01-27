@@ -66,6 +66,7 @@ public class ExternalCommand {
 
 			stdoutInputStream = process.getInputStream();
 			stderrInputStream = process.getErrorStream();
+			// TODO read from both in one loop to avoid process being stuck if one of outputs is full?
 			stdoutBytes = readAsBytes(stdoutInputStream, inputBufferSize);
 			stderrBytes = readAsBytes(stderrInputStream, inputBufferSize);
 
@@ -144,11 +145,11 @@ public class ExternalCommand {
 		return result;
 	}
 
-	private static byte[] readAsBytes(InputStream stdoutInputStream, int inputBufferSize) throws IOException {
+	private static byte[] readAsBytes(InputStream inputStream, int inputBufferSize) throws IOException {
 		ByteArrayOutputStream byteArrayStream = new ByteArrayOutputStream();
-		int n;
 		byte[] buffer = new byte[inputBufferSize];
-		while ((n = stdoutInputStream.read(buffer, 0, buffer.length)) != -1) {
+		int n;
+		while ((n = inputStream.read(buffer, 0, buffer.length)) != -1) {
 			byteArrayStream.write(buffer, 0, n);
 		}
 		byteArrayStream.flush();

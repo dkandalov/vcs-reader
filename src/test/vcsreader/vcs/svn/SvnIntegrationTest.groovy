@@ -18,10 +18,8 @@ import static vcsreader.vcs.svn.SvnIntegrationTestConfig.*
 
 class SvnIntegrationTest {
 	private final svnSettings = SvnSettings.defaults().withSvnPath(pathToSvn)
-	private final project = new VcsProject([new SvnVcsRoot(repositoryUrl, svnSettings)])
-			.addListener(new VcsCommandListener() {
+	private final project = new VcsProject([new SvnVcsRoot(repositoryUrl, svnSettings)]).addListener(new VcsCommandListener() {
 		@Override void beforeCommand(VcsCommand<?> command) { println(command.describe()) }
-
 		@Override void afterCommand(VcsCommand<?> command) {}
 	})
 
