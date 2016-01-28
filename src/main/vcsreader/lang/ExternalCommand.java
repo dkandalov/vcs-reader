@@ -9,12 +9,11 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ExternalCommand {
-	private static final File currentDirectory = null;
 	private static final int exitCodeBeforeFinished = -123;
-	private static final int defaultBufferSize = 8192;
-	private static final int maxBytesToUseForCharsetDetection = 8192;
 
+	private final Config config;
 	private final String[] commandAndArgs;
+
 	private String stdout;
 	private String stderr;
 	private byte[] stdoutBytes;
@@ -22,38 +21,31 @@ public class ExternalCommand {
 	private int exitCode = exitCodeBeforeFinished;
 	private Exception exception;
 
-	private int inputBufferSize = defaultBufferSize;
-	private File workingDirectory = currentDirectory;
-	private Charset outputCharset = Charset.defaultCharset();
-	private boolean charsetAutoDetect = false;
-
 	private final AtomicReference<Process> processRef = new AtomicReference<Process>();
 
 
 	public ExternalCommand(String... commandAndArgs) {
-		this(defaultBufferSize, commandAndArgs);
+		this(Config.defaults, commandAndArgs);
 	}
 
-	public ExternalCommand(int inputBufferSize, String... commandAndArgs) {
-		this.inputBufferSize = inputBufferSize;
+	public ExternalCommand(Config config, String... commandAndArgs) {
+		this.config = config;
 		this.commandAndArgs = checkForNulls(commandAndArgs);
 		this.stdoutBytes = new byte[0];
 		this.stderrBytes = new byte[0];
 	}
 
 	public ExternalCommand workingDir(String path) {
-		workingDirectory = new File(path);
-		return this;
+		if (path == null) return new ExternalCommand(config.workingDir(null), commandAndArgs);
+		else return new ExternalCommand(config.workingDir(new File(path)), commandAndArgs);
 	}
 
 	public ExternalCommand outputCharset(@NotNull Charset charset) {
-		outputCharset = charset;
-		return this;
+		return new ExternalCommand(config.outputCharset(charset), commandAndArgs);
 	}
 
 	public ExternalCommand charsetAutoDetect(boolean value) {
-		charsetAutoDetect = value;
-		return this;
+		return new ExternalCommand(config.charsetAutoDetect(value), commandAndArgs);
 	}
 
 	public ExternalCommand execute() {
@@ -61,14 +53,14 @@ public class ExternalCommand {
 		InputStream stderrInputStream = null;
 		try {
 
-			Process process = new ProcessBuilder(commandAndArgs).directory(workingDirectory).start();
+			Process process = new ProcessBuilder(commandAndArgs).directory(config.workingDirectory).start();
 			processRef.set(process);
 
 			stdoutInputStream = process.getInputStream();
 			stderrInputStream = process.getErrorStream();
 			// TODO read from both in one loop to avoid process being stuck if one of outputs is full?
-			stdoutBytes = readAsBytes(stdoutInputStream, inputBufferSize);
-			stderrBytes = readAsBytes(stderrInputStream, inputBufferSize);
+			stdoutBytes = readAsBytes(stdoutInputStream, config.stdoutBufferSize);
+			stderrBytes = readAsBytes(stderrInputStream, config.stderrBufferSize);
 
 			process.waitFor();
 			stdoutInputStream.close();
@@ -95,8 +87,10 @@ public class ExternalCommand {
 
 	@NotNull public String stdout() {
 		if (stdout == null) {
-			Charset charset = charsetAutoDetect ? detectCharset(stdoutBytes) : outputCharset;
-			if (charset == null) charset = outputCharset;
+			Charset charset = config.charsetAutoDetect ?
+					detectCharset(stdoutBytes, config.maxBufferForCharsetDetection) :
+					config.outputCharset;
+			if (charset == null) charset = config.outputCharset;
 			stdout = new String(stdoutBytes, charset);
 		}
 		return stdout;
@@ -104,8 +98,10 @@ public class ExternalCommand {
 
 	@NotNull public String stderr() {
 		if (stderr == null) {
-			Charset charset = charsetAutoDetect ? detectCharset(stderrBytes) : outputCharset;
-			if (charset == null) charset = outputCharset;
+			Charset charset = config.charsetAutoDetect ?
+					detectCharset(stderrBytes, config.maxBufferForCharsetDetection) :
+					config.outputCharset;
+			if (charset == null) charset = config.outputCharset;
 			stderr = new String(stderrBytes, charset);
 		}
 		return stderr;
@@ -139,8 +135,8 @@ public class ExternalCommand {
 			result += commandAndArgs[i];
 			if (i < commandAndArgs.length - 1) result += " ";
 		}
-		if (workingDirectory != null) {
-			result += " (working directory '" + workingDirectory + "')";
+		if (config.workingDirectory != null) {
+			result += " (working directory '" + config.workingDirectory + "')";
 		}
 		return result;
 	}
@@ -156,10 +152,10 @@ public class ExternalCommand {
 		return byteArrayStream.toByteArray();
 	}
 
-	private static Charset detectCharset(byte[] bytes) {
+	private static Charset detectCharset(byte[] bytes, int maxBufferForCharsetDetection) {
 		UniversalDetector detector = new UniversalDetector(null);
 		try {
-			detector.handleData(bytes, 0, Math.min(bytes.length, maxBytesToUseForCharsetDetection));
+			detector.handleData(bytes, 0, Math.min(bytes.length, maxBufferForCharsetDetection));
 			detector.dataEnd();
 		} finally {
 			detector.reset();
@@ -182,6 +178,51 @@ public class ExternalCommand {
 		try {
 			reader.close();
 		} catch (IOException ignored) {
+		}
+	}
+
+
+	public static class Config {
+		private static final int defaultBufferSize = 8192;
+		private static final File currentDirectory = null;
+
+		public static Config defaults = new Config(
+				currentDirectory,
+				defaultBufferSize,
+				defaultBufferSize,
+				defaultBufferSize,
+				false,
+				Charset.defaultCharset()
+		);
+
+		private final File workingDirectory;
+		private final int stdoutBufferSize;
+		private final int stderrBufferSize;
+		private final int maxBufferForCharsetDetection;
+		private final boolean charsetAutoDetect;
+		private final Charset outputCharset;
+
+		public Config(File workingDirectory, int stdoutBufferSize, int stderrBufferSize, int maxBufferForCharsetDetection,
+		              boolean charsetAutoDetect, Charset outputCharset) {
+			this.workingDirectory = workingDirectory;
+			this.stdoutBufferSize = stdoutBufferSize;
+			this.stderrBufferSize = stderrBufferSize;
+			this.maxBufferForCharsetDetection = maxBufferForCharsetDetection;
+			this.charsetAutoDetect = charsetAutoDetect;
+			this.outputCharset = outputCharset;
+		}
+
+		public Config charsetAutoDetect(boolean value) {
+			return new Config(workingDirectory, stdoutBufferSize, stderrBufferSize, maxBufferForCharsetDetection, value, outputCharset);
+		}
+
+		public Config outputCharset(Charset charset) {
+			return new Config(workingDirectory, stdoutBufferSize, stderrBufferSize, maxBufferForCharsetDetection, charsetAutoDetect, charset);
+		}
+
+		public Config workingDir(File file) {
+			return new Config(file, stdoutBufferSize, stderrBufferSize, maxBufferForCharsetDetection, charsetAutoDetect, outputCharset);
+
 		}
 	}
 }
