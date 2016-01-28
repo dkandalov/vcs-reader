@@ -30,7 +30,7 @@ class ExternalCommandTest {
 		}
 		command.execute()
 
-		assert command.exitCode() == -123
+		assert command.exitCode() == 143
 	}
 
 	@Test void "command description"() {

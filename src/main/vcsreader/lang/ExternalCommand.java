@@ -6,7 +6,11 @@ import org.mozilla.universalchardet.UniversalDetector;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static vcsreader.lang.StringUtil.shortened;
 
 public class ExternalCommand {
 	private static final int exitCodeBeforeFinished = -123;
@@ -14,10 +18,8 @@ public class ExternalCommand {
 	private final Config config;
 	private final String[] commandAndArgs;
 
-	private String stdout;
-	private String stderr;
-	private byte[] stdoutBytes;
-	private byte[] stderrBytes;
+	private String stdout = "";
+	private String stderr = "";
 	private int exitCode = exitCodeBeforeFinished;
 	private Exception exception;
 
@@ -31,8 +33,6 @@ public class ExternalCommand {
 	public ExternalCommand(Config config, String... commandAndArgs) {
 		this.config = config;
 		this.commandAndArgs = checkForNulls(commandAndArgs);
-		this.stdoutBytes = new byte[0];
-		this.stderrBytes = new byte[0];
 	}
 
 	public ExternalCommand workingDir(String path) {
@@ -58,9 +58,18 @@ public class ExternalCommand {
 
 			stdoutInputStream = process.getInputStream();
 			stderrInputStream = process.getErrorStream();
-			// TODO read from both in one loop to avoid process being stuck if one of outputs is full?
-			stdoutBytes = readAsBytes(stdoutInputStream, config.stdoutBufferSize);
-			stderrBytes = readAsBytes(stderrInputStream, config.stderrBufferSize);
+
+			Future<String> stdoutFuture = config.taskExecutor.submit(
+					readStreamTask(stdoutInputStream, config.stdoutBufferSize),
+					"stdout reader: " + shortened(describe(), 30)
+			);
+			Future<String> stderrFuture = config.taskExecutor.submit(
+					readStreamTask(stderrInputStream, config.stderrBufferSize),
+					"stderr reader: " + shortened(describe(), 30)
+			);
+
+			stdout = stdoutFuture.get();
+			stderr = stderrFuture.get();
 
 			process.waitFor();
 			stdoutInputStream.close();
@@ -86,24 +95,10 @@ public class ExternalCommand {
 	}
 
 	@NotNull public String stdout() {
-		if (stdout == null) {
-			Charset charset = config.charsetAutoDetect ?
-					detectCharset(stdoutBytes, config.maxBufferForCharsetDetection) :
-					config.outputCharset;
-			if (charset == null) charset = config.outputCharset;
-			stdout = new String(stdoutBytes, charset);
-		}
 		return stdout;
 	}
 
 	@NotNull public String stderr() {
-		if (stderr == null) {
-			Charset charset = config.charsetAutoDetect ?
-					detectCharset(stderrBytes, config.maxBufferForCharsetDetection) :
-					config.outputCharset;
-			if (charset == null) charset = config.outputCharset;
-			stderr = new String(stderrBytes, charset);
-		}
 		return stderr;
 	}
 
@@ -139,6 +134,23 @@ public class ExternalCommand {
 			result += " (working directory '" + config.workingDirectory + "')";
 		}
 		return result;
+	}
+
+	private Callable<String> readStreamTask(final InputStream stdoutInputStream, final int inputBufferSize) {
+		return new Callable<String>() {
+			@Override public String call() throws Exception {
+				byte[] bytes = readAsBytes(stdoutInputStream, inputBufferSize);
+				return convertToString(bytes);
+			}
+		};
+	}
+
+	private String convertToString(byte[] bytes) throws IOException {
+		Charset charset = config.charsetAutoDetect ?
+				detectCharset(bytes, config.maxBufferForCharsetDetection) :
+				config.outputCharset;
+		if (charset == null) charset = config.outputCharset;
+		return new String(bytes, charset);
 	}
 
 	private static byte[] readAsBytes(InputStream inputStream, int inputBufferSize) throws IOException {
@@ -181,6 +193,9 @@ public class ExternalCommand {
 		}
 	}
 
+	public interface TaskExecutor {
+		<T> Future<T> submit(Callable<T> task, String taskName);
+	}
 
 	public static class Config {
 		private static final int defaultBufferSize = 8192;
@@ -192,8 +207,9 @@ public class ExternalCommand {
 				defaultBufferSize,
 				defaultBufferSize,
 				false,
-				Charset.defaultCharset()
-		);
+				Charset.defaultCharset(),
+				newThreadExecutor());
+
 
 		private final File workingDirectory;
 		private final int stdoutBufferSize;
@@ -201,28 +217,50 @@ public class ExternalCommand {
 		private final int maxBufferForCharsetDetection;
 		private final boolean charsetAutoDetect;
 		private final Charset outputCharset;
+		private final TaskExecutor taskExecutor;
 
 		public Config(File workingDirectory, int stdoutBufferSize, int stderrBufferSize, int maxBufferForCharsetDetection,
-		              boolean charsetAutoDetect, Charset outputCharset) {
+		              boolean charsetAutoDetect, Charset outputCharset, TaskExecutor taskExecutor) {
 			this.workingDirectory = workingDirectory;
 			this.stdoutBufferSize = stdoutBufferSize;
 			this.stderrBufferSize = stderrBufferSize;
 			this.maxBufferForCharsetDetection = maxBufferForCharsetDetection;
 			this.charsetAutoDetect = charsetAutoDetect;
 			this.outputCharset = outputCharset;
+			this.taskExecutor = taskExecutor;
 		}
 
 		public Config charsetAutoDetect(boolean value) {
-			return new Config(workingDirectory, stdoutBufferSize, stderrBufferSize, maxBufferForCharsetDetection, value, outputCharset);
+			return new Config(workingDirectory, stdoutBufferSize, stderrBufferSize, maxBufferForCharsetDetection, value, outputCharset, taskExecutor);
 		}
 
 		public Config outputCharset(Charset charset) {
-			return new Config(workingDirectory, stdoutBufferSize, stderrBufferSize, maxBufferForCharsetDetection, charsetAutoDetect, charset);
+			return new Config(workingDirectory, stdoutBufferSize, stderrBufferSize, maxBufferForCharsetDetection, charsetAutoDetect, charset, taskExecutor);
 		}
 
 		public Config workingDir(File file) {
-			return new Config(file, stdoutBufferSize, stderrBufferSize, maxBufferForCharsetDetection, charsetAutoDetect, outputCharset);
+			return new Config(file, stdoutBufferSize, stderrBufferSize, maxBufferForCharsetDetection, charsetAutoDetect, outputCharset, taskExecutor);
+		}
 
+		private static TaskExecutor newThreadExecutor() {
+			return new TaskExecutor() {
+				@Override public <T> Future<T> submit(final Callable<T> task, String taskName) {
+					final FutureResult<T> futureResult = new FutureResult<T>();
+					Runnable runnable = new Runnable() {
+						@Override public void run() {
+							try {
+								futureResult.set(task.call());
+							} catch (Exception e) {
+								futureResult.setException(e);
+							}
+						}
+					};
+					Thread thread = new Thread(null, runnable, taskName);
+					thread.setDaemon(true);
+					thread.start();
+					return futureResult;
+				}
+			};
 		}
 	}
 }
