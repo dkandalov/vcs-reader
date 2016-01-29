@@ -1,7 +1,7 @@
 package vcsreader.vcs.svn;
 
 import org.jetbrains.annotations.Nullable;
-import vcsreader.lang.ExternalCommand;
+import vcsreader.lang.CommandLine;
 import vcsreader.vcs.commandlistener.VcsCommand;
 
 import java.util.ArrayList;
@@ -9,37 +9,37 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static vcsreader.vcs.svn.SvnInfo.Result.unknownRoot;
-import static vcsreader.vcs.svn.SvnExternalCommand.newExternalCommand;
-import static vcsreader.vcs.svn.SvnExternalCommand.isSuccessful;
+import static vcsreader.vcs.svn.SvnCommandLine.newExternalCommand;
+import static vcsreader.vcs.svn.SvnCommandLine.isSuccessful;
 
 
 class SvnInfo implements VcsCommand<SvnInfo.Result> {
 	private final String svnPath;
 	private final String repositoryUrl;
-	private final ExternalCommand externalCommand;
+	private final CommandLine commandLine;
 
 	public SvnInfo(String svnPath, String repositoryUrl) {
 		this.svnPath = svnPath;
 		this.repositoryUrl = repositoryUrl;
-		this.externalCommand = svnInfo(svnPath, repositoryUrl);
+		this.commandLine = svnInfo(svnPath, repositoryUrl);
 	}
 
 	@Override public SvnInfo.Result execute() {
-		externalCommand.execute();
+		commandLine.execute();
 
-		if (isSuccessful(externalCommand)) {
-			String repositoryRoot = parse(externalCommand.stdout());
+		if (isSuccessful(commandLine)) {
+			String repositoryRoot = parse(commandLine.stdout());
 			if (repositoryRoot == null) {
 				return new Result(unknownRoot, asList("Didn't find svn root in output for " + repositoryUrl));
 			} else {
 				return new Result(repositoryRoot);
 			}
 		} else {
-			return new Result(unknownRoot, asList(externalCommand.stdout() + externalCommand.exceptionStacktrace()));
+			return new Result(unknownRoot, asList(commandLine.stdout() + commandLine.exceptionStacktrace()));
 		}
 	}
 
-	static ExternalCommand svnInfo(String svnPath, String repositoryUrl) {
+	static CommandLine svnInfo(String svnPath, String repositoryUrl) {
 		return newExternalCommand(svnPath, "info", repositoryUrl);
 	}
 
@@ -54,7 +54,7 @@ class SvnInfo implements VcsCommand<SvnInfo.Result> {
 	}
 
 	@Override public String describe() {
-		return externalCommand.describe();
+		return commandLine.describe();
 	}
 
 	@SuppressWarnings("RedundantIfStatement")

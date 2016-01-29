@@ -1,13 +1,13 @@
 package vcsreader.vcs.git;
 
-import vcsreader.lang.ExternalCommand;
+import vcsreader.lang.CommandLine;
 import vcsreader.vcs.commandlistener.VcsCommand;
 
 import java.nio.charset.Charset;
 
 import static vcsreader.VcsProject.LogFileContentResult;
 import static vcsreader.lang.StringUtil.trimLastNewLine;
-import static vcsreader.vcs.git.GitExternalCommand.isSuccessful;
+import static vcsreader.vcs.git.GitCommandLine.isSuccessful;
 
 /**
  * See https://git-scm.com/docs/git-show
@@ -23,7 +23,7 @@ class GitLogFileContent implements VcsCommand<LogFileContentResult> {
 	private final String filePath;
 	private final String revision;
 	private final Charset charset;
-	private final ExternalCommand externalCommand;
+	private final CommandLine commandLine;
 
 	GitLogFileContent(String gitPath, String folder, String filePath, String revision, Charset charset) {
 		this.gitPath = gitPath;
@@ -31,25 +31,25 @@ class GitLogFileContent implements VcsCommand<LogFileContentResult> {
 		this.filePath = filePath;
 		this.revision = revision;
 		this.charset = charset;
-		this.externalCommand = gitLogFileContent(gitPath, folder, filePath, revision, charset);
+		this.commandLine = gitLogFileContent(gitPath, folder, filePath, revision, charset);
 	}
 
-	static ExternalCommand gitLogFileContent(String pathToGit, String folder, String filePath, String revision, Charset charset) {
-		ExternalCommand command = new ExternalCommand(pathToGit, "show", revision + ":" + filePath);
-		return command.workingDir(folder).outputCharset(charset).charsetAutoDetect(true);
+	static CommandLine gitLogFileContent(String pathToGit, String folder, String filePath, String revision, Charset charset) {
+		CommandLine commandLine = new CommandLine(pathToGit, "show", revision + ":" + filePath);
+		return commandLine.workingDir(folder).outputCharset(charset).charsetAutoDetect(true);
 	}
 
 	@Override public LogFileContentResult execute() {
-		externalCommand.execute();
-		if (isSuccessful(externalCommand)) {
-			return new LogFileContentResult(trimLastNewLine(externalCommand.stdout()));
+		commandLine.execute();
+		if (isSuccessful(commandLine)) {
+			return new LogFileContentResult(trimLastNewLine(commandLine.stdout()));
 		} else {
-			return new LogFileContentResult(externalCommand.stderr() + externalCommand.exceptionStacktrace(), externalCommand.exitCode());
+			return new LogFileContentResult(commandLine.stderr() + commandLine.exceptionStacktrace(), commandLine.exitCode());
 		}
 	}
 
 	@Override public String describe() {
-		return externalCommand.describe();
+		return commandLine.describe();
 	}
 
 	@SuppressWarnings("RedundantIfStatement")

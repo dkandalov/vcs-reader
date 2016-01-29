@@ -1,41 +1,41 @@
 package vcsreader.vcs.git;
 
 import vcsreader.VcsProject;
-import vcsreader.lang.ExternalCommand;
+import vcsreader.lang.CommandLine;
 import vcsreader.vcs.commandlistener.VcsCommand;
 
 import static java.util.Arrays.asList;
-import static vcsreader.vcs.git.GitExternalCommand.isSuccessful;
+import static vcsreader.vcs.git.GitCommandLine.isSuccessful;
 
 class GitClone implements VcsCommand<VcsProject.CloneResult> {
 	private final String pathToGit;
 	private final String repositoryUrl;
 	private final String localPath;
-	private final ExternalCommand externalCommand;
+	private final CommandLine commandLine;
 
 	public GitClone(String pathToGit, String repositoryUrl, String localPath) {
 		this.pathToGit = pathToGit;
 		this.repositoryUrl = repositoryUrl;
 		this.localPath = localPath;
-		this.externalCommand = gitClone(pathToGit, repositoryUrl, localPath);
+		this.commandLine = gitClone(pathToGit, repositoryUrl, localPath);
 	}
 
 	@Override public VcsProject.CloneResult execute() {
-		externalCommand.execute();
+		commandLine.execute();
 
-		if (isSuccessful(externalCommand)) {
+		if (isSuccessful(commandLine)) {
 			return new VcsProject.CloneResult();
 		} else {
-			return new VcsProject.CloneResult(asList(externalCommand.stderr() + externalCommand.exceptionStacktrace()));
+			return new VcsProject.CloneResult(asList(commandLine.stderr() + commandLine.exceptionStacktrace()));
 		}
 	}
 
-	static ExternalCommand gitClone(String pathToGit, String repositoryUrl, String targetPath) {
-		return new ExternalCommand(pathToGit, "clone", "-v", repositoryUrl, targetPath);
+	static CommandLine gitClone(String pathToGit, String repositoryUrl, String targetPath) {
+		return new CommandLine(pathToGit, "clone", "-v", repositoryUrl, targetPath);
 	}
 
 	@Override public String describe() {
-		return externalCommand.describe();
+		return commandLine.describe();
 	}
 
 	@SuppressWarnings("RedundantIfStatement")

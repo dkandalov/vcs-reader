@@ -2,7 +2,7 @@ package vcsreader.vcs.hg;
 
 import vcsreader.Commit;
 import vcsreader.VcsProject;
-import vcsreader.lang.ExternalCommand;
+import vcsreader.lang.CommandLine;
 import vcsreader.vcs.commandlistener.VcsCommand;
 
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static vcsreader.lang.Charsets.UTF8;
-import static vcsreader.vcs.hg.HgExternalCommand.isSuccessful;
+import static vcsreader.vcs.hg.HgCommandLine.isSuccessful;
 
 // suppress because it's similar to GitLog
 @SuppressWarnings("Duplicates")
@@ -21,40 +21,40 @@ class HgLog implements VcsCommand<VcsProject.LogResult> {
 	private final Date fromDate;
 	private final Date toDate;
 
-	private final ExternalCommand externalCommand;
+	private final CommandLine commandLine;
 
 	public HgLog(String hgPath, String folder, Date fromDate, Date toDate) {
 		this.hgPath = hgPath;
 		this.folder = folder;
 		this.fromDate = fromDate;
 		this.toDate = toDate;
-		this.externalCommand = hgLog(hgPath, folder, fromDate, toDate);
+		this.commandLine = hgLog(hgPath, folder, fromDate, toDate);
 	}
 
 	@Override public VcsProject.LogResult execute() {
-		externalCommand.execute();
+		commandLine.execute();
 
-		if (isSuccessful(externalCommand)) {
-			List<Commit> commits = HgCommitParser.parseListOfCommits(externalCommand.stdout());
-			List<String> errors = (externalCommand.stderr().trim().isEmpty() ? new ArrayList<String>() : asList(externalCommand.stderr()));
+		if (isSuccessful(commandLine)) {
+			List<Commit> commits = HgCommitParser.parseListOfCommits(commandLine.stdout());
+			List<String> errors = (commandLine.stderr().trim().isEmpty() ? new ArrayList<String>() : asList(commandLine.stderr()));
 			return new VcsProject.LogResult(commits, errors);
 		} else {
-			return new VcsProject.LogResult(new ArrayList<Commit>(), asList(externalCommand.stderr() + externalCommand.exceptionStacktrace()));
+			return new VcsProject.LogResult(new ArrayList<Commit>(), asList(commandLine.stderr() + commandLine.exceptionStacktrace()));
 		}
 	}
 
 	@Override public String describe() {
-		return externalCommand.describe();
+		return commandLine.describe();
 	}
 
-	static ExternalCommand hgLog(String hgPath, String folder, Date fromDate, Date toDate) {
-		ExternalCommand command = new ExternalCommand(
+	static CommandLine hgLog(String hgPath, String folder, Date fromDate, Date toDate) {
+		CommandLine commandLine = new CommandLine(
 				hgPath, "log",
 				"--encoding", UTF8.name(),
 				"-r", "date(\"" + asHgDate(fromDate) + " to " + asHgDate(toDate) + "\")",
 				"--template", HgCommitParser.logTemplate()
 		);
-		return command.workingDir(folder).outputCharset(UTF8);
+		return commandLine.workingDir(folder).outputCharset(UTF8);
 	}
 
 	private static String asHgDate(Date date) {

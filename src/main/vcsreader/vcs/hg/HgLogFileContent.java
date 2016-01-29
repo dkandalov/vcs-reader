@@ -1,13 +1,13 @@
 package vcsreader.vcs.hg;
 
 import vcsreader.VcsProject;
-import vcsreader.lang.ExternalCommand;
+import vcsreader.lang.CommandLine;
 import vcsreader.vcs.commandlistener.VcsCommand;
 
 import java.nio.charset.Charset;
 
 import static vcsreader.lang.StringUtil.trimLastNewLine;
-import static vcsreader.vcs.hg.HgExternalCommand.isSuccessful;
+import static vcsreader.vcs.hg.HgCommandLine.isSuccessful;
 
 
 /**
@@ -21,7 +21,7 @@ class HgLogFileContent implements VcsCommand<VcsProject.LogFileContentResult> {
 	private final String filePath;
 	private final String revision;
 	private final Charset charset;
-	private final ExternalCommand externalCommand;
+	private final CommandLine commandLine;
 
 	public HgLogFileContent(String pathToHg, String folder, String filePath, String revision, Charset charset) {
 		this.pathToHg = pathToHg;
@@ -29,25 +29,25 @@ class HgLogFileContent implements VcsCommand<VcsProject.LogFileContentResult> {
 		this.filePath = filePath;
 		this.revision = revision;
 		this.charset = charset;
-		this.externalCommand = hgLogFileContent(pathToHg, folder, filePath, revision, charset);
+		this.commandLine = hgLogFileContent(pathToHg, folder, filePath, revision, charset);
 	}
 
 	@Override public VcsProject.LogFileContentResult execute() {
-		externalCommand.execute();
-		if (isSuccessful(externalCommand)) {
-			return new VcsProject.LogFileContentResult(trimLastNewLine(externalCommand.stdout()));
+		commandLine.execute();
+		if (isSuccessful(commandLine)) {
+			return new VcsProject.LogFileContentResult(trimLastNewLine(commandLine.stdout()));
 		} else {
-			return new VcsProject.LogFileContentResult(externalCommand.stderr() + externalCommand.exceptionStacktrace(), externalCommand.exitCode());
+			return new VcsProject.LogFileContentResult(commandLine.stderr() + commandLine.exceptionStacktrace(), commandLine.exitCode());
 		}
 	}
 
 	@Override public String describe() {
-		return externalCommand.describe();
+		return commandLine.describe();
 	}
 
-	static ExternalCommand hgLogFileContent(String pathToHg, String folder, String filePath, String revision, Charset charset) {
-		ExternalCommand command = new ExternalCommand(pathToHg, "cat", "-r " + revision, filePath);
-		return command.workingDir(folder).outputCharset(charset).charsetAutoDetect(true);
+	static CommandLine hgLogFileContent(String pathToHg, String folder, String filePath, String revision, Charset charset) {
+		CommandLine commandLine = new CommandLine(pathToHg, "cat", "-r " + revision, filePath);
+		return commandLine.workingDir(folder).outputCharset(charset).charsetAutoDetect(true);
 	}
 
 	@SuppressWarnings("SimplifiableIfStatement")

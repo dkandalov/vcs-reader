@@ -1,14 +1,14 @@
 package vcsreader.vcs.svn;
 
 import org.jetbrains.annotations.NotNull;
-import vcsreader.lang.ExternalCommand;
+import vcsreader.lang.CommandLine;
 import vcsreader.vcs.commandlistener.VcsCommand;
 
 import java.nio.charset.Charset;
 
 import static vcsreader.VcsProject.LogFileContentResult;
-import static vcsreader.vcs.svn.SvnExternalCommand.newExternalCommand;
-import static vcsreader.vcs.svn.SvnExternalCommand.isSuccessful;
+import static vcsreader.vcs.svn.SvnCommandLine.newExternalCommand;
+import static vcsreader.vcs.svn.SvnCommandLine.isSuccessful;
 
 /**
  * See http://svnbook.red-bean.com/en/1.8/svn.ref.svn.c.cat.html
@@ -19,7 +19,7 @@ class SvnLogFileContent implements VcsCommand<LogFileContentResult> {
 	private final String filePath;
 	private final String revision;
 	private final Charset charset;
-	private final ExternalCommand externalCommand;
+	private final CommandLine commandLine;
 
 	SvnLogFileContent(String svnPath, String repositoryRoot, String filePath, String revision, Charset charset) {
 		this.svnPath = svnPath;
@@ -27,10 +27,10 @@ class SvnLogFileContent implements VcsCommand<LogFileContentResult> {
 		this.filePath = filePath;
 		this.revision = revision;
 		this.charset = charset;
-		this.externalCommand = svnLogFileContent(svnPath, repositoryRoot, filePath, revision, charset);
+		this.commandLine = svnLogFileContent(svnPath, repositoryRoot, filePath, revision, charset);
 	}
 
-	static ExternalCommand svnLogFileContent(String pathToSvn, String repositoryRoot, String filePath, String revision, Charset charset) {
+	static CommandLine svnLogFileContent(String pathToSvn, String repositoryRoot, String filePath, String revision, Charset charset) {
 		String fileRevisionUrl = repositoryRoot + "/" + filePath + "@" + revision;
 		return newExternalCommand(pathToSvn, "cat", fileRevisionUrl).outputCharset(charset).charsetAutoDetect(true);
 	}
@@ -41,16 +41,16 @@ class SvnLogFileContent implements VcsCommand<LogFileContentResult> {
 	}
 
 	@Override public LogFileContentResult execute() {
-		externalCommand.execute();
-		if (isSuccessful(externalCommand)) {
-			return new LogFileContentResult(trimLastNewLine(externalCommand.stdout()));
+		commandLine.execute();
+		if (isSuccessful(commandLine)) {
+			return new LogFileContentResult(trimLastNewLine(commandLine.stdout()));
 		} else {
-			return new LogFileContentResult(externalCommand.stderr() + externalCommand.exceptionStacktrace(), externalCommand.exitCode());
+			return new LogFileContentResult(commandLine.stderr() + commandLine.exceptionStacktrace(), commandLine.exitCode());
 		}
 	}
 
 	@Override public String describe() {
-		return externalCommand.describe();
+		return commandLine.describe();
 	}
 
 	@SuppressWarnings("RedundantIfStatement")

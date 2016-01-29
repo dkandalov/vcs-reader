@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static vcsreader.lang.StringUtil.shortened;
 
-public class ExternalCommand {
+public class CommandLine {
 	private static final int exitCodeBeforeFinished = -123;
 
 	private final Config config;
@@ -26,29 +26,29 @@ public class ExternalCommand {
 	private final AtomicReference<Process> processRef = new AtomicReference<Process>();
 
 
-	public ExternalCommand(String... commandAndArgs) {
+	public CommandLine(String... commandAndArgs) {
 		this(Config.defaults, commandAndArgs);
 	}
 
-	public ExternalCommand(Config config, String... commandAndArgs) {
+	public CommandLine(Config config, String... commandAndArgs) {
 		this.config = config;
 		this.commandAndArgs = checkForNulls(commandAndArgs);
 	}
 
-	public ExternalCommand workingDir(String path) {
-		if (path == null) return new ExternalCommand(config.workingDir(null), commandAndArgs);
-		else return new ExternalCommand(config.workingDir(new File(path)), commandAndArgs);
+	public CommandLine workingDir(String path) {
+		if (path == null) return new CommandLine(config.workingDir(null), commandAndArgs);
+		else return new CommandLine(config.workingDir(new File(path)), commandAndArgs);
 	}
 
-	public ExternalCommand outputCharset(@NotNull Charset charset) {
-		return new ExternalCommand(config.outputCharset(charset), commandAndArgs);
+	public CommandLine outputCharset(@NotNull Charset charset) {
+		return new CommandLine(config.outputCharset(charset), commandAndArgs);
 	}
 
-	public ExternalCommand charsetAutoDetect(boolean value) {
-		return new ExternalCommand(config.charsetAutoDetect(value), commandAndArgs);
+	public CommandLine charsetAutoDetect(boolean value) {
+		return new CommandLine(config.charsetAutoDetect(value), commandAndArgs);
 	}
 
-	public ExternalCommand execute() {
+	public CommandLine execute() {
 		InputStream stdoutInputStream = null;
 		InputStream stderrInputStream = null;
 		try {

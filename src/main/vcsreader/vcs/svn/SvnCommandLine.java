@@ -1,16 +1,16 @@
 package vcsreader.vcs.svn;
 
-import vcsreader.lang.ExternalCommand;
+import vcsreader.lang.CommandLine;
 
-class SvnExternalCommand {
+class SvnCommandLine {
 
-	public static ExternalCommand newExternalCommand(String svnPath, String... args) {
+	public static CommandLine newExternalCommand(String svnPath, String... args) {
 		String[] commandAndArgs = concat(new String[]{svnPath, "--non-interactive", "--trust-server-cert"}, args);
-		return new ExternalCommand(commandAndArgs);
+		return new CommandLine(commandAndArgs);
 	}
 
-	public static boolean isSuccessful(ExternalCommand command) {
-		return command.stderr().trim().isEmpty() && command.exitCode() == 0 && command.hasNoExceptions();
+	public static boolean isSuccessful(CommandLine commandLine) {
+		return commandLine.stderr().trim().isEmpty() && commandLine.exitCode() == 0 && commandLine.hasNoExceptions();
 	}
 
 	private static String[] concat(String[] array1, String[] array2) {
