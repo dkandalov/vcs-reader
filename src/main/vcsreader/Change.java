@@ -18,6 +18,9 @@ public class Change {
 		ADDED,
 		MODIFIED,
 		DELETED,
+		/**
+		 * Note that MOVED does not imply there were no change in file content.
+		 */
 		MOVED
 	}
 
