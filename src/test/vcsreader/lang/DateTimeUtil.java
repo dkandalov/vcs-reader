@@ -9,11 +9,11 @@ import java.util.TimeZone;
 import static java.util.Arrays.asList;
 
 public class DateTimeUtil {
-	private static final TimeZone utc = TimeZone.getTimeZone("UTC");
+	private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
 	public static Date date(String s) {
 		SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-		format.setTimeZone(utc);
+		format.setTimeZone(UTC);
 		try {
 			return format.parse(s);
 		} catch (ParseException e) {
@@ -30,7 +30,7 @@ public class DateTimeUtil {
 		);
 		for (SimpleDateFormat format : formats) {
 			try {
-				format.setTimeZone(utc);
+				format.setTimeZone(UTC);
 				return format.parse(s);
 			} catch (ParseException ignored) {
 			}
