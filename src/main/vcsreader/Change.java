@@ -6,12 +6,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static vcsreader.VcsProject.LogFileContentResult;
 
-/**
- * Contains data about file modification in a {@link Commit}.
- * See {@link FileContent}.
- * <p/>
- * This class is effectively immutable (even though some fields are modifiable).
- */
 public class Change implements VcsChange, VcsChange.WithRootReference {
 	@NotNull private final Type type;
 	@NotNull private final String filePath;

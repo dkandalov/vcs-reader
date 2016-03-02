@@ -3,6 +3,7 @@ package vcsreader.vcs.git;
 import vcsreader.Change;
 import vcsreader.Commit;
 import vcsreader.VcsChange;
+import vcsreader.VcsCommit;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,12 +20,12 @@ class GitCommitParser {
 	private static final String commitStartSeparator = "\u0015\u0016\u0017\u0018\u0019";
 	private static final String commitFieldsSeparator = "\u0019\u0018\u0017\u0016\u0015";
 
-	public static List<Commit> parseListOfCommits(String stdout) {
-		List<Commit> commits = new ArrayList<Commit>();
+	public static List<VcsCommit> parseListOfCommits(String stdout) {
+		List<VcsCommit> commits = new ArrayList<VcsCommit>();
 		List<String> commitsAsString = split(stdout, commitStartSeparator);
 
 		for (String s : commitsAsString) {
-			Commit commit = parseCommit(s, commitFieldsSeparator);
+			VcsCommit commit = parseCommit(s, commitFieldsSeparator);
 			if (commit != null) {
 				commits.add(commit);
 			}
@@ -32,7 +33,7 @@ class GitCommitParser {
 		return commits;
 	}
 
-	private static Commit parseCommit(String s, String fieldsSeparator) {
+	private static VcsCommit parseCommit(String s, String fieldsSeparator) {
 		List<String> values = split(s, fieldsSeparator);
 
 		List<String> previousRevision = split(values.get(1), " ");

@@ -3,6 +3,7 @@ package vcsreader.vcs.git;
 import vcsreader.Change;
 import vcsreader.Commit;
 import vcsreader.VcsChange;
+import vcsreader.VcsCommit;
 import vcsreader.lang.CommandLine;
 import vcsreader.vcs.commandlistener.VcsCommand;
 
@@ -45,13 +46,13 @@ class GitLog implements VcsCommand<LogResult> {
 		commandLine.execute();
 
 		if (isSuccessful(commandLine)) {
-			List<Commit> commits = parseListOfCommits(commandLine.stdout());
+			List<VcsCommit> commits = parseListOfCommits(commandLine.stdout());
 			commits = handleFileRenamesIn(commits);
 
 			List<String> errors = (commandLine.stderr().trim().isEmpty() ? new ArrayList<String>() : asList(commandLine.stderr()));
 			return new LogResult(commits, errors);
 		} else {
-			return new LogResult(new ArrayList<Commit>(), asList(commandLine.stderr()));
+			return new LogResult(new ArrayList<VcsCommit>(), asList(commandLine.stderr()));
 		}
 	}
 
@@ -69,9 +70,9 @@ class GitLog implements VcsCommand<LogResult> {
 		return new CommandLine(gitPath, "show", "-M", "--pretty=format:", "--name-status", revision).workingDir(folder);
 	}
 
-	private List<Commit> handleFileRenamesIn(List<Commit> commits) {
-		List<Commit> result = new ArrayList<Commit>();
-		for (Commit commit : commits) {
+	private List<VcsCommit> handleFileRenamesIn(List<VcsCommit> commits) {
+		List<VcsCommit> result = new ArrayList<VcsCommit>();
+		for (VcsCommit commit : commits) {
 			if (hasPotentialRenames(commit)) {
 				CommandLine commandLine = gitLogRenames(gitPath, folder, commit.getRevision());
 				externalSubCommands.add(commandLine);
@@ -87,7 +88,7 @@ class GitLog implements VcsCommand<LogResult> {
 		return result;
 	}
 
-	private static boolean hasPotentialRenames(Commit commit) {
+	private static boolean hasPotentialRenames(VcsCommit commit) {
 		boolean hasDeletions = false;
 		boolean hasAdditions = false;
 		for (VcsChange change : commit.getChanges()) {

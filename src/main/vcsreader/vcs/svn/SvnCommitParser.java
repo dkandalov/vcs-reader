@@ -8,6 +8,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import vcsreader.Change;
 import vcsreader.Commit;
+import vcsreader.VcsCommit;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
@@ -23,7 +24,7 @@ import static vcsreader.VcsChange.noFilePath;
 import static vcsreader.VcsChange.noRevision;
 
 class SvnCommitParser {
-	static List<Commit> parseCommits(String xml) {
+	static List<VcsCommit> parseCommits(String xml) {
 		try {
 			CommitReadingHandler commitReadingHandler = new CommitReadingHandler();
 
@@ -43,7 +44,7 @@ class SvnCommitParser {
 	}
 
 	private static class CommitReadingHandler extends DefaultHandler {
-		private final List<Commit> commits = new ArrayList<Commit>();
+		private final List<VcsCommit> commits = new ArrayList<VcsCommit>();
 
 		private String revision;
 		private String revisionBefore;

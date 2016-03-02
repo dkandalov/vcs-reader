@@ -1,6 +1,6 @@
 package vcsreader.vcs.hg;
 
-import vcsreader.Commit;
+import vcsreader.VcsCommit;
 import vcsreader.VcsProject;
 import vcsreader.lang.CommandLine;
 import vcsreader.vcs.commandlistener.VcsCommand;
@@ -35,11 +35,11 @@ class HgLog implements VcsCommand<VcsProject.LogResult> {
 		commandLine.execute();
 
 		if (isSuccessful(commandLine)) {
-			List<Commit> commits = HgCommitParser.parseListOfCommits(commandLine.stdout());
+			List<VcsCommit> commits = HgCommitParser.parseListOfCommits(commandLine.stdout());
 			List<String> errors = (commandLine.stderr().trim().isEmpty() ? new ArrayList<String>() : asList(commandLine.stderr()));
 			return new VcsProject.LogResult(commits, errors);
 		} else {
-			return new VcsProject.LogResult(new ArrayList<Commit>(), asList(commandLine.stderr() + commandLine.exceptionStacktrace()));
+			return new VcsProject.LogResult(new ArrayList<VcsCommit>(), asList(commandLine.stderr() + commandLine.exceptionStacktrace()));
 		}
 	}
 

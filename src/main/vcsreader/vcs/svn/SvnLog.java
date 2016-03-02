@@ -1,8 +1,8 @@
 package vcsreader.vcs.svn;
 
 import vcsreader.Change;
-import vcsreader.Commit;
 import vcsreader.VcsChange;
+import vcsreader.VcsCommit;
 import vcsreader.lang.Charsets;
 import vcsreader.lang.CommandLine;
 import vcsreader.vcs.commandlistener.VcsCommand;
@@ -45,11 +45,11 @@ class SvnLog implements VcsCommand<LogResult> {
 		commandLine.execute();
 
 		if (isSuccessful(commandLine)) {
-			List<Commit> allCommits = SvnCommitParser.parseCommits(commandLine.stdout());
-			List<Commit> commits = transformToSubPathCommits(deleteCommitsBefore(fromDate, allCommits));
+			List<VcsCommit> allCommits = SvnCommitParser.parseCommits(commandLine.stdout());
+			List<VcsCommit> commits = transformToSubPathCommits(deleteCommitsBefore(fromDate, allCommits));
 			return new LogResult(commits, new ArrayList<String>());
 		} else {
-			return new LogResult(Collections.<Commit>emptyList(), asList(commandLine.stderr() + commandLine.exceptionStacktrace()));
+			return new LogResult(Collections.<VcsCommit>emptyList(), asList(commandLine.stderr() + commandLine.exceptionStacktrace()));
 		}
 	}
 
@@ -90,25 +90,25 @@ class SvnLog implements VcsCommand<LogResult> {
 	 * Delete commits because "Subversion will find the most recent revision of the repository as of the date you give".
 	 * See http://svnbook.red-bean.com/en/1.8/svn.tour.revs.specifiers.html#svn.tour.revs.keywords
 	 */
-	private static List<Commit> deleteCommitsBefore(Date date, List<Commit> commits) {
-		Iterator<Commit> iterator = commits.iterator();
+	private static List<VcsCommit> deleteCommitsBefore(Date date, List<VcsCommit> commits) {
+		Iterator<VcsCommit> iterator = commits.iterator();
 		while (iterator.hasNext()) {
-			Commit commit = iterator.next();
+			VcsCommit commit = iterator.next();
 			if (commit.getTime().before(date)) iterator.remove();
 		}
 		return commits;
 	}
 
-	private List<Commit> transformToSubPathCommits(List<Commit> commits) {
+	private List<VcsCommit> transformToSubPathCommits(List<VcsCommit> commits) {
 		String subPath = subPathOf(repositoryUrl, repositoryRoot);
 		commits = removeChangesNotIn(subPath, commits);
 		commits = modifyChanges(subPath, commits);
 		return commits;
 	}
 
-	private static List<Commit> modifyChanges(String subPath, List<Commit> commits) {
-		List<Commit> result = new ArrayList<Commit>();
-		for (Commit commit : commits) {
+	private static List<VcsCommit> modifyChanges(String subPath, List<VcsCommit> commits) {
+		List<VcsCommit> result = new ArrayList<VcsCommit>();
+		for (VcsCommit commit : commits) {
 			List<Change> modifiedChanges = new ArrayList<Change>();
 			for (VcsChange vcsChange : commit.getChanges()) {
 				Change change = (Change) vcsChange;
@@ -123,9 +123,9 @@ class SvnLog implements VcsCommand<LogResult> {
 		return result;
 	}
 
-	private static List<Commit> removeChangesNotIn(String subPath, List<Commit> commits) {
-		List<Commit> result = new ArrayList<Commit>();
-		for (Commit commit : commits) {
+	private static List<VcsCommit> removeChangesNotIn(String subPath, List<VcsCommit> commits) {
+		List<VcsCommit> result = new ArrayList<VcsCommit>();
+		for (VcsCommit commit : commits) {
 			List<VcsChange> filteredChanges = new ArrayList<VcsChange>();
 			for (VcsChange change : commit.getChanges()) {
 

@@ -201,37 +201,37 @@ public class VcsProject {
 
 
 	public static class LogResult implements Aggregatable<LogResult> {
-		private final List<Commit> commits;
+		private final List<VcsCommit> commits;
 		private final List<String> vcsErrors;
 		private final List<Exception> exceptions;
 
 		public LogResult() {
-			this(new ArrayList<Commit>(), new ArrayList<String>(), new ArrayList<Exception>());
+			this(new ArrayList<VcsCommit>(), new ArrayList<String>(), new ArrayList<Exception>());
 		}
 
 		public LogResult(Exception e) {
-			this(new ArrayList<Commit>(), new ArrayList<String>(), asList(e));
+			this(new ArrayList<VcsCommit>(), new ArrayList<String>(), asList(e));
 		}
 
-		public LogResult(List<Commit> commits, List<String> vcsErrors) {
+		public LogResult(List<VcsCommit> commits, List<String> vcsErrors) {
 			this(commits, vcsErrors, new ArrayList<Exception>());
 		}
 
-		public LogResult(List<Commit> commits, List<String> vcsErrors, List<Exception> exceptions) {
+		public LogResult(List<VcsCommit> commits, List<String> vcsErrors, List<Exception> exceptions) {
 			this.commits = commits;
 			this.vcsErrors = vcsErrors;
 			this.exceptions = exceptions;
 		}
 
 		public LogResult aggregateWith(LogResult result) {
-			List<Commit> newCommits = new ArrayList<Commit>(commits);
+			List<VcsCommit> newCommits = new ArrayList<VcsCommit>(commits);
 			List<String> newErrors = new ArrayList<String>(vcsErrors);
 			List<Exception> newExceptions = new ArrayList<Exception>(exceptions);
 			newCommits.addAll(result.commits);
 			newErrors.addAll(result.vcsErrors);
 			newExceptions.addAll(result.exceptions);
-			sort(newCommits, new Comparator<Commit>() {
-				@Override public int compare(@NotNull Commit commit1, @NotNull Commit commit2) {
+			sort(newCommits, new Comparator<VcsCommit>() {
+				@Override public int compare(@NotNull VcsCommit commit1, @NotNull VcsCommit commit2) {
 					return new Long(commit1.getTime().getTime()).compareTo(commit2.getTime().getTime());
 				}
 			});
@@ -251,13 +251,15 @@ public class VcsProject {
 			return exceptions;
 		}
 
-		public List<Commit> commits() {
+		public List<VcsCommit> commits() {
 			return commits;
 		}
 
 		public LogResult setVcsRoot(VcsRoot vcsRoot) {
-			for (Commit commit : commits) {
-				commit.setVcsRoot(vcsRoot);
+			for (VcsCommit commit : commits) {
+				if (commit instanceof VcsCommit.WithRootReference) {
+					((VcsCommit.WithRootReference) commit).setVcsRoot(vcsRoot);
+				}
 			}
 			return this;
 		}

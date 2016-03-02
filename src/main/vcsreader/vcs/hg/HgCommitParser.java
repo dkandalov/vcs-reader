@@ -2,6 +2,7 @@ package vcsreader.vcs.hg;
 
 import vcsreader.Change;
 import vcsreader.Commit;
+import vcsreader.VcsCommit;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,8 +26,8 @@ class HgCommitParser {
 	private static final String hgNoRevision = "0000000000000000000000000000000000000000";
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
 
-	public static List<Commit> parseListOfCommits(String stdout) {
-		ArrayList<Commit> commits = new ArrayList<Commit>();
+	public static List<VcsCommit> parseListOfCommits(String stdout) {
+		ArrayList<VcsCommit> commits = new ArrayList<VcsCommit>();
 		List<String> commitsAsString = split(stdout, commitStartSeparator);
 
 		for (String s : commitsAsString) {
@@ -35,7 +36,7 @@ class HgCommitParser {
 		return commits;
 	}
 
-	private static Commit parseCommit(String s, String fieldsSeparator) {
+	private static VcsCommit parseCommit(String s, String fieldsSeparator) {
 		List<String> values = split(s, fieldsSeparator);
 
 		String revision = values.get(0);

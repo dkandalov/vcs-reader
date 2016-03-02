@@ -4,6 +4,12 @@ import org.jetbrains.annotations.NotNull;
 
 import static vcsreader.lang.StringUtil.shortened;
 
+/**
+ * Contains data about file modification in a {@link VcsCommit}.
+ * See {@link FileContent}.
+ * <p/>
+ * This class is effectively immutable (even though some fields are modifiable).
+ */
 public interface VcsChange {
 	String noRevision = "noRevision";
 	String noFilePath = "";
