@@ -14,34 +14,12 @@ import static java.util.Collections.unmodifiableList;
  * This class is effectively immutable (even though some fields are modifiable).
  */
 public class Commit {
-	/**
-	 * Revision id as returned by VCS.
-	 */
-	@NotNull public final String revision;
-	/**
-	 * Previous revision id as return by VCS ({@link Change#noRevision} for the first commit).
-	 */
-	@NotNull public final String revisionBefore;
-	/**
-	 * Time of commit.
-	 */
-	@NotNull public final Date time;
-	/**
-	 * Commit author (it might be different from committer).
-	 * Note that it might also include email (e.g. for git commits).
-	 */
-	@NotNull public final String author;
-	/**
-	 * Commit message.
-	 */
-	@NotNull public final String message;
-	/**
-	 * List of changes made in the commit.
-	 * Only the changes made under current {@link VcsRoot} are included.
-	 * The order of changes is specified by VCS (it may be unstable e.g. in case of svn).
-	 * Note that list of changes can be empty (e.g. git, svn support commits with no changes).
-	 */
-	@NotNull public final List<Change> changes;
+	@NotNull private final String revision;
+	@NotNull private final String revisionBefore;
+	@NotNull private final Date time;
+	@NotNull private final String author;
+	@NotNull private final String message;
+	@NotNull private final List<Change> changes;
 
 
 	public Commit(@NotNull String revision, @NotNull String revisionBefore, @NotNull Date time,
@@ -62,6 +40,52 @@ public class Commit {
 
 	public Commit withChanges(List<Change> newChanges) {
 		return new Commit(revision, revisionBefore, time, author, message, newChanges);
+	}
+
+	/**
+	 * Revision id as returned by VCS.
+	 */
+	@NotNull public String getRevision() {
+		return revision;
+	}
+
+	/**
+	 * Previous revision id as return by VCS ({@link Change#noRevision} for the first commit).
+	 */
+	@NotNull public String getRevisionBefore() {
+		return revisionBefore;
+	}
+
+	/**
+	 * Time of commit.
+	 */
+	@NotNull public Date getTime() {
+		return time;
+	}
+
+	/**
+	 * Commit author (it might be different from committer).
+	 * Note that it might also include email (e.g. for git commits).
+	 */
+	@NotNull public String getAuthor() {
+		return author;
+	}
+
+	/**
+	 * Commit message.
+	 */
+	@NotNull public String getMessage() {
+		return message;
+	}
+
+	/**
+	 * List of changes made in the commit.
+	 * Only the changes made under current {@link VcsRoot} are included.
+	 * The order of changes is specified by VCS (it may be unstable e.g. in case of svn).
+	 * Note that list of changes can be empty (e.g. git, svn support commits with no changes).
+	 */
+	@NotNull public List<Change> getChanges() {
+		return changes;
 	}
 
 	@Override public String toString() {

@@ -93,7 +93,7 @@ class SvnLog implements VcsCommand<LogResult> {
 		Iterator<Commit> iterator = commits.iterator();
 		while (iterator.hasNext()) {
 			Commit commit = iterator.next();
-			if (commit.time.before(date)) iterator.remove();
+			if (commit.getTime().before(date)) iterator.remove();
 		}
 		return commits;
 	}
@@ -109,7 +109,7 @@ class SvnLog implements VcsCommand<LogResult> {
 		List<Commit> result = new ArrayList<Commit>();
 		for (Commit commit : commits) {
 			List<Change> modifiedChanges = new ArrayList<Change>();
-			for (Change change : commit.changes) {
+			for (Change change : commit.getChanges()) {
 				modifiedChanges.add(change.withTypeAndPaths(
 						changeTypeConsideringSubPath(subPath, change),
 						useSubPathAsRoot(subPath, change.getFilePath()),
@@ -125,7 +125,7 @@ class SvnLog implements VcsCommand<LogResult> {
 		List<Commit> result = new ArrayList<Commit>();
 		for (Commit commit : commits) {
 			List<Change> filteredChanges = new ArrayList<Change>();
-			for (Change change : commit.changes) {
+			for (Change change : commit.getChanges()) {
 
 				if (change.getFilePath().startsWith(subPath) || change.getFilePathBefore().startsWith(subPath)) {
 					filteredChanges.add(change);

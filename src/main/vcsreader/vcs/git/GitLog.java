@@ -72,13 +72,13 @@ class GitLog implements VcsCommand<LogResult> {
 		List<Commit> result = new ArrayList<Commit>();
 		for (Commit commit : commits) {
 			if (hasPotentialRenames(commit)) {
-				CommandLine commandLine = gitLogRenames(gitPath, folder, commit.revision);
+				CommandLine commandLine = gitLogRenames(gitPath, folder, commit.getRevision());
 				externalSubCommands.add(commandLine);
 				commandLine.execute();
 
 				if (isSuccessful(commandLine)) {
-					List<Change> updatedChanges = parseListOfChanges(commandLine.stdout(), commit.revision, commit.revisionBefore);
-					commit = new Commit(commit.revision, commit.revisionBefore, commit.time, commit.author, commit.message, updatedChanges);
+					List<Change> updatedChanges = parseListOfChanges(commandLine.stdout(), commit.getRevision(), commit.getRevisionBefore());
+					commit = new Commit(commit.getRevision(), commit.getRevisionBefore(), commit.getTime(), commit.getAuthor(), commit.getMessage(), updatedChanges);
 				}
 			}
 			result.add(commit);
@@ -89,7 +89,7 @@ class GitLog implements VcsCommand<LogResult> {
 	private static boolean hasPotentialRenames(Commit commit) {
 		boolean hasDeletions = false;
 		boolean hasAdditions = false;
-		for (Change change : commit.changes) {
+		for (Change change : commit.getChanges()) {
 			if (change.getType() == DELETED) hasDeletions = true;
 			else if (change.getType() == ADDED) hasAdditions = true;
 		}

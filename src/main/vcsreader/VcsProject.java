@@ -232,7 +232,7 @@ public class VcsProject {
 			newExceptions.addAll(result.exceptions);
 			sort(newCommits, new Comparator<Commit>() {
 				@Override public int compare(@NotNull Commit commit1, @NotNull Commit commit2) {
-					return new Long(commit1.time.getTime()).compareTo(commit2.time.getTime());
+					return new Long(commit1.getTime().getTime()).compareTo(commit2.getTime().getTime());
 				}
 			});
 
