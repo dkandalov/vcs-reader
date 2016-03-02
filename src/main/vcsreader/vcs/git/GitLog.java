@@ -2,6 +2,7 @@ package vcsreader.vcs.git;
 
 import vcsreader.Change;
 import vcsreader.Commit;
+import vcsreader.VcsChange;
 import vcsreader.lang.CommandLine;
 import vcsreader.vcs.commandlistener.VcsCommand;
 
@@ -10,8 +11,8 @@ import java.util.Date;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static vcsreader.Change.Type.DELETED;
-import static vcsreader.Change.Type.ADDED;
+import static vcsreader.VcsChange.Type.DELETED;
+import static vcsreader.VcsChange.Type.ADDED;
 import static vcsreader.VcsProject.LogResult;
 import static vcsreader.lang.Charsets.UTF8;
 import static vcsreader.vcs.git.GitCommitParser.*;
@@ -89,7 +90,7 @@ class GitLog implements VcsCommand<LogResult> {
 	private static boolean hasPotentialRenames(Commit commit) {
 		boolean hasDeletions = false;
 		boolean hasAdditions = false;
-		for (Change change : commit.getChanges()) {
+		for (VcsChange change : commit.getChanges()) {
 			if (change.getType() == DELETED) hasDeletions = true;
 			else if (change.getType() == ADDED) hasAdditions = true;
 		}

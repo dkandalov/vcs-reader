@@ -18,9 +18,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static java.lang.Boolean.parseBoolean;
-import static vcsreader.Change.Type.*;
-import static vcsreader.Change.noFilePath;
-import static vcsreader.Change.noRevision;
+import static vcsreader.VcsChange.Type.*;
+import static vcsreader.VcsChange.noFilePath;
+import static vcsreader.VcsChange.noRevision;
 
 class SvnCommitParser {
 	static List<Commit> parseCommits(String xml) {

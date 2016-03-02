@@ -4,12 +4,13 @@ import org.junit.BeforeClass
 import org.junit.Test
 import vcsreader.Change
 import vcsreader.Commit
+import vcsreader.VcsChange
 import vcsreader.VcsProject
 import vcsreader.vcs.commandlistener.VcsCommand
 import vcsreader.vcs.commandlistener.VcsCommandListener
 
-import static vcsreader.Change.Type.*
-import static vcsreader.Change.noRevision
+import static vcsreader.VcsChange.Type.*
+import static vcsreader.VcsChange.noRevision
 import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.lang.DateTimeUtil.dateTime
 import static vcsreader.vcs.TestUtil.assertEqualCommits
@@ -255,7 +256,7 @@ class SvnIntegrationTest {
 		def change = withSortedChanges(logResult.commits()).first().changes.first()
 		assert change.type == ADDED
 		assert change.fileContent().value == "file2 content"
-		assert change.fileContentBefore() == Change.FileContent.none
+		assert change.fileContentBefore() == VcsChange.FileContent.none
 		assert logResult.vcsErrors().empty
 		assert logResult.isSuccessful()
 	}
@@ -265,7 +266,7 @@ class SvnIntegrationTest {
 
 		def change = logResult.commits().first().changes.first()
 		assert change.type == DELETED
-		assert change.fileContent() == Change.FileContent.none
+		assert change.fileContent() == VcsChange.FileContent.none
 		assert change.fileContentBefore().value == "file1 content"
 		assert logResult.vcsErrors().empty
 		assert logResult.isSuccessful()
@@ -291,12 +292,12 @@ class SvnIntegrationTest {
 
 		def logResult = nonRootProject.log(date("01/08/2014"), date("01/09/2014"))
 		assert logResult.commits()[0].message == "moved and renamed file1"
-		assert logResult.commits()[0].changes[0].fileContentBefore() == Change.FileContent.none
+		assert logResult.commits()[0].changes[0].fileContentBefore() == VcsChange.FileContent.none
 		// no content because file was moved from outside of project root
 		assert logResult.commits()[0].changes[0].fileContent().value == "file1 content"
 		assert logResult.commits()[1].message == "deleted file1"
 		assert logResult.commits()[1].changes[0].fileContentBefore().value == "file1 content"
-		assert logResult.commits()[1].changes[0].fileContent() == Change.FileContent.none
+		assert logResult.commits()[1].changes[0].fileContent() == VcsChange.FileContent.none
 	}
 
 	@Test void "get repository root"() {

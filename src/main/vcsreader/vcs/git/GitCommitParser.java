@@ -2,13 +2,14 @@ package vcsreader.vcs.git;
 
 import vcsreader.Change;
 import vcsreader.Commit;
+import vcsreader.VcsChange;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static vcsreader.Change.Type.*;
+import static vcsreader.VcsChange.Type.*;
 import static vcsreader.lang.StringUtil.split;
 import static vcsreader.lang.StringUtil.trim;
 
@@ -40,7 +41,7 @@ class GitCommitParser {
 		if (isMergeCommit) return null;
 
 		String revision = values.get(0);
-		String revisionBefore = (isFirstCommit ? Change.noRevision : previousRevision.get(0));
+		String revisionBefore = (isFirstCommit ? VcsChange.noRevision : previousRevision.get(0));
 		Date commitDate = parseDate(values.get(2));
 		String author = values.get(3);
 		String message = trim(values.get(4), " \r\n\t");
@@ -70,18 +71,18 @@ class GitCommitParser {
 		if (s.trim().isEmpty()) return null;
 
 		List<String> values = split(s, "\t");
-		Change.Type changeType = parseChangeType(values.get(0));
+		VcsChange.Type changeType = parseChangeType(values.get(0));
 
 		boolean hasRenames = values.size() > 2;
 		String filePath = unescapeQuotes(hasRenames ? values.get(2) : values.get(1));
 		String filePathBefore = unescapeQuotes(hasRenames ? values.get(1) : filePath);
 
 		if (changeType == ADDED) {
-			filePathBefore = Change.noFilePath;
-			revisionBefore = Change.noRevision;
+			filePathBefore = VcsChange.noFilePath;
+			revisionBefore = VcsChange.noRevision;
 		} else if (changeType == DELETED) {
 			filePathBefore = filePath;
-			filePath = Change.noFilePath;
+			filePath = VcsChange.noFilePath;
 		}
 
 		return new Change(changeType, filePath, filePathBefore, revision, revisionBefore);
@@ -96,7 +97,7 @@ class GitCommitParser {
 		return filePath.substring(1, filePath.length() - 1).replace("\\\"", "\"");
 	}
 
-	private static Change.Type parseChangeType(String s) {
+	private static VcsChange.Type parseChangeType(String s) {
 		// see "--diff-filter" at https://www.kernel.org/pub/software/scm/git/docs/git-log.html
 		char added = 'A';
 		char copied = 'C';

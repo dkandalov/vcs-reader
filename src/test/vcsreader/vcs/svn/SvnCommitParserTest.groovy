@@ -6,10 +6,10 @@ import vcsreader.Commit
 
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
-import static vcsreader.Change.Type.MODIFIED
-import static vcsreader.Change.Type.MOVED
-import static vcsreader.Change.Type.ADDED
-import static vcsreader.Change.noRevision
+import static vcsreader.VcsChange.Type.MODIFIED
+import static vcsreader.VcsChange.Type.MOVED
+import static vcsreader.VcsChange.Type.ADDED
+import static vcsreader.VcsChange.noRevision
 import static vcsreader.lang.DateTimeUtil.dateTime
 import static vcsreader.vcs.TestUtil.assertEqualCommits
 

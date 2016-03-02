@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import static vcsreader.Change.Type.*;
+import static vcsreader.VcsChange.Type.*;
 import static vcsreader.Change.noFilePath;
 import static vcsreader.Change.noRevision;
 import static vcsreader.lang.StringUtil.split;

@@ -2,6 +2,7 @@ package vcsreader.vcs.svn;
 
 import vcsreader.Change;
 import vcsreader.Commit;
+import vcsreader.VcsChange;
 import vcsreader.lang.Charsets;
 import vcsreader.lang.CommandLine;
 import vcsreader.vcs.commandlistener.VcsCommand;
@@ -109,7 +110,8 @@ class SvnLog implements VcsCommand<LogResult> {
 		List<Commit> result = new ArrayList<Commit>();
 		for (Commit commit : commits) {
 			List<Change> modifiedChanges = new ArrayList<Change>();
-			for (Change change : commit.getChanges()) {
+			for (VcsChange vcsChange : commit.getChanges()) {
+				Change change = (Change) vcsChange;
 				modifiedChanges.add(change.withTypeAndPaths(
 						changeTypeConsideringSubPath(subPath, change),
 						useSubPathAsRoot(subPath, change.getFilePath()),
@@ -124,8 +126,8 @@ class SvnLog implements VcsCommand<LogResult> {
 	private static List<Commit> removeChangesNotIn(String subPath, List<Commit> commits) {
 		List<Commit> result = new ArrayList<Commit>();
 		for (Commit commit : commits) {
-			List<Change> filteredChanges = new ArrayList<Change>();
-			for (Change change : commit.getChanges()) {
+			List<VcsChange> filteredChanges = new ArrayList<VcsChange>();
+			for (VcsChange change : commit.getChanges()) {
 
 				if (change.getFilePath().startsWith(subPath) || change.getFilePathBefore().startsWith(subPath)) {
 					filteredChanges.add(change);
@@ -144,16 +146,16 @@ class SvnLog implements VcsCommand<LogResult> {
 		return subPath;
 	}
 
-	private static Change.Type changeTypeConsideringSubPath(String subPath, Change change) {
-		if (change.getType() != Change.Type.MOVED) return change.getType();
-		else if (!change.getFilePath().startsWith(subPath)) return Change.Type.DELETED;
-		else if (!change.getFilePathBefore().startsWith(subPath)) return Change.Type.ADDED;
+	private static VcsChange.Type changeTypeConsideringSubPath(String subPath, VcsChange change) {
+		if (change.getType() != VcsChange.Type.MOVED) return change.getType();
+		else if (!change.getFilePath().startsWith(subPath)) return VcsChange.Type.DELETED;
+		else if (!change.getFilePathBefore().startsWith(subPath)) return VcsChange.Type.ADDED;
 		else return change.getType();
 	}
 
 	private static String useSubPathAsRoot(String subPath, String filePath) {
 		int i = filePath.indexOf(subPath);
-		if (i != 0) return Change.noFilePath;
+		if (i != 0) return VcsChange.noFilePath;
 		else return filePath.substring(subPath.length());
 	}
 

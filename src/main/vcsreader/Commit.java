@@ -9,7 +9,7 @@ import static java.util.Collections.unmodifiableList;
 
 /**
  * Contains data for single VCS commit.
- * See also {@link Change}.
+ * See also {@link VcsChange}.
  * <p/>
  * This class is effectively immutable (even though some fields are modifiable).
  */
@@ -19,11 +19,11 @@ public class Commit {
 	@NotNull private final Date time;
 	@NotNull private final String author;
 	@NotNull private final String message;
-	@NotNull private final List<Change> changes;
+	@NotNull private final List<? extends VcsChange> changes;
 
 
 	public Commit(@NotNull String revision, @NotNull String revisionBefore, @NotNull Date time,
-	              @NotNull String author, @NotNull String message, @NotNull List<Change> changes) {
+	              @NotNull String author, @NotNull String message, @NotNull List<? extends VcsChange> changes) {
 		this.revision = revision;
 		this.revisionBefore = revisionBefore;
 		this.time = time;
@@ -33,12 +33,14 @@ public class Commit {
 	}
 
 	public void setVcsRoot(VcsRoot vcsRoot) {
-		for (Change change : changes) {
-			change.setVcsRoot(vcsRoot);
+		for (VcsChange change : changes) {
+			if (change instanceof VcsChange.WithRootReference) {
+				((VcsChange.WithRootReference) change).setVcsRoot(vcsRoot);
+			}
 		}
 	}
 
-	public Commit withChanges(List<Change> newChanges) {
+	public Commit withChanges(List<? extends VcsChange> newChanges) {
 		return new Commit(revision, revisionBefore, time, author, message, newChanges);
 	}
 
@@ -50,7 +52,7 @@ public class Commit {
 	}
 
 	/**
-	 * Previous revision id as return by VCS ({@link Change#noRevision} for the first commit).
+	 * Previous revision id as return by VCS ({@link VcsChange#noRevision} for the first commit).
 	 */
 	@NotNull public String getRevisionBefore() {
 		return revisionBefore;
@@ -84,7 +86,7 @@ public class Commit {
 	 * The order of changes is specified by VCS (it may be unstable e.g. in case of svn).
 	 * Note that list of changes can be empty (e.g. git, svn support commits with no changes).
 	 */
-	@NotNull public List<Change> getChanges() {
+	@NotNull public List<? extends VcsChange> getChanges() {
 		return changes;
 	}
 

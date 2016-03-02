@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static vcsreader.VcsProject.LogFileContentResult;
-import static vcsreader.lang.StringUtil.shortened;
 
 /**
  * Contains data about file modification in a {@link Commit}.
@@ -13,21 +12,7 @@ import static vcsreader.lang.StringUtil.shortened;
  * <p/>
  * This class is effectively immutable (even though some fields are modifiable).
  */
-public class Change {
-
-	public enum Type {
-		ADDED,
-		MODIFIED,
-		DELETED,
-		/**
-		 * Note that MOVED does not imply there were no change in file content.
-		 */
-		MOVED
-	}
-
-	public static final String noRevision = "noRevision";
-	public static final String noFilePath = "";
-
+public class Change implements VcsChange, VcsChange.WithRootReference {
 	@NotNull private final Type type;
 	@NotNull private final String filePath;
 	@NotNull private final String filePathBefore;
@@ -55,50 +40,33 @@ public class Change {
 		this.revisionBefore = revisionBefore;
 	}
 
-	/**
-	 * Type of file change.
-	 */
-	@NotNull public Type getType() {
+	@NotNull @Override public Type getType() {
 		return type;
 	}
 
-	/**
-	 * File path after commit relative to {@link VcsRoot} path.
-	 * {@link #noFilePath} if file was deleted.
-	 */
-	@NotNull public String getFilePath() {
+	@NotNull @Override public String getFilePath() {
 		return filePath;
 	}
 
-	/**
-	 * File path before commit relative to {@link VcsRoot} path.
-	 * {@link #noFilePath} if file didn't exist.
-	 */
-	@NotNull public String getFilePathBefore() {
+	@NotNull @Override public String getFilePathBefore() {
 		return filePathBefore;
 	}
 
-	public String getRevision() {
+	@Override public String getRevision() {
 		return revision;
 	}
 
-	public String getRevisionBefore() {
+	@Override public String getRevisionBefore() {
 		return revisionBefore;
 	}
 
-	/**
-	 * Requests content of modified file after the change.
-	 */
-	@NotNull public FileContent fileContent() {
+	@NotNull @Override public FileContent fileContent() {
 		if (filePath.equals(noFilePath)) return FileContent.none;
 		LogFileContentResult logFileContentResult = vcsRoot.get().logFileContent(filePath, revision);
 		return logFileContentResult.isSuccessful() ? new FileContent(logFileContentResult.text()) : FileContent.failedToLoad;
 	}
 
-	/**
-	 * Requests content of modified file before the change.
-	 */
-	@NotNull public FileContent fileContentBefore() {
+	@NotNull @Override public FileContent fileContentBefore() {
 		if (filePathBefore.equals(noFilePath)) return FileContent.none;
 		LogFileContentResult logFileContentResult = vcsRoot.get().logFileContent(filePathBefore, revisionBefore);
 		return logFileContentResult.isSuccessful() ? new FileContent(logFileContentResult.text()) : FileContent.failedToLoad;
@@ -108,7 +76,7 @@ public class Change {
 		return new Change(type, filePath, filePathBefore, revision, revisionBefore);
 	}
 
-	public void setVcsRoot(VcsRoot vcsRoot) {
+	@Override public void setVcsRoot(VcsRoot vcsRoot) {
 		this.vcsRoot.set(vcsRoot);
 	}
 
@@ -139,56 +107,5 @@ public class Change {
 		result = 31 * result + (revision.hashCode());
 		result = 31 * result + (revisionBefore.hashCode());
 		return result;
-	}
-
-
-	public static class FileContent {
-		public final static FileContent failedToLoad = new FileContent("") {
-			@Override public String toString() {
-				return "ContentFailedToLoad";
-			}
-
-			@Override public boolean equals(Object o) {
-				return this == o;
-			}
-		};
-		public final static FileContent none = new FileContent("") {
-			@Override public String toString() {
-				return "NoContent";
-			}
-
-			@Override public boolean equals(Object o) {
-				return this == o;
-			}
-		};
-
-		/**
-		 * Content of file as logged by VCS.
-		 * Encoding of the file is auto-detected or looked up in {@code VcsRoot} configuration
-		 * and then decoded into java string UTF-16.
-		 */
-		@NotNull public final String value;
-
-
-		public FileContent(@NotNull String value) {
-			this.value = value;
-		}
-
-		@Override public String toString() {
-			return "Content{value='" + shortened(value, 100) + "'}";
-		}
-
-		@Override public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			FileContent fileContent = (FileContent) o;
-
-			return value.equals(fileContent.value);
-		}
-
-		@Override public int hashCode() {
-			return value.hashCode();
-		}
 	}
 }

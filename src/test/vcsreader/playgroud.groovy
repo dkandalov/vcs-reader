@@ -3,7 +3,7 @@ package vcsreader
 import vcsreader.vcs.git.GitSettings
 import vcsreader.vcs.git.GitVcsRoot
 
-import static vcsreader.Change.Type.MODIFIED
+import static vcsreader.VcsChange.Type.MODIFIED
 import static vcsreader.lang.DateTimeUtil.date
 import static vcsreader.lang.DateTimeUtil.dateTime
 

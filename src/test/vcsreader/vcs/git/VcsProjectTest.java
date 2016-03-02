@@ -1,11 +1,8 @@
 package vcsreader.vcs.git;
 
 import org.junit.Test;
-import vcsreader.Change;
-import vcsreader.Commit;
-import vcsreader.VcsProject;
+import vcsreader.*;
 import vcsreader.VcsProject.CloneResult;
-import vcsreader.VcsRoot;
 
 import java.util.*;
 
@@ -50,8 +47,8 @@ public class VcsProjectTest {
 
 	@Test public void successfulLogProjectHistory() {
 		// given
-		final Commit commit1 = new Commit("1", "", new Date(0), "", "", new ArrayList<Change>());
-		final Commit commit2 = new Commit("2", "", new Date(0), "", "", new ArrayList<Change>());
+		final Commit commit1 = new Commit("1", "", new Date(0), "", "", new ArrayList<VcsChange>());
+		final Commit commit2 = new Commit("2", "", new Date(0), "", "", new ArrayList<VcsChange>());
 		when(root1.log(any(Date.class), any(Date.class))).thenReturn(new LogResult(asList(commit1), asList("some error")));
 		when(root2.log(any(Date.class), any(Date.class))).thenReturn(new LogResult(asList(commit2), new ArrayList<String>()));
 		VcsProject project = new VcsProject(asList(root1, root2));
