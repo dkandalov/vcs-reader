@@ -90,8 +90,8 @@ class GitLog implements VcsCommand<LogResult> {
 		boolean hasDeletions = false;
 		boolean hasAdditions = false;
 		for (Change change : commit.changes) {
-			if (change.type == DELETED) hasDeletions = true;
-			else if (change.type == ADDED) hasAdditions = true;
+			if (change.getType() == DELETED) hasDeletions = true;
+			else if (change.getType() == ADDED) hasAdditions = true;
 		}
 		return hasDeletions && hasAdditions;
 	}

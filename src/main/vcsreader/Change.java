@@ -14,6 +14,7 @@ import static vcsreader.lang.StringUtil.shortened;
  * This class is effectively immutable (even though some fields are modifiable).
  */
 public class Change {
+
 	public enum Type {
 		ADDED,
 		MODIFIED,
@@ -27,29 +28,17 @@ public class Change {
 	public static final String noRevision = "noRevision";
 	public static final String noFilePath = "";
 
-	/**
-	 * Type of file change.
-	 */
-	@NotNull public final Type type;
-	/**
-	 * File path after commit relative to {@link VcsRoot} path.
-	 * {@link #noFilePath} if file was deleted.
-	 */
-	@NotNull public final String filePath;
-	/**
-	 * File path before commit relative to {@link VcsRoot} path.
-	 * {@link #noFilePath} if file didn't exist.
-	 */
-	@NotNull public final String filePathBefore;
-
-	public final String revision;
-	public final String revisionBefore;
+	@NotNull private final Type type;
+	@NotNull private final String filePath;
+	@NotNull private final String filePathBefore;
+	private final String revision;
+	private final String revisionBefore;
 
 	private final AtomicReference<VcsRoot> vcsRoot = new AtomicReference<VcsRoot>();
 
 
 	public Change(Change change) {
-		this(change.type, change.filePath, change.filePathBefore, change.revision, change.revisionBefore);
+		this(change.getType(), change.getFilePath(), change.getFilePathBefore(), change.getRevision(), change.getRevisionBefore());
 		setVcsRoot(change.vcsRoot.get());
 	}
 
@@ -64,6 +53,37 @@ public class Change {
 		this.filePathBefore = filePathBefore;
 		this.revision = revision;
 		this.revisionBefore = revisionBefore;
+	}
+
+	/**
+	 * Type of file change.
+	 */
+	@NotNull public Type getType() {
+		return type;
+	}
+
+	/**
+	 * File path after commit relative to {@link VcsRoot} path.
+	 * {@link #noFilePath} if file was deleted.
+	 */
+	@NotNull public String getFilePath() {
+		return filePath;
+	}
+
+	/**
+	 * File path before commit relative to {@link VcsRoot} path.
+	 * {@link #noFilePath} if file didn't exist.
+	 */
+	@NotNull public String getFilePathBefore() {
+		return filePathBefore;
+	}
+
+	public String getRevision() {
+		return revision;
+	}
+
+	public String getRevisionBefore() {
+		return revisionBefore;
 	}
 
 	/**

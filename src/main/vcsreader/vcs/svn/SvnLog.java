@@ -112,8 +112,8 @@ class SvnLog implements VcsCommand<LogResult> {
 			for (Change change : commit.changes) {
 				modifiedChanges.add(change.withTypeAndPaths(
 						changeTypeConsideringSubPath(subPath, change),
-						useSubPathAsRoot(subPath, change.filePath),
-						useSubPathAsRoot(subPath, change.filePathBefore)
+						useSubPathAsRoot(subPath, change.getFilePath()),
+						useSubPathAsRoot(subPath, change.getFilePathBefore())
 				));
 			}
 			result.add(commit.withChanges(modifiedChanges));
@@ -127,7 +127,7 @@ class SvnLog implements VcsCommand<LogResult> {
 			List<Change> filteredChanges = new ArrayList<Change>();
 			for (Change change : commit.changes) {
 
-				if (change.filePath.startsWith(subPath) || change.filePathBefore.startsWith(subPath)) {
+				if (change.getFilePath().startsWith(subPath) || change.getFilePathBefore().startsWith(subPath)) {
 					filteredChanges.add(change);
 				}
 
@@ -145,10 +145,10 @@ class SvnLog implements VcsCommand<LogResult> {
 	}
 
 	private static Change.Type changeTypeConsideringSubPath(String subPath, Change change) {
-		if (change.type != Change.Type.MOVED) return change.type;
-		else if (!change.filePath.startsWith(subPath)) return Change.Type.DELETED;
-		else if (!change.filePathBefore.startsWith(subPath)) return Change.Type.ADDED;
-		else return change.type;
+		if (change.getType() != Change.Type.MOVED) return change.getType();
+		else if (!change.getFilePath().startsWith(subPath)) return Change.Type.DELETED;
+		else if (!change.getFilePathBefore().startsWith(subPath)) return Change.Type.ADDED;
+		else return change.getType();
 	}
 
 	private static String useSubPathAsRoot(String subPath, String filePath) {

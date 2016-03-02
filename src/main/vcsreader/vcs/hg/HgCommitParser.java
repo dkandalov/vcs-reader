@@ -75,7 +75,7 @@ class HgCommitParser {
 			Iterator<Change> addedIterator = filesAdded.iterator();
 			while (addedIterator.hasNext()) {
 				Change change = addedIterator.next();
-				if (change.filePath.equals(filePath)) {
+				if (change.getFilePath().equals(filePath)) {
 					addedIterator.remove();
 					break;
 				}
@@ -83,7 +83,7 @@ class HgCommitParser {
 			Iterator<Change> deletedIterator = filesDeleted.iterator();
 			while (deletedIterator.hasNext()) {
 				Change change = deletedIterator.next();
-				if (change.filePathBefore.equals(filePathBefore)) {
+				if (change.getFilePathBefore().equals(filePathBefore)) {
 					deletedIterator.remove();
 					break;
 				}

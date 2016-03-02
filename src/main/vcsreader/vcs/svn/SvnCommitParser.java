@@ -128,7 +128,7 @@ class SvnCommitParser {
 				Iterator<Change> i = changes.iterator();
 				while (i.hasNext()) {
 					Change change = i.next();
-					if (change.type == DELETED && movedPaths.contains(change.filePathBefore)) {
+					if (change.getType() == DELETED && movedPaths.contains(change.getFilePathBefore())) {
 						i.remove();
 					}
 				}
