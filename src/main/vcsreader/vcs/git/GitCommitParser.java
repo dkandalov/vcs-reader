@@ -1,7 +1,7 @@
 package vcsreader.vcs.git;
 
-import vcsreader.Change;
-import vcsreader.Commit;
+import vcsreader.vcs.Change;
+import vcsreader.vcs.Commit;
 import vcsreader.VcsChange;
 import vcsreader.VcsCommit;
 

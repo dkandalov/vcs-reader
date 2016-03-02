@@ -2,8 +2,8 @@ package vcsreader.vcs.svn
 
 import org.junit.BeforeClass
 import org.junit.Test
-import vcsreader.Change
-import vcsreader.Commit
+import vcsreader.vcs.Change
+import vcsreader.vcs.Commit
 import vcsreader.VcsChange
 import vcsreader.VcsProject
 import vcsreader.vcs.commandlistener.VcsCommand

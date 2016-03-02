@@ -6,8 +6,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import vcsreader.Change;
-import vcsreader.Commit;
+import vcsreader.vcs.Change;
+import vcsreader.vcs.Commit;
 import vcsreader.VcsCommit;
 
 import javax.xml.parsers.ParserConfigurationException;

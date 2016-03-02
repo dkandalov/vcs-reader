@@ -1,6 +1,8 @@
-package vcsreader;
+package vcsreader.vcs;
 
 import org.jetbrains.annotations.NotNull;
+import vcsreader.VcsChange;
+import vcsreader.VcsRoot;
 
 import java.util.concurrent.atomic.AtomicReference;
 

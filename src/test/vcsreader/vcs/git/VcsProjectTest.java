@@ -3,6 +3,7 @@ package vcsreader.vcs.git;
 import org.junit.Test;
 import vcsreader.*;
 import vcsreader.VcsProject.CloneResult;
+import vcsreader.vcs.Commit;
 
 import java.util.*;
 

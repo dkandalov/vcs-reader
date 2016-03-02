@@ -1,8 +1,8 @@
 package vcsreader.vcs.svn
 
 import org.junit.Test
-import vcsreader.Change
-import vcsreader.Commit
+import vcsreader.vcs.Change
+import vcsreader.vcs.Commit
 
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat

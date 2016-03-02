@@ -1,7 +1,7 @@
 package vcsreader.vcs.hg;
 
-import vcsreader.Change;
-import vcsreader.Commit;
+import vcsreader.vcs.Change;
+import vcsreader.vcs.Commit;
 import vcsreader.VcsCommit;
 
 import java.text.ParseException;
@@ -12,8 +12,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import static vcsreader.VcsChange.Type.*;
-import static vcsreader.Change.noFilePath;
-import static vcsreader.Change.noRevision;
+import static vcsreader.vcs.Change.noFilePath;
+import static vcsreader.vcs.Change.noRevision;
 import static vcsreader.lang.StringUtil.split;
 
 class HgCommitParser {

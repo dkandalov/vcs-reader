@@ -1,6 +1,9 @@
-package vcsreader;
+package vcsreader.vcs;
 
 import org.jetbrains.annotations.NotNull;
+import vcsreader.VcsChange;
+import vcsreader.VcsCommit;
+import vcsreader.VcsRoot;
 
 import java.util.Date;
 import java.util.List;

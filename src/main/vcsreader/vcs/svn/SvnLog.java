@@ -1,6 +1,6 @@
 package vcsreader.vcs.svn;
 
-import vcsreader.Change;
+import vcsreader.vcs.Change;
 import vcsreader.VcsChange;
 import vcsreader.VcsCommit;
 import vcsreader.lang.Charsets;
