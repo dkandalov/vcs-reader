@@ -82,16 +82,20 @@ public interface VcsChange {
 			}
 		};
 
+		@NotNull private final String value;
+
+
+		public FileContent(@NotNull String value) {
+			this.value = value;
+		}
+
 		/**
 		 * Content of file as logged by VCS.
 		 * Encoding of the file is auto-detected or looked up in {@code VcsRoot} configuration
 		 * and then decoded into java string UTF-16.
 		 */
-		@NotNull public final String value;
-
-
-		public FileContent(@NotNull String value) {
-			this.value = value;
+		@NotNull public String getValue() {
+			return value;
 		}
 
 		@Override public String toString() {
