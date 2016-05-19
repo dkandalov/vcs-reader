@@ -15,7 +15,7 @@ public class SvnSettings {
 	 * @param defaultFileCharset default charset of files in repository
 	 *                           (it will be used if charset could not be determined from file content)
 	 * @param useMergeHistory    allows to see merge commits by using "--use-merge-history" flag,
-	 *                           should be enabled for svn >= 1.7
+	 *                           should be enabled for svn 1.7 and above
 	 */
 	public SvnSettings(@NotNull String svnPath, @NotNull Charset defaultFileCharset, boolean useMergeHistory) {
 		this.svnPath = svnPath;

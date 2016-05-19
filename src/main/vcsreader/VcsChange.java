@@ -7,7 +7,7 @@ import static vcsreader.lang.StringUtil.shortened;
 /**
  * Contains data about file modification in a {@link VcsCommit}.
  * See {@link FileContent}.
- * <p/>
+ * <p>
  * This class is effectively immutable (even though some fields are modifiable).
  */
 public interface VcsChange {

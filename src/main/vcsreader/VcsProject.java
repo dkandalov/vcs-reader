@@ -74,7 +74,7 @@ public class VcsProject {
 	/**
 	 * Request commits from VCS for all {@link VcsRoot}s within specified date range.
 	 * For distributed VCS commits are read from currently checked out branch.
-	 * <p/>
+	 * <p>
 	 * Merge commits are not logged, the commit which was merged into branch is logged instead.
 	 * Therefore, it's possible to see commit with time outside of requested time range.
 	 *
