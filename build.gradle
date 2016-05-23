@@ -11,7 +11,7 @@ version = "1.0.0"
 repositories {
     mavenLocal()
     mavenCentral()
-    maven { url 'lib' }
+//    maven { url 'lib' } // has to be commented out before publishing to central.sonatype
 }
 
 dependencies {
@@ -34,10 +34,10 @@ sourceSets {
 }
 
 //
-// Configuration for publishing vcs-reader to central.sonatype.
+// Configuration for publishing vcsreader to central.sonatype.
 // See http://central.sonatype.org/pages/gradle.html
 //
-archivesBaseName = "vcs-reader"
+archivesBaseName = "vcsreader"
 task javadocWithLinks(type: Javadoc) {
 	options {
 		links = ["."]
