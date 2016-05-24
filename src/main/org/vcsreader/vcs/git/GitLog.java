@@ -31,7 +31,7 @@ class GitLog implements VcsCommand<LogResult> {
 	private final Date toDate;
 
 	private final CommandLine commandLine;
-	private final List<CommandLine> externalSubCommands = new ArrayList<CommandLine>();
+	private final List<CommandLine> externalSubCommands = new ArrayList<>();
 
 
 	public GitLog(String gitPath, String folder, Date fromDate, Date toDate) {
@@ -49,10 +49,10 @@ class GitLog implements VcsCommand<LogResult> {
 			List<VcsCommit> commits = parseListOfCommits(commandLine.stdout());
 			commits = handleFileRenamesIn(commits);
 
-			List<String> errors = (commandLine.stderr().trim().isEmpty() ? new ArrayList<String>() : asList(commandLine.stderr()));
+			List<String> errors = (commandLine.stderr().trim().isEmpty() ? new ArrayList<>() : asList(commandLine.stderr()));
 			return new LogResult(commits, errors);
 		} else {
-			return new LogResult(new ArrayList<VcsCommit>(), asList(commandLine.stderr()));
+			return new LogResult(new ArrayList<>(), asList(commandLine.stderr()));
 		}
 	}
 
@@ -71,7 +71,7 @@ class GitLog implements VcsCommand<LogResult> {
 	}
 
 	private List<VcsCommit> handleFileRenamesIn(List<VcsCommit> commits) {
-		List<VcsCommit> result = new ArrayList<VcsCommit>();
+		List<VcsCommit> result = new ArrayList<>();
 		for (VcsCommit commit : commits) {
 			if (hasPotentialRenames(commit)) {
 				CommandLine commandLine = gitLogRenames(gitPath, folder, commit.getRevision());

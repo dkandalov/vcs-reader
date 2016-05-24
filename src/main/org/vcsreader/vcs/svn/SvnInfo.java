@@ -92,7 +92,7 @@ class SvnInfo implements VcsCommand<SvnInfo.Result> {
 		private final List<String> errors;
 
 		public Result(String repositoryRoot) {
-			this(repositoryRoot, new ArrayList<String>());
+			this(repositoryRoot, new ArrayList<>());
 		}
 
 		public Result(String repositoryRoot, List<String> errors) {

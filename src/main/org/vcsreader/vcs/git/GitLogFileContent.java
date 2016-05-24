@@ -15,8 +15,8 @@ import static org.vcsreader.vcs.git.GitCommandLine.isSuccessful;
  * Note that this class is only compatible with git > 1.5 because "git show" seems to work only since 1.5.x
  * (http://stackoverflow.com/questions/610208/how-to-retrieve-a-single-file-from-specific-revision-in-git).
  */
+// because it's similar to HgLogFileContent
 @SuppressWarnings("Duplicates")
-		// because it's similar to HgLogFileContent
 class GitLogFileContent implements VcsCommand<LogFileContentResult> {
 	private final String gitPath;
 	private final String folder;

@@ -21,7 +21,7 @@ class GitCommitParser {
 	private static final String commitFieldsSeparator = "\u0019\u0018\u0017\u0016\u0015";
 
 	public static List<VcsCommit> parseListOfCommits(String stdout) {
-		List<VcsCommit> commits = new ArrayList<VcsCommit>();
+		List<VcsCommit> commits = new ArrayList<>();
 		List<String> commitsAsString = split(stdout, commitStartSeparator);
 
 		for (String s : commitsAsString) {
@@ -49,14 +49,14 @@ class GitCommitParser {
 
 		boolean hasNoChanges = values.size() < 6; // e.g. for commits with --allow-empty flag
 		List<Change> changes = hasNoChanges ?
-				Collections.<Change>emptyList() :
+				Collections.emptyList() :
 				parseListOfChanges(values.get(5), revision, revisionBefore);
 
 		return new Commit(revision, revisionBefore, commitDate, author, message, changes);
 	}
 
 	static List<Change> parseListOfChanges(String changesAsString, String revision, String revisionBefore) {
-		List<Change> changes = new ArrayList<Change>();
+		List<Change> changes = new ArrayList<>();
 
 		for (String s : split(changesAsString, "\n")) {
 			Change change = parseChange(s, revision, revisionBefore);

@@ -7,7 +7,7 @@ import java.util.List;
 
 public class StringUtil {
 	public static List<String> split(String s, String separator) {
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		int lastIndex = 0;
 		int index = s.indexOf(separator);
 

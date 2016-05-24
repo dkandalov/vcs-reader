@@ -47,9 +47,9 @@ class SvnLog implements VcsCommand<LogResult> {
 		if (isSuccessful(commandLine)) {
 			List<VcsCommit> allCommits = SvnCommitParser.parseCommits(commandLine.stdout());
 			List<VcsCommit> commits = transformToSubPathCommits(deleteCommitsBefore(fromDate, allCommits));
-			return new LogResult(commits, new ArrayList<String>());
+			return new LogResult(commits, new ArrayList<>());
 		} else {
-			return new LogResult(Collections.<VcsCommit>emptyList(), asList(commandLine.stderr() + commandLine.exceptionStacktrace()));
+			return new LogResult(Collections.emptyList(), asList(commandLine.stderr() + commandLine.exceptionStacktrace()));
 		}
 	}
 
@@ -60,6 +60,7 @@ class SvnLog implements VcsCommand<LogResult> {
 		String mergeHistory = (useMergeHistory ? "--use-merge-history" : "");
 
 		// see http://subversion.tigris.org/issues/show_bug.cgi?id=2938
+		@SuppressWarnings("UnnecessaryLocalVariable")
 		Charset svnXmlCharset = Charsets.UTF8;
 
 		return newExternalCommand(
@@ -107,9 +108,9 @@ class SvnLog implements VcsCommand<LogResult> {
 	}
 
 	private static List<VcsCommit> modifyChanges(String subPath, List<VcsCommit> commits) {
-		List<VcsCommit> result = new ArrayList<VcsCommit>();
+		List<VcsCommit> result = new ArrayList<>();
 		for (VcsCommit commit : commits) {
-			List<Change> modifiedChanges = new ArrayList<Change>();
+			List<Change> modifiedChanges = new ArrayList<>();
 			for (VcsChange vcsChange : commit.getChanges()) {
 				Change change = (Change) vcsChange;
 				modifiedChanges.add(change.withTypeAndPaths(
@@ -124,9 +125,9 @@ class SvnLog implements VcsCommand<LogResult> {
 	}
 
 	private static List<VcsCommit> removeChangesNotIn(String subPath, List<VcsCommit> commits) {
-		List<VcsCommit> result = new ArrayList<VcsCommit>();
+		List<VcsCommit> result = new ArrayList<>();
 		for (VcsCommit commit : commits) {
-			List<VcsChange> filteredChanges = new ArrayList<VcsChange>();
+			List<VcsChange> filteredChanges = new ArrayList<>();
 			for (VcsChange change : commit.getChanges()) {
 
 				if (change.getFilePath().startsWith(subPath) || change.getFilePathBefore().startsWith(subPath)) {

@@ -51,7 +51,7 @@ public class HgVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
 		this.observer = observer;
 	}
 
-	@SuppressWarnings("RedundantIfStatement")
+	@SuppressWarnings("SimplifiableIfStatement")
 	@Override public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;

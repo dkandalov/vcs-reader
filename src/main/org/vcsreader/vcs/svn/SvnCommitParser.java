@@ -34,17 +34,15 @@ class SvnCommitParser {
 			xmlReader.parse(new InputSource(new StringReader(xml)));
 
 			return commitReadingHandler.commits;
-		} catch (ParserConfigurationException e) {
-			throw new RuntimeException(e);
 		} catch (SAXException e) {
 			throw new RuntimeException("Failed to parse xml: " + xml, e);
-		} catch (IOException e) {
+		} catch (ParserConfigurationException | IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	private static class CommitReadingHandler extends DefaultHandler {
-		private final List<VcsCommit> commits = new ArrayList<VcsCommit>();
+		private final List<VcsCommit> commits = new ArrayList<>();
 
 		private String revision;
 		private String revisionBefore;
@@ -52,7 +50,7 @@ class SvnCommitParser {
 		private Date commitDate;
 		private String commitDateString;
 		private String comment;
-		private List<Change> changes = new ArrayList<Change>();
+		private List<Change> changes = new ArrayList<>();
 
 		private String filePath;
 		private SvnChangeType changeType;
@@ -66,7 +64,7 @@ class SvnCommitParser {
 		private boolean isCopy;
 		private String copyFromFilePath;
 		private String copyFromRevision;
-		private final Set<String> movedPaths = new HashSet<String>();
+		private final Set<String> movedPaths = new HashSet<>();
 
 		private final SimpleDateFormat dateFormat;
 
@@ -134,7 +132,7 @@ class SvnCommitParser {
 					}
 				}
 
-				commits.add(new Commit(revision, revisionBefore, commitDate, author, comment, new ArrayList<Change>(changes)));
+				commits.add(new Commit(revision, revisionBefore, commitDate, author, comment, new ArrayList<>(changes)));
 				changes.clear();
 				movedPaths.clear();
 

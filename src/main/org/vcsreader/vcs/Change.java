@@ -15,7 +15,7 @@ public class Change implements VcsChange, VcsChange.WithRootReference {
 	private final String revision;
 	private final String revisionBefore;
 
-	private final AtomicReference<VcsRoot> vcsRoot = new AtomicReference<VcsRoot>();
+	private final AtomicReference<VcsRoot> vcsRoot = new AtomicReference<>();
 
 
 	public Change(Change change) {

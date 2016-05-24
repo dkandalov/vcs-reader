@@ -33,14 +33,14 @@ public class FutureResult<T> implements Future<T> {
 	public synchronized void set(@Nullable T result) {
 		assertNotSet();
 
-		pair = pair((Object) result, true);
+		pair = pair(result, true);
 		semaphore.release();
 	}
 
 	public synchronized void setException(@NotNull Throwable e) {
 		assertNotSet();
 
-		pair = pair((Object) e, false);
+		pair = pair(e, false);
 		semaphore.release();
 	}
 

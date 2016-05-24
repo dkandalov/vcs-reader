@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VcsCommandObserver {
-	private final List<VcsCommandListener> listeners = new ArrayList<VcsCommandListener>();
+	private final List<VcsCommandListener> listeners = new ArrayList<>();
 
 	public <T> T executeAndObserve(final VcsCommand<T> command) {
 		for (VcsCommandListener listener : listeners) {

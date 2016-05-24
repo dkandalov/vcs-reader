@@ -13,7 +13,7 @@ public class Pair<A, B> {
     public final B second;
 
     @NotNull public static <A, B> Pair<A, B> pair(A first, B second) {
-        return new Pair<A, B>(first, second);
+        return new Pair<>(first, second);
     }
 
     @SuppressWarnings("unchecked")
@@ -21,7 +21,7 @@ public class Pair<A, B> {
         return EMPTY;
     }
 
-    public Pair(A first, B second) {
+    private Pair(A first, B second) {
         this.first = first;
         this.second = second;
     }

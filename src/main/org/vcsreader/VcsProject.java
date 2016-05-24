@@ -38,7 +38,7 @@ public class VcsProject {
 	 * Does nothing for centralized VCS because commit history can be queried from server.
 	 */
 	public CloneResult cloneToLocal() {
-		Aggregator<CloneResult> aggregator = new Aggregator<CloneResult>(new CloneResult());
+		Aggregator<CloneResult> aggregator = new Aggregator<>(new CloneResult());
 		for (VcsRoot vcsRoot : vcsRoots) {
 			try {
 
@@ -57,7 +57,7 @@ public class VcsProject {
 	 * Does nothing for centralized VCS because commit history can be queried from server.
 	 */
 	public UpdateResult update() {
-		Aggregator<UpdateResult> aggregator = new Aggregator<UpdateResult>(new UpdateResult());
+		Aggregator<UpdateResult> aggregator = new Aggregator<>(new UpdateResult());
 		for (VcsRoot vcsRoot : vcsRoots) {
 			try {
 
@@ -89,7 +89,7 @@ public class VcsProject {
 					"From: " + dateFormat.format(from) + ", to: " + dateFormat.format(to) + ".");
 		}
 
-		Aggregator<LogResult> aggregator = new Aggregator<LogResult>(new LogResult());
+		Aggregator<LogResult> aggregator = new Aggregator<>(new LogResult());
 		for (VcsRoot vcsRoot : vcsRoots) {
 			try {
 
@@ -206,15 +206,15 @@ public class VcsProject {
 		private final List<Exception> exceptions;
 
 		public LogResult() {
-			this(new ArrayList<VcsCommit>(), new ArrayList<String>(), new ArrayList<Exception>());
+			this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 		}
 
 		public LogResult(Exception e) {
-			this(new ArrayList<VcsCommit>(), new ArrayList<String>(), asList(e));
+			this(new ArrayList<>(), new ArrayList<>(), asList(e));
 		}
 
 		public LogResult(List<VcsCommit> commits, List<String> vcsErrors) {
-			this(commits, vcsErrors, new ArrayList<Exception>());
+			this(commits, vcsErrors, new ArrayList<>());
 		}
 
 		public LogResult(List<VcsCommit> commits, List<String> vcsErrors, List<Exception> exceptions) {
@@ -224,17 +224,15 @@ public class VcsProject {
 		}
 
 		public LogResult aggregateWith(LogResult result) {
-			List<VcsCommit> newCommits = new ArrayList<VcsCommit>(commits);
-			List<String> newErrors = new ArrayList<String>(vcsErrors);
-			List<Exception> newExceptions = new ArrayList<Exception>(exceptions);
+			List<VcsCommit> newCommits = new ArrayList<>(commits);
+			List<String> newErrors = new ArrayList<>(vcsErrors);
+			List<Exception> newExceptions = new ArrayList<>(exceptions);
 			newCommits.addAll(result.commits);
 			newErrors.addAll(result.vcsErrors);
 			newExceptions.addAll(result.exceptions);
-			sort(newCommits, new Comparator<VcsCommit>() {
-				@Override public int compare(@NotNull VcsCommit commit1, @NotNull VcsCommit commit2) {
-					return new Long(commit1.getTime().getTime()).compareTo(commit2.getTime().getTime());
-				}
-			});
+			sort(newCommits, (commit1, commit2) ->
+					new Long(commit1.getTime().getTime()).compareTo(commit2.getTime().getTime())
+			);
 
 			return new LogResult(newCommits, newErrors, newExceptions);
 		}
@@ -297,11 +295,11 @@ public class VcsProject {
 		private final List<Exception> exceptions;
 
 		public UpdateResult() {
-			this(new ArrayList<String>(), new ArrayList<Exception>());
+			this(new ArrayList<>(), new ArrayList<>());
 		}
 
 		public UpdateResult(Exception e) {
-			this(new ArrayList<String>(), asList(e));
+			this(new ArrayList<>(), asList(e));
 		}
 
 		public UpdateResult(List<String> vcsErrors, List<Exception> exceptions) {
@@ -310,12 +308,12 @@ public class VcsProject {
 		}
 
 		public UpdateResult(String error) {
-			this(asList(error), new ArrayList<Exception>());
+			this(asList(error), new ArrayList<>());
 		}
 
 		@Override public UpdateResult aggregateWith(UpdateResult result) {
-			List<String> newErrors = new ArrayList<String>(vcsErrors);
-			List<Exception> newExceptions = new ArrayList<Exception>(exceptions);
+			List<String> newErrors = new ArrayList<>(vcsErrors);
+			List<Exception> newExceptions = new ArrayList<>(exceptions);
 			newErrors.addAll(result.vcsErrors);
 			newExceptions.addAll(result.exceptions);
 			return new UpdateResult(newErrors, newExceptions);
@@ -362,11 +360,11 @@ public class VcsProject {
 		private final List<Exception> exceptions;
 
 		public CloneResult() {
-			this(new ArrayList<String>(), new ArrayList<Exception>());
+			this(new ArrayList<>(), new ArrayList<>());
 		}
 
 		public CloneResult(Exception e) {
-			this(new ArrayList<String>(), asList(e));
+			this(new ArrayList<>(), asList(e));
 		}
 
 		public CloneResult(List<String> vcsErrors, List<Exception> exceptions) {
@@ -375,12 +373,12 @@ public class VcsProject {
 		}
 
 		public CloneResult(List<String> vcsErrors) {
-			this(vcsErrors, new ArrayList<Exception>());
+			this(vcsErrors, new ArrayList<>());
 		}
 
 		@Override public CloneResult aggregateWith(CloneResult result) {
-			List<String> newErrors = new ArrayList<String>(vcsErrors);
-			List<Exception> newExceptions = new ArrayList<Exception>(exceptions);
+			List<String> newErrors = new ArrayList<>(vcsErrors);
+			List<Exception> newExceptions = new ArrayList<>(exceptions);
 			newErrors.addAll(result.vcsErrors);
 			newExceptions.addAll(result.exceptions);
 			return new CloneResult(newErrors, newExceptions);

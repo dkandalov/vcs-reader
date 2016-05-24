@@ -23,7 +23,7 @@ public class CommandLine {
 	private int exitCode = exitCodeBeforeFinished;
 	private Exception exception;
 
-	private final AtomicReference<Process> processRef = new AtomicReference<Process>();
+	private final AtomicReference<Process> processRef = new AtomicReference<>();
 
 
 	public CommandLine(String... commandAndArgs) {
@@ -114,12 +114,9 @@ public class CommandLine {
 		if (exception == null) return "";
 
 		StringWriter stringWriter = new StringWriter();
-		PrintWriter printWriter = new PrintWriter(stringWriter);
-		try {
+		try (PrintWriter printWriter = new PrintWriter(stringWriter)) {
 			printWriter.append('\n');
 			exception.printStackTrace(printWriter);
-		} finally {
-			printWriter.close();
 		}
 		return stringWriter.toString();
 	}
@@ -137,11 +134,9 @@ public class CommandLine {
 	}
 
 	private Callable<String> readStreamTask(final InputStream stdoutInputStream, final int inputBufferSize) {
-		return new Callable<String>() {
-			@Override public String call() throws Exception {
-				byte[] bytes = readAsBytes(stdoutInputStream, inputBufferSize);
-				return convertToString(bytes);
-			}
+		return () -> {
+			byte[] bytes = readAsBytes(stdoutInputStream, inputBufferSize);
+			return convertToString(bytes);
 		};
 	}
 
@@ -245,14 +240,12 @@ public class CommandLine {
 		private static TaskExecutor newThreadExecutor() {
 			return new TaskExecutor() {
 				@Override public <T> Future<T> submit(final Callable<T> task, String taskName) {
-					final FutureResult<T> futureResult = new FutureResult<T>();
-					Runnable runnable = new Runnable() {
-						@Override public void run() {
-							try {
-								futureResult.set(task.call());
-							} catch (Exception e) {
-								futureResult.setException(e);
-							}
+					final FutureResult<T> futureResult = new FutureResult<>();
+					Runnable runnable = () -> {
+						try {
+							futureResult.set(task.call());
+						} catch (Exception e) {
+							futureResult.setException(e);
 						}
 					};
 					Thread thread = new Thread(null, runnable, taskName);

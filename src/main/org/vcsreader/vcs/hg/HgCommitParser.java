@@ -27,7 +27,7 @@ class HgCommitParser {
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
 
 	public static List<VcsCommit> parseListOfCommits(String stdout) {
-		ArrayList<VcsCommit> commits = new ArrayList<VcsCommit>();
+		ArrayList<VcsCommit> commits = new ArrayList<>();
 		List<String> commitsAsString = split(stdout, commitStartSeparator);
 
 		for (String s : commitsAsString) {
@@ -48,17 +48,17 @@ class HgCommitParser {
 		String author = values.get(3);
 		String comment = values.get(4);
 
-		List<Change> filesAdded = new ArrayList<Change>();
+		List<Change> filesAdded = new ArrayList<>();
 		for (String filePath : values.get(5).split(fileSeparator)) {
 			if (filePath.isEmpty()) continue;
 			filesAdded.add(new Change(ADDED, filePath, revision));
 		}
-		List<Change> filesDeleted = new ArrayList<Change>();
+		List<Change> filesDeleted = new ArrayList<>();
 		for (String filePath : values.get(6).split(fileSeparator)) {
 			if (filePath.isEmpty()) continue;
 			filesDeleted.add(new Change(DELETED, noFilePath, filePath, revision, revisionBefore));
 		}
-		List<Change> filesMoved = new ArrayList<Change>();
+		List<Change> filesMoved = new ArrayList<>();
 		for (String newAndOldFilePath : values.get(7).split(fileSeparator)) {
 			if (newAndOldFilePath.isEmpty()) continue;
 			String[] parts = newAndOldFilePath.split("\\s+\\(");
@@ -90,13 +90,13 @@ class HgCommitParser {
 				}
 			}
 		}
-		List<Change> filesModified = new ArrayList<Change>();
+		List<Change> filesModified = new ArrayList<>();
 		for (String filePath : values.get(8).split(fileSeparator)) {
 			if (filePath.isEmpty()) continue;
 			filesModified.add(new Change(MODIFIED, filePath, filePath, revision, revisionBefore));
 		}
 
-		List<Change> changes = new ArrayList<Change>();
+		List<Change> changes = new ArrayList<>();
 		changes.addAll(filesAdded);
 		changes.addAll(filesDeleted);
 		changes.addAll(filesMoved);

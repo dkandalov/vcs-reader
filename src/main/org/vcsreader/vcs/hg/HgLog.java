@@ -36,10 +36,10 @@ class HgLog implements VcsCommand<VcsProject.LogResult> {
 
 		if (isSuccessful(commandLine)) {
 			List<VcsCommit> commits = HgCommitParser.parseListOfCommits(commandLine.stdout());
-			List<String> errors = (commandLine.stderr().trim().isEmpty() ? new ArrayList<String>() : asList(commandLine.stderr()));
+			List<String> errors = (commandLine.stderr().trim().isEmpty() ? new ArrayList<>() : asList(commandLine.stderr()));
 			return new VcsProject.LogResult(commits, errors);
 		} else {
-			return new VcsProject.LogResult(new ArrayList<VcsCommit>(), asList(commandLine.stderr() + commandLine.exceptionStacktrace()));
+			return new VcsProject.LogResult(new ArrayList<>(), asList(commandLine.stderr() + commandLine.exceptionStacktrace()));
 		}
 	}
 
