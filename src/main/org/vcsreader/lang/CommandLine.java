@@ -6,6 +6,7 @@ import org.mozilla.universalchardet.UniversalDetector;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
@@ -25,6 +26,10 @@ public class CommandLine {
 
 	private final AtomicReference<Process> processRef = new AtomicReference<>();
 
+
+	public CommandLine(Collection<String> commandAndArgs) {
+		this(Config.defaults, commandAndArgs.toArray(new String[0]));
+	}
 
 	public CommandLine(String... commandAndArgs) {
 		this(Config.defaults, commandAndArgs);
