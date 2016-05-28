@@ -19,26 +19,24 @@ import static org.vcsreader.lang.FileUtil.tempDirectoryFile
 import static org.vcsreader.vcs.TestUtil.assertEqualCommits
 
 class GitIntegrationTest {
-	private static final String projectFolder = findSequentNonExistentFile(tempDirectoryFile(), "git-repo-${GitIntegrationTest.simpleName}", "")
 	private static final repositoryCreator = new GitRepositoryCreator()
 	private static final author = repositoryCreator.author
-	private static String nonExistentPath = "/tmp/non-existent-path"
+	private static final gitSettings = GitSettings.defaults().withGitPath(repositoryCreator.pathToGit)
+	private static final String projectFolder = findSequentNonExistentFile(tempDirectoryFile(), "git-repo-${GitIntegrationTest.simpleName}", "")
 
-	private final gitSettings = GitSettings.defaults().withGitPath(repositoryCreator.pathToGit)
-	private final vcsRoot = new GitVcsRoot(projectFolder, repositoryCreator.repoPath, gitSettings)
-	private final project = new VcsProject([vcsRoot]).addListener(new VcsCommandListener() {
-		@Override void beforeCommand(VcsCommand<?> command) { println(command.describe()) }
-		@Override void afterCommand(VcsCommand<?> command) {}
-	})
+	private VcsProject project
+
 
 	@Test void "clone project"() {
+		new File(projectFolder).deleteDir() // delete project folder to test cloning
+
 		def cloneResult = project.cloneToLocal()
 		assert cloneResult.vcsErrors().empty
 		assert cloneResult.isSuccessful()
 	}
 
 	@Test void "clone project failure"() {
-		def vcsRoots = [new GitVcsRoot(projectFolder, nonExistentPath, gitSettings)]
+		def vcsRoots = [new GitVcsRoot(projectFolder, "/tmp/non-existent-path", gitSettings)]
 		def project = new VcsProject(vcsRoots)
 
 		def cloneResult = project.cloneToLocal()
@@ -48,15 +46,13 @@ class GitIntegrationTest {
 	}
 
 	@Test void "update project"() {
-		project.cloneToLocal()
 		def updateResult = project.update()
 		assert updateResult.vcsErrors().empty
 		assert updateResult.isSuccessful()
 	}
 
 	@Test void "update project failure"() {
-		project.cloneToLocal()
-		new File(projectFolder).deleteDir()
+		new File(projectFolder).deleteDir() // delete project folder so that git update fails
 
 		def updateResult = project.update()
 		assert !updateResult.isSuccessful()
@@ -64,7 +60,6 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log no commits for empty project history interval"() {
-		project.cloneToLocal()
 		def logResult = project.log(date("01/08/2014"), date("02/08/2014"))
 
 		assert logResult.commits().empty
@@ -73,7 +68,6 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log single commit from project history (start date is inclusive, end date is exclusive)"() {
-		project.cloneToLocal()
 		def logResult = project.log(date("10/08/2014"), date("11/08/2014"))
 
 		assertEqualCommits(logResult, [
@@ -88,7 +82,6 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log several commits from project history"() {
-		project.cloneToLocal()
 		def logResult = project.log(date("10/08/2014"), date("12/08/2014"))
 
 		assertEqualCommits(logResult, [
@@ -113,7 +106,6 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log modification commit"() {
-		project.cloneToLocal()
 		def logResult = project.log(date("12/08/2014"), date("13/08/2014"))
 
 		assertEqualCommits(logResult, [
@@ -131,7 +123,6 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log moved file commit"() {
-		project.cloneToLocal()
 		def logResult = project.log(date("13/08/2014"), date("14/08/2014"))
 
 		assertEqualCommits(logResult, [
@@ -146,7 +137,6 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log moved and renamed file commit"() {
-		project.cloneToLocal()
 		def logResult = project.log(date("14/08/2014"), date("15/08/2014"))
 
 		assertEqualCommits(logResult, [
@@ -161,7 +151,6 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log deleted file"() {
-		project.cloneToLocal()
 		def logResult = project.log(date("15/08/2014"), date("16/08/2014"))
 
 		assertEqualCommits(logResult, [
@@ -176,7 +165,6 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log file with spaces and quotes in its name"() {
-		project.cloneToLocal()
 		def logResult = project.log(date("16/08/2014"), date("17/08/2014"))
 
 		assertEqualCommits(logResult, [
@@ -191,7 +179,6 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log commit with non-ascii message and file content"() {
-		project.cloneToLocal()
 		def logResult = project.log(date("17/08/2014"), date("18/08/2014"))
 
 		assertEqualCommits(logResult, [
@@ -206,7 +193,6 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log commit with empty message"() {
-		project.cloneToLocal()
 		def logResult = project.log(date("18/08/2014"), date("19/08/2014"))
 
 		assertEqualCommits(logResult, [
@@ -221,7 +207,6 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log commit with no changes"() {
-		project.cloneToLocal()
 		def logResult = project.log(date("19/08/2014"), date("20/08/2014"))
 
 		assertEqualCommits(logResult, [
@@ -236,7 +221,6 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log branch rebase"() {
-		project.cloneToLocal()
 		def logResult = project.log(date("20/08/2014"), date("21/08/2014"))
 
 		assertEqualCommits(logResult, [
@@ -258,7 +242,6 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log branch merge"() {
-		project.cloneToLocal()
 		def logResult = project.log(date("21/08/2014"), date("22/08/2014"))
 
 		assertEqualCommits(logResult, [
@@ -280,7 +263,6 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log content of modified file"() {
-		project.cloneToLocal()
 		def logResult = project.log(date("12/08/2014"), date("13/08/2014"))
 
 		def change = logResult.commits().first().changes.first()
@@ -292,7 +274,6 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log content of new file"() {
-		project.cloneToLocal()
 		def logResult = project.log(date("11/08/2014"), date("12/08/2014"))
 
 		def change = logResult.commits().first().changes.first()
@@ -304,7 +285,6 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log content of deleted file"() {
-		project.cloneToLocal()
 		def logResult = project.log(date("15/08/2014"), date("16/08/2014"))
 
 		def change = logResult.commits().first().changes.first()
@@ -322,6 +302,13 @@ class GitIntegrationTest {
 	@Before void setup() {
 		new File(projectFolder).deleteDir()
 		new File(projectFolder).mkdirs()
+
+		def vcsRoot = new GitVcsRoot(projectFolder, repositoryCreator.repoPath, gitSettings)
+		project = new VcsProject([vcsRoot]).addListener(new VcsCommandListener() {
+			@Override void beforeCommand(VcsCommand<?> command) { println(command.describe()) }
+			@Override void afterCommand(VcsCommand<?> command) {}
+		})
+		project.cloneToLocal()
 	}
 
 	@BeforeClass static void setupConfig() {
