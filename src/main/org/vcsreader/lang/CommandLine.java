@@ -7,6 +7,8 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
@@ -25,6 +27,7 @@ public class CommandLine {
 	private Exception exception;
 
 	private final AtomicReference<Process> processRef = new AtomicReference<>();
+	private final Map<String, String> environment = new HashMap<>();
 
 
 	public CommandLine(Collection<String> commandAndArgs) {
@@ -45,6 +48,12 @@ public class CommandLine {
 		else return new CommandLine(config.workingDir(new File(path)), commandAndArgs);
 	}
 
+	public CommandLine environment(Map<String, String> map) {
+		environment.clear();
+		environment.putAll(map);
+		return this;
+	}
+
 	public CommandLine outputCharset(@NotNull Charset charset) {
 		return new CommandLine(config.outputCharset(charset), commandAndArgs);
 	}
@@ -58,7 +67,9 @@ public class CommandLine {
 		InputStream stderrInputStream = null;
 		try {
 
-			Process process = new ProcessBuilder(commandAndArgs).directory(config.workingDirectory).start();
+			ProcessBuilder builder = new ProcessBuilder(commandAndArgs).directory(config.workingDirectory);
+			builder.environment().putAll(environment);
+			Process process = builder.start();
 			processRef.set(process);
 
 			stdoutInputStream = process.getInputStream();

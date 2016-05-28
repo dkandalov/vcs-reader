@@ -107,24 +107,31 @@ class GitRepositoryCreator {
 
 	private def mergeBranch(String branchName, String message, String date) {
 		git("merge", branchName, "-m", message)
-		git("commit", "--amend", "--author", author, "--date", date, "-m", message)
+		def env = ["GIT_COMMITTER_DATE": date]
+		git(env, "commit", "--amend", "--author", author, "--date", date, "-m", message)
 	}
 
 	private def rebase(String branchName, String message, String date) {
 		git("rebase", branchName)
-		git("commit", "--amend", "--author", author, "--date", date, "-m", message)
+		def env = ["GIT_COMMITTER_DATE": date]
+		git(env, "commit", "--amend", "-m", message)
 	}
 
 	private def commit(String message, String date) {
 		git("add", "--all",  ".")
 		// allow empty messages and empty commits (without changes) to test it
 		git("commit", "--allow-empty-message", "--allow-empty", "-m", message)
-		git("commit", "--allow-empty-message", "--allow-empty", "--amend", "--author", author, "--date", date, "-m", message)
-		// TODO what about GIT_COMMITTER_DATE env parameter, is it required?
+
+		// committer date has to be specified because when requesting git log it checks committer date not author date
+		def env = ["GIT_COMMITTER_DATE": date]
+		git(env, "commit", "--allow-empty-message", "--allow-empty", "--amend", "--author", author, "--date", date, "-m", message)
 	}
 
-	private def git(String... args) {
-		def commandLine = new CommandLine([pathToGit] + args.toList()).workingDir(referenceProject).execute()
+	private def git(Map environment = [:], String... args) {
+		def commandLine = new CommandLine([pathToGit] + args.toList())
+				.workingDir(referenceProject)
+				.environment(environment)
+				.execute()
 		println(commandLine.stdout())
 		println(commandLine.stderr())
 		if (commandLine.exitCode() != 0) {

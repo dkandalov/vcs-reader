@@ -181,7 +181,7 @@ class GitIntegrationTest {
 						dateTime("14:00:00 16/08/2014"),
 						author,
 						"added file with spaces and quotes",
-						[new Change(ADDED, "\"file with spaces.txt\"", "", revision(7), noRevision)]
+						[new Change(ADDED, "file with spaces.txt", "", revision(7), noRevision)]
 				)
 		])
 	}
