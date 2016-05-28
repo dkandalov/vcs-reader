@@ -1,12 +1,11 @@
-package org.vcsreader.vcs.git;
+package org.vcsreader.vcs;
 
 import org.junit.Test;
-import org.vcsreader.VcsChange;
 import org.vcsreader.VcsCommit;
 import org.vcsreader.VcsProject;
 import org.vcsreader.VcsProject.CloneResult;
 import org.vcsreader.VcsRoot;
-import org.vcsreader.vcs.Commit;
+import org.vcsreader.vcs.git.GitVcsRoot;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,7 +40,7 @@ public class VcsProjectTest {
 
 	@Test public void successfulProjectCloneWithNoVcsRoots() {
 		// given
-		VcsProject project = new VcsProject(Collections.<VcsRoot>emptyList());
+		VcsProject project = new VcsProject(Collections.emptyList());
 
 		// when
 		CloneResult cloneResult = project.cloneToLocal();
@@ -53,10 +52,10 @@ public class VcsProjectTest {
 
 	@Test public void successfulLogProjectHistory() {
 		// given
-		final VcsCommit commit1 = new Commit("1", "", new Date(0), "", "", new ArrayList<VcsChange>());
-		final VcsCommit commit2 = new Commit("2", "", new Date(0), "", "", new ArrayList<VcsChange>());
+		final VcsCommit commit1 = new Commit("1", "", new Date(0), "", "", new ArrayList<>());
+		final VcsCommit commit2 = new Commit("2", "", new Date(0), "", "", new ArrayList<>());
 		when(root1.log(any(Date.class), any(Date.class))).thenReturn(new LogResult(asList(commit1), asList("some error")));
-		when(root2.log(any(Date.class), any(Date.class))).thenReturn(new LogResult(asList(commit2), new ArrayList<String>()));
+		when(root2.log(any(Date.class), any(Date.class))).thenReturn(new LogResult(asList(commit2), new ArrayList<>()));
 		VcsProject project = new VcsProject(asList(root1, root2));
 
 		// when
