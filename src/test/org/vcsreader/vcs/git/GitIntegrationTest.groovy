@@ -3,10 +3,10 @@ package org.vcsreader.vcs.git
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
-import org.vcsreader.vcs.Change
-import org.vcsreader.vcs.Commit
 import org.vcsreader.VcsChange
 import org.vcsreader.VcsProject
+import org.vcsreader.vcs.Change
+import org.vcsreader.vcs.Commit
 import org.vcsreader.vcs.commandlistener.VcsCommand
 import org.vcsreader.vcs.commandlistener.VcsCommandListener
 
@@ -14,14 +14,18 @@ import static org.vcsreader.VcsChange.Type.*
 import static org.vcsreader.VcsChange.noRevision
 import static org.vcsreader.lang.DateTimeUtil.date
 import static org.vcsreader.lang.DateTimeUtil.dateTime
+import static org.vcsreader.lang.FileUtil.findSequentNonExistentFile
+import static org.vcsreader.lang.FileUtil.tempDirectoryFile
 import static org.vcsreader.vcs.TestUtil.assertEqualCommits
-import static org.vcsreader.vcs.git.GitIntegrationTestConfig.*
 
 class GitIntegrationTest {
-	private static final String projectFolder = "/tmp/git-commands-test/git-repo-${GitIntegrationTest.simpleName}/"
+	private static final String projectFolder = findSequentNonExistentFile(tempDirectoryFile(), "git-repo-${GitIntegrationTest.simpleName}", "")
+	private static final repositoryCreator = new GitRepositoryCreator()
+	private static final author = repositoryCreator.author
+	private static String nonExistentPath = "/tmp/non-existent-path"
 
-	private final gitSettings = GitSettings.defaults().withGitPath(pathToGit)
-	private final vcsRoot = new GitVcsRoot(projectFolder, referenceProject, gitSettings)
+	private final gitSettings = GitSettings.defaults().withGitPath(repositoryCreator.pathToGit)
+	private final vcsRoot = new GitVcsRoot(projectFolder, repositoryCreator.repoPath, gitSettings)
 	private final project = new VcsProject([vcsRoot]).addListener(new VcsCommandListener() {
 		@Override void beforeCommand(VcsCommand<?> command) { println(command.describe()) }
 		@Override void afterCommand(VcsCommand<?> command) {}
@@ -311,12 +315,16 @@ class GitIntegrationTest {
 		assert logResult.isSuccessful()
 	}
 
+	private static String revision(int i) {
+		repositoryCreator.commitHashes[i - 1]
+	}
+
 	@Before void setup() {
 		new File(projectFolder).deleteDir()
 		new File(projectFolder).mkdirs()
 	}
 
 	@BeforeClass static void setupConfig() {
-		initTestConfig()
+		repositoryCreator.createReferenceRepository()
 	}
 }

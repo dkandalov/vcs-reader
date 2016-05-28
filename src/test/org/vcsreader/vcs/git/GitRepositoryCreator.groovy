@@ -2,10 +2,15 @@ package org.vcsreader.vcs.git
 
 import org.vcsreader.lang.CommandLine
 
+import static org.vcsreader.lang.FileUtil.findSequentNonExistentFile
+import static org.vcsreader.lang.FileUtil.tempDirectoryFile
+
 class GitRepositoryCreator {
-	private final pathToGit = "/usr/local/Cellar/git/2.5.0/bin/git"
-	private final referenceProject = "/tmp/reference-repos/git-repo"
-	private final author = "Some Author <some.author@mail.com>"
+	final pathToGit = "/usr/local/Cellar/git/2.5.0/bin/git"
+	String repoPath
+	List<String> commitHashes
+	final author = "Some Author"
+	private final authorWithEmail = "${author} <some.author@mail.com>"
 
 	// TODO move initialisation to tests and remove main()
 	public static void main(String[] args) {
@@ -13,8 +18,9 @@ class GitRepositoryCreator {
 	}
 
 	def createReferenceRepository() {
-		new File(referenceProject).deleteDir()
-		new File(referenceProject).mkdirs()
+		def file = findSequentNonExistentFile(tempDirectoryFile(), "git-test-reference-repo", "")
+		repoPath = file.absolutePath
+		file.mkdirs()
 
 		git("init")
 		writeToFile("file1.txt", "file1 content")
@@ -73,20 +79,20 @@ class GitRepositoryCreator {
 		mergeBranch("a-branch", "merged branch into master", "Aug 21 19:20:00 2014 +0000")
 		//// end of branch rebase and merge
 
-		println(logCommitHashes().collect{ '"' + it + '"' })
+		commitHashes = logCommitHashes()
 	}
 
 	private def remove(String fileName) {
-		new File(referenceProject + File.separator + fileName).delete()
+		new File(repoPath + File.separator + fileName).delete()
 	}
 
 	private def move(String from, String to) {
-		new File(referenceProject + File.separator + from)
-			.renameTo(new File(referenceProject + File.separator + to))
+		new File(repoPath + File.separator + from)
+			.renameTo(new File(repoPath + File.separator + to))
 	}
 
 	private def mkdir(String folderName) {
-		new File(referenceProject + File.separator + folderName).mkdir()
+		new File(repoPath + File.separator + folderName).mkdir()
 	}
 
 	private def createBranch(String branchName) {
@@ -108,7 +114,7 @@ class GitRepositoryCreator {
 	private def mergeBranch(String branchName, String message, String date) {
 		git("merge", branchName, "-m", message)
 		def env = ["GIT_COMMITTER_DATE": date]
-		git(env, "commit", "--amend", "--author", author, "--date", date, "-m", message)
+		git(env, "commit", "--amend", "--author", authorWithEmail, "--date", date, "-m", message)
 	}
 
 	private def rebase(String branchName, String message, String date) {
@@ -124,12 +130,12 @@ class GitRepositoryCreator {
 
 		// committer date has to be specified because when requesting git log it checks committer date not author date
 		def env = ["GIT_COMMITTER_DATE": date]
-		git(env, "commit", "--allow-empty-message", "--allow-empty", "--amend", "--author", author, "--date", date, "-m", message)
+		git(env, "commit", "--allow-empty-message", "--allow-empty", "--amend", "--author", authorWithEmail, "--date", date, "-m", message)
 	}
 
 	private def git(Map environment = [:], String... args) {
 		def commandLine = new CommandLine([pathToGit] + args.toList())
-				.workingDir(referenceProject)
+				.workingDir(repoPath)
 				.environment(environment)
 				.execute()
 		println(commandLine.stdout())
@@ -141,6 +147,6 @@ class GitRepositoryCreator {
 	}
 
 	private def writeToFile(String fileName, String text) {
-		new File(referenceProject + File.separator + fileName).write(text)
+		new File(repoPath + File.separator + fileName).write(text)
 	}
 }
