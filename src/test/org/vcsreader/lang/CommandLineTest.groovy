@@ -2,7 +2,10 @@ package org.vcsreader.lang
 
 import org.junit.Test
 
+import java.util.concurrent.Callable
+
 import static java.util.concurrent.Executors.newSingleThreadExecutor
+import static org.vcsreader.lang.CommandLine.exitCodeBeforeFinished
 
 class CommandLineTest {
 	@Test void "successful command line execution"() {
@@ -18,7 +21,20 @@ class CommandLineTest {
 		assert commandLine.stdout().empty
 		assert commandLine.stderr().empty
 		assert !commandLine.exceptionStacktrace().empty
-		assert commandLine.exitCode() == -123
+		assert commandLine.exitCode() == exitCodeBeforeFinished
+	}
+
+	@Test void "command with failing task executor"() {
+		def asyncExecutor = { Callable task, String taskName ->
+			new FutureResult().setException(new IllegalStateException())
+		} as CommandLine.AsyncExecutor
+		def config = CommandLine.Config.defaults.asyncExecutor(asyncExecutor)
+
+		def commandLine = new CommandLine(config, "ls").execute()
+		assert commandLine.stdout().empty
+		assert commandLine.stderr().empty
+		assert !commandLine.exceptionStacktrace().empty
+		assert commandLine.exitCode() == exitCodeBeforeFinished
 	}
 
 	@Test(timeout = 1000L) void "kill hanging command"() {

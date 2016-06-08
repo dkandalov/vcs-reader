@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.vcsreader.lang.StringUtil.shortened;
 
 public class CommandLine {
-	private static final int exitCodeBeforeFinished = -123;
+	public static final int exitCodeBeforeFinished = -123;
 
 	private final Config config;
 	private final String[] commandAndArgs;
@@ -65,21 +65,22 @@ public class CommandLine {
 	public CommandLine execute() {
 		InputStream stdoutInputStream = null;
 		InputStream stderrInputStream = null;
+		Process process = null;
 		try {
 
-			ProcessBuilder builder = new ProcessBuilder(commandAndArgs).directory(config.workingDirectory);
+			ProcessBuilder builder = new ProcessBuilder(commandAndArgs).directory(config.workingDir);
 			builder.environment().putAll(environment);
-			Process process = builder.start();
+			process = builder.start();
 			processRef.set(process);
 
 			stdoutInputStream = process.getInputStream();
 			stderrInputStream = process.getErrorStream();
 
-			Future<String> stdoutFuture = config.taskExecutor.submit(
+			Future<String> stdoutFuture = config.asyncExecutor.submit(
 					readStreamTask(stdoutInputStream, config.stdoutBufferSize),
 					"stdout reader: " + shortened(describe(), 30)
 			);
-			Future<String> stderrFuture = config.taskExecutor.submit(
+			Future<String> stderrFuture = config.asyncExecutor.submit(
 					readStreamTask(stderrInputStream, config.stderrBufferSize),
 					"stderr reader: " + shortened(describe(), 30)
 			);
@@ -97,6 +98,8 @@ public class CommandLine {
 		} catch (Exception e) {
 			exception = e;
 		} finally {
+			// make sure process is stopped in case of exceptions in java code
+			if (process != null) process.destroy();
 			close(stdoutInputStream);
 			close(stderrInputStream);
 		}
@@ -143,8 +146,8 @@ public class CommandLine {
 			result += commandAndArgs[i];
 			if (i < commandAndArgs.length - 1) result += " ";
 		}
-		if (config.workingDirectory != null) {
-			result += " (working directory '" + config.workingDirectory + "')";
+		if (config.workingDir != null) {
+			result += " (working directory '" + config.workingDir + "')";
 		}
 		return result;
 	}
@@ -204,7 +207,7 @@ public class CommandLine {
 		}
 	}
 
-	public interface TaskExecutor {
+	public interface AsyncExecutor {
 		<T> Future<T> submit(Callable<T> task, String taskName);
 	}
 
@@ -216,47 +219,48 @@ public class CommandLine {
 				currentDirectory,
 				defaultBufferSize,
 				defaultBufferSize,
-				defaultBufferSize,
-				false,
-				Charset.defaultCharset(),
-				newThreadExecutor());
+				Charset.defaultCharset(), false, defaultBufferSize,
+				newExecutor());
 
-
-		private final File workingDirectory;
+		private final File workingDir;
 		private final int stdoutBufferSize;
 		private final int stderrBufferSize;
-		private final int maxBufferForCharsetDetection;
-		private final boolean charsetAutoDetect;
 		private final Charset outputCharset;
-		private final TaskExecutor taskExecutor;
+		private final boolean charsetAutoDetect;
+		private final int maxBufferForCharsetDetection;
+		private final AsyncExecutor asyncExecutor;
 
-		public Config(File workingDirectory, int stdoutBufferSize, int stderrBufferSize, int maxBufferForCharsetDetection,
-		              boolean charsetAutoDetect, Charset outputCharset, TaskExecutor taskExecutor) {
-			this.workingDirectory = workingDirectory;
+		public Config(File workingDir, int stdoutBufferSize, int stderrBufferSize, Charset outputCharset,
+		              boolean charsetAutoDetect, int maxBufferForCharsetDetection, AsyncExecutor asyncExecutor) {
+			this.workingDir = workingDir;
 			this.stdoutBufferSize = stdoutBufferSize;
 			this.stderrBufferSize = stderrBufferSize;
-			this.maxBufferForCharsetDetection = maxBufferForCharsetDetection;
-			this.charsetAutoDetect = charsetAutoDetect;
 			this.outputCharset = outputCharset;
-			this.taskExecutor = taskExecutor;
+			this.charsetAutoDetect = charsetAutoDetect;
+			this.maxBufferForCharsetDetection = maxBufferForCharsetDetection;
+			this.asyncExecutor = asyncExecutor;
+		}
+
+		public Config workingDir(File newWorkingDirectory) {
+			return new Config(newWorkingDirectory, stdoutBufferSize, stderrBufferSize, outputCharset, charsetAutoDetect, maxBufferForCharsetDetection, asyncExecutor);
 		}
 
 		public Config charsetAutoDetect(boolean value) {
-			return new Config(workingDirectory, stdoutBufferSize, stderrBufferSize, maxBufferForCharsetDetection, value, outputCharset, taskExecutor);
+			return new Config(workingDir, stdoutBufferSize, stderrBufferSize, outputCharset, value, maxBufferForCharsetDetection, asyncExecutor);
 		}
 
 		public Config outputCharset(Charset charset) {
-			return new Config(workingDirectory, stdoutBufferSize, stderrBufferSize, maxBufferForCharsetDetection, charsetAutoDetect, charset, taskExecutor);
+			return new Config(workingDir, stdoutBufferSize, stderrBufferSize, charset, charsetAutoDetect, maxBufferForCharsetDetection, asyncExecutor);
 		}
 
-		public Config workingDir(File file) {
-			return new Config(file, stdoutBufferSize, stderrBufferSize, maxBufferForCharsetDetection, charsetAutoDetect, outputCharset, taskExecutor);
+		public Config asyncExecutor(AsyncExecutor newAsyncExecutor) {
+			return new Config(workingDir, stdoutBufferSize, stderrBufferSize, outputCharset, charsetAutoDetect, maxBufferForCharsetDetection, newAsyncExecutor);
 		}
 
-		private static TaskExecutor newThreadExecutor() {
-			return new TaskExecutor() {
-				@Override public <T> Future<T> submit(final Callable<T> task, String taskName) {
-					final FutureResult<T> futureResult = new FutureResult<>();
+		private static AsyncExecutor newExecutor() {
+			return new AsyncExecutor() {
+				@Override public <T> Future<T> submit(Callable<T> task, String taskName) {
+					FutureResult<T> futureResult = new FutureResult<>();
 					Runnable runnable = () -> {
 						try {
 							futureResult.set(task.call());
