@@ -21,7 +21,7 @@ class GitIntegrationTest {
 
 	@Test void "clone project"() {
 		def repository = new GitRepository(newReferenceRepoPath()).init()
-		def project = new VcsProject(new GitVcsRoot(newProjectPath(), repository.path))
+		def project = new VcsProject(new GitVcsRoot(newProjectPath(), repository.path, gitSettings))
 
 		def cloneResult = project.cloneToLocal()
 
@@ -41,7 +41,7 @@ class GitIntegrationTest {
 
 	@Test void "update project"() {
 		def repository = new GitRepository(newReferenceRepoPath()).init().with {
-			// need this commit to force git create master branch
+			// dummy commit to force git create master branch
 			create("dummy-file.txt")
 			commit("added dummy file", "Aug 20 18:10:00 2014 +0000")
 			it
@@ -57,6 +57,7 @@ class GitIntegrationTest {
 	@Test void "update project failure"() {
 		def repository = new GitRepository(newReferenceRepoPath()).init()
 		def project = newProject(repository)
+		// delete project directory so that update fails
 		assert new File((project.vcsRoots().first() as GitVcsRoot).localPath).deleteDir()
 
 		def updateResult = project.update()
@@ -143,13 +144,13 @@ class GitIntegrationTest {
 
 	@Test void "log commit with modified files"() {
 		def repository = new GitRepository(newReferenceRepoPath()).init().with {
+			create("file1.txt", "file1 content")
 			create("file2.txt", "file2 content")
-			create("file3.txt", "file3 content")
-			commit("added file2, file3", "Aug 11 00:00:00 2014 +0000")
+			commit("added file1, file2", "Aug 11 00:00:00 2014 +0000")
 
+			create("file1.txt", "file1 new content")
 			create("file2.txt", "file2 new content")
-			create("file3.txt", "file3 new content")
-			commit("modified file2, file3", "Aug 12 14:00:00 2014 +0000")
+			commit("modified file1, file2", "Aug 12 14:00:00 2014 +0000")
 			it
 		}
 		def revisions = repository.revisions
@@ -162,10 +163,10 @@ class GitIntegrationTest {
 				revisions[1], revisions[0],
 				dateTime("14:00:00 12/08/2014"),
 				author,
-				"modified file2, file3",
+				"modified file1, file2",
 				[
-					new Change(MODIFIED, "file2.txt", "file2.txt", revisions[1], revisions[0]),
-					new Change(MODIFIED, "file3.txt", "file3.txt", revisions[1], revisions[0])
+					new Change(MODIFIED, "file1.txt", "file1.txt", revisions[1], revisions[0]),
+					new Change(MODIFIED, "file2.txt", "file2.txt", revisions[1], revisions[0])
 				]
 			)
 		])
@@ -296,7 +297,7 @@ class GitIntegrationTest {
 
 	@Test void "log commit with empty message"() {
 		def repository = new GitRepository(newReferenceRepoPath()).init().with {
-			create("file4.txt")
+			create("file.txt")
 			commit("", "Aug 18 16:00:00 2014 +0000")
 			it
 		}
@@ -311,7 +312,7 @@ class GitIntegrationTest {
 				dateTime("16:00:00 18/08/2014"),
 				author,
 				"",
-				[new Change(ADDED, "file4.txt", "", revisions[0], noRevision)]
+				[new Change(ADDED, "file.txt", "", revisions[0], noRevision)]
 			)
 		])
 	}
@@ -474,7 +475,7 @@ class GitIntegrationTest {
 
 
 	private static VcsProject newProject(GitRepository repository) {
-		def project = new VcsProject(new GitVcsRoot(newProjectPath(), repository.path))
+		def project = new VcsProject(new GitVcsRoot(newProjectPath(), repository.path, gitSettings))
 		project.cloneToLocal()
 		project
 	}
