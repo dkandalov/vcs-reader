@@ -112,11 +112,16 @@ class GitRepository {
 		new File(path + File.separator + fileName).write(text)
 	}
 
-	private def createBranch(String branchName) {
+	def createAndCheckoutBranch(String branchName) {
+		createBranch(branchName)
+		checkoutBranch(branchName)
+	}
+
+	def createBranch(String branchName) {
 		git("branch", branchName)
 	}
 
-	private def checkoutBranch(String branchName) {
+	def checkoutBranch(String branchName) {
 		git("checkout", branchName)
 	}
 
@@ -131,15 +136,15 @@ class GitRepository {
 			.reverse()
 	}
 
-	private def mergeBranch(String branchName, String message, String date) {
+	def mergeBranch(String branchName, String message, String date) {
 		git("merge", branchName, "-m", message)
 		def env = ["GIT_COMMITTER_DATE": date]
 		git(env, "commit", "--amend", "--author", authorWithEmail, "--date", date, "-m", message)
 	}
 
-	private def rebase(String branchName, String message, String date) {
+	def rebase(String branchName, String message, String committerDate) {
 		git("rebase", branchName)
-		def env = ["GIT_COMMITTER_DATE": date]
+		def env = ["GIT_COMMITTER_DATE": committerDate]
 		git(env, "commit", "--amend", "-m", message)
 	}
 

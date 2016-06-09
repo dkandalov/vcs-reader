@@ -333,23 +333,38 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log branch rebase"() {
+		def repository = new GitRepository(newReferenceRepoPath()).init().with {
+			createFile("file-master.txt", "file-master content")
+			commit("added file-master.txt", "Aug 20 18:10:00 2014 +0000")
+
+			createAndCheckoutBranch("a-branch")
+			createFile("file-branch.txt", "file branch content")
+			commit("added file-branch.txt", "Aug 20 18:00:00 2014 +0000")
+
+			// simulate what happens on rebase when committer date changes but author date doesn't
+			rebase("master", "added file-branch.txt", "Aug 20 18:20:00 2014 +0000")
+			it
+		}
+		def revisions = repository.revisions
+
+		def project = newProject(repository)
 		def logResult = project.log(date("20/08/2014"), date("21/08/2014"))
 
 		assertEqualCommits(logResult, [
-				new Commit(
-						revision(12), revision(11),
-						dateTime("18:00:00 20/08/2014"),
-						author,
-						"added file1-branch.txt",
-						[new Change(ADDED, "file1-branch.txt", "", revision(12), noRevision)]
-				),
-				new Commit(
-						revision(11), revision(10),
-						dateTime("18:10:00 20/08/2014"),
-						author,
-						"added file1-master.txt",
-						[new Change(ADDED, "file1-master.txt", "", revision(11), noRevision)]
-				)
+			new Commit(
+				revisions[1], revisions[0],
+				dateTime("18:00:00 20/08/2014"),
+				author,
+				"added file-branch.txt",
+				[new Change(ADDED, "file-branch.txt", "", revisions[1], noRevision)]
+			),
+			new Commit(
+				revisions[0], noRevision,
+				dateTime("18:10:00 20/08/2014"),
+				author,
+				"added file-master.txt",
+				[new Change(ADDED, "file-master.txt", "", revisions[0], noRevision)]
+			)
 		])
 	}
 
