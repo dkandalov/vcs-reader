@@ -1,14 +1,10 @@
 package org.vcsreader.vcs.git
 
-import org.junit.Before
-import org.junit.BeforeClass
 import org.junit.Test
 import org.vcsreader.VcsChange
 import org.vcsreader.VcsProject
 import org.vcsreader.vcs.Change
 import org.vcsreader.vcs.Commit
-import org.vcsreader.vcs.commandlistener.VcsCommand
-import org.vcsreader.vcs.commandlistener.VcsCommandListener
 
 import static org.vcsreader.VcsChange.Type.*
 import static org.vcsreader.VcsChange.noRevision
@@ -17,21 +13,18 @@ import static org.vcsreader.lang.DateTimeUtil.dateTime
 import static org.vcsreader.lang.FileUtil.findSequentNonExistentFile
 import static org.vcsreader.lang.FileUtil.tempDirectoryFile
 import static org.vcsreader.vcs.TestUtil.assertEqualCommits
+import static org.vcsreader.vcs.git.GitRepository.author
 
 class GitIntegrationTest {
-	private static final repository = new GitRepository(newReferenceRepoPath())
+	private static final gitSettings = GitSettings.defaults().withGitPath(GitRepository.pathToGit)
 
-	private static final author = repository.author
-	private static final gitSettings = GitSettings.defaults().withGitPath(repository.pathToGit)
-	private static final String projectFolder = newProjectPath()
-
-	private VcsProject project
 
 	@Test void "clone project"() {
 		def repository = new GitRepository(newReferenceRepoPath()).init()
 		def project = new VcsProject(new GitVcsRoot(newProjectPath(), repository.path))
 
 		def cloneResult = project.cloneToLocal()
+
 		assert cloneResult.vcsErrors().empty
 		assert cloneResult.isSuccessful()
 	}
@@ -47,22 +40,34 @@ class GitIntegrationTest {
 	}
 
 	@Test void "update project"() {
+		def repository = new GitRepository(newReferenceRepoPath()).init().with {
+			// need this commit to force git create master branch
+			create("dummy-file.txt")
+			commit("added dummy file", "Aug 20 18:10:00 2014 +0000")
+			it
+		}
+
+		def project = newProject(repository)
 		def updateResult = project.update()
+
 		assert updateResult.vcsErrors().empty
 		assert updateResult.isSuccessful()
 	}
 
 	@Test void "update project failure"() {
-		new File(projectFolder).deleteDir() // delete project folder so that git update fails
+		def repository = new GitRepository(newReferenceRepoPath()).init()
+		def project = newProject(repository)
+		assert new File((project.vcsRoots().first() as GitVcsRoot).localPath).deleteDir()
 
 		def updateResult = project.update()
+
 		assert !updateResult.isSuccessful()
 		assert updateResult.vcsErrors() != []
 	}
 
 	@Test void "log no commits for empty project history interval"() {
 		def repository = new GitRepository(newReferenceRepoPath()).init().with {
-			createFile("file.txt")
+			create("file.txt")
 			commit("initial commit", "Aug 10 00:00:00 2014 +0000")
 			it
 		}
@@ -77,10 +82,10 @@ class GitIntegrationTest {
 
 	@Test void "log single commit from project history (start date is inclusive, end date is exclusive)"() {
 		def repository = new GitRepository(newReferenceRepoPath()).init().with {
-			createFile("file1.txt")
+			create("file1.txt")
 			commit("initial commit", "Aug 10 00:00:00 2014 +0000")
 
-			createFile("file2.txt")
+			create("file2.txt")
 			commit("added file2", "Aug 11 00:00:00 2014 +0000")
 			it
 		}
@@ -102,11 +107,11 @@ class GitIntegrationTest {
 
 	@Test void "log several commits from project history"() {
 		def repository = new GitRepository(newReferenceRepoPath()).init().with {
-			createFile("file1.txt")
+			create("file1.txt")
 			commit("initial commit", "Aug 10 00:00:00 2014 +0000")
 
-			createFile("file2.txt")
-			createFile("file3.txt")
+			create("file2.txt")
+			create("file3.txt")
 			commit("added file2, file3", "Aug 11 00:00:00 2014 +0000")
 			it
 		}
@@ -138,12 +143,12 @@ class GitIntegrationTest {
 
 	@Test void "log commit with modified files"() {
 		def repository = new GitRepository(newReferenceRepoPath()).init().with {
-			createFile("file2.txt", "file2 content")
-			createFile("file3.txt", "file3 content")
+			create("file2.txt", "file2 content")
+			create("file3.txt", "file3 content")
 			commit("added file2, file3", "Aug 11 00:00:00 2014 +0000")
 
-			createFile("file2.txt", "file2 new content")
-			createFile("file3.txt", "file3 new content")
+			create("file2.txt", "file2 new content")
+			create("file3.txt", "file3 new content")
 			commit("modified file2, file3", "Aug 12 14:00:00 2014 +0000")
 			it
 		}
@@ -156,7 +161,7 @@ class GitIntegrationTest {
 			new Commit(
 				revisions[1], revisions[0],
 				dateTime("14:00:00 12/08/2014"),
-				repository.author,
+				author,
 				"modified file2, file3",
 				[
 					new Change(MODIFIED, "file2.txt", "file2.txt", revisions[1], revisions[0]),
@@ -168,7 +173,7 @@ class GitIntegrationTest {
 
 	@Test void "log moved file commit"() {
 		def repository = new GitRepository(newReferenceRepoPath()).init().with {
-			createFile("file.txt")
+			create("file.txt")
 			commit("initial commit", "Aug 10 00:00:00 2014 +0000")
 
 			mkdir("folder")
@@ -185,7 +190,7 @@ class GitIntegrationTest {
 			new Commit(
 				revisions[1], revisions[0],
 				dateTime("14:00:00 13/08/2014"),
-				repository.author,
+				author,
 				"moved file",
 				[new Change(MOVED, "folder/file.txt", "file.txt", revisions[1], revisions[0])]
 			)
@@ -194,7 +199,7 @@ class GitIntegrationTest {
 
 	@Test void "log moved and renamed file commit"() {
 		def repository = new GitRepository(newReferenceRepoPath()).init().with {
-			createFile("file.txt")
+			create("file.txt")
 			commit("initial commit", "Aug 10 00:00:00 2014 +0000")
 
 			mkdir("folder")
@@ -220,7 +225,7 @@ class GitIntegrationTest {
 
 	@Test void "log deleted file"() {
 		def repository = new GitRepository(newReferenceRepoPath()).init().with {
-			createFile("file.txt")
+			create("file.txt")
 			commit("initial commit", "Aug 10 00:00:00 2014 +0000")
 
 			delete("file.txt")
@@ -245,7 +250,7 @@ class GitIntegrationTest {
 
 	@Test void "log file with spaces and quotes in its name"() {
 		def repository = new GitRepository(newReferenceRepoPath()).init().with {
-			createFile("file with spaces.txt")
+			create("file with spaces.txt")
 			commit("added file with spaces and quotes", "Aug 16 14:00:00 2014 +0000")
 			it
 		}
@@ -267,7 +272,7 @@ class GitIntegrationTest {
 
 	@Test void "log commit with non-ascii message and file content"() {
 		def repository = new GitRepository(newReferenceRepoPath()).init().with {
-			createFile("non-ascii.txt", "non-ascii содержимое")
+			create("non-ascii.txt", "non-ascii содержимое")
 			commit("non-ascii комментарий", "Aug 17 15:00:00 2014 +0000")
 			it
 		}
@@ -291,7 +296,7 @@ class GitIntegrationTest {
 
 	@Test void "log commit with empty message"() {
 		def repository = new GitRepository(newReferenceRepoPath()).init().with {
-			createFile("file4.txt")
+			create("file4.txt")
 			commit("", "Aug 18 16:00:00 2014 +0000")
 			it
 		}
@@ -334,14 +339,14 @@ class GitIntegrationTest {
 
 	@Test void "log branch rebase"() {
 		def repository = new GitRepository(newReferenceRepoPath()).init().with {
-			createFile("file-master.txt", "file-master content")
+			create("file-master.txt", "file-master content")
 			commit("added file-master.txt", "Aug 20 18:10:00 2014 +0000")
 
 			createAndCheckoutBranch("a-branch")
-			createFile("file-branch.txt", "file branch content")
+			create("file-branch.txt", "file branch content")
 			commit("added file-branch.txt", "Aug 20 18:00:00 2014 +0000")
 
-			// simulate what happens on rebase when committer date changes but author date doesn't
+			// note that on rebase committer date changes but author date doesn't
 			rebase("master", "added file-branch.txt", "Aug 20 18:20:00 2014 +0000")
 			it
 		}
@@ -369,55 +374,100 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log branch merge"() {
+		def repository = new GitRepository(newReferenceRepoPath()).init().with {
+			// need this commit to force git create master branch
+			create("dummy-file.txt")
+			commit("added dummy file", "Aug 20 18:10:00 2014 +0000")
+
+			createAndCheckoutBranch("a-branch")
+			create("file-branch.txt", "file branch content")
+			commit("added file-branch.txt", "Aug 21 19:00:00 2014 +0000")
+
+			checkoutBranch("master")
+			create("file-master.txt", "file-master content")
+			commit("added file-master.txt", "Aug 21 19:10:00 2014 +0000")
+			mergeBranch("a-branch", "merged branch into master", "Aug 21 19:20:00 2014 +0000")
+			it
+		}
+		def revisions = repository.revisions
+
+		def project = newProject(repository)
 		def logResult = project.log(date("21/08/2014"), date("22/08/2014"))
 
 		assertEqualCommits(logResult, [
-				new Commit(
-						revision(13), revision(12),
-						dateTime("19:00:00 21/08/2014"),
-						author,
-						"added file2-branch.txt",
-						[new Change(ADDED, "file2-branch.txt", "", revision(13), noRevision)]
-				),
-				new Commit(
-						revision(14), revision(11), // note the revision "jump"
-						dateTime("19:10:00 21/08/2014"),
-						author,
-						"added file2-master.txt",
-						[new Change(ADDED, "file2-master.txt", "", revision(14), noRevision)]
-				)
+			new Commit(
+				revisions[1], revisions[0],
+				dateTime("19:00:00 21/08/2014"),
+				author,
+				"added file-branch.txt",
+				[new Change(ADDED, "file-branch.txt", "", revisions[1], noRevision)]
+			),
+			new Commit(
+				revisions[2], revisions[0], // note the revision "jump"
+				dateTime("19:10:00 21/08/2014"),
+				author,
+				"added file-master.txt",
+				[new Change(ADDED, "file-master.txt", "", revisions[2], noRevision)]
+			)
 		])
 	}
 
 	@Test void "log content of modified file"() {
+		def repository = new GitRepository(newReferenceRepoPath()).init().with {
+			create("file.txt", "file content")
+			commit("added file", "Aug 11 00:00:00 2014 +0000")
+
+			create("file.txt", "file new content")
+			commit("modified file", "Aug 12 14:00:00 2014 +0000")
+			it
+		}
+
+		def project = newProject(repository)
 		def logResult = project.log(date("12/08/2014"), date("13/08/2014"))
 
 		def change = logResult.commits().first().changes.first()
 		assert change.type == MODIFIED
-		assert change.fileContent().value == "file2 new content"
-		assert change.fileContentBefore().value == "file2 content"
+		assert change.fileContent().value == "file new content"
+		assert change.fileContentBefore().value == "file content"
 
 		assert logResult.isSuccessful()
 	}
 
 	@Test void "log content of new file"() {
+		def repository = new GitRepository(newReferenceRepoPath()).init().with {
+			create("file.txt", "file content")
+			commit("added file", "Aug 11 00:00:00 2014 +0000")
+			it
+		}
+
+		def project = newProject(repository)
 		def logResult = project.log(date("11/08/2014"), date("12/08/2014"))
 
 		def change = logResult.commits().first().changes.first()
 		assert change.type == ADDED
-		assert change.fileContent().value == "file2 content"
+		assert change.fileContent().value == "file content"
 		assert change.fileContentBefore() == VcsChange.FileContent.none
 
 		assert logResult.isSuccessful()
 	}
 
 	@Test void "log content of deleted file"() {
+		def repository = new GitRepository(newReferenceRepoPath()).init().with {
+			create("file.txt", "file content")
+			commit("added file", "Aug 11 00:00:00 2014 +0000")
+
+			delete("file.txt")
+			commit("deleted file", "Aug 15 14:00:00 2014 +0000")
+			it
+		}
+
+		def project = newProject(repository)
 		def logResult = project.log(date("15/08/2014"), date("16/08/2014"))
 
 		def change = logResult.commits().first().changes.first()
 		assert change.type == DELETED
 		assert change.fileContent() == VcsChange.FileContent.none
-		assert change.fileContentBefore().value == "file1 content"
+		assert change.fileContentBefore().value == "file content"
 
 		assert logResult.isSuccessful()
 	}
@@ -427,10 +477,6 @@ class GitIntegrationTest {
 		def project = new VcsProject(new GitVcsRoot(newProjectPath(), repository.path))
 		project.cloneToLocal()
 		project
-	}
-
-	private static String revision(int i) {
-		repository.revisions[i - 1]
 	}
 
 	private static String newReferenceRepoPath() {
@@ -445,21 +491,5 @@ class GitIntegrationTest {
 		assert file.mkdirs()
 		file.deleteOnExit()
 		file.absolutePath
-	}
-
-	@Before void setup() {
-		new File(projectFolder).deleteDir()
-		new File(projectFolder).mkdirs()
-
-		def vcsRoot = new GitVcsRoot(projectFolder, repository.path, gitSettings)
-		project = new VcsProject([vcsRoot]).addListener(new VcsCommandListener() {
-			@Override void beforeCommand(VcsCommand<?> command) { println(command.describe()) }
-			@Override void afterCommand(VcsCommand<?> command) {}
-		})
-		project.cloneToLocal()
-	}
-
-	@BeforeClass static void setupConfig() {
-		repository.createReferenceRepository()
 	}
 }
