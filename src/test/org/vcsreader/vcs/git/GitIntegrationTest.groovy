@@ -19,16 +19,17 @@ import static org.vcsreader.lang.FileUtil.tempDirectoryFile
 import static org.vcsreader.vcs.TestUtil.assertEqualCommits
 
 class GitIntegrationTest {
-	private static final repositoryCreator = new GitRepositoryCreator()
-	private static final author = repositoryCreator.author
-	private static final gitSettings = GitSettings.defaults().withGitPath(repositoryCreator.pathToGit)
-	private static final String projectFolder = findSequentNonExistentFile(tempDirectoryFile(), "git-repo-${GitIntegrationTest.simpleName}", "")
+	private static final repository = new GitRepository(newReferenceRepoPath())
+
+	private static final author = repository.author
+	private static final gitSettings = GitSettings.defaults().withGitPath(repository.pathToGit)
+	private static final String projectFolder = newProjectPath()
 
 	private VcsProject project
 
-
 	@Test void "clone project"() {
-		new File(projectFolder).deleteDir() // delete project folder to test cloning
+		def repository = new GitRepository(newReferenceRepoPath()).init()
+		def project = new VcsProject(new GitVcsRoot(newProjectPath(), repository.path))
 
 		def cloneResult = project.cloneToLocal()
 		assert cloneResult.vcsErrors().empty
@@ -36,8 +37,8 @@ class GitIntegrationTest {
 	}
 
 	@Test void "clone project failure"() {
-		def vcsRoots = [new GitVcsRoot(projectFolder, "/tmp/non-existent-path", gitSettings)]
-		def project = new VcsProject(vcsRoots)
+		def vcsRoot = new GitVcsRoot(newProjectPath(), "/tmp/non-existent-repo-path", gitSettings)
+		def project = new VcsProject(vcsRoot)
 
 		def cloneResult = project.cloneToLocal()
 
@@ -60,6 +61,13 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log no commits for empty project history interval"() {
+		def repository = new GitRepository(newReferenceRepoPath()).init().with {
+			createFile("file.txt")
+			commit("initial commit", "Aug 10 00:00:00 2014 +0000")
+			it
+		}
+
+		def project = newProject(repository)
 		def logResult = project.log(date("01/08/2014"), date("02/08/2014"))
 
 		assert logResult.commits().empty
@@ -68,155 +76,259 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log single commit from project history (start date is inclusive, end date is exclusive)"() {
+		def repository = new GitRepository(newReferenceRepoPath()).init().with {
+			createFile("file1.txt")
+			commit("initial commit", "Aug 10 00:00:00 2014 +0000")
+
+			createFile("file2.txt")
+			commit("added file2", "Aug 11 00:00:00 2014 +0000")
+			it
+		}
+		def revisions = repository.revisions
+
+		def project = newProject(repository)
 		def logResult = project.log(date("10/08/2014"), date("11/08/2014"))
 
 		assertEqualCommits(logResult, [
-				new Commit(
-						revision(1), noRevision,
-						dateTime("00:00:00 10/08/2014"),
-						author,
-						"initial commit",
-						[new Change(ADDED, "file1.txt", revision(1))]
-				)
+			new Commit(
+				revisions[0], noRevision,
+				dateTime("00:00:00 10/08/2014"),
+				author,
+				"initial commit",
+				[new Change(ADDED, "file1.txt", revisions[0])]
+			)
 		])
 	}
 
 	@Test void "log several commits from project history"() {
+		def repository = new GitRepository(newReferenceRepoPath()).init().with {
+			createFile("file1.txt")
+			commit("initial commit", "Aug 10 00:00:00 2014 +0000")
+
+			createFile("file2.txt")
+			createFile("file3.txt")
+			commit("added file2, file3", "Aug 11 00:00:00 2014 +0000")
+			it
+		}
+		def revisions = repository.revisions
+
+		def project = newProject(repository)
 		def logResult = project.log(date("10/08/2014"), date("12/08/2014"))
 
 		assertEqualCommits(logResult, [
-				new Commit(
-						revision(1), noRevision,
-						dateTime("00:00:00 10/08/2014"),
-						author,
-						"initial commit",
-						[new Change(ADDED, "file1.txt", revision(1))]
-				),
-				new Commit(
-						revision(2), revision(1),
-						dateTime("00:00:00 11/08/2014"),
-						author,
-						"added file2, file3",
-						[
-								new Change(ADDED, "file2.txt", "", revision(2), noRevision),
-								new Change(ADDED, "file3.txt", "", revision(2), noRevision)
-						]
-				)
+			new Commit(
+				revisions[0], noRevision,
+				dateTime("00:00:00 10/08/2014"),
+				author,
+				"initial commit",
+				[new Change(ADDED, "file1.txt", revisions[0])]
+			),
+			new Commit(
+				revisions[1], revisions[0],
+				dateTime("00:00:00 11/08/2014"),
+				author,
+				"added file2, file3",
+				[
+					new Change(ADDED, "file2.txt", "", revisions[1], noRevision),
+					new Change(ADDED, "file3.txt", "", revisions[1], noRevision)
+				]
+			)
 		])
 	}
 
-	@Test void "log modification commit"() {
+	@Test void "log commit with modified files"() {
+		def repository = new GitRepository(newReferenceRepoPath()).init().with {
+			createFile("file2.txt", "file2 content")
+			createFile("file3.txt", "file3 content")
+			commit("added file2, file3", "Aug 11 00:00:00 2014 +0000")
+
+			createFile("file2.txt", "file2 new content")
+			createFile("file3.txt", "file3 new content")
+			commit("modified file2, file3", "Aug 12 14:00:00 2014 +0000")
+			it
+		}
+		def revisions = repository.revisions
+
+		VcsProject project = newProject(repository)
 		def logResult = project.log(date("12/08/2014"), date("13/08/2014"))
 
 		assertEqualCommits(logResult, [
-				new Commit(
-						revision(3), revision(2),
-						dateTime("14:00:00 12/08/2014"),
-						author,
-						"modified file2, file3",
-						[
-								new Change(MODIFIED, "file2.txt", "file2.txt", revision(3), revision(2)),
-								new Change(MODIFIED, "file3.txt", "file3.txt", revision(3), revision(2))
-						]
-				)
+			new Commit(
+				revisions[1], revisions[0],
+				dateTime("14:00:00 12/08/2014"),
+				repository.author,
+				"modified file2, file3",
+				[
+					new Change(MODIFIED, "file2.txt", "file2.txt", revisions[1], revisions[0]),
+					new Change(MODIFIED, "file3.txt", "file3.txt", revisions[1], revisions[0])
+				]
+			)
 		])
 	}
 
 	@Test void "log moved file commit"() {
+		def repository = new GitRepository(newReferenceRepoPath()).init().with {
+			createFile("file.txt")
+			commit("initial commit", "Aug 10 00:00:00 2014 +0000")
+
+			mkdir("folder")
+			move("file.txt",  "folder/file.txt")
+			commit("moved file", "Aug 13 14:00:00 2014 +0000")
+			it
+		}
+		def revisions = repository.revisions
+
+		def project = newProject(repository)
 		def logResult = project.log(date("13/08/2014"), date("14/08/2014"))
 
 		assertEqualCommits(logResult, [
-				new Commit(
-						revision(4), revision(3),
-						dateTime("14:00:00 13/08/2014"),
-						author,
-						"moved file1",
-						[new Change(MOVED, "folder1/file1.txt", "file1.txt", revision(4), revision(3))]
-				)
+			new Commit(
+				revisions[1], revisions[0],
+				dateTime("14:00:00 13/08/2014"),
+				repository.author,
+				"moved file",
+				[new Change(MOVED, "folder/file.txt", "file.txt", revisions[1], revisions[0])]
+			)
 		])
 	}
 
 	@Test void "log moved and renamed file commit"() {
+		def repository = new GitRepository(newReferenceRepoPath()).init().with {
+			createFile("file.txt")
+			commit("initial commit", "Aug 10 00:00:00 2014 +0000")
+
+			mkdir("folder")
+			move("file.txt", "folder/renamed_file.txt")
+			commit("moved and renamed file", "Aug 14 14:00:00 2014 +0000")
+			it
+		}
+		def revisions = repository.revisions
+
+		def project = newProject(repository)
 		def logResult = project.log(date("14/08/2014"), date("15/08/2014"))
 
 		assertEqualCommits(logResult, [
-				new Commit(
-						revision(5), revision(4),
-						dateTime("14:00:00 14/08/2014"),
-						author,
-						"moved and renamed file1",
-						[new Change(MOVED, "folder2/renamed_file1.txt", "folder1/file1.txt", revision(5), revision(4))]
-				)
+			new Commit(
+				revisions[1], revisions[0],
+				dateTime("14:00:00 14/08/2014"),
+				author,
+				"moved and renamed file",
+				[new Change(MOVED, "folder/renamed_file.txt", "file.txt", revisions[1], revisions[0])]
+			)
 		])
 	}
 
 	@Test void "log deleted file"() {
+		def repository = new GitRepository(newReferenceRepoPath()).init().with {
+			createFile("file.txt")
+			commit("initial commit", "Aug 10 00:00:00 2014 +0000")
+
+			delete("file.txt")
+			commit("deleted file", "Aug 15 14:00:00 2014 +0000")
+			it
+		}
+		def revisions = repository.revisions
+
+		def project = newProject(repository)
 		def logResult = project.log(date("15/08/2014"), date("16/08/2014"))
 
 		assertEqualCommits(logResult, [
-				new Commit(
-						revision(6), revision(5),
-						dateTime("14:00:00 15/08/2014"),
-						author,
-						"deleted file1",
-						[new Change(DELETED, "", "folder2/renamed_file1.txt", revision(6), revision(5))]
-				)
+			new Commit(
+				revisions[1], revisions[0],
+				dateTime("14:00:00 15/08/2014"),
+				author,
+				"deleted file",
+				[new Change(DELETED, "", "file.txt", revisions[1], revisions[0])]
+			)
 		])
 	}
 
 	@Test void "log file with spaces and quotes in its name"() {
+		def repository = new GitRepository(newReferenceRepoPath()).init().with {
+			createFile("file with spaces.txt")
+			commit("added file with spaces and quotes", "Aug 16 14:00:00 2014 +0000")
+			it
+		}
+		def revisions = repository.revisions
+
+		def project = newProject(repository)
 		def logResult = project.log(date("16/08/2014"), date("17/08/2014"))
 
 		assertEqualCommits(logResult, [
-				new Commit(
-						revision(7), revision(6),
-						dateTime("14:00:00 16/08/2014"),
-						author,
-						"added file with spaces and quotes",
-						[new Change(ADDED, "file with spaces.txt", "", revision(7), noRevision)]
-				)
+			new Commit(
+				revisions[0], noRevision,
+				dateTime("14:00:00 16/08/2014"),
+				author,
+				"added file with spaces and quotes",
+				[new Change(ADDED, "file with spaces.txt", "", revisions[0], noRevision)]
+			)
 		])
 	}
 
 	@Test void "log commit with non-ascii message and file content"() {
+		def repository = new GitRepository(newReferenceRepoPath()).init().with {
+			createFile("non-ascii.txt", "non-ascii содержимое")
+			commit("non-ascii комментарий", "Aug 17 15:00:00 2014 +0000")
+			it
+		}
+		def revisions = repository.revisions
+
+		def project = newProject(repository)
 		def logResult = project.log(date("17/08/2014"), date("18/08/2014"))
 
 		assertEqualCommits(logResult, [
-				new Commit(
-						revision(8), revision(7),
-						dateTime("15:00:00 17/08/2014"),
-						author,
-						"non-ascii комментарий",
-						[new Change(ADDED, "non-ascii.txt", "", revision(8), noRevision)]
-				)
+			new Commit(
+				revisions[0], noRevision,
+				dateTime("15:00:00 17/08/2014"),
+				author,
+				"non-ascii комментарий",
+				[new Change(ADDED, "non-ascii.txt", "", revisions[0], noRevision)]
+			)
 		])
+		def nonAsciiContent = logResult.commits().first().changes.first().fileContent().value
+		assert nonAsciiContent == "non-ascii содержимое"
 	}
 
 	@Test void "log commit with empty message"() {
+		def repository = new GitRepository(newReferenceRepoPath()).init().with {
+			createFile("file4.txt")
+			commit("", "Aug 18 16:00:00 2014 +0000")
+			it
+		}
+		def revisions = repository.revisions
+
+		def project = newProject(repository)
 		def logResult = project.log(date("18/08/2014"), date("19/08/2014"))
 
 		assertEqualCommits(logResult, [
-				new Commit(
-						revision(9), revision(8),
-						dateTime("16:00:00 18/08/2014"),
-						author,
-						"",
-						[new Change(ADDED, "file4.txt", "", revision(9), noRevision)]
-				)
+			new Commit(
+				revisions[0], noRevision,
+				dateTime("16:00:00 18/08/2014"),
+				author,
+				"",
+				[new Change(ADDED, "file4.txt", "", revisions[0], noRevision)]
+			)
 		])
 	}
 
 	@Test void "log commit with no changes"() {
+		def repository = new GitRepository(newReferenceRepoPath()).init().with {
+			commit("commit with no changes", "Aug 19 17:00:00 2014 +0000")
+			it
+		}
+		def revisions = repository.revisions
+
+		def project = newProject(repository)
 		def logResult = project.log(date("19/08/2014"), date("20/08/2014"))
 
 		assertEqualCommits(logResult, [
-				new Commit(
-						revision(10), revision(9),
-						dateTime("17:00:00 19/08/2014"),
-						author,
-						"commit with no changes",
-						[]
-				)
+			new Commit(
+				revisions[0], noRevision,
+				dateTime("17:00:00 19/08/2014"),
+				author,
+				"commit with no changes",
+				[]
+			)
 		])
 	}
 
@@ -295,15 +407,36 @@ class GitIntegrationTest {
 		assert logResult.isSuccessful()
 	}
 
+
+	private static VcsProject newProject(GitRepository repository) {
+		def project = new VcsProject(new GitVcsRoot(newProjectPath(), repository.path))
+		project.cloneToLocal()
+		project
+	}
+
 	private static String revision(int i) {
-		repositoryCreator.commitHashes[i - 1]
+		repository.revisions[i - 1]
+	}
+
+	private static String newReferenceRepoPath() {
+		def file = findSequentNonExistentFile(tempDirectoryFile(), "git-reference-repo-${GitIntegrationTest.simpleName}", "")
+		assert file.mkdirs()
+		file.deleteOnExit()
+		file.absolutePath
+	}
+
+	private static String newProjectPath() {
+		def file = findSequentNonExistentFile(tempDirectoryFile(), "git-repo-${GitIntegrationTest.simpleName}", "")
+		assert file.mkdirs()
+		file.deleteOnExit()
+		file.absolutePath
 	}
 
 	@Before void setup() {
 		new File(projectFolder).deleteDir()
 		new File(projectFolder).mkdirs()
 
-		def vcsRoot = new GitVcsRoot(projectFolder, repositoryCreator.repoPath, gitSettings)
+		def vcsRoot = new GitVcsRoot(projectFolder, repository.path, gitSettings)
 		project = new VcsProject([vcsRoot]).addListener(new VcsCommandListener() {
 			@Override void beforeCommand(VcsCommand<?> command) { println(command.describe()) }
 			@Override void afterCommand(VcsCommand<?> command) {}
@@ -312,6 +445,6 @@ class GitIntegrationTest {
 	}
 
 	@BeforeClass static void setupConfig() {
-		repositoryCreator.createReferenceRepository()
+		repository.createReferenceRepository()
 	}
 }
