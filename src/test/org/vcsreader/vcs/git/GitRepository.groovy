@@ -2,8 +2,9 @@ package org.vcsreader.vcs.git
 
 import org.vcsreader.lang.CommandLine
 
+import static org.vcsreader.vcs.git.GitIntegrationTestConfig.newReferenceRepoPath
+
 class GitRepository {
-	static final pathToGit = "/usr/local/Cellar/git/2.5.0/bin/git"
 	static final author = "Some Author"
 
 	final String path
@@ -20,10 +21,7 @@ class GitRepository {
 		if (!new File(path).exists()) {
 			throw new IllegalStateException()
 		}
-
 		git("init")
-		// TODO do a dummy commit to make git create master branch?
-
 		this
 	}
 
@@ -91,7 +89,7 @@ class GitRepository {
 	}
 
 	private def git(Map environment = [:], String... args) {
-		def commandLine = new CommandLine([pathToGit] + args.toList())
+		def commandLine = new CommandLine([GitIntegrationTestConfig.pathToGit] + args.toList())
 				.workingDir(path)
 				.environment(environment)
 				.execute()
@@ -114,5 +112,89 @@ class GitRepository {
 				.findAll{ it.startsWith("commit ") }
 				.collect{ it.replace("commit ", "") }
 				.reverse()
+	}
+
+
+	static class Scripts {
+		static 'two commits with three added files'() {
+			new GitRepository(newReferenceRepoPath()).init().with {
+				create("file1.txt")
+				commit("initial commit", "Aug 10 00:00:00 2014 +0000")
+
+				create("file2.txt")
+				create("file3.txt")
+				commit("added file2, file3", "Aug 11 00:00:00 2014 +0000")
+				it
+			}
+		}
+
+		static 'two added and modified files'() {
+			new GitRepository(newReferenceRepoPath()).init().with {
+				create("file1.txt", "file1 content")
+				create("file2.txt", "file2 content")
+				commit("added file1, file2", "Aug 11 00:00:00 2014 +0000")
+
+				create("file1.txt", "file1 new content")
+				create("file2.txt", "file2 new content")
+				commit("modified file1, file2", "Aug 12 14:00:00 2014 +0000")
+				it
+			}
+		}
+
+		static 'moved file'() {
+			new GitRepository(newReferenceRepoPath()).init().with {
+				create("file.txt")
+				commit("initial commit", "Aug 10 00:00:00 2014 +0000")
+
+				mkdir("folder")
+				move("file.txt",  "folder/file.txt")
+				commit("moved file", "Aug 13 14:00:00 2014 +0000")
+				it
+			}
+		}
+
+		static 'moved and renamed file'() {
+			new GitRepository(newReferenceRepoPath()).init().with {
+				create("file.txt")
+				commit("initial commit", "Aug 10 00:00:00 2014 +0000")
+
+				mkdir("folder")
+				move("file.txt", "folder/renamed_file.txt")
+				commit("moved and renamed file", "Aug 14 14:00:00 2014 +0000")
+				it
+			}
+		}
+
+		static 'repo with deleted file'() {
+			new GitRepository(newReferenceRepoPath()).init().with {
+				create("file.txt", "file content")
+				commit("initial commit", "Aug 10 00:00:00 2014 +0000")
+
+				delete("file.txt")
+				commit("deleted file", "Aug 15 14:00:00 2014 +0000")
+				it
+			}
+		}
+
+		static 'repo with file with spaces and quotes'() {
+			new GitRepository(newReferenceRepoPath()).init().with {
+				create('"file with spaces.txt"')
+				commit("added file with spaces and quotes", "Aug 16 14:00:00 2014 +0000")
+				it
+			}
+		}
+
+		static 'repo with non-ascii file name and commit message'() {
+			new GitRepository(newReferenceRepoPath()).init().with {
+				create("non-ascii.txt", "non-ascii содержимое")
+				commit("non-ascii комментарий", "Aug 17 15:00:00 2014 +0000")
+				it
+			}
+		}
+
+		static someNonEmptyRepository() {
+			'two added and modified files'()
+		}
+
 	}
 }

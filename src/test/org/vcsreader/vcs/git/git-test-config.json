@@ -1,7 +1,5 @@
 {
   "pathToGit": "/usr/local/Cellar/git/2.5.0/bin/git",
   "author": "Some Author",
-  "authorWithEmail": "Some Author <some.author@mail.com>",
-  "referenceProject": "/tmp/reference-repos/git-repo",
-  "revisions": ["e49c5d1f8f457d7d17d9ba0d066df038dc7ae6b1", "f8577efd2680c3b916f1e7095208f7aed8bbfa45", "31ca0b76c1c4e7e2171fab4a86a3095002f2997f", "86aa126023a1de189a4bc41222534980fb8d93fb", "4ec520d93af3019869fd3601f80649ea5aa7b09c", "412837763ddc019fd48597b8833d6cf3ecc783fa", "e7c4b8ded2ce313bec10daea7cb33182130a8b8f", "ecfb0bb5e28e089e9b88c69ae603ec319417ee6b", "b896bdcd1e4af518765264c75acc75d1301a1ce7", "ba0b039bcebbbd44f5eae7197408cb857c0c2921", "8e338e45304c79235f14ddc90350bf53eb95f9a0", "d781be407ba7ab64bdca6901e05dfcbc140c0c2a", "81bff8e66b4c4389abe91be8c793c5c2e704321a", "91f1ff25868183d3afc831f3af22d01bbb71da19", "640baea7d774c1e6a200d941b401044e3a268f04"]
+  "authorWithEmail": "Some Author <some.author@mail.com>"
 }
