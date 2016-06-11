@@ -11,10 +11,10 @@ import static org.vcsreader.VcsChange.noRevision
 import static org.vcsreader.lang.DateTimeUtil.date
 import static org.vcsreader.lang.DateTimeUtil.dateTime
 import static org.vcsreader.vcs.TestUtil.assertEqualCommits
+import static org.vcsreader.vcs.git.GitIntegrationTestConfig.author
 import static org.vcsreader.vcs.git.GitIntegrationTestConfig.newProjectPath
 import static org.vcsreader.vcs.git.GitIntegrationTestConfig.newReferenceRepoPath
 import static org.vcsreader.vcs.git.GitRepository.Scripts.*
-import static org.vcsreader.vcs.git.GitRepository.author
 
 class GitIntegrationTest {
 	private static final gitSettings = GitSettings.defaults().withGitPath(GitIntegrationTestConfig.pathToGit)
