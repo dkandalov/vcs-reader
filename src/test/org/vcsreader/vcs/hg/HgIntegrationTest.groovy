@@ -14,7 +14,7 @@ import static org.vcsreader.VcsChange.Type.*
 import static org.vcsreader.VcsChange.noRevision
 import static org.vcsreader.lang.DateTimeUtil.date
 import static org.vcsreader.lang.DateTimeUtil.dateTime
-import static org.vcsreader.vcs.TestUtil.assertEqualCommits
+import static org.vcsreader.vcs.TestUtil.assertCommitsIn
 import static org.vcsreader.vcs.hg.HgIntegrationTestConfig.*
 
 class HgIntegrationTest {
@@ -72,7 +72,7 @@ class HgIntegrationTest {
 		project.cloneToLocal()
 		def logResult = project.log(date("10/08/2014"), date("11/08/2014"))
 
-		assertEqualCommits(logResult, [
+		assertCommitsIn(logResult, [
 				new Commit(
 						revision(1), noRevision,
 						dateTime("00:00:00 10/08/2014"),
@@ -87,7 +87,7 @@ class HgIntegrationTest {
 		project.cloneToLocal()
 		def logResult = project.log(date("10/08/2014"), date("12/08/2014"))
 
-		assertEqualCommits(logResult, [
+		assertCommitsIn(logResult, [
 				new Commit(
 						revision(1), noRevision,
 						dateTime("00:00:00 10/08/2014"),
@@ -112,7 +112,7 @@ class HgIntegrationTest {
 		project.cloneToLocal()
 		def logResult = project.log(date("12/08/2014"), date("13/08/2014"))
 
-		assertEqualCommits(logResult, [
+		assertCommitsIn(logResult, [
 				new Commit(
 						revision(3), revision(2),
 						dateTime("14:00:00 12/08/2014"),
@@ -130,7 +130,7 @@ class HgIntegrationTest {
 		project.cloneToLocal()
 		def logResult = project.log(date("13/08/2014"), date("14/08/2014"))
 
-		assertEqualCommits(logResult, [
+		assertCommitsIn(logResult, [
 				new Commit(
 						revision(4), revision(3),
 						dateTime("14:00:00 13/08/2014"),
@@ -145,7 +145,7 @@ class HgIntegrationTest {
 		project.cloneToLocal()
 		def logResult = project.log(date("14/08/2014"), date("15/08/2014"))
 
-		assertEqualCommits(logResult, [
+		assertCommitsIn(logResult, [
 				new Commit(
 						revision(5), revision(4),
 						dateTime("14:00:00 14/08/2014"),
@@ -160,7 +160,7 @@ class HgIntegrationTest {
 		project.cloneToLocal()
 		def logResult = project.log(date("15/08/2014"), date("16/08/2014"))
 
-		assertEqualCommits(logResult, [
+		assertCommitsIn(logResult, [
 				new Commit(
 						revision(6), revision(5),
 						dateTime("14:00:00 15/08/2014"),
@@ -175,7 +175,7 @@ class HgIntegrationTest {
 		project.cloneToLocal()
 		def logResult = project.log(date("16/08/2014"), date("17/08/2014"))
 
-		assertEqualCommits(logResult, [
+		assertCommitsIn(logResult, [
 				new Commit(
 						revision(7), revision(6),
 						dateTime("14:00:00 16/08/2014"),
@@ -190,7 +190,7 @@ class HgIntegrationTest {
 		project.cloneToLocal()
 		def logResult = project.log(date("17/08/2014"), date("18/08/2014"))
 
-		assertEqualCommits(logResult, [
+		assertCommitsIn(logResult, [
 				new Commit(
 						revision(8), revision(7),
 						dateTime("15:00:00 17/08/2014"),

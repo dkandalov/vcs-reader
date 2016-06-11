@@ -10,10 +10,8 @@ import static org.vcsreader.VcsChange.Type.*
 import static org.vcsreader.VcsChange.noRevision
 import static org.vcsreader.lang.DateTimeUtil.date
 import static org.vcsreader.lang.DateTimeUtil.dateTime
-import static org.vcsreader.vcs.TestUtil.assertEqualCommits
-import static org.vcsreader.vcs.git.GitIntegrationTestConfig.author
-import static org.vcsreader.vcs.git.GitIntegrationTestConfig.newProjectPath
-import static org.vcsreader.vcs.git.GitIntegrationTestConfig.newReferenceRepoPath
+import static org.vcsreader.vcs.TestUtil.assertCommitsIn
+import static org.vcsreader.vcs.git.GitIntegrationTestConfig.*
 import static org.vcsreader.vcs.git.GitRepository.Scripts.*
 
 class GitIntegrationTest {
@@ -80,7 +78,7 @@ class GitIntegrationTest {
 		def project = newProject(repository)
 		def logResult = project.log(date("10/08/2014"), date("11/08/2014"))
 
-		assertEqualCommits(logResult, [
+		assertCommitsIn(logResult, [
 			new Commit(
 				revisions[0], noRevision,
 				dateTime("00:00:00 10/08/2014"),
@@ -98,7 +96,7 @@ class GitIntegrationTest {
 		def project = newProject(repository)
 		def logResult = project.log(date("10/08/2014"), date("12/08/2014"))
 
-		assertEqualCommits(logResult, [
+		assertCommitsIn(logResult, [
 			new Commit(
 				revisions[0], noRevision,
 				dateTime("00:00:00 10/08/2014"),
@@ -126,7 +124,7 @@ class GitIntegrationTest {
 		VcsProject project = newProject(repository)
 		def logResult = project.log(date("12/08/2014"), date("13/08/2014"))
 
-		assertEqualCommits(logResult, [
+		assertCommitsIn(logResult, [
 			new Commit(
 				revisions[1], revisions[0],
 				dateTime("14:00:00 12/08/2014"),
@@ -147,7 +145,7 @@ class GitIntegrationTest {
 		def project = newProject(repository)
 		def logResult = project.log(date("13/08/2014"), date("14/08/2014"))
 
-		assertEqualCommits(logResult, [
+		assertCommitsIn(logResult, [
 			new Commit(
 				revisions[1], revisions[0],
 				dateTime("14:00:00 13/08/2014"),
@@ -165,7 +163,7 @@ class GitIntegrationTest {
 		def project = newProject(repository)
 		def logResult = project.log(date("14/08/2014"), date("15/08/2014"))
 
-		assertEqualCommits(logResult, [
+		assertCommitsIn(logResult, [
 			new Commit(
 				revisions[1], revisions[0],
 				dateTime("14:00:00 14/08/2014"),
@@ -183,7 +181,7 @@ class GitIntegrationTest {
 		def project = newProject(repository)
 		def logResult = project.log(date("15/08/2014"), date("16/08/2014"))
 
-		assertEqualCommits(logResult, [
+		assertCommitsIn(logResult, [
 			new Commit(
 				revisions[1], revisions[0],
 				dateTime("14:00:00 15/08/2014"),
@@ -201,7 +199,7 @@ class GitIntegrationTest {
 		def project = newProject(repository)
 		def logResult = project.log(date("16/08/2014"), date("17/08/2014"))
 
-		assertEqualCommits(logResult, [
+		assertCommitsIn(logResult, [
 			new Commit(
 				revisions[0], noRevision,
 				dateTime("14:00:00 16/08/2014"),
@@ -219,7 +217,7 @@ class GitIntegrationTest {
 		def project = newProject(repository)
 		def logResult = project.log(date("17/08/2014"), date("18/08/2014"))
 
-		assertEqualCommits(logResult, [
+		assertCommitsIn(logResult, [
 			new Commit(
 				revisions[0], noRevision,
 				dateTime("15:00:00 17/08/2014"),
@@ -243,7 +241,7 @@ class GitIntegrationTest {
 		def project = newProject(repository)
 		def logResult = project.log(date("18/08/2014"), date("19/08/2014"))
 
-		assertEqualCommits(logResult, [
+		assertCommitsIn(logResult, [
 			new Commit(
 				revisions[0], noRevision,
 				dateTime("16:00:00 18/08/2014"),
@@ -264,7 +262,7 @@ class GitIntegrationTest {
 		def project = newProject(repository)
 		def logResult = project.log(date("19/08/2014"), date("20/08/2014"))
 
-		assertEqualCommits(logResult, [
+		assertCommitsIn(logResult, [
 			new Commit(
 				revisions[0], noRevision,
 				dateTime("17:00:00 19/08/2014"),
@@ -293,7 +291,7 @@ class GitIntegrationTest {
 		def project = newProject(repository)
 		def logResult = project.log(date("20/08/2014"), date("21/08/2014"))
 
-		assertEqualCommits(logResult, [
+		assertCommitsIn(logResult, [
 			new Commit(
 				revisions[1], revisions[0],
 				dateTime("18:00:00 20/08/2014"),
@@ -332,7 +330,7 @@ class GitIntegrationTest {
 		def project = newProject(repository)
 		def logResult = project.log(date("21/08/2014"), date("22/08/2014"))
 
-		assertEqualCommits(logResult, [
+		assertCommitsIn(logResult, [
 			new Commit(
 				revisions[1], revisions[0],
 				dateTime("19:00:00 21/08/2014"),

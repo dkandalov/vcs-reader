@@ -7,7 +7,7 @@ import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
 
 class TestUtil {
-	static assertEqualCommits(LogResult logResult, List<VcsCommit> expected) {
+	static assertCommitsIn(LogResult logResult, List<VcsCommit> expected) {
 		assert logResult.vcsErrors() == []
 		assert logResult.exceptions() == []
 		assert logResult.successful
