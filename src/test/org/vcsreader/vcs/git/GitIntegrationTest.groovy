@@ -15,7 +15,7 @@ import static org.vcsreader.vcs.git.GitIntegrationTestConfig.*
 import static org.vcsreader.vcs.git.GitRepository.Scripts.*
 
 class GitIntegrationTest {
-	private static final gitSettings = GitSettings.defaults().withGitPath(GitIntegrationTestConfig.pathToGit)
+	private static final gitSettings = GitSettings.defaults().withGitPath(pathToGit)
 
 
 	@Test void "clone project"() {
