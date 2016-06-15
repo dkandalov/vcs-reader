@@ -1,7 +1,0 @@
-{
-  "pathToHg": "/usr/local/Cellar/mercurial/3.5/bin/hg",
-  "author": "Some Author",
-  "authorWithEmail": "Some Author <some.author@mail.com>",
-  "referenceProject": "/tmp/reference-repos/hg-repo",
-  "revisions": ["a833bc984e5aa64fd365709c5465d7f4e4c8e1cd","3698f849577d268c789f99cfb4467d5cd0ff3ba0","92fb61bb93009a0d4efeef3d68ed2dd8d651743b","066210ab410d9eba370e62cd6cf525dad69a6cde","6b0be3b4678bc311e4fd3cf10b4e894be44e1bd3","58b9567657247dffe633f0e00b80d1353336c4d6","e97abc3a7574f415ebff163fcb6905fabbe1adb7","ecba9d458e90086b586650a90e4252202ce23e8c"]
-}
