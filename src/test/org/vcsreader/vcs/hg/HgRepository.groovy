@@ -38,7 +38,6 @@ class HgRepository {
 		hg("mv", from, to)
 	}
 
-	// TODO extract file operations to a class shared between git/hg
 	def mkdir(String folderName) {
 		def wasCreated = new File(path + File.separator + folderName).mkdir()
 		assert wasCreated
@@ -61,7 +60,6 @@ class HgRepository {
 		stdout.trim().split("\n").reverse()
 	}
 
-
 	private def hg(Map environment = [:], String... args) {
 		def commandLine = new CommandLine([HgIntegrationTestConfig.pathToHg] + args.toList())
 				.workingDir(path)
@@ -79,7 +77,7 @@ class HgRepository {
 
 
 	static class Scripts {
-		static 'two commits with three added files'() {
+		static 'repo with two commits with three added files'() {
 			new HgRepository(newReferenceRepoPath()).init().with {
 				create("file1.txt")
 				commit("initial commit", "Aug 10 00:00:00 2014 +0000")
@@ -91,7 +89,7 @@ class HgRepository {
 			}
 		}
 
-		static 'two added and modified files'() {
+		static 'repo with two added and modified files'() {
 			new HgRepository(newReferenceRepoPath()).init().with {
 				create("file1.txt", "file1 content")
 				create("file2.txt", "file2 content")
@@ -104,7 +102,7 @@ class HgRepository {
 			}
 		}
 
-		static 'moved file'() {
+		static 'repo with moved file'() {
 			new HgRepository(newReferenceRepoPath()).init().with {
 				create("file.txt")
 				commit("initial commit", "Aug 10 00:00:00 2014 +0000")
@@ -116,7 +114,7 @@ class HgRepository {
 			}
 		}
 
-		static 'moved and renamed file'() {
+		static 'repo with moved and renamed file'() {
 			new HgRepository(newReferenceRepoPath()).init().with {
 				create("file.txt")
 				commit("initial commit", "Aug 10 00:00:00 2014 +0000")
@@ -156,7 +154,7 @@ class HgRepository {
 		}
 
 		static someNonEmptyRepository() {
-			'two added and modified files'()
+			'repo with two added and modified files'()
 		}
 	}
 }

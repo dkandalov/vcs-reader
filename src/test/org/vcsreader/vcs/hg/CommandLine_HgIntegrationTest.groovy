@@ -17,7 +17,7 @@ class CommandLine_HgIntegrationTest {
 	private final String projectFolder = newProjectPath()
 
 	@Test void "basic log"() {
-		def repository = 'two commits with three added files'()
+		def repository = 'repo with two commits with three added files'()
 
 		def commandLine = hgLog(pathToHg, repository.path, date("01/01/2013"), date("01/01/2023")).execute()
 
@@ -36,7 +36,7 @@ class CommandLine_HgIntegrationTest {
 	}
 
 	@Test void "log file content"() {
-		def repository = 'two added and modified files'()
+		def repository = 'repo with two added and modified files'()
 
 		def commandLine = hgLogFileContent(pathToHg, repository.path, "file1.txt", repository.revisions[0], UTF8).execute()
 

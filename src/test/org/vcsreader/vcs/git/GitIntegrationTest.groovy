@@ -29,7 +29,7 @@ class GitIntegrationTest {
 	}
 
 	@Test void "clone project failure"() {
-		def vcsRoot = new GitVcsRoot(newProjectPath(), "/tmp/non-existent-repo-path", gitSettings)
+		def vcsRoot = new GitVcsRoot(newProjectPath(), nonExistentPath, gitSettings)
 		def project = new VcsProject(vcsRoot)
 
 		def cloneResult = project.cloneToLocal()
@@ -72,7 +72,7 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log single commit from project history (start date is inclusive, end date is exclusive)"() {
-		def repository = 'two commits with three added files'()
+		def repository = 'repo with two commits with three added files'()
 		def revisions = repository.revisions
 
 		def project = newProject(repository)
@@ -90,7 +90,7 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log several commits from project history"() {
-		def repository = 'two commits with three added files'()
+		def repository = 'repo with two commits with three added files'()
 		def revisions = repository.revisions
 
 		def project = newProject(repository)
@@ -118,7 +118,7 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log commit with modified files"() {
-		def repository = 'two added and modified files'()
+		def repository = 'repo with two added and modified files'()
 		def revisions = repository.revisions
 
 		VcsProject project = newProject(repository)
@@ -139,7 +139,7 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log moved file commit"() {
-		def repository = 'moved file'()
+		def repository = 'repo with moved file'()
 		def revisions = repository.revisions
 
 		def project = newProject(repository)
@@ -157,7 +157,7 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log moved and renamed file commit"() {
-		def repository = 'moved and renamed file'()
+		def repository = 'repo with moved and renamed file'()
 		def revisions = repository.revisions
 
 		def project = newProject(repository)
@@ -349,7 +349,7 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log content of modified file"() {
-		def repository = 'two added and modified files'()
+		def repository = 'repo with two added and modified files'()
 
 		def project = newProject(repository)
 		def logResult = project.log(date("12/08/2014"), date("13/08/2014"))
@@ -358,12 +358,10 @@ class GitIntegrationTest {
 		assert change.type == MODIFIED
 		assert change.fileContent().value == "file1 new content"
 		assert change.fileContentBefore().value == "file1 content"
-
-		assert logResult.isSuccessful()
 	}
 
 	@Test void "log content of new file"() {
-		def repository = 'two added and modified files'()
+		def repository = 'repo with two added and modified files'()
 
 		def project = newProject(repository)
 		def logResult = project.log(date("11/08/2014"), date("12/08/2014"))
@@ -372,8 +370,6 @@ class GitIntegrationTest {
 		assert change.type == ADDED
 		assert change.fileContent().value == "file1 content"
 		assert change.fileContentBefore() == VcsChange.FileContent.none
-
-		assert logResult.isSuccessful()
 	}
 
 	@Test void "log content of deleted file"() {
@@ -386,8 +382,6 @@ class GitIntegrationTest {
 		assert change.type == DELETED
 		assert change.fileContent() == VcsChange.FileContent.none
 		assert change.fileContentBefore().value == "file content"
-
-		assert logResult.isSuccessful()
 	}
 
 

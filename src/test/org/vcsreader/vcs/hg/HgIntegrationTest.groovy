@@ -72,7 +72,7 @@ class HgIntegrationTest {
 	}
 
 	@Test void "log single commit from project history (start date is inclusive, end date is exclusive)"() {
-		def repository = 'two commits with three added files'()
+		def repository = 'repo with two commits with three added files'()
 		def revisions = repository.revisions
 
 		def project = newProject(repository)
@@ -90,7 +90,7 @@ class HgIntegrationTest {
 	}
 
 	@Test void "log several commits from project history"() {
-		def repository = 'two commits with three added files'()
+		def repository = 'repo with two commits with three added files'()
 		def revisions = repository.revisions
 
 		def project = newProject(repository)
@@ -118,7 +118,7 @@ class HgIntegrationTest {
 	}
 
 	@Test void "log modification commit"() {
-		def repository = 'two added and modified files'()
+		def repository = 'repo with two added and modified files'()
 		def revisions = repository.revisions
 
 		VcsProject project = newProject(repository)
@@ -139,7 +139,7 @@ class HgIntegrationTest {
 	}
 
 	@Test void "log moved file commit"() {
-		def repository = 'moved file'()
+		def repository = 'repo with moved file'()
 		def revisions = repository.revisions
 
 		def project = newProject(repository)
@@ -157,7 +157,7 @@ class HgIntegrationTest {
 	}
 
 	@Test void "log moved and renamed file commit"() {
-		def repository = 'moved and renamed file'()
+		def repository = 'repo with moved and renamed file'()
 		def revisions = repository.revisions
 
 		def project = newProject(repository)
@@ -229,7 +229,7 @@ class HgIntegrationTest {
 	}
 
 	@Test void "log content of modified file"() {
-		def repository = 'two added and modified files'()
+		def repository = 'repo with two added and modified files'()
 
 		def project = newProject(repository)
 		def logResult = project.log(date("12/08/2014"), date("13/08/2014"))
@@ -241,7 +241,7 @@ class HgIntegrationTest {
 	}
 
 	@Test void "log content of new file"() {
-		def repository = 'two added and modified files'()
+		def repository = 'repo with two added and modified files'()
 
 		def project = newProject(repository)
 		def logResult = project.log(date("11/08/2014"), date("12/08/2014"))

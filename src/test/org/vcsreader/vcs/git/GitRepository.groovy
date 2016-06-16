@@ -114,7 +114,7 @@ class GitRepository {
 
 
 	static class Scripts {
-		static 'two commits with three added files'() {
+		static 'repo with two commits with three added files'() {
 			new GitRepository(newReferenceRepoPath()).init().with {
 				create("file1.txt")
 				commit("initial commit", "Aug 10 00:00:00 2014 +0000")
@@ -126,7 +126,7 @@ class GitRepository {
 			}
 		}
 
-		static 'two added and modified files'() {
+		static 'repo with two added and modified files'() {
 			new GitRepository(newReferenceRepoPath()).init().with {
 				create("file1.txt", "file1 content")
 				create("file2.txt", "file2 content")
@@ -139,7 +139,7 @@ class GitRepository {
 			}
 		}
 
-		static 'moved file'() {
+		static 'repo with moved file'() {
 			new GitRepository(newReferenceRepoPath()).init().with {
 				create("file.txt")
 				commit("initial commit", "Aug 10 00:00:00 2014 +0000")
@@ -151,7 +151,7 @@ class GitRepository {
 			}
 		}
 
-		static 'moved and renamed file'() {
+		static 'repo with moved and renamed file'() {
 			new GitRepository(newReferenceRepoPath()).init().with {
 				create("file.txt")
 				commit("initial commit", "Aug 10 00:00:00 2014 +0000")
@@ -191,7 +191,7 @@ class GitRepository {
 		}
 
 		static someNonEmptyRepository() {
-			'two added and modified files'()
+			'repo with two added and modified files'()
 		}
 
 	}

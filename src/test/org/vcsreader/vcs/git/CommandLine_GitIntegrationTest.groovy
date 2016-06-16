@@ -16,7 +16,7 @@ class CommandLine_GitIntegrationTest {
 	private final String projectFolder = newProjectPath()
 
 	@Test void "basic log"() {
-		def repository = 'two commits with three added files'()
+		def repository = 'repo with two commits with three added files'()
 
 		def commandLine = gitLog(pathToGit, repository.path, date("01/01/2013"), date("01/01/2023")).execute()
 
@@ -36,7 +36,7 @@ class CommandLine_GitIntegrationTest {
 	}
 
 	@Test void "log file content"() {
-		def repository = 'two added and modified files'()
+		def repository = 'repo with two added and modified files'()
 
 		def commandLine = gitLogFileContent(pathToGit, repository.path, "file1.txt", repository.revisions[0], UTF8).execute()
 
@@ -56,7 +56,7 @@ class CommandLine_GitIntegrationTest {
 	}
 
 	@Test void "log renames"() {
-		def repository = 'moved and renamed file'()
+		def repository = 'repo with moved and renamed file'()
 
 		def commandLine = gitLogRenames(pathToGit, repository.path, repository.revisions[1]).execute()
 
@@ -108,7 +108,6 @@ class CommandLine_GitIntegrationTest {
 
 	@Test void "failed update without upstream repository"() {
 		def repository = someNonEmptyRepository()
-
 		gitClone(pathToGit, repository.path, projectFolder).execute()
 		new File(repository.path).deleteDir() // delete upstream repo so that update fails
 
