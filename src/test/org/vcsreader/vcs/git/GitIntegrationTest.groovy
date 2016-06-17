@@ -19,7 +19,7 @@ class GitIntegrationTest {
 
 
 	@Test void "clone project"() {
-		def repository = new GitRepository(newReferenceRepoPath()).init()
+		def repository = new GitRepository().init()
 		def project = new VcsProject(new GitVcsRoot(newProjectPath(), repository.path, gitSettings))
 
 		def cloneResult = project.cloneToLocal()
@@ -49,7 +49,7 @@ class GitIntegrationTest {
 	}
 
 	@Test void "update project failure"() {
-		def repository = new GitRepository(newReferenceRepoPath()).init()
+		def repository = new GitRepository().init()
 		def project = newProject(repository)
 		// delete project directory so that update fails
 		assert new File((project.vcsRoots().first() as GitVcsRoot).localPath).deleteDir()
@@ -231,7 +231,7 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log commit with empty message"() {
-		def repository = new GitRepository(newReferenceRepoPath()).init().with {
+		def repository = new GitRepository().init().with {
 			create("file.txt")
 			commit("", "Aug 18 16:00:00 2014 +0000")
 			it
@@ -253,7 +253,7 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log commit with no changes"() {
-		def repository = new GitRepository(newReferenceRepoPath()).init().with {
+		def repository = new GitRepository().init().with {
 			commit("commit with no changes", "Aug 19 17:00:00 2014 +0000")
 			it
 		}
@@ -274,7 +274,7 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log branch rebase"() {
-		def repository = new GitRepository(newReferenceRepoPath()).init().with {
+		def repository = new GitRepository().init().with {
 			create("file-master.txt", "file-master content")
 			commit("added file-master.txt", "Aug 20 18:10:00 2014 +0000")
 
@@ -310,7 +310,7 @@ class GitIntegrationTest {
 	}
 
 	@Test void "log branch merge"() {
-		def repository = new GitRepository(newReferenceRepoPath()).init().with {
+		def repository = new GitRepository().init().with {
 			// need this commit to force git create master branch
 			create("dummy-file.txt")
 			commit("added dummy file", "Aug 20 18:10:00 2014 +0000")

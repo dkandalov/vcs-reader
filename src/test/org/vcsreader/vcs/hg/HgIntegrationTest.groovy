@@ -18,7 +18,7 @@ class HgIntegrationTest {
 	private static final hgSettings = HgSettings.defaults().withHgPath(pathToHg)
 
 	@Test void "clone project"() {
-		def repository = new HgRepository(newReferenceRepoPath()).init()
+		def repository = new HgRepository().init()
 		def project = new VcsProject(new HgVcsRoot(newProjectPath(), repository.path, hgSettings))
 
 		def cloneResult = project.cloneToLocal()
@@ -49,7 +49,7 @@ class HgIntegrationTest {
 	}
 
 	@Test void "update project failure"() {
-		def repository = new HgRepository(newReferenceRepoPath()).init()
+		def repository = new HgRepository().init()
 		def project = newProject(repository)
 		// delete project directory so that update fails
 		assert new File((project.vcsRoots().first() as HgVcsRoot).localPath).deleteDir()

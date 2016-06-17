@@ -17,7 +17,7 @@ class HgIntegrationTestConfig {
 	}
 
 	static String newProjectPath() {
-		def file = findSequentNonExistentFile(tempDirectoryFile(), "hg-repo-", "")
+		def file = findSequentNonExistentFile(tempDirectoryFile(), "hg-project-repo-", "")
 		assert file.mkdirs()
 		file.deleteOnExit()
 		file.absolutePath

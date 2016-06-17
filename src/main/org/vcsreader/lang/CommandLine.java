@@ -152,6 +152,10 @@ public class CommandLine {
 		return result;
 	}
 
+	@Override public String toString() {
+		return describe();
+	}
+
 	private Callable<String> readStreamTask(final InputStream stdoutInputStream, final int inputBufferSize) {
 		return () -> {
 			byte[] bytes = readAsBytes(stdoutInputStream, inputBufferSize);

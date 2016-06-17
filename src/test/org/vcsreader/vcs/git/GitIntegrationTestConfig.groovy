@@ -17,7 +17,7 @@ class GitIntegrationTestConfig {
 	}
 
 	static String newProjectPath() {
-		def file = findSequentNonExistentFile(tempDirectoryFile(), "git-repo-", "")
+		def file = findSequentNonExistentFile(tempDirectoryFile(), "git-project-repo-", "")
 		assert file.mkdirs()
 		file.deleteOnExit()
 		file.absolutePath

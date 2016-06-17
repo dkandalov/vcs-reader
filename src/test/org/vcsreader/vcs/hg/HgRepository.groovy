@@ -4,6 +4,7 @@ import org.vcsreader.lang.CommandLine
 
 import static org.vcsreader.vcs.hg.HgIntegrationTestConfig.authorWithEmail
 import static org.vcsreader.vcs.hg.HgIntegrationTestConfig.newReferenceRepoPath
+import static org.vcsreader.vcs.hg.HgIntegrationTestConfig.pathToHg
 
 
 class HgRepository {
@@ -11,7 +12,7 @@ class HgRepository {
 	private List<String> revisions
 	private boolean printOutput = true
 
-	HgRepository(String path) {
+	HgRepository(String path = newReferenceRepoPath()) {
 		this.path = path
 	}
 
@@ -40,7 +41,7 @@ class HgRepository {
 
 	def mkdir(String folderName) {
 		def wasCreated = new File(path + File.separator + folderName).mkdir()
-		assert wasCreated
+		assert wasCreated : "Failed to create '${folderName}'"
 	}
 
 	def create(String fileName, String text = "") {
@@ -60,10 +61,9 @@ class HgRepository {
 		stdout.trim().split("\n").reverse()
 	}
 
-	private def hg(Map environment = [:], String... args) {
-		def commandLine = new CommandLine([HgIntegrationTestConfig.pathToHg] + args.toList())
+	private def hg(String... args) {
+		def commandLine = new CommandLine([pathToHg] + args.toList())
 				.workingDir(path)
-				.environment(environment)
 				.execute()
 		if (printOutput) {
 			println(commandLine.stdout())
@@ -78,7 +78,7 @@ class HgRepository {
 
 	static class Scripts {
 		static 'repo with two commits with three added files'() {
-			new HgRepository(newReferenceRepoPath()).init().with {
+			new HgRepository().init().with {
 				create("file1.txt")
 				commit("initial commit", "Aug 10 00:00:00 2014 +0000")
 
@@ -90,7 +90,7 @@ class HgRepository {
 		}
 
 		static 'repo with two added and modified files'() {
-			new HgRepository(newReferenceRepoPath()).init().with {
+			new HgRepository().init().with {
 				create("file1.txt", "file1 content")
 				create("file2.txt", "file2 content")
 				commit("added file1, file2", "Aug 11 00:00:00 2014 +0000")
@@ -103,7 +103,7 @@ class HgRepository {
 		}
 
 		static 'repo with moved file'() {
-			new HgRepository(newReferenceRepoPath()).init().with {
+			new HgRepository().init().with {
 				create("file.txt")
 				commit("initial commit", "Aug 10 00:00:00 2014 +0000")
 
@@ -115,7 +115,7 @@ class HgRepository {
 		}
 
 		static 'repo with moved and renamed file'() {
-			new HgRepository(newReferenceRepoPath()).init().with {
+			new HgRepository().init().with {
 				create("file.txt")
 				commit("initial commit", "Aug 10 00:00:00 2014 +0000")
 
@@ -127,7 +127,7 @@ class HgRepository {
 		}
 
 		static 'repo with deleted file'() {
-			new HgRepository(newReferenceRepoPath()).init().with {
+			new HgRepository().init().with {
 				create("file.txt", "file content")
 				commit("initial commit", "Aug 10 00:00:00 2014 +0000")
 
@@ -138,7 +138,7 @@ class HgRepository {
 		}
 
 		static 'repo with file with spaces and quotes'() {
-			new HgRepository(newReferenceRepoPath()).init().with {
+			new HgRepository().init().with {
 				create('"file with spaces.txt"')
 				commit("added file with spaces and quotes", "Aug 16 14:00:00 2014 +0000")
 				it
@@ -146,7 +146,7 @@ class HgRepository {
 		}
 
 		static 'repo with non-ascii file name and commit message'() {
-			new HgRepository(newReferenceRepoPath()).init().with {
+			new HgRepository().init().with {
 				create("non-ascii.txt", "non-ascii содержимое")
 				commit("non-ascii комментарий", "Aug 17 15:00:00 2014 +0000")
 				it

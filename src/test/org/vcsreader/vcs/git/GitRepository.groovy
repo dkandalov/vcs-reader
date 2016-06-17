@@ -11,7 +11,7 @@ class GitRepository {
 	private boolean printOutput = true
 
 
-	GitRepository(String path) {
+	GitRepository(String path = newReferenceRepoPath()) {
 		this.path = path
 	}
 
@@ -44,7 +44,7 @@ class GitRepository {
 
 	def mkdir(String folderName) {
 		def wasCreated = new File(path + File.separator + folderName).mkdir()
-		assert wasCreated
+		assert wasCreated : "Failed to create '${folderName}'"
 	}
 
 	def create(String fileName, String text = "") {
@@ -115,7 +115,7 @@ class GitRepository {
 
 	static class Scripts {
 		static 'repo with two commits with three added files'() {
-			new GitRepository(newReferenceRepoPath()).init().with {
+			new GitRepository().init().with {
 				create("file1.txt")
 				commit("initial commit", "Aug 10 00:00:00 2014 +0000")
 
@@ -127,7 +127,7 @@ class GitRepository {
 		}
 
 		static 'repo with two added and modified files'() {
-			new GitRepository(newReferenceRepoPath()).init().with {
+			new GitRepository().init().with {
 				create("file1.txt", "file1 content")
 				create("file2.txt", "file2 content")
 				commit("added file1, file2", "Aug 11 00:00:00 2014 +0000")
@@ -140,19 +140,19 @@ class GitRepository {
 		}
 
 		static 'repo with moved file'() {
-			new GitRepository(newReferenceRepoPath()).init().with {
+			new GitRepository().init().with {
 				create("file.txt")
 				commit("initial commit", "Aug 10 00:00:00 2014 +0000")
 
 				mkdir("folder")
-				move("file.txt",  "folder/file.txt")
+				move("file.txt", "folder/file.txt")
 				commit("moved file", "Aug 13 14:00:00 2014 +0000")
 				it
 			}
 		}
 
 		static 'repo with moved and renamed file'() {
-			new GitRepository(newReferenceRepoPath()).init().with {
+			new GitRepository().init().with {
 				create("file.txt")
 				commit("initial commit", "Aug 10 00:00:00 2014 +0000")
 
@@ -164,7 +164,7 @@ class GitRepository {
 		}
 
 		static 'repo with deleted file'() {
-			new GitRepository(newReferenceRepoPath()).init().with {
+			new GitRepository().init().with {
 				create("file.txt", "file content")
 				commit("initial commit", "Aug 10 00:00:00 2014 +0000")
 
@@ -175,7 +175,7 @@ class GitRepository {
 		}
 
 		static 'repo with file with spaces and quotes'() {
-			new GitRepository(newReferenceRepoPath()).init().with {
+			new GitRepository().init().with {
 				create('"file with spaces.txt"')
 				commit("added file with spaces and quotes", "Aug 16 14:00:00 2014 +0000")
 				it
@@ -183,7 +183,7 @@ class GitRepository {
 		}
 
 		static 'repo with non-ascii file name and commit message'() {
-			new GitRepository(newReferenceRepoPath()).init().with {
+			new GitRepository().init().with {
 				create("non-ascii.txt", "non-ascii содержимое")
 				commit("non-ascii комментарий", "Aug 17 15:00:00 2014 +0000")
 				it
@@ -193,6 +193,5 @@ class GitRepository {
 		static someNonEmptyRepository() {
 			'repo with two added and modified files'()
 		}
-
 	}
 }

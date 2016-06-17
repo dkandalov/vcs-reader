@@ -9,7 +9,7 @@ import java.util.TimeZone;
 import static java.util.Arrays.asList;
 
 public class DateTimeUtil {
-	private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
+	public static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
 	public static Date date(String s) {
 		SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
