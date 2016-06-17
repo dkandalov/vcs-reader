@@ -2,12 +2,13 @@ package org.vcsreader.vcs.svn
 
 import groovy.json.JsonSlurper
 
+import static org.vcsreader.lang.FileUtil.deleteOnShutdown
 import static org.vcsreader.lang.FileUtil.findSequentNonExistentFile
 import static org.vcsreader.lang.FileUtil.tempDirectoryFile
 
 class SvnIntegrationTestConfig {
-	static String pathToSvn = "/usr/local/Cellar/subversion/1.8.13/bin/svn"
-	static String pathToSvnAdmin = "/usr/local/Cellar/subversion/1.8.13/bin/svnadmin"
+	static String pathToSvn = System.getProperty("vcsreader.test.svnPath", "/usr/local/Cellar/subversion/1.8.13/bin/svn")
+	static String pathToSvnAdmin = System.getProperty("vcsreader.test.svnAdminPath", "/usr/local/Cellar/subversion/1.8.13/bin/svnadmin")
 	static String repositoryUrl
 	static String nonExistentUrl
 	static String author = "Some Author"
@@ -37,14 +38,14 @@ class SvnIntegrationTestConfig {
 	static String newReferenceRepoPath() {
 		def file = findSequentNonExistentFile(tempDirectoryFile(), "svn-reference-repo-", "")
 		assert file.mkdirs()
-		file.deleteOnExit()
+		deleteOnShutdown(file)
 		file.absolutePath
 	}
 
 	static String newProjectPath() {
 		def file = findSequentNonExistentFile(tempDirectoryFile(), "svn-project-", "")
 		assert file.mkdirs()
-		file.deleteOnExit()
+		deleteOnShutdown(file)
 		file.absolutePath
 	}
 }
