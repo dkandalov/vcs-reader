@@ -181,5 +181,12 @@ class SvnRepository {
 				it
 			}
 		}
+
+		static someNonEmptyRepository() {
+			new SvnRepository().init().with {
+				dummyCommit(dateTime("00:00:00 10/08/2014"))
+				it
+			}
+		}
 	}
 }

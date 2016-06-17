@@ -80,7 +80,7 @@ class SvnIntegrationTest {
 				dateTime("00:00:00 10/08/2014"),
 				author,
 				"initial commit",
-				[new Change(ADDED, "file1.txt", revision(1))]
+				[new Change(ADDED, "file1.txt", revisions[0])]
 			),
 			new Commit(
 				revisions[1], revisions[0],
