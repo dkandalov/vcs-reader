@@ -17,36 +17,38 @@ public interface VcsCommit {
 	VcsCommit withChanges(List<? extends VcsChange> newChanges);
 
 	/**
-	 * Revision id as returned by VCS.
+	 * @return revision of this commit as returned by VCS
 	 */
 	@NotNull String getRevision();
 
 	/**
-	 * Previous revision id as return by VCS ({@link VcsChange#noRevision} for the first commit).
+	 * @return revision of previous commit as returned by VCS or {@link VcsChange#noRevision} for the first commit
 	 */
 	@NotNull String getRevisionBefore();
 
 	/**
-	 * Time of commit.
+	 * @return date and time of commit
 	 */
 	@NotNull Date getTime();
 
 	/**
-	 * Commit author (it might be different from committer).
-	 * Note that it might also include email (e.g. for git commits).
+	 * @return author of the commit.
+	 * Note that for merge commits in git and mercurial author and committer can be different.
+	 * Also author name can include email (e.g. for git commits).
 	 */
 	@NotNull String getAuthor();
 
 	/**
-	 * Commit message.
+	 * @return commit message
 	 */
 	@NotNull String getMessage();
 
 	/**
-	 * List of changes made in the commit.
-	 * Only the changes made under current {@link VcsRoot} are included.
+	 * @return list of changes made in the commit.
 	 * The order of changes is specified by VCS (it may be unstable e.g. in case of svn).
-	 * Note that list of changes can be empty (e.g. git, svn support commits with no changes).
+	 *
+	 * Note that for svn only the changes made under the current {@link VcsRoot} path are included.
+	 * Note that git, svn support commits with no changes so list of changes can be empty.
 	 */
 	@NotNull List<? extends VcsChange> getChanges();
 

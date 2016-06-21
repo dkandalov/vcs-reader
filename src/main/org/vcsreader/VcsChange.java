@@ -15,33 +15,40 @@ public interface VcsChange {
 	String noFilePath = "";
 
 	/**
-	 * Type of file change.
+	 * @return type of file change.
 	 */
 	@NotNull Type getType();
 
 	/**
-	 * File path after commit relative to {@link VcsRoot} path.
+	 * @return file path after commit relative to {@link VcsRoot} path.
 	 * {@link #noFilePath} if file was deleted.
 	 */
 	@NotNull String getFilePath();
 
 	/**
-	 * File path before commit relative to {@link VcsRoot} path.
+	 * @return file path before commit relative to {@link VcsRoot} path.
 	 * {@link #noFilePath} if file didn't exist.
 	 */
 	@NotNull String getFilePathBefore();
 
+	/**
+	 * @return revision of the commit in which file was modified
+	 */
 	String getRevision();
 
+	/**
+	 * @return revision of the previous commit in which file was modified
+	 * or {@link VcsChange#noRevision} if file wan't tracked by VCS before this commit.
+	 */
 	String getRevisionBefore();
 
 	/**
-	 * Requests content of modified file after the change.
+	 * @return requests from VCS and returns file content after change.
 	 */
 	@NotNull FileContent fileContent();
 
 	/**
-	 * Requests content of modified file before the change.
+	 * @return requests from VCS and returns file content before change.
 	 */
 	@NotNull FileContent fileContentBefore();
 
@@ -90,7 +97,7 @@ public interface VcsChange {
 		}
 
 		/**
-		 * Content of file as logged by VCS.
+		 * @return content of file as logged by VCS.
 		 * Encoding of the file is auto-detected or looked up in {@code VcsRoot} configuration
 		 * and then decoded into java string UTF-16.
 		 */

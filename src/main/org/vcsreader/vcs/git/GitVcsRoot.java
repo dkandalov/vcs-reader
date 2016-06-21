@@ -1,5 +1,7 @@
 package org.vcsreader.vcs.git;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.vcsreader.VcsRoot;
 import org.vcsreader.vcs.commandlistener.VcsCommandObserver;
 
@@ -14,22 +16,29 @@ public class GitVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
 	private VcsCommandObserver observer;
 
 
-	public GitVcsRoot(String localPath, String repositoryUrl) {
+	public GitVcsRoot(@NotNull String localPath) {
+		this(localPath, null, GitSettings.defaults());
+	}
+
+	public GitVcsRoot(@NotNull String localPath, @Nullable String repositoryUrl) {
 		this(localPath, repositoryUrl, GitSettings.defaults());
 	}
 
 	/**
-	 * @param localPath     path to folder with repository clone
-	 *                      (if folder doesn't exit, it will be created on {@link #cloneToLocal()}.
+	 * @param localPath     path to folder with repository
+	 *                      (if folder doesn't exist, it will be created by {@link #cloneToLocal()}.
 	 * @param repositoryUrl url to remote repository (only required for {@link #cloneToLocal()})
 	 */
-	public GitVcsRoot(String localPath, String repositoryUrl, GitSettings settings) {
+	public GitVcsRoot(@NotNull String localPath, @Nullable String repositoryUrl, GitSettings settings) {
 		this.localPath = localPath;
 		this.repositoryUrl = repositoryUrl;
 		this.settings = settings;
 	}
 
 	@Override public CloneResult cloneToLocal() {
+		if (repositoryUrl == null) {
+			throw new IllegalStateException("Cannot clone repository because remote url is not specified");
+		}
 		return observer.executeAndObserve(new GitClone(settings.gitPath, repositoryUrl, localPath));
 	}
 
