@@ -7,23 +7,25 @@ import org.vcsreader.VcsProject.LogFileContentResult;
 import org.vcsreader.VcsProject.LogResult;
 import org.vcsreader.VcsProject.UpdateResult;
 import org.vcsreader.VcsRoot;
-import org.vcsreader.vcs.commandlistener.VcsCommandExecutor;
+import org.vcsreader.vcs.commandlistener.VcsCommand;
 
 import java.util.Date;
 
-public class HgVcsRoot implements VcsRoot, VcsRoot.WithCommandExecutor {
+import static org.vcsreader.vcs.commandlistener.VcsCommand.Listener.executeWith;
+
+public class HgVcsRoot implements VcsRoot, VcsCommand.Owner {
 	public final String localPath;
 	public final String repositoryUrl;
 	public final HgSettings settings;
-	private VcsCommandExecutor commandExecutor;
+	private final VcsCommand.Listener listener;
 
 
 	public HgVcsRoot(@NotNull String localPath) {
-		this(localPath, null, HgSettings.defaults());
+		this(localPath, null);
 	}
 
 	public HgVcsRoot(@NotNull String localPath, @Nullable String repositoryUrl) {
-		this(localPath, repositoryUrl, HgSettings.defaults());
+		this(localPath, repositoryUrl, HgSettings.defaults(), VcsCommand.Listener.none);
 	}
 
 	/**
@@ -32,29 +34,35 @@ public class HgVcsRoot implements VcsRoot, VcsRoot.WithCommandExecutor {
 	 * @param repositoryUrl url to remote repository (only required for {@link #cloneToLocal()})
 	 */
 	public HgVcsRoot(@NotNull String localPath, @Nullable String repositoryUrl, HgSettings settings) {
+		this(localPath, repositoryUrl, settings, VcsCommand.Listener.none);
+	}
+
+	private HgVcsRoot(@NotNull String localPath, @Nullable String repositoryUrl,
+	                 HgSettings settings, VcsCommand.Listener listener) {
 		this.localPath = localPath;
 		this.repositoryUrl = repositoryUrl;
 		this.settings = settings;
+		this.listener = listener;
+	}
+
+	@Override public HgVcsRoot withListener(VcsCommand.Listener listener) {
+		return new HgVcsRoot(localPath, repositoryUrl, settings, listener);
 	}
 
 	@Override public CloneResult cloneToLocal() {
-		return commandExecutor.executeAndObserve(new HgClone(settings.hgPath, repositoryUrl, localPath));
+		return executeWith(listener, new HgClone(settings.hgPath, repositoryUrl, localPath));
 	}
 
 	@Override public UpdateResult update() {
-		return commandExecutor.executeAndObserve(new HgUpdate(settings.hgPath, localPath));
+		return executeWith(listener, new HgUpdate(settings.hgPath, localPath));
 	}
 
 	@Override public LogResult log(Date fromDate, Date toDate) {
-		return commandExecutor.executeAndObserve(new HgLog(settings.hgPath, localPath, fromDate, toDate));
+		return executeWith(listener, new HgLog(settings.hgPath, localPath, fromDate, toDate));
 	}
 
 	@Override public LogFileContentResult logFileContent(String filePath, String revision) {
-		return commandExecutor.executeAndObserve(new HgLogFileContent(settings.hgPath, localPath, filePath, revision, settings.defaultFileCharset));
-	}
-
-	public void setCommandExecutor(VcsCommandExecutor commandExecutor) {
-		this.commandExecutor = commandExecutor;
+		return executeWith(listener, new HgLogFileContent(settings.hgPath, localPath, filePath, revision, settings.defaultFileCharset));
 	}
 
 	@SuppressWarnings("SimplifiableIfStatement")

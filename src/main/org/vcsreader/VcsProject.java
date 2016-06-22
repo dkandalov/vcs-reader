@@ -1,16 +1,17 @@
 package org.vcsreader;
 
 import org.jetbrains.annotations.NotNull;
-import org.vcsreader.vcs.commandlistener.VcsCommandExecutor;
+import org.vcsreader.vcs.commandlistener.VcsCommand;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.sort;
+import static java.util.Collections.unmodifiableList;
+import static java.util.stream.Collectors.toList;
 import static org.vcsreader.lang.DateTimeUtil.UTC;
 import static org.vcsreader.lang.DateTimeUtil.dateTimeFormat;
 import static org.vcsreader.lang.StringUtil.shortened;
@@ -21,20 +22,20 @@ import static org.vcsreader.lang.StringUtil.shortened;
  */
 public class VcsProject {
 	private final List<VcsRoot> vcsRoots;
-	private final VcsCommandExecutor commandExecutor;
+	private final CompositeListener compositeListener;
 
 	public VcsProject(VcsRoot... vcsRoots) {
 		this(asList(vcsRoots));
 	}
 
 	public VcsProject(List<VcsRoot> vcsRoots) {
-		this.vcsRoots = vcsRoots;
-		this.commandExecutor = new VcsCommandExecutor();
-		for (VcsRoot vcsRoot : vcsRoots) {
-			if (vcsRoot instanceof VcsRoot.WithCommandExecutor) {
-				((VcsRoot.WithCommandExecutor) vcsRoot).setCommandExecutor(commandExecutor);
+		this.compositeListener = new CompositeListener();
+		this.vcsRoots = vcsRoots.stream().map((vcsRoot) -> {
+			if (vcsRoot instanceof VcsCommand.Owner) {
+				((VcsCommand.Owner) vcsRoot).withListener(compositeListener);
 			}
-		}
+			return vcsRoot;
+		}).collect(toList());
 	}
 
 	/**
@@ -107,18 +108,18 @@ public class VcsProject {
 		return aggregator.result;
 	}
 
-	public VcsProject addListener(VcsCommandExecutor.Listener listener) {
-		commandExecutor.add(listener);
+	public VcsProject addListener(VcsCommand.Listener listener) {
+		compositeListener.add(listener);
 		return this;
 	}
 
-	public VcsProject removeListener(VcsCommandExecutor.Listener listener) {
-		commandExecutor.remove(listener);
+	public VcsProject removeListener(VcsCommand.Listener listener) {
+		compositeListener.remove(listener);
 		return this;
 	}
 
 	public List<VcsRoot> vcsRoots() {
-		return Collections.unmodifiableList(vcsRoots);
+		return unmodifiableList(vcsRoots);
 	}
 
 	@Override public String toString() {
@@ -419,6 +420,31 @@ public class VcsProject {
 			int result = vcsErrors.hashCode();
 			result = 31 * result + exceptions.hashCode();
 			return result;
+		}
+	}
+
+
+	private class CompositeListener implements VcsCommand.Listener {
+		private final List<VcsCommand.Listener> listeners = new ArrayList<>();
+
+		public void add(VcsCommand.Listener listener) {
+			listeners.add(listener);
+		}
+
+		public void remove(VcsCommand.Listener listener) {
+			listeners.remove(listener);
+		}
+
+		@Override public void beforeCommand(VcsCommand<?> command) {
+			for (VcsCommand.Listener listener : listeners) {
+				listener.beforeCommand(command);
+			}
+		}
+
+		@Override public void afterCommand(VcsCommand<?> command) {
+			for (VcsCommand.Listener listener : listeners) {
+				listener.afterCommand(command);
+			}
 		}
 	}
 }

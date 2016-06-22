@@ -1,7 +1,5 @@
 package org.vcsreader;
 
-import org.vcsreader.vcs.commandlistener.VcsCommandExecutor;
-
 import java.util.Date;
 
 import static org.vcsreader.VcsProject.*;
@@ -19,8 +17,4 @@ public interface VcsRoot {
 	LogResult log(Date fromDate, Date toDate);
 
 	LogFileContentResult logFileContent(String filePath, String revision);
-
-	interface WithCommandExecutor {
-		void setCommandExecutor(VcsCommandExecutor commandExecutor);
-	}
 }

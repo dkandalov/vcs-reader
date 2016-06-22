@@ -3,25 +3,26 @@ package org.vcsreader.vcs.git;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.vcsreader.VcsRoot;
-import org.vcsreader.vcs.commandlistener.VcsCommandExecutor;
+import org.vcsreader.vcs.commandlistener.VcsCommand;
 
 import java.util.Date;
 
 import static org.vcsreader.VcsProject.*;
+import static org.vcsreader.vcs.commandlistener.VcsCommand.Listener.executeWith;
 
-public class GitVcsRoot implements VcsRoot, VcsRoot.WithCommandExecutor {
+public class GitVcsRoot implements VcsRoot, VcsCommand.Owner {
 	public final String localPath;
 	public final String repositoryUrl;
 	public final GitSettings settings;
-	private VcsCommandExecutor commandExecutor;
+	private final VcsCommand.Listener listener;
 
 
 	public GitVcsRoot(@NotNull String localPath) {
-		this(localPath, null, GitSettings.defaults());
+		this(localPath, null);
 	}
 
 	public GitVcsRoot(@NotNull String localPath, @Nullable String repositoryUrl) {
-		this(localPath, repositoryUrl, GitSettings.defaults());
+		this(localPath, repositoryUrl, GitSettings.defaults(), VcsCommand.Listener.none);
 	}
 
 	/**
@@ -30,32 +31,38 @@ public class GitVcsRoot implements VcsRoot, VcsRoot.WithCommandExecutor {
 	 * @param repositoryUrl url to remote repository (only required for {@link #cloneToLocal()})
 	 */
 	public GitVcsRoot(@NotNull String localPath, @Nullable String repositoryUrl, GitSettings settings) {
+		this(localPath, repositoryUrl, settings, VcsCommand.Listener.none);
+	}
+
+	private GitVcsRoot(@NotNull String localPath, @Nullable String repositoryUrl,
+	                  GitSettings settings, VcsCommand.Listener listener) {
 		this.localPath = localPath;
 		this.repositoryUrl = repositoryUrl;
 		this.settings = settings;
+		this.listener = listener;
+	}
+
+	@Override public GitVcsRoot withListener(VcsCommand.Listener listener) {
+		return new GitVcsRoot(localPath, repositoryUrl, settings, listener);
 	}
 
 	@Override public CloneResult cloneToLocal() {
 		if (repositoryUrl == null) {
 			throw new IllegalStateException("Cannot clone repository because remote url is not specified");
 		}
-		return commandExecutor.executeAndObserve(new GitClone(settings.gitPath, repositoryUrl, localPath));
+		return executeWith(listener, new GitClone(settings.gitPath, repositoryUrl, localPath));
 	}
 
 	@Override public UpdateResult update() {
-		return commandExecutor.executeAndObserve(new GitUpdate(settings.gitPath, localPath));
+		return executeWith(listener, new GitUpdate(settings.gitPath, localPath));
 	}
 
 	@Override public LogResult log(Date fromDate, Date toDate) {
-		return commandExecutor.executeAndObserve(new GitLog(settings.gitPath, localPath, fromDate, toDate));
+		return executeWith(listener, new GitLog(settings.gitPath, localPath, fromDate, toDate));
 	}
 
 	@Override public LogFileContentResult logFileContent(String filePath, String revision) {
-		return commandExecutor.executeAndObserve(new GitLogFileContent(settings.gitPath, localPath, filePath, revision, settings.defaultFileCharset));
-	}
-
-	public void setCommandExecutor(VcsCommandExecutor commandExecutor) {
-		this.commandExecutor = commandExecutor;
+		return executeWith(listener, new GitLogFileContent(settings.gitPath, localPath, filePath, revision, settings.defaultFileCharset));
 	}
 
 	@SuppressWarnings("RedundantIfStatement")
