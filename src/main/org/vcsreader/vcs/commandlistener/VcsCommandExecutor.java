@@ -3,33 +3,32 @@ package org.vcsreader.vcs.commandlistener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VcsCommandObserver {
+public class VcsCommandExecutor {
 	private final List<VcsCommandListener> listeners = new ArrayList<>();
 
 	public <T> T executeAndObserve(final VcsCommand<T> command) {
 		for (VcsCommandListener listener : listeners) {
 			listener.beforeCommand(command);
 		}
-
-		T result;
 		try {
-			result = command.execute();
+
+			return command.execute();
+
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to execute " + command.describe(), e);
+		} finally {
+			for (VcsCommandListener listener : listeners) {
+				listener.afterCommand(command);
+			}
 		}
-
-		for (VcsCommandListener listener : listeners) {
-			listener.afterCommand(command);
-		}
-		return result;
 	}
 
-	public VcsCommandObserver add(VcsCommandListener listener) {
+	public VcsCommandExecutor add(VcsCommandListener listener) {
 		listeners.add(listener);
 		return this;
 	}
 
-	public VcsCommandObserver remove(VcsCommandListener listener) {
+	public VcsCommandExecutor remove(VcsCommandListener listener) {
 		listeners.remove(listener);
 		return this;
 	}

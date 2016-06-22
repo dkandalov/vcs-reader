@@ -2,7 +2,7 @@ package org.vcsreader;
 
 import org.jetbrains.annotations.NotNull;
 import org.vcsreader.vcs.commandlistener.VcsCommandListener;
-import org.vcsreader.vcs.commandlistener.VcsCommandObserver;
+import org.vcsreader.vcs.commandlistener.VcsCommandExecutor;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -17,7 +17,7 @@ import static org.vcsreader.lang.StringUtil.shortened;
  */
 public class VcsProject {
 	private final List<VcsRoot> vcsRoots;
-	private final VcsCommandObserver commandObserver;
+	private final VcsCommandExecutor commandExecutor;
 
 	public VcsProject(VcsRoot... vcsRoots) {
 		this(asList(vcsRoots));
@@ -25,10 +25,10 @@ public class VcsProject {
 
 	public VcsProject(List<VcsRoot> vcsRoots) {
 		this.vcsRoots = vcsRoots;
-		this.commandObserver = new VcsCommandObserver();
+		this.commandExecutor = new VcsCommandExecutor();
 		for (VcsRoot vcsRoot : vcsRoots) {
-			if (vcsRoot instanceof VcsRoot.WithCommandObserver) {
-				((VcsRoot.WithCommandObserver) vcsRoot).setObserver(commandObserver);
+			if (vcsRoot instanceof VcsRoot.WithCommandExecutor) {
+				((VcsRoot.WithCommandExecutor) vcsRoot).setCommandExecutor(commandExecutor);
 			}
 		}
 	}
@@ -105,12 +105,12 @@ public class VcsProject {
 	}
 
 	public VcsProject addListener(VcsCommandListener listener) {
-		commandObserver.add(listener);
+		commandExecutor.add(listener);
 		return this;
 	}
 
 	public VcsProject removeListener(VcsCommandListener listener) {
-		commandObserver.remove(listener);
+		commandExecutor.remove(listener);
 		return this;
 	}
 

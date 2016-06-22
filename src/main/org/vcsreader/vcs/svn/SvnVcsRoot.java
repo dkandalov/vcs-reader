@@ -1,18 +1,18 @@
 package org.vcsreader.vcs.svn;
 
 import org.vcsreader.VcsRoot;
-import org.vcsreader.vcs.commandlistener.VcsCommandObserver;
+import org.vcsreader.vcs.commandlistener.VcsCommandExecutor;
 
 import java.util.Date;
 
 import static org.vcsreader.VcsProject.*;
 
-public class SvnVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
+public class SvnVcsRoot implements VcsRoot, VcsRoot.WithCommandExecutor {
 	public final String repositoryUrl;
 	public final SvnSettings settings;
 	private String repositoryRoot;
 	private boolean quoteDateRange = false;
-	private VcsCommandObserver observer;
+	private VcsCommandExecutor commandExecutor;
 
 
 	public SvnVcsRoot(String repositoryUrl) {
@@ -34,13 +34,13 @@ public class SvnVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
 
 	@Override public LogResult log(Date fromDate, Date toDate) {
 		if (repositoryRoot == null) {
-			SvnInfo.Result result = observer.executeAndObserve(new SvnInfo(settings.svnPath, repositoryUrl));
+			SvnInfo.Result result = commandExecutor.executeAndObserve(new SvnInfo(settings.svnPath, repositoryUrl));
 			repositoryRoot = result.repositoryRoot;
 		}
-		LogResult logResult = observer.executeAndObserve(svnLog(fromDate, toDate));
+		LogResult logResult = commandExecutor.executeAndObserve(svnLog(fromDate, toDate));
 		if (hasRevisionArgumentError(logResult)) {
 			quoteDateRange = !quoteDateRange;
-			logResult = observer.executeAndObserve(svnLog(fromDate, toDate));
+			logResult = commandExecutor.executeAndObserve(svnLog(fromDate, toDate));
 		}
 		return logResult;
 	}
@@ -72,7 +72,7 @@ public class SvnVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
 	}
 
 	@Override public LogFileContentResult logFileContent(String filePath, String revision) {
-		return observer.executeAndObserve(new SvnLogFileContent(
+		return commandExecutor.executeAndObserve(new SvnLogFileContent(
 				settings.svnPath,
 				repositoryUrl,
 				filePath,
@@ -81,8 +81,8 @@ public class SvnVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
 		));
 	}
 
-	@Override public void setObserver(VcsCommandObserver observer) {
-		this.observer = observer;
+	public void setCommandExecutor(VcsCommandExecutor commandExecutor) {
+		this.commandExecutor = commandExecutor;
 	}
 
 	@Override public String toString() {

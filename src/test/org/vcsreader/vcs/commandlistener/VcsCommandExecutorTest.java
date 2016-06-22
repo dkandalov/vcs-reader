@@ -5,11 +5,11 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-public class VcsCommandObserverTest {
+public class VcsCommandExecutorTest {
 	@Test public void notifyListenerAboutVcsCommands() {
 		final VcsCommand[] onBeforeCommands = new VcsCommand[1];
 		final VcsCommand[] onAfterCommands = new VcsCommand[1];
-		VcsCommandObserver observer = new VcsCommandObserver().add(new VcsCommandListener() {
+		VcsCommandExecutor commandExecutor = new VcsCommandExecutor().add(new VcsCommandListener() {
 			@Override public void beforeCommand(VcsCommand<?> command) {
 				onBeforeCommands[0] = command;
 			}
@@ -17,7 +17,7 @@ public class VcsCommandObserverTest {
 				onAfterCommands[0] = command;
 			}
 		});
-		observer.executeAndObserve(new SuccessfulVcsCommand());
+		commandExecutor.executeAndObserve(new SuccessfulVcsCommand());
 
 		assertThat(onBeforeCommands[0], instanceOf(SuccessfulVcsCommand.class));
 		assertThat(onAfterCommands[0], instanceOf(SuccessfulVcsCommand.class));

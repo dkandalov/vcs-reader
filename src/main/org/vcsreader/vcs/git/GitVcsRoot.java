@@ -3,17 +3,17 @@ package org.vcsreader.vcs.git;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.vcsreader.VcsRoot;
-import org.vcsreader.vcs.commandlistener.VcsCommandObserver;
+import org.vcsreader.vcs.commandlistener.VcsCommandExecutor;
 
 import java.util.Date;
 
 import static org.vcsreader.VcsProject.*;
 
-public class GitVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
+public class GitVcsRoot implements VcsRoot, VcsRoot.WithCommandExecutor {
 	public final String localPath;
 	public final String repositoryUrl;
 	public final GitSettings settings;
-	private VcsCommandObserver observer;
+	private VcsCommandExecutor commandExecutor;
 
 
 	public GitVcsRoot(@NotNull String localPath) {
@@ -39,23 +39,23 @@ public class GitVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
 		if (repositoryUrl == null) {
 			throw new IllegalStateException("Cannot clone repository because remote url is not specified");
 		}
-		return observer.executeAndObserve(new GitClone(settings.gitPath, repositoryUrl, localPath));
+		return commandExecutor.executeAndObserve(new GitClone(settings.gitPath, repositoryUrl, localPath));
 	}
 
 	@Override public UpdateResult update() {
-		return observer.executeAndObserve(new GitUpdate(settings.gitPath, localPath));
+		return commandExecutor.executeAndObserve(new GitUpdate(settings.gitPath, localPath));
 	}
 
 	@Override public LogResult log(Date fromDate, Date toDate) {
-		return observer.executeAndObserve(new GitLog(settings.gitPath, localPath, fromDate, toDate));
+		return commandExecutor.executeAndObserve(new GitLog(settings.gitPath, localPath, fromDate, toDate));
 	}
 
 	@Override public LogFileContentResult logFileContent(String filePath, String revision) {
-		return observer.executeAndObserve(new GitLogFileContent(settings.gitPath, localPath, filePath, revision, settings.defaultFileCharset));
+		return commandExecutor.executeAndObserve(new GitLogFileContent(settings.gitPath, localPath, filePath, revision, settings.defaultFileCharset));
 	}
 
-	@Override public void setObserver(VcsCommandObserver observer) {
-		this.observer = observer;
+	public void setCommandExecutor(VcsCommandExecutor commandExecutor) {
+		this.commandExecutor = commandExecutor;
 	}
 
 	@SuppressWarnings("RedundantIfStatement")

@@ -7,15 +7,15 @@ import org.vcsreader.VcsProject.LogFileContentResult;
 import org.vcsreader.VcsProject.LogResult;
 import org.vcsreader.VcsProject.UpdateResult;
 import org.vcsreader.VcsRoot;
-import org.vcsreader.vcs.commandlistener.VcsCommandObserver;
+import org.vcsreader.vcs.commandlistener.VcsCommandExecutor;
 
 import java.util.Date;
 
-public class HgVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
+public class HgVcsRoot implements VcsRoot, VcsRoot.WithCommandExecutor {
 	public final String localPath;
 	public final String repositoryUrl;
 	public final HgSettings settings;
-	private VcsCommandObserver observer;
+	private VcsCommandExecutor commandExecutor;
 
 
 	public HgVcsRoot(@NotNull String localPath) {
@@ -38,23 +38,23 @@ public class HgVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
 	}
 
 	@Override public CloneResult cloneToLocal() {
-		return observer.executeAndObserve(new HgClone(settings.hgPath, repositoryUrl, localPath));
+		return commandExecutor.executeAndObserve(new HgClone(settings.hgPath, repositoryUrl, localPath));
 	}
 
 	@Override public UpdateResult update() {
-		return observer.executeAndObserve(new HgUpdate(settings.hgPath, localPath));
+		return commandExecutor.executeAndObserve(new HgUpdate(settings.hgPath, localPath));
 	}
 
 	@Override public LogResult log(Date fromDate, Date toDate) {
-		return observer.executeAndObserve(new HgLog(settings.hgPath, localPath, fromDate, toDate));
+		return commandExecutor.executeAndObserve(new HgLog(settings.hgPath, localPath, fromDate, toDate));
 	}
 
 	@Override public LogFileContentResult logFileContent(String filePath, String revision) {
-		return observer.executeAndObserve(new HgLogFileContent(settings.hgPath, localPath, filePath, revision, settings.defaultFileCharset));
+		return commandExecutor.executeAndObserve(new HgLogFileContent(settings.hgPath, localPath, filePath, revision, settings.defaultFileCharset));
 	}
 
-	@Override public void setObserver(VcsCommandObserver observer) {
-		this.observer = observer;
+	public void setCommandExecutor(VcsCommandExecutor commandExecutor) {
+		this.commandExecutor = commandExecutor;
 	}
 
 	@SuppressWarnings("SimplifiableIfStatement")
