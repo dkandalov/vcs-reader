@@ -1,5 +1,7 @@
 package org.vcsreader.vcs.hg;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.vcsreader.VcsProject.CloneResult;
 import org.vcsreader.VcsProject.LogFileContentResult;
 import org.vcsreader.VcsProject.LogResult;
@@ -16,8 +18,12 @@ public class HgVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
 	private VcsCommandObserver observer;
 
 
-	public HgVcsRoot(String repositoryUrl, String localPath) {
-		this(repositoryUrl, localPath, HgSettings.defaults());
+	public HgVcsRoot(@NotNull String localPath) {
+		this(localPath, null, HgSettings.defaults());
+	}
+
+	public HgVcsRoot(@NotNull String localPath, @Nullable String repositoryUrl) {
+		this(localPath, repositoryUrl, HgSettings.defaults());
 	}
 
 	/**
@@ -25,7 +31,7 @@ public class HgVcsRoot implements VcsRoot, VcsRoot.WithCommandObserver {
 	 *                      (if folder doesn't exit, it will be created on {@link #cloneToLocal()}.
 	 * @param repositoryUrl url to remote repository (only required for {@link #cloneToLocal()})
 	 */
-	public HgVcsRoot(String localPath, String repositoryUrl, HgSettings settings) {
+	public HgVcsRoot(@NotNull String localPath, @Nullable String repositoryUrl, HgSettings settings) {
 		this.localPath = localPath;
 		this.repositoryUrl = repositoryUrl;
 		this.settings = settings;
