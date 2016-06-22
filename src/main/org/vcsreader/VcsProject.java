@@ -38,7 +38,7 @@ public class VcsProject {
 	}
 
 	/**
-	 * For distributes VCS clones {@link VcsRoot}s to local file system and must be called before querying commits.
+	 * For distributed VCS clones {@link VcsRoot}s to local file system and must be called before querying commits.
 	 * Does nothing for centralized VCS because commit history can be queried from server.
 	 */
 	public CloneResult cloneToLocal() {
@@ -57,7 +57,7 @@ public class VcsProject {
 	}
 
 	/**
-	 * For distributes VCS pulls updates from upstream for all {@link VcsRoot}s
+	 * For distributed VCS pulls updates from upstream for all {@link VcsRoot}s
 	 * Does nothing for centralized VCS because commit history can be queried from server.
 	 */
 	public UpdateResult update() {
