@@ -1,18 +1,20 @@
 package org.vcsreader.vcs.svn;
 
-import org.vcsreader.vcs.Change;
 import org.vcsreader.VcsChange;
 import org.vcsreader.VcsCommit;
-import org.vcsreader.lang.Charsets;
+import org.vcsreader.lang.CharsetUtil;
 import org.vcsreader.lang.CommandLine;
+import org.vcsreader.vcs.Change;
 import org.vcsreader.vcs.commandlistener.VcsCommand;
 
 import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.*;
 
 import static java.util.Arrays.asList;
 import static org.vcsreader.VcsProject.LogResult;
+import static org.vcsreader.lang.DateTimeUtil.UTC;
+import static org.vcsreader.lang.DateTimeUtil.dateTimeFormat;
 import static org.vcsreader.vcs.svn.SvnCommandLine.isSuccessful;
 import static org.vcsreader.vcs.svn.SvnCommandLine.newExternalCommand;
 
@@ -61,7 +63,7 @@ class SvnLog implements VcsCommand<LogResult> {
 
 		// see http://subversion.tigris.org/issues/show_bug.cgi?id=2938
 		@SuppressWarnings("UnnecessaryLocalVariable")
-		Charset svnXmlCharset = Charsets.UTF8;
+		Charset svnXmlCharset = CharsetUtil.UTF8;
 
 		return newExternalCommand(
 				pathToSvn, "log",
@@ -77,8 +79,7 @@ class SvnLog implements VcsCommand<LogResult> {
 		toDate = new Date(toDate.getTime() - 1000); // make toDate exclusive
 
 		// svn supports any ISO 8601 date format (https://en.wikipedia.org/wiki/ISO_8601)
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-		dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+		DateFormat dateFormat = dateTimeFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", UTC);
 
 		String result = "{" + dateFormat.format(fromDate) + "}:{" + dateFormat.format(toDate) + "}";
 		if (quoteDateRange) {

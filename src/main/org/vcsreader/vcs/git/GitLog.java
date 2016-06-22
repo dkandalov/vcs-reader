@@ -15,7 +15,7 @@ import static java.util.Arrays.asList;
 import static org.vcsreader.VcsChange.Type.DELETED;
 import static org.vcsreader.VcsChange.Type.ADDED;
 import static org.vcsreader.VcsProject.LogResult;
-import static org.vcsreader.lang.Charsets.UTF8;
+import static org.vcsreader.lang.CharsetUtil.UTF8;
 import static org.vcsreader.vcs.git.GitCommitParser.*;
 import static org.vcsreader.vcs.git.GitCommandLine.isSuccessful;
 

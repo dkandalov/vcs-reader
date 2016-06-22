@@ -1,7 +1,7 @@
 package org.vcsreader.vcs.hg;
 
 import org.jetbrains.annotations.NotNull;
-import org.vcsreader.lang.Charsets;
+import org.vcsreader.lang.CharsetUtil;
 
 import java.nio.charset.Charset;
 
@@ -20,7 +20,7 @@ public class HgSettings {
 	}
 
 	public static HgSettings defaults() {
-		return new HgSettings("hg", Charsets.UTF8);
+		return new HgSettings("hg", CharsetUtil.UTF8);
 	}
 
 	public HgSettings withHgPath(String value) {

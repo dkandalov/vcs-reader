@@ -1,20 +1,22 @@
 package org.vcsreader.vcs.hg;
 
+import org.vcsreader.VcsCommit;
 import org.vcsreader.vcs.Change;
 import org.vcsreader.vcs.Commit;
-import org.vcsreader.VcsCommit;
 
+import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 import static org.vcsreader.VcsChange.Type.*;
+import static org.vcsreader.lang.DateTimeUtil.UTC;
+import static org.vcsreader.lang.DateTimeUtil.dateTimeFormat;
+import static org.vcsreader.lang.StringUtil.split;
 import static org.vcsreader.vcs.Change.noFilePath;
 import static org.vcsreader.vcs.Change.noRevision;
-import static org.vcsreader.lang.StringUtil.split;
 
 class HgCommitParser {
 	private static final String commitStartSeparatorFormat = "\\x15\\x16\\x17\\x18\\x19";
@@ -24,7 +26,7 @@ class HgCommitParser {
 	private static final String commitFieldsSeparator = "\u0019\u0018\u0017\u0016\u0015";
 	private static final String fileSeparator = "\u0017\u0016\u0015\u0019\u0018";
 	private static final String hgNoRevision = "0000000000000000000000000000000000000000";
-	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+	private static final DateFormat dateFormat = dateTimeFormat("yyyy-MM-dd HH:mm:ss Z", UTC);
 
 	public static List<VcsCommit> parseListOfCommits(String stdout) {
 		ArrayList<VcsCommit> commits = new ArrayList<>();

@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.vcsreader.lang.Charsets.UTF8;
+import static org.vcsreader.lang.CharsetUtil.UTF8;
 import static org.vcsreader.vcs.hg.HgCommandLine.isSuccessful;
 
 // suppress because it's similar to GitLog

@@ -3,11 +3,16 @@ package org.vcsreader;
 import org.jetbrains.annotations.NotNull;
 import org.vcsreader.vcs.commandlistener.VcsCommandExecutor;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.sort;
+import static org.vcsreader.lang.DateTimeUtil.UTC;
+import static org.vcsreader.lang.DateTimeUtil.dateTimeFormat;
 import static org.vcsreader.lang.StringUtil.shortened;
 
 /**
@@ -82,8 +87,7 @@ public class VcsProject {
 	 */
 	public LogResult log(Date from, Date to) {
 		if (to.getTime() < from.getTime()) {
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-			dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+			DateFormat dateFormat = dateTimeFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", UTC);
 			throw new IllegalArgumentException("Invalid date range. " +
 					"From: " + dateFormat.format(from) + ", to: " + dateFormat.format(to) + ".");
 		}

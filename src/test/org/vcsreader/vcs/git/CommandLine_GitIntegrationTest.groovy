@@ -2,7 +2,7 @@ package org.vcsreader.vcs.git
 
 import org.junit.Test
 
-import static org.vcsreader.lang.Charsets.UTF8
+import static org.vcsreader.lang.CharsetUtil.UTF8
 import static org.vcsreader.lang.DateTimeUtil.date
 import static org.vcsreader.vcs.git.GitClone.gitClone
 import static org.vcsreader.vcs.git.GitIntegrationTestConfig.*

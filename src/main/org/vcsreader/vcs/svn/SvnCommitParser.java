@@ -1,27 +1,29 @@
 package org.vcsreader.vcs.svn;
 
 import org.jetbrains.annotations.NotNull;
+import org.vcsreader.VcsCommit;
+import org.vcsreader.vcs.Change;
+import org.vcsreader.vcs.Commit;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import org.vcsreader.vcs.Change;
-import org.vcsreader.vcs.Commit;
-import org.vcsreader.VcsCommit;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
 import java.io.StringReader;
+import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static java.lang.Boolean.parseBoolean;
 import static org.vcsreader.VcsChange.Type.*;
 import static org.vcsreader.VcsChange.noFilePath;
 import static org.vcsreader.VcsChange.noRevision;
+import static org.vcsreader.lang.DateTimeUtil.UTC;
+import static org.vcsreader.lang.DateTimeUtil.dateTimeFormat;
 
 class SvnCommitParser {
 	static List<VcsCommit> parseCommits(String xml) {
@@ -66,11 +68,10 @@ class SvnCommitParser {
 		private String copyFromRevision;
 		private final Set<String> movedPaths = new HashSet<>();
 
-		private final SimpleDateFormat dateFormat;
+		private final DateFormat dateFormat;
 
 		private CommitReadingHandler() {
-			dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-			dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+			dateFormat = dateTimeFormat("yyyy-MM-dd'T'HH:mm:ss", UTC);
 		}
 
 		@Override public void startElement(@NotNull String uri, @NotNull String localName,
