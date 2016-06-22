@@ -6,12 +6,14 @@ apply plugin: 'signing'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 group = "org.vcsreader"
-version = "1.0.0"
+version = "1.0.1"
 
 repositories {
     mavenLocal()
     mavenCentral()
-//    maven { url 'lib' } // has to be commented out before publishing to central.sonatype
+	// Use the following repository to fetch dependencies from 'lib' folder
+	// (has to be commented out before publishing to central.sonatype)
+	maven { url 'lib' }
 }
 
 dependencies {
