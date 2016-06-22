@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VcsCommandExecutor {
-	private final List<VcsCommandListener> listeners = new ArrayList<>();
+	private final List<Listener> listeners = new ArrayList<>();
 
 	public <T> T executeAndObserve(final VcsCommand<T> command) {
-		for (VcsCommandListener listener : listeners) {
+		for (Listener listener : listeners) {
 			listener.beforeCommand(command);
 		}
 		try {
@@ -17,19 +17,26 @@ public class VcsCommandExecutor {
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to execute " + command.describe(), e);
 		} finally {
-			for (VcsCommandListener listener : listeners) {
+			for (Listener listener : listeners) {
 				listener.afterCommand(command);
 			}
 		}
 	}
 
-	public VcsCommandExecutor add(VcsCommandListener listener) {
+	public VcsCommandExecutor add(Listener listener) {
 		listeners.add(listener);
 		return this;
 	}
 
-	public VcsCommandExecutor remove(VcsCommandListener listener) {
+	public VcsCommandExecutor remove(Listener listener) {
 		listeners.remove(listener);
 		return this;
+	}
+
+
+	public interface Listener {
+		void beforeCommand(VcsCommand<?> command);
+
+		void afterCommand(VcsCommand<?> command);
 	}
 }

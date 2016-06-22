@@ -1,7 +1,6 @@
 package org.vcsreader;
 
 import org.jetbrains.annotations.NotNull;
-import org.vcsreader.vcs.commandlistener.VcsCommandListener;
 import org.vcsreader.vcs.commandlistener.VcsCommandExecutor;
 
 import java.text.SimpleDateFormat;
@@ -104,12 +103,12 @@ public class VcsProject {
 		return aggregator.result;
 	}
 
-	public VcsProject addListener(VcsCommandListener listener) {
+	public VcsProject addListener(VcsCommandExecutor.Listener listener) {
 		commandExecutor.add(listener);
 		return this;
 	}
 
-	public VcsProject removeListener(VcsCommandListener listener) {
+	public VcsProject removeListener(VcsCommandExecutor.Listener listener) {
 		commandExecutor.remove(listener);
 		return this;
 	}

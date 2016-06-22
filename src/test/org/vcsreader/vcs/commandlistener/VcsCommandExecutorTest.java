@@ -9,7 +9,7 @@ public class VcsCommandExecutorTest {
 	@Test public void notifyListenerAboutVcsCommands() {
 		final VcsCommand[] onBeforeCommands = new VcsCommand[1];
 		final VcsCommand[] onAfterCommands = new VcsCommand[1];
-		VcsCommandExecutor commandExecutor = new VcsCommandExecutor().add(new VcsCommandListener() {
+		VcsCommandExecutor commandExecutor = new VcsCommandExecutor().add(new VcsCommandExecutor.Listener() {
 			@Override public void beforeCommand(VcsCommand<?> command) {
 				onBeforeCommands[0] = command;
 			}
