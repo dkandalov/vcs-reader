@@ -12,11 +12,6 @@ import java.util.List;
 public interface VcsCommit {
 
 	/**
-	 * @return new instance of commit object with updated list of changes
-	 */
-	VcsCommit withChanges(List<? extends VcsChange> newChanges);
-
-	/**
 	 * @return revision of this commit as returned by VCS
 	 */
 	@NotNull String getRevision();
@@ -51,6 +46,11 @@ public interface VcsCommit {
 	 * Note that git, svn support commits with no changes so list of changes can be empty.
 	 */
 	@NotNull List<? extends VcsChange> getChanges();
+
+	/**
+	 * @return new instance of commit object with updated list of changes
+	 */
+	VcsCommit withChanges(List<? extends VcsChange> newChanges);
 
 
 	interface WithRootReference {

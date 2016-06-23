@@ -30,12 +30,12 @@ public class VcsProject {
 
 	public VcsProject(List<VcsRoot> vcsRoots) {
 		this.compositeListener = new CompositeListener();
-		this.vcsRoots = vcsRoots.stream().map((vcsRoot) -> {
+		this.vcsRoots = unmodifiableList(vcsRoots.stream().map((vcsRoot) -> {
 			if (vcsRoot instanceof VcsCommand.Owner) {
 				((VcsCommand.Owner) vcsRoot).withListener(compositeListener);
 			}
 			return vcsRoot;
-		}).collect(toList());
+		}).collect(toList()));
 	}
 
 	/**
@@ -119,7 +119,7 @@ public class VcsProject {
 	}
 
 	public List<VcsRoot> vcsRoots() {
-		return unmodifiableList(vcsRoots);
+		return vcsRoots;
 	}
 
 	@Override public String toString() {
