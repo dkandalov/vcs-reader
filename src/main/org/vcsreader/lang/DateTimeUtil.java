@@ -3,6 +3,8 @@ package org.vcsreader.lang;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -11,6 +13,14 @@ import static java.util.Arrays.asList;
 
 public class DateTimeUtil {
 	public static final TimeZone UTC = TimeZone.getTimeZone("UTC");
+
+	public static Date asDate(Calendar calendar) {
+		return new Date(calendar.getTimeInMillis());
+	}
+
+	public static Date asDate(OffsetDateTime offsetDateTime) {
+		return new Date(offsetDateTime.toEpochSecond());
+	}
 
 	public static Date date(String s) {
 		try {
