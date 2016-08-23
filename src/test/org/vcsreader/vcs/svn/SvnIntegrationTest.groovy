@@ -10,8 +10,7 @@ import static org.vcsreader.VcsChange.Type.*
 import static org.vcsreader.VcsChange.noRevision
 import static org.vcsreader.lang.DateTimeUtil.date
 import static org.vcsreader.lang.DateTimeUtil.dateTime
-import static org.vcsreader.vcs.TestUtil.assertCommitsIn
-import static org.vcsreader.vcs.TestUtil.withSortedChanges
+import static org.vcsreader.vcs.TestUtil.*
 import static org.vcsreader.vcs.svn.SvnIntegrationTestConfig.*
 import static org.vcsreader.vcs.svn.SvnRepository.Scripts.*
 
@@ -371,7 +370,6 @@ class SvnIntegrationTest {
 		def change = logResult.commits().first().changes.first()
 		assert change.fileContentBefore() == VcsChange.FileContent.none // no content because file was moved from outside of project root
 		assert change.fileContent().value == "file content"
-
 	}
 
 	@Test void "run svn info command to find repository root from relative url"() {
@@ -385,6 +383,8 @@ class SvnIntegrationTest {
 	}
 
 	private static VcsProject newProject(SvnRepository repository) {
-		new VcsProject(new SvnVcsRoot("file://" + repository.repoPath, svnSettings))
+		def project = new VcsProject(new SvnVcsRoot("file://" + repository.repoPath, svnSettings))
+		project.addListener(printingListener)
+		project
 	}
 }

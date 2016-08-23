@@ -32,9 +32,10 @@ public class VcsProject {
 		this.compositeListener = new CompositeListener();
 		this.vcsRoots = unmodifiableList(vcsRoots.stream().map((vcsRoot) -> {
 			if (vcsRoot instanceof VcsCommand.Owner) {
-				((VcsCommand.Owner) vcsRoot).withListener(compositeListener);
+				return (VcsRoot)((VcsCommand.Owner) vcsRoot).withListener(compositeListener);
+			} else {
+				return vcsRoot;
 			}
-			return vcsRoot;
 		}).collect(toList()));
 	}
 
@@ -75,6 +76,8 @@ public class VcsProject {
 		}
 		return aggregator.result;
 	}
+
+	// TODO add logAll() method?
 
 	/**
 	 * Request commits from VCS for all {@link VcsRoot}s within specified date range.
@@ -135,15 +138,15 @@ public class VcsProject {
 	private static class Aggregator<T extends Aggregatable<T>> {
 		private T result;
 
-		public Aggregator(T result) {
-			this.result = result;
+		public Aggregator(T value) {
+			result = value;
 		}
 
-		public void aggregate(T result) {
-			if (this.result == null) {
-				this.result = result;
+		public void aggregate(T value) {
+			if (result == null) {
+				result = value;
 			} else {
-				this.result = this.result.aggregateWith(result);
+				result = result.aggregateWith(value);
 			}
 		}
 	}

@@ -1,13 +1,14 @@
 package org.vcsreader.vcs.hg
 
 import org.junit.Test
+import org.vcsreader.lang.CommandLine
 
 import static org.vcsreader.lang.CharsetUtil.UTF8
 import static org.vcsreader.lang.DateTimeUtil.date
 import static org.vcsreader.vcs.hg.HgClone.hgClone
-import static org.vcsreader.vcs.hg.HgIntegrationTestConfig.getNonExistentPath
-import static org.vcsreader.vcs.hg.HgIntegrationTestConfig.getPathToHg
 import static org.vcsreader.vcs.hg.HgIntegrationTestConfig.newProjectPath
+import static org.vcsreader.vcs.hg.HgIntegrationTestConfig.nonExistentPath
+import static org.vcsreader.vcs.hg.HgIntegrationTestConfig.pathToHg
 import static org.vcsreader.vcs.hg.HgLog.hgLog
 import static org.vcsreader.vcs.hg.HgLogFileContent.hgLogFileContent
 import static org.vcsreader.vcs.hg.HgRepository.Scripts.*
@@ -27,12 +28,9 @@ class CommandLine_HgIntegrationTest {
 		assert commandLine.exitCode() == 0
 	}
 
-	@Test void "failed log"() {
-		def commandLine = hgLog(pathToHg, nonExistentPath, date("01/01/2013"), date("01/01/2023")).execute()
-		assert commandLine.stdout() == ""
-		assert commandLine.stderr() == ""
-		assert commandLine.exceptionStacktrace().matches(/(?s).*java.io.IOException.*No such file or directory.*/)
-		assert commandLine.exitCode() != 0
+	@Test(expected = CommandLine.Failure)
+	void "failed log"() {
+		hgLog(pathToHg, nonExistentPath, date("01/01/2013"), date("01/01/2023")).execute()
 	}
 
 	@Test void "log file content"() {
@@ -84,12 +82,9 @@ class CommandLine_HgIntegrationTest {
 		assert commandLine.exitCode() == 0
 	}
 
-	@Test void "failed update of non-existing repository"() {
-		def commandLine = hgUpdate(pathToHg, nonExistentPath).execute()
-
-		assert commandLine.stdout() == ""
-		assert commandLine.stderr() == ""
-		assert commandLine.exceptionStacktrace().matches(/(?s).*java.io.IOException.*No such file or directory.*/)
+	@Test(expected = CommandLine.Failure)
+	void "failed update of non-existing repository"() {
+		hgUpdate(pathToHg, nonExistentPath).execute()
 	}
 
 	@Test void "failed update without upstream repository"() {

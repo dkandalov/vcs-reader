@@ -1,6 +1,7 @@
 package org.vcsreader.vcs.git
 
 import org.junit.Test
+import org.vcsreader.lang.CommandLine
 
 import static org.vcsreader.lang.CharsetUtil.UTF8
 import static org.vcsreader.lang.DateTimeUtil.date
@@ -26,13 +27,9 @@ class CommandLine_GitIntegrationTest {
 		assert commandLine.exitCode() == 0
 	}
 
-	@Test void "failed log"() {
-		def commandLine = gitLog(pathToGit, nonExistentPath, date("01/01/2013"), date("01/01/2023")).execute()
-
-		assert commandLine.stdout() == ""
-		assert commandLine.stderr() == ""
-		assert commandLine.exceptionStacktrace().matches(/(?s).*java.io.IOException.*No such file or directory.*/)
-		assert commandLine.exitCode() != 0
+	@Test(expected = CommandLine.Failure)
+	void "failed log"() {
+		gitLog(pathToGit, nonExistentPath, date("01/01/2013"), date("01/01/2023")).execute()
 	}
 
 	@Test void "log file content"() {
@@ -97,13 +94,9 @@ class CommandLine_GitIntegrationTest {
 		assert commandLine.exitCode() == 0
 	}
 
-	@Test void "failed update of non-existing repository"() {
-		def commandLine = gitUpdate(pathToGit, nonExistentPath).execute()
-
-		assert commandLine.stdout() == ""
-		assert commandLine.stderr() == ""
-		assert commandLine.exitCode() != 0
-		assert commandLine.exceptionStacktrace().matches(/(?s).*java.io.IOException.*No such file or directory.*/)
+	@Test(expected = CommandLine.Failure)
+	void "failed update of non-existing repository"() {
+		gitUpdate(pathToGit, nonExistentPath).execute()
 	}
 
 	@Test void "failed update without upstream repository"() {

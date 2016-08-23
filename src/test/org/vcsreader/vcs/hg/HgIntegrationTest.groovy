@@ -11,6 +11,7 @@ import static org.vcsreader.VcsChange.noRevision
 import static org.vcsreader.lang.DateTimeUtil.date
 import static org.vcsreader.lang.DateTimeUtil.dateTime
 import static org.vcsreader.vcs.TestUtil.assertCommitsIn
+import static org.vcsreader.vcs.TestUtil.printingListener
 import static org.vcsreader.vcs.hg.HgIntegrationTestConfig.*
 import static org.vcsreader.vcs.hg.HgRepository.Scripts.*
 
@@ -57,7 +58,8 @@ class HgIntegrationTest {
 		def updateResult = project.update()
 
 		assert !updateResult.isSuccessful()
-		assert updateResult.vcsErrors() != []
+		assert updateResult.vcsErrors() == []
+		assert updateResult.exceptions() != []
 	}
 
 	@Test void "log no commits for empty project history interval"() {
@@ -266,6 +268,7 @@ class HgIntegrationTest {
 
 	private static VcsProject newProject(HgRepository repository) {
 		def project = new VcsProject(new HgVcsRoot(newProjectPath(), repository.path, hgSettings))
+		project.addListener(printingListener)
 		project.cloneToLocal()
 		project
 	}

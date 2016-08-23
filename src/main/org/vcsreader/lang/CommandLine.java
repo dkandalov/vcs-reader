@@ -62,7 +62,7 @@ public class CommandLine {
 		return new CommandLine(config.charsetAutoDetect(value), commandAndArgs);
 	}
 
-	public CommandLine execute() {
+	public CommandLine execute() throws Failure {
 		InputStream stdoutInputStream = null;
 		InputStream stderrInputStream = null;
 		Process process = null;
@@ -97,6 +97,7 @@ public class CommandLine {
 
 		} catch (Exception e) {
 			exception = e;
+			throw new Failure(e);
 		} finally {
 			// make sure process is stopped in case of exceptions in java code
 			if (process != null) process.destroy();
@@ -125,10 +126,12 @@ public class CommandLine {
 		return exitCode;
 	}
 
+	// TODO remove
 	public boolean hasNoExceptions() {
 		return exception == null;
 	}
 
+	// TODO remove
 	public String exceptionStacktrace() {
 		if (exception == null) return "";
 
@@ -207,7 +210,14 @@ public class CommandLine {
 		if (reader == null) return;
 		try {
 			reader.close();
-		} catch (IOException ignored) {
+		} catch (IOException e) {
+			throw new Failure(e);
+		}
+	}
+
+	public static class Failure extends RuntimeException {
+		public Failure(Throwable cause) {
+			super(cause);
 		}
 	}
 

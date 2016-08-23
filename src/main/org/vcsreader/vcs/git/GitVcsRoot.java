@@ -48,7 +48,7 @@ public class GitVcsRoot implements VcsRoot, VcsCommand.Owner {
 
 	@Override public CloneResult cloneToLocal() {
 		if (repositoryUrl == null) {
-			throw new IllegalStateException("Cannot clone repository because remote url is not specified");
+			throw new IllegalStateException("Cannot clone repository because remote url is not specified for root: " + this);
 		}
 		return executeWith(listener, new GitClone(settings.gitPath, repositoryUrl, localPath));
 	}

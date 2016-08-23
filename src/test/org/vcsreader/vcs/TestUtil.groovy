@@ -2,11 +2,20 @@ package org.vcsreader.vcs
 
 import org.vcsreader.VcsCommit
 import org.vcsreader.VcsProject.LogResult
+import org.vcsreader.vcs.commandlistener.VcsCommand
 
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
 
 class TestUtil {
+	static final printingListener = new VcsCommand.Listener() {
+		@Override void beforeCommand(VcsCommand<?> command) {
+		}
+		@Override void afterCommand(VcsCommand<?> command) {
+			println(command.describe())
+		}
+	}
+
 	static assertCommitsIn(LogResult logResult, List<VcsCommit> expected) {
 		assert logResult.vcsErrors() == []
 		assert logResult.exceptions() == []

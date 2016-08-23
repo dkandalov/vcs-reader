@@ -11,6 +11,7 @@ import static org.vcsreader.VcsChange.noRevision
 import static org.vcsreader.lang.DateTimeUtil.date
 import static org.vcsreader.lang.DateTimeUtil.dateTime
 import static org.vcsreader.vcs.TestUtil.assertCommitsIn
+import static org.vcsreader.vcs.TestUtil.printingListener
 import static org.vcsreader.vcs.git.GitIntegrationTestConfig.*
 import static org.vcsreader.vcs.git.GitRepository.Scripts.*
 
@@ -56,8 +57,11 @@ class GitIntegrationTest {
 
 		def updateResult = project.update()
 
+		println(updateResult.vcsErrors())
+		println(updateResult.exceptions())
 		assert !updateResult.isSuccessful()
-		assert updateResult.vcsErrors() != []
+		assert updateResult.exceptions() != []
+		assert updateResult.vcsErrors() == []
 	}
 
 	@Test void "log no commits for empty project history interval"() {
@@ -387,6 +391,7 @@ class GitIntegrationTest {
 
 	private static VcsProject newProject(GitRepository repository) {
 		def project = new VcsProject(new GitVcsRoot(newProjectPath(), repository.path, gitSettings))
+		project.addListener(printingListener)
 		project.cloneToLocal()
 		project
 	}

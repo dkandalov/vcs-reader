@@ -1,6 +1,7 @@
 package org.vcsreader.vcs.commandlistener;
 
 public interface VcsCommand<R> {
+
 	String describe();
 
 	R execute();
@@ -10,6 +11,7 @@ public interface VcsCommand<R> {
 		Listener none = new Listener() {
 			@Override public void beforeCommand(VcsCommand<?> command) {}
 			@Override public void afterCommand(VcsCommand<?> command) {}
+			@Override public String toString() { return "Listener.none"; }
 		};
 
 		static <T> T executeWith(Listener listener, VcsCommand<T> command) {
