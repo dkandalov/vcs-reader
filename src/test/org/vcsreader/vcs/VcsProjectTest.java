@@ -1,10 +1,10 @@
 package org.vcsreader.vcs;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.vcsreader.VcsCommit;
 import org.vcsreader.VcsProject;
 import org.vcsreader.VcsProject.CloneResult;
-import org.vcsreader.VcsRoot;
 import org.vcsreader.vcs.git.GitVcsRoot;
 
 import java.util.ArrayList;
@@ -21,8 +21,13 @@ import static org.vcsreader.VcsProject.LogResult;
 import static org.vcsreader.lang.DateTimeUtil.date;
 
 public class VcsProjectTest {
-	private final VcsRoot root1 = mock(GitVcsRoot.class);
-	private final VcsRoot root2 = mock(GitVcsRoot.class);
+	private final GitVcsRoot root1 = mock(GitVcsRoot.class);
+	private final GitVcsRoot root2 = mock(GitVcsRoot.class);
+
+	@Before public void setup() {
+		when(root1.withListener(any())).thenReturn(root1);
+		when(root2.withListener(any())).thenReturn(root2);
+	}
 
 	@Test public void mergeResultsOfProjectClone() {
 		// given
@@ -52,10 +57,10 @@ public class VcsProjectTest {
 
 	@Test public void successfulLogProjectHistory() {
 		// given
-		final VcsCommit commit1 = new Commit("1", "", new Date(0), "", "", new ArrayList<>());
-		final VcsCommit commit2 = new Commit("2", "", new Date(0), "", "", new ArrayList<>());
-		when(root1.log(any(Date.class), any(Date.class))).thenReturn(new LogResult(asList(commit1), asList("some error")));
-		when(root2.log(any(Date.class), any(Date.class))).thenReturn(new LogResult(asList(commit2), new ArrayList<>()));
+		VcsCommit commit1 = new Commit("1", "", new Date(0), "", "", new ArrayList<>());
+		VcsCommit commit2 = new Commit("2", "", new Date(0), "", "", new ArrayList<>());
+		when(root1.log(anyDate(), anyDate())).thenReturn(new LogResult(asList(commit1), asList("some error")));
+		when(root2.log(anyDate(), anyDate())).thenReturn(new LogResult(asList(commit2), new ArrayList<>()));
 		VcsProject project = new VcsProject(asList(root1, root2));
 
 		// when
@@ -69,8 +74,8 @@ public class VcsProjectTest {
 
 	@Test public void failedLogProjectHistory() {
 		// given
-		when(root1.log(any(Date.class), any(Date.class))).thenThrow(new IllegalStateException());
-		when(root2.log(any(Date.class), any(Date.class))).thenThrow(new IllegalStateException());
+		when(root1.log(anyDate(), anyDate())).thenThrow(new IllegalStateException());
+		when(root2.log(anyDate(), anyDate())).thenThrow(new IllegalStateException());
 		VcsProject project = new VcsProject(asList(root1, root2));
 
 		// when
@@ -79,5 +84,9 @@ public class VcsProjectTest {
 		// then
 		assertThat(logResult.vcsErrors().size(), equalTo(0));
 		assertThat(logResult.exceptions().size(), equalTo(2));
+	}
+
+	private static Date anyDate() {
+		return any(Date.class);
 	}
 }
