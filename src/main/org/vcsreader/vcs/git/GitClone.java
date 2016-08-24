@@ -26,7 +26,7 @@ class GitClone implements VcsCommand<VcsProject.CloneResult> {
 		if (isSuccessful(commandLine)) {
 			return new VcsProject.CloneResult();
 		} else {
-			return new VcsProject.CloneResult(asList(commandLine.stderr() + commandLine.exceptionStacktrace()));
+			return new VcsProject.CloneResult(asList(commandLine.stderr()));
 		}
 	}
 

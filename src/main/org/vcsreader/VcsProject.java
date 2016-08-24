@@ -68,8 +68,8 @@ public class VcsProject {
 			try {
 
 				UpdateResult updateResult = vcsRoot.update();
-
 				aggregator.aggregate(updateResult);
+
 			} catch (Exception e) {
 				aggregator.aggregate(new UpdateResult(e));
 			}

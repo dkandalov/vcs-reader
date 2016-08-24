@@ -23,7 +23,6 @@ class CommandLine_GitIntegrationTest {
 
 		assert commandLine.stdout().contains("initial commit")
 		assert commandLine.stderr() == ""
-		assert commandLine.exceptionStacktrace() == ""
 		assert commandLine.exitCode() == 0
 	}
 

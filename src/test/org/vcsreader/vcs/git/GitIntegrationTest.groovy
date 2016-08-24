@@ -57,8 +57,6 @@ class GitIntegrationTest {
 
 		def updateResult = project.update()
 
-		println(updateResult.vcsErrors())
-		println(updateResult.exceptions())
 		assert !updateResult.isSuccessful()
 		assert updateResult.exceptions() != []
 		assert updateResult.vcsErrors() == []

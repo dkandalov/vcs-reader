@@ -51,7 +51,7 @@ class SvnLog implements VcsCommand<LogResult> {
 			List<VcsCommit> commits = transformToSubPathCommits(deleteCommitsBefore(fromDate, allCommits));
 			return new LogResult(commits, new ArrayList<>());
 		} else {
-			return new LogResult(Collections.emptyList(), asList(commandLine.stderr() + commandLine.exceptionStacktrace()));
+			return new LogResult(Collections.emptyList(), asList(commandLine.stderr()));
 		}
 	}
 

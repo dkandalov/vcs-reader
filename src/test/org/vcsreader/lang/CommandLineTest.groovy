@@ -14,7 +14,6 @@ class CommandLineTest {
 		def commandLine = new CommandLine("ls").execute()
 		assert commandLine.stderr().empty
 		assert !commandLine.stdout().empty
-		assert commandLine.exceptionStacktrace().empty
 		assert commandLine.exitCode() == 0
 	}
 

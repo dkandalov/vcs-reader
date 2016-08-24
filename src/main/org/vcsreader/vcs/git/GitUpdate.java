@@ -22,7 +22,7 @@ class GitUpdate implements VcsCommand<UpdateResult> {
 		if (isSuccessful(commandLine)) {
 			return new UpdateResult();
 		} else {
-			return new UpdateResult(commandLine.stderr() + commandLine.exceptionStacktrace());
+			return new UpdateResult(commandLine.stderr());
 		}
 	}
 

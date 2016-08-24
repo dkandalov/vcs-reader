@@ -63,7 +63,7 @@ public interface VcsChange {
 		MODIFIED,
 		DELETED,
 		/**
-		 * Note that MOVED does not imply there were no change in file content.
+		 * Note that MOVED does not imply there were no changes in file content.
 		 */
 		MOVED
 	}

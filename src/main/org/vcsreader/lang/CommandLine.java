@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.vcsreader.lang.StringUtil.shortened;
 
 public class CommandLine {
-	public static final int exitCodeBeforeFinished = -123;
+	public static final int exitCodeBeforeFinished = Integer.MIN_VALUE;
 
 	private final Config config;
 	private final String[] commandAndArgs;
@@ -24,7 +24,6 @@ public class CommandLine {
 	private String stdout = "";
 	private String stderr = "";
 	private int exitCode = exitCodeBeforeFinished;
-	private Exception exception;
 
 	private final AtomicReference<Process> processRef = new AtomicReference<>();
 	private final Map<String, String> environment = new HashMap<>();
@@ -96,7 +95,6 @@ public class CommandLine {
 			exitCode = process.exitValue();
 
 		} catch (Exception e) {
-			exception = e;
 			throw new Failure(e);
 		} finally {
 			// make sure process is stopped in case of exceptions in java code
@@ -124,23 +122,6 @@ public class CommandLine {
 
 	public int exitCode() {
 		return exitCode;
-	}
-
-	// TODO remove
-	public boolean hasNoExceptions() {
-		return exception == null;
-	}
-
-	// TODO remove
-	public String exceptionStacktrace() {
-		if (exception == null) return "";
-
-		StringWriter stringWriter = new StringWriter();
-		try (PrintWriter printWriter = new PrintWriter(stringWriter)) {
-			printWriter.append('\n');
-			exception.printStackTrace(printWriter);
-		}
-		return stringWriter.toString();
 	}
 
 	public String describe() {

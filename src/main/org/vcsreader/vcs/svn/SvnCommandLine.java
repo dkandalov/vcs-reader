@@ -10,7 +10,7 @@ class SvnCommandLine {
 	}
 
 	public static boolean isSuccessful(CommandLine commandLine) {
-		return commandLine.stderr().trim().isEmpty() && commandLine.exitCode() == 0 && commandLine.hasNoExceptions();
+		return commandLine.stderr().trim().isEmpty() && commandLine.exitCode() == 0;
 	}
 
 	private static String[] concat(String[] array1, String[] array2) {

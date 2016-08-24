@@ -39,7 +39,7 @@ class HgLog implements VcsCommand<VcsProject.LogResult> {
 			List<String> errors = (commandLine.stderr().trim().isEmpty() ? new ArrayList<>() : asList(commandLine.stderr()));
 			return new VcsProject.LogResult(commits, errors);
 		} else {
-			return new VcsProject.LogResult(new ArrayList<>(), asList(commandLine.stderr() + commandLine.exceptionStacktrace()));
+			return new VcsProject.LogResult(new ArrayList<>(), asList(commandLine.stderr()));
 		}
 	}
 

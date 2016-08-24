@@ -37,7 +37,7 @@ class HgLogFileContent implements VcsCommand<VcsProject.LogFileContentResult> {
 		if (isSuccessful(commandLine)) {
 			return new VcsProject.LogFileContentResult(trimLastNewLine(commandLine.stdout()));
 		} else {
-			return new VcsProject.LogFileContentResult(commandLine.stderr() + commandLine.exceptionStacktrace(), commandLine.exitCode());
+			return new VcsProject.LogFileContentResult(commandLine.stderr(), commandLine.exitCode());
 		}
 	}
 

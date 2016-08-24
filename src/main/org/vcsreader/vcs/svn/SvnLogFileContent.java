@@ -45,7 +45,7 @@ class SvnLogFileContent implements VcsCommand<LogFileContentResult> {
 		if (isSuccessful(commandLine)) {
 			return new LogFileContentResult(trimLastNewLine(commandLine.stdout()));
 		} else {
-			return new LogFileContentResult(commandLine.stderr() + commandLine.exceptionStacktrace(), commandLine.exitCode());
+			return new LogFileContentResult(commandLine.stderr(), commandLine.exitCode());
 		}
 	}
 
