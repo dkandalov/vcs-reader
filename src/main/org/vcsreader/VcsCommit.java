@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * Contains data for single VCS commit.
- * @see VcsChange
+ * See also {@link VcsChange}.
  */
 public interface VcsCommit {
 

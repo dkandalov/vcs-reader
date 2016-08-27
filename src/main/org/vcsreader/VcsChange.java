@@ -6,9 +6,7 @@ import static org.vcsreader.lang.StringUtil.shortened;
 
 /**
  * Contains data about file modification in a {@link VcsCommit}.
- * See {@link FileContent}.
- * <p>
- * This class is effectively immutable (even though some fields are modifiable).
+ * See also {@link FileContent}.
  */
 public interface VcsChange {
 	String noRevision = "noRevision";
@@ -106,7 +104,7 @@ public interface VcsChange {
 		}
 
 		@Override public String toString() {
-			return "Content{value='" + shortened(value, 100) + "'}";
+			return "FileContent{value='" + shortened(value, 100) + "'}";
 		}
 
 		@Override public boolean equals(Object o) {

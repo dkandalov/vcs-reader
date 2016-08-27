@@ -196,15 +196,18 @@ public class CommandLine {
 		}
 	}
 
+
 	public static class Failure extends RuntimeException {
 		public Failure(Throwable cause) {
 			super(cause);
 		}
 	}
 
+
 	public interface AsyncExecutor {
 		<T> Future<T> submit(Callable<T> task, String taskName);
 	}
+
 
 	public static class Config {
 		private static final int defaultBufferSize = 8192;
@@ -215,7 +218,8 @@ public class CommandLine {
 				defaultBufferSize,
 				defaultBufferSize,
 				Charset.defaultCharset(), false, defaultBufferSize,
-				newExecutor());
+				newExecutor()
+		);
 
 		private final File workingDir;
 		private final int stdoutBufferSize;
