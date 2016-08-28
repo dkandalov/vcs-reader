@@ -87,15 +87,9 @@ public class VcsProject {
 
 		Aggregator<LogResult> aggregator = new Aggregator<>(new LogResult());
 		for (VcsRoot vcsRoot : vcsRoots) {
-			try {
-
-				LogResult logResult = vcsRoot.log(from, to);
-				logResult = (logResult != null ? logResult.setVcsRoot(vcsRoot) : null);
-
-				aggregator.aggregate(logResult);
-			} catch (Exception e) {
-				aggregator.aggregate(new LogResult(e));
-			}
+			LogResult logResult = vcsRoot.log(from, to);
+			logResult = (logResult != null ? logResult.setVcsRoot(vcsRoot) : null);
+			aggregator.aggregate(logResult);
 		}
 		return aggregator.result;
 	}

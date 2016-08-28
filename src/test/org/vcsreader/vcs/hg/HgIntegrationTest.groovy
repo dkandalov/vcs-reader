@@ -16,7 +16,7 @@ import static org.vcsreader.vcs.hg.HgIntegrationTestConfig.*
 import static org.vcsreader.vcs.hg.HgRepository.Scripts.*
 
 class HgIntegrationTest {
-	private static final hgSettings = HgSettings.defaults().withHgPath(pathToHg)
+	private static final hgSettings = HgSettings.defaults().withHgPath(pathToHg).withFailFast(false)
 
 	@Test void "clone project"() {
 		def repository = new HgRepository().init()

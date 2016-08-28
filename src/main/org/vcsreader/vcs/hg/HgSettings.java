@@ -11,10 +11,6 @@ public class HgSettings {
 	public final boolean failFast;
 
 
-	public HgSettings(@NotNull String hgPath, @NotNull Charset defaultFileCharset) {
-		this(hgPath, defaultFileCharset, false);
-	}
-
 	/**
 	 * @param hgPath             path to hg executable
 	 * @param defaultFileCharset default charset of files in repository
@@ -29,15 +25,19 @@ public class HgSettings {
 	}
 
 	public static HgSettings defaults() {
-		return new HgSettings("hg", CharsetUtil.UTF8);
+		return new HgSettings("hg", CharsetUtil.UTF8, true);
 	}
 
 	public HgSettings withHgPath(String value) {
-		return new HgSettings(value, defaultFileCharset);
+		return new HgSettings(value, defaultFileCharset, failFast);
 	}
 
 	public HgSettings withDefaultFileCharset(Charset value) {
-		return new HgSettings(hgPath, value);
+		return new HgSettings(hgPath, value, failFast);
+	}
+
+	public HgSettings withFailFast(boolean value) {
+		return new HgSettings(hgPath, defaultFileCharset, value);
 	}
 
 	@Override public boolean equals(Object o) {

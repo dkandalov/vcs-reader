@@ -15,7 +15,7 @@ import static org.vcsreader.vcs.svn.SvnIntegrationTestConfig.*
 import static org.vcsreader.vcs.svn.SvnRepository.Scripts.*
 
 class SvnIntegrationTest {
-	private static final svnSettings = SvnSettings.defaults().withSvnPath(pathToSvn)
+	private static final svnSettings = SvnSettings.defaults().withSvnPath(pathToSvn).withFailFast(true)
 
 	@Test void "clone project always succeeds"() {
 		def vcsRoots = [new SvnVcsRoot(nonExistentUrl, svnSettings)]

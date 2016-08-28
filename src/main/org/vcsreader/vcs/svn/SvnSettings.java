@@ -11,10 +11,6 @@ public class SvnSettings {
 	public final boolean useMergeHistory;
 	public final boolean failFast;
 
-	public SvnSettings(@NotNull String svnPath, @NotNull Charset defaultFileCharset, boolean useMergeHistory) {
-		this(svnPath, defaultFileCharset, useMergeHistory, false);
-	}
-
 	/**
 	 * @param svnPath            path to svn executable
 	 * @param defaultFileCharset default charset of files in repository
@@ -32,19 +28,23 @@ public class SvnSettings {
 	}
 
 	public static SvnSettings defaults() {
-		return new SvnSettings("svn", CharsetUtil.UTF8, true);
+		return new SvnSettings("svn", CharsetUtil.UTF8, true, true);
 	}
 
 	public SvnSettings withSvnPath(String value) {
-		return new SvnSettings(value, defaultFileCharset, useMergeHistory);
+		return new SvnSettings(value, defaultFileCharset, useMergeHistory, failFast);
 	}
 
 	public SvnSettings withDefaultFileCharset(Charset value) {
-		return new SvnSettings(svnPath, value, useMergeHistory);
+		return new SvnSettings(svnPath, value, useMergeHistory, failFast);
 	}
 
 	public SvnSettings withMergeHistory(boolean value) {
-		return new SvnSettings(svnPath, defaultFileCharset, value);
+		return new SvnSettings(svnPath, defaultFileCharset, value, failFast);
+	}
+
+	public SvnSettings withFailFast(boolean value) {
+		return new SvnSettings(svnPath, defaultFileCharset, useMergeHistory, value);
 	}
 
 	@Override public boolean equals(Object o) {

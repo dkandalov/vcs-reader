@@ -10,10 +10,6 @@ public class GitSettings {
 	@NotNull public final Charset defaultFileCharset;
 	public final boolean failFast;
 
-	public GitSettings(@NotNull String gitPath, @NotNull Charset defaultFileCharset) {
-		this(gitPath, defaultFileCharset, false);
-	}
-
 	/**
 	 * @param gitPath            path to git executable
 	 * @param defaultFileCharset default charset of files in repository
@@ -28,15 +24,19 @@ public class GitSettings {
 	}
 
 	public static GitSettings defaults() {
-		return new GitSettings("git", CharsetUtil.UTF8, false);
+		return new GitSettings("git", CharsetUtil.UTF8, true);
 	}
 
 	public GitSettings withGitPath(String value) {
-		return new GitSettings(value, defaultFileCharset);
+		return new GitSettings(value, defaultFileCharset, failFast);
 	}
 
 	public GitSettings withDefaultFileCharset(Charset value) {
-		return new GitSettings(gitPath, value);
+		return new GitSettings(gitPath, value, failFast);
+	}
+
+	public GitSettings withFailFast(boolean value) {
+		return new GitSettings(gitPath, defaultFileCharset, value);
 	}
 
 	@Override public boolean equals(Object o) {
