@@ -72,18 +72,15 @@ public class VcsProjectTest {
 		assertThat(logResult.exceptions().size(), equalTo(0));
 	}
 
-	@Test public void failedLogProjectHistory() {
+	@Test(expected = IllegalStateException.class)
+	public void failedLogProjectHistory() {
 		// given
 		when(root1.log(anyDate(), anyDate())).thenThrow(new IllegalStateException());
 		when(root2.log(anyDate(), anyDate())).thenThrow(new IllegalStateException());
 		VcsProject project = new VcsProject(asList(root1, root2));
 
-		// when
-		LogResult logResult = project.log(date("01/07/2014"), date("08/07/2014"));
-
-		// then
-		assertThat(logResult.vcsErrors().size(), equalTo(0));
-		assertThat(logResult.exceptions().size(), equalTo(2));
+		// when / then
+		project.log(date("01/07/2014"), date("08/07/2014"));
 	}
 
 	private static Date anyDate() {
