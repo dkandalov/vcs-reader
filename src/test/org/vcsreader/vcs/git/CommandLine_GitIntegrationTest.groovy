@@ -4,7 +4,7 @@ import org.junit.Test
 import org.vcsreader.lang.CommandLine
 
 import static org.vcsreader.lang.CharsetUtil.UTF8
-import static org.vcsreader.lang.DateTimeUtil.date
+import static org.vcsreader.lang.DateTimeUtil.timeRange
 import static org.vcsreader.vcs.git.GitClone.gitClone
 import static org.vcsreader.vcs.git.GitIntegrationTestConfig.*
 import static org.vcsreader.vcs.git.GitLog.gitLog
@@ -19,16 +19,18 @@ class CommandLine_GitIntegrationTest {
 	@Test void "basic log"() {
 		def repository = 'repo with two commits with three added files'()
 
-		def commandLine = gitLog(pathToGit, repository.path, date("01/01/2013"), date("01/01/2023")).execute()
+		def commandLine = gitLog(pathToGit, repository.path, timeRange("01/01/2013", "01/01/2023")).execute()
 
 		assert commandLine.stdout().contains("initial commit")
 		assert commandLine.stderr() == ""
 		assert commandLine.exitCode() == 0
 	}
 
+	// TODO test log before 1970
+
 	@Test(expected = CommandLine.Failure)
 	void "failed log"() {
-		gitLog(pathToGit, nonExistentPath, date("01/01/2013"), date("01/01/2023")).execute()
+		gitLog(pathToGit, nonExistentPath, timeRange("01/01/2013", "01/01/2023")).execute()
 	}
 
 	@Test void "log file content"() {
@@ -113,7 +115,7 @@ class CommandLine_GitIntegrationTest {
 	@Test void "log with non-ascii characters"() {
 		def repository = 'repo with non-ascii file name and commit message'()
 
-		def commandLine = gitLog(pathToGit, repository.path, date("01/01/2013"), date("01/01/2023")).execute()
+		def commandLine = gitLog(pathToGit, repository.path, timeRange("01/01/2013", "01/01/2023")).execute()
 		assert commandLine.stderr() == ""
 		assert commandLine.stdout().contains("non-ascii комментарий")
 		assert commandLine.exitCode() == 0

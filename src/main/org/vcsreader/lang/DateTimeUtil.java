@@ -30,6 +30,10 @@ public class DateTimeUtil {
 		}
 	}
 
+	public static TimeRange timeRange(String from, String to) {
+		return new TimeRange(date(from), date(to));
+	}
+
 	public static Date dateTime(String s) {
 		List<DateFormat> formats = asList(
 				dateTimeFormat("kk:mm dd/MM/yyyy", UTC),

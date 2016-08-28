@@ -3,6 +3,7 @@ package org.vcsreader.vcs.git;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.vcsreader.VcsRoot;
+import org.vcsreader.lang.TimeRange;
 import org.vcsreader.vcs.VcsCommand;
 import org.vcsreader.vcs.VcsCommand.ResultAdapter;
 
@@ -58,7 +59,7 @@ public class GitVcsRoot implements VcsRoot, VcsCommand.Owner {
 	}
 
 	@Override public LogResult log(Date fromDate, Date toDate) {
-		return execute(new GitLog(settings.gitPath, localPath, fromDate, toDate), LogResult.adapter);
+		return execute(new GitLog(settings.gitPath, localPath, new TimeRange(fromDate, toDate)), LogResult.adapter);
 	}
 
 	@Override public LogFileContentResult logFileContent(String filePath, String revision) {
