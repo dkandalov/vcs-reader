@@ -10,7 +10,6 @@ public class GitSettings {
 	@NotNull public final Charset defaultFileCharset;
 	public final boolean failFast;
 
-	// TODO inline
 	public GitSettings(@NotNull String gitPath, @NotNull Charset defaultFileCharset) {
 		this(gitPath, defaultFileCharset, false);
 	}

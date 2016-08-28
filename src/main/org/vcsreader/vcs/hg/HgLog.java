@@ -3,7 +3,7 @@ package org.vcsreader.vcs.hg;
 import org.vcsreader.VcsCommit;
 import org.vcsreader.VcsProject;
 import org.vcsreader.lang.CommandLine;
-import org.vcsreader.vcs.commandlistener.VcsCommand;
+import org.vcsreader.vcs.VcsCommand;
 
 import java.util.ArrayList;
 import java.util.Date;

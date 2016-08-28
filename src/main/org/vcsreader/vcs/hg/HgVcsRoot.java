@@ -7,8 +7,8 @@ import org.vcsreader.VcsProject.LogFileContentResult;
 import org.vcsreader.VcsProject.LogResult;
 import org.vcsreader.VcsProject.UpdateResult;
 import org.vcsreader.VcsRoot;
-import org.vcsreader.vcs.commandlistener.VcsCommand;
-import org.vcsreader.vcs.commandlistener.VcsCommand.ResultAdapter;
+import org.vcsreader.vcs.VcsCommand;
+import org.vcsreader.vcs.VcsCommand.ResultAdapter;
 
 import java.util.Date;
 

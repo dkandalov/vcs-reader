@@ -3,8 +3,8 @@ package org.vcsreader.vcs.git;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.vcsreader.VcsRoot;
-import org.vcsreader.vcs.commandlistener.VcsCommand;
-import org.vcsreader.vcs.commandlistener.VcsCommand.ResultAdapter;
+import org.vcsreader.vcs.VcsCommand;
+import org.vcsreader.vcs.VcsCommand.ResultAdapter;
 
 import java.util.Date;
 

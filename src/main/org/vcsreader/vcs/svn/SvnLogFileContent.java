@@ -2,7 +2,7 @@ package org.vcsreader.vcs.svn;
 
 import org.jetbrains.annotations.NotNull;
 import org.vcsreader.lang.CommandLine;
-import org.vcsreader.vcs.commandlistener.VcsCommand;
+import org.vcsreader.vcs.VcsCommand;
 
 import java.nio.charset.Charset;
 

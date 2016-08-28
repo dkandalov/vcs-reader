@@ -5,7 +5,7 @@ import org.vcsreader.VcsCommit;
 import org.vcsreader.lang.CharsetUtil;
 import org.vcsreader.lang.CommandLine;
 import org.vcsreader.vcs.Change;
-import org.vcsreader.vcs.commandlistener.VcsCommand;
+import org.vcsreader.vcs.VcsCommand;
 
 import java.nio.charset.Charset;
 import java.text.DateFormat;

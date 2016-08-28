@@ -1,10 +1,9 @@
-package org.vcsreader.vcs.commandlistener;
+package org.vcsreader.vcs;
 
 import java.util.List;
 
-import static org.vcsreader.vcs.commandlistener.VcsCommand.Listener.executeWith;
+import static org.vcsreader.vcs.VcsCommand.Listener.executeWith;
 
-// TODO move to a different package
 public interface VcsCommand<R> {
 
 	String describe();

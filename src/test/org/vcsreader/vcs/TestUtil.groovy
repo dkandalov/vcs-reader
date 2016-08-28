@@ -2,7 +2,6 @@ package org.vcsreader.vcs
 
 import org.vcsreader.VcsCommit
 import org.vcsreader.VcsProject.LogResult
-import org.vcsreader.vcs.commandlistener.VcsCommand
 
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat

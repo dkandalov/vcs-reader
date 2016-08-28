@@ -1,7 +1,7 @@
 package org.vcsreader.vcs.git;
 
 import org.vcsreader.lang.CommandLine;
-import org.vcsreader.vcs.commandlistener.VcsCommand;
+import org.vcsreader.vcs.VcsCommand;
 
 import java.nio.charset.Charset;
 

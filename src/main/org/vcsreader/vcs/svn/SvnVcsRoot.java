@@ -1,8 +1,8 @@
 package org.vcsreader.vcs.svn;
 
 import org.vcsreader.VcsRoot;
-import org.vcsreader.vcs.commandlistener.VcsCommand;
-import org.vcsreader.vcs.commandlistener.VcsCommand.ResultAdapter;
+import org.vcsreader.vcs.VcsCommand;
+import org.vcsreader.vcs.VcsCommand.ResultAdapter;
 
 import java.util.Date;
 

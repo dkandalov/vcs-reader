@@ -5,7 +5,7 @@ import org.vcsreader.vcs.Commit;
 import org.vcsreader.VcsChange;
 import org.vcsreader.VcsCommit;
 import org.vcsreader.lang.CommandLine;
-import org.vcsreader.vcs.commandlistener.VcsCommand;
+import org.vcsreader.vcs.VcsCommand;
 
 import java.util.ArrayList;
 import java.util.Date;
