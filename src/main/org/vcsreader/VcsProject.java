@@ -69,7 +69,7 @@ public class VcsProject {
 	// TODO add logAll() method?
 
 	/**
-	 * Request commits from VCS for all {@link VcsRoot}s within specified date range.
+	 * Request commits from VCS for all {@link VcsRoot}s within specified time range.
 	 * For distributed VCS commits are read from currently checked out branch.
 	 * <p>
 	 * Merge commits are not logged, the commit which was merged into branch is logged instead.
@@ -136,7 +136,7 @@ public class VcsProject {
 
 
 	public static class LogFileContentResult {
-		public static ResultAdapter<LogFileContentResult> adapter = new ResultAdapter<LogFileContentResult>() {
+		public static final ResultAdapter<LogFileContentResult> adapter = new ResultAdapter<LogFileContentResult>() {
 			@Override public LogFileContentResult wrapException(Exception e) {
 				return new LogFileContentResult(e);
 			}
@@ -178,11 +178,7 @@ public class VcsProject {
 		}
 
 		public boolean isSuccessful() {
-			return stderr.isEmpty() && exitCode == 0;
-		}
-
-		public Exception exception() {
-			return exception;
+			return stderr.isEmpty() && exception == null && exitCode == 0;
 		}
 
 		@Override public String toString() {
@@ -217,7 +213,7 @@ public class VcsProject {
 
 
 	public static class LogResult implements Aggregatable<LogResult> {
-		public static ResultAdapter<LogResult> adapter = new ResultAdapter<LogResult>() {
+		public static final ResultAdapter<LogResult> adapter = new ResultAdapter<LogResult>() {
 			@Override public LogResult wrapException(Exception e) {
 				return new LogResult(e);
 			}
@@ -398,7 +394,7 @@ public class VcsProject {
 
 
 	public static class CloneResult implements Aggregatable<CloneResult> {
-		public static ResultAdapter<CloneResult> adapter = new ResultAdapter<CloneResult>() {
+		public static final ResultAdapter<CloneResult> adapter = new ResultAdapter<CloneResult>() {
 			@Override public CloneResult wrapException(Exception e) {
 				return new CloneResult(e);
 			}
@@ -473,6 +469,7 @@ public class VcsProject {
 			return result;
 		}
 	}
+
 
 	private class CompositeListener implements VcsCommand.Listener {
 		private final List<VcsCommand.Listener> listeners = new ArrayList<>();
