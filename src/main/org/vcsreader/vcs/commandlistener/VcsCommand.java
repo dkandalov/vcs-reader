@@ -1,5 +1,10 @@
 package org.vcsreader.vcs.commandlistener;
 
+import java.util.List;
+
+import static org.vcsreader.vcs.commandlistener.VcsCommand.Listener.executeWith;
+
+// TODO move to a different package
 public interface VcsCommand<R> {
 
 	String describe();
@@ -20,8 +25,6 @@ public interface VcsCommand<R> {
 
 				return command.execute();
 
-			} catch (Exception e) {
-				throw new RuntimeException("Failed to execute " + command.describe(), e);
 			} finally {
 				listener.afterCommand(command);
 			}
@@ -31,7 +34,46 @@ public interface VcsCommand<R> {
 		void afterCommand(VcsCommand<?> command);
 	}
 
+
 	interface Owner {
 		Owner withListener(Listener listener);
+	}
+
+
+	class Failure extends RuntimeException {
+		private final List<String> vcsErrors;
+
+		public Failure(List<String> vcsErrors) {
+			this.vcsErrors = vcsErrors;
+		}
+
+		@Override public String getMessage() {
+			return String.join("\n", vcsErrors);
+		}
+	}
+
+	static <T> T execute(VcsCommand<T> vcsCommand, ResultAdapter<T> resultAdapter, VcsCommand.Listener listener, boolean isFailFast) {
+		T result;
+		try {
+			result = executeWith(listener, vcsCommand);
+		} catch (Exception e) {
+			if (isFailFast) {
+				throw e;
+			} else {
+				return resultAdapter.wrapException(e);
+			}
+		}
+		if (isFailFast && !resultAdapter.isSuccessful(result)) {
+			throw new VcsCommand.Failure(resultAdapter.vcsErrorsIn(result));
+		}
+		return result;
+	}
+
+	interface ResultAdapter<T> {
+		T wrapException(Exception e);
+
+		boolean isSuccessful(T result);
+
+		List<String> vcsErrorsIn(T result);
 	}
 }

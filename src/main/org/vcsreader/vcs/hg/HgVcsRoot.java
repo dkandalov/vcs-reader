@@ -8,10 +8,9 @@ import org.vcsreader.VcsProject.LogResult;
 import org.vcsreader.VcsProject.UpdateResult;
 import org.vcsreader.VcsRoot;
 import org.vcsreader.vcs.commandlistener.VcsCommand;
+import org.vcsreader.vcs.commandlistener.VcsCommand.ResultAdapter;
 
 import java.util.Date;
-
-import static org.vcsreader.vcs.commandlistener.VcsCommand.Listener.executeWith;
 
 public class HgVcsRoot implements VcsRoot, VcsCommand.Owner {
 	public final String localPath;
@@ -32,6 +31,7 @@ public class HgVcsRoot implements VcsRoot, VcsCommand.Owner {
 	 * @param localPath     path to folder with repository clone
 	 *                      (if folder doesn't exit, it will be created on {@link #cloneToLocal()}.
 	 * @param repositoryUrl url to remote repository (only required for {@link #cloneToLocal()})
+	 *
 	 */
 	public HgVcsRoot(@NotNull String localPath, @Nullable String repositoryUrl, HgSettings settings) {
 		this(localPath, repositoryUrl, settings, VcsCommand.Listener.none);
@@ -50,19 +50,24 @@ public class HgVcsRoot implements VcsRoot, VcsCommand.Owner {
 	}
 
 	@Override public CloneResult cloneToLocal() {
-		return executeWith(listener, new HgClone(settings.hgPath, repositoryUrl, localPath));
+		return execute(new HgClone(settings.hgPath, repositoryUrl, localPath), CloneResult.adapter);
 	}
 
 	@Override public UpdateResult update() {
-		return executeWith(listener, new HgUpdate(settings.hgPath, localPath));
+		return execute(new HgUpdate(settings.hgPath, localPath), UpdateResult.adapter);
 	}
 
 	@Override public LogResult log(Date fromDate, Date toDate) {
-		return executeWith(listener, new HgLog(settings.hgPath, localPath, fromDate, toDate));
+		return execute(new HgLog(settings.hgPath, localPath, fromDate, toDate), LogResult.adapter);
 	}
 
 	@Override public LogFileContentResult logFileContent(String filePath, String revision) {
-		return executeWith(listener, new HgLogFileContent(settings.hgPath, localPath, filePath, revision, settings.defaultFileCharset));
+		HgLogFileContent logFileContent = new HgLogFileContent(settings.hgPath, localPath, filePath, revision, settings.defaultFileCharset);
+		return execute(logFileContent, LogFileContentResult.adapter);
+	}
+
+	private <T> T execute(VcsCommand<T> vcsCommand, ResultAdapter<T> resultAdapter) {
+		return VcsCommand.execute(vcsCommand, resultAdapter, listener, settings.failFast);
 	}
 
 	@SuppressWarnings("SimplifiableIfStatement")

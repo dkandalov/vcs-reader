@@ -2,6 +2,7 @@ package org.vcsreader;
 
 import org.jetbrains.annotations.NotNull;
 import org.vcsreader.vcs.commandlistener.VcsCommand;
+import org.vcsreader.vcs.commandlistener.VcsCommand.ResultAdapter;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -46,14 +47,8 @@ public class VcsProject {
 	public CloneResult cloneToLocal() {
 		Aggregator<CloneResult> aggregator = new Aggregator<>(new CloneResult());
 		for (VcsRoot vcsRoot : vcsRoots) {
-			try {
-
-				CloneResult cloneResult = vcsRoot.cloneToLocal();
-
-				aggregator.aggregate(cloneResult);
-			} catch (Exception e) {
-				aggregator.aggregate(new CloneResult(e));
-			}
+			CloneResult cloneResult = vcsRoot.cloneToLocal();
+			aggregator.aggregate(cloneResult);
 		}
 		return aggregator.result;
 	}
@@ -65,14 +60,8 @@ public class VcsProject {
 	public UpdateResult update() {
 		Aggregator<UpdateResult> aggregator = new Aggregator<>(new UpdateResult());
 		for (VcsRoot vcsRoot : vcsRoots) {
-			try {
-
-				UpdateResult updateResult = vcsRoot.update();
-				aggregator.aggregate(updateResult);
-
-			} catch (Exception e) {
-				aggregator.aggregate(new UpdateResult(e));
-			}
+			UpdateResult updateResult = vcsRoot.update();
+			aggregator.aggregate(updateResult);
 		}
 		return aggregator.result;
 	}
@@ -153,22 +142,41 @@ public class VcsProject {
 
 
 	public static class LogFileContentResult {
+		public static ResultAdapter<LogFileContentResult> adapter = new ResultAdapter<LogFileContentResult>() {
+			@Override public LogFileContentResult wrapException(Exception e) {
+				return new LogFileContentResult(e);
+			}
+
+			@Override public boolean isSuccessful(LogFileContentResult result) {
+				return result.isSuccessful();
+			}
+
+			@Override public List<String> vcsErrorsIn(LogFileContentResult result) {
+				return asList(result.stderr);
+			}
+		};
 		private final String text;
 		private final String stderr;
 		private final int exitCode;
+		private final Exception exception;
+
+		public LogFileContentResult(Exception exception) {
+			this("", "", 0, exception);
+		}
 
 		public LogFileContentResult(@NotNull String text) {
-			this(text, "", 0);
+			this(text, "", 0, null);
 		}
 
 		public LogFileContentResult(@NotNull String stderr, int exitCode) {
-			this("", stderr, exitCode);
+			this("", stderr, exitCode, null);
 		}
 
-		private LogFileContentResult(@NotNull String text, @NotNull String stderr, int exitCode) {
+		private LogFileContentResult(@NotNull String text, @NotNull String stderr, int exitCode, Exception exception) {
 			this.text = text;
 			this.stderr = stderr;
 			this.exitCode = exitCode;
+			this.exception = exception;
 		}
 
 		@NotNull public String text() {
@@ -179,11 +187,16 @@ public class VcsProject {
 			return stderr.isEmpty() && exitCode == 0;
 		}
 
+		public Exception exception() {
+			return exception;
+		}
+
 		@Override public String toString() {
 			return "LogFileContentResult{" +
 					"text='" + shortened(text, 100) + '\'' +
 					", stderr='" + shortened(stderr, 100) + '\'' +
-					", exitCode=" + exitCode +
+					", exitCode=" + exitCode + '\'' +
+					", exception=" + exception.toString() +
 					'}';
 		}
 
@@ -193,21 +206,36 @@ public class VcsProject {
 
 			LogFileContentResult that = (LogFileContentResult) o;
 
-			return exitCode == that.exitCode
-				&& text.equals(that.text)
-				&& stderr.equals(that.stderr);
+			return exitCode == that.exitCode &&
+					text.equals(that.text) &&
+					stderr.equals(that.stderr) &&
+					(exception != null ? exception.equals(that.exception) : that.exception == null);
 		}
 
 		@Override public int hashCode() {
 			int result = text.hashCode();
 			result = 31 * result + stderr.hashCode();
 			result = 31 * result + exitCode;
+			result = 31 * result + (exception != null ? exception.hashCode() : 0);
 			return result;
 		}
 	}
 
 
 	public static class LogResult implements Aggregatable<LogResult> {
+		public static ResultAdapter<LogResult> adapter = new ResultAdapter<LogResult>() {
+			@Override public LogResult wrapException(Exception e) {
+				return new LogResult(e);
+			}
+
+			@Override public boolean isSuccessful(LogResult result) {
+				return result.isSuccessful();
+			}
+
+			@Override public List<String> vcsErrorsIn(LogResult result) {
+				return result.vcsErrors();
+			}
+		};
 		private final List<VcsCommit> commits;
 		private final List<String> vcsErrors;
 		private final List<Exception> exceptions;
@@ -298,6 +326,19 @@ public class VcsProject {
 
 
 	public static class UpdateResult implements Aggregatable<UpdateResult> {
+		public static final ResultAdapter<UpdateResult> adapter = new ResultAdapter<UpdateResult>() {
+			@Override public UpdateResult wrapException(Exception e) {
+				return new UpdateResult(e);
+			}
+
+			@Override public boolean isSuccessful(UpdateResult result) {
+				return result.isSuccessful();
+			}
+
+			@Override public List<String> vcsErrorsIn(UpdateResult result) {
+				return result.vcsErrors();
+			}
+		};
 		private final List<String> vcsErrors;
 		private final List<Exception> exceptions;
 
@@ -363,6 +404,19 @@ public class VcsProject {
 
 
 	public static class CloneResult implements Aggregatable<CloneResult> {
+		public static ResultAdapter<CloneResult> adapter = new ResultAdapter<CloneResult>() {
+			@Override public CloneResult wrapException(Exception e) {
+				return new CloneResult(e);
+			}
+
+			@Override public boolean isSuccessful(CloneResult result) {
+				return result.isSuccessful();
+			}
+
+			@Override public List<String> vcsErrorsIn(CloneResult result) {
+				return result.vcsErrors();
+			}
+		};
 		private final List<String> vcsErrors;
 		private final List<Exception> exceptions;
 
@@ -425,7 +479,6 @@ public class VcsProject {
 			return result;
 		}
 	}
-
 
 	private class CompositeListener implements VcsCommand.Listener {
 		private final List<VcsCommand.Listener> listeners = new ArrayList<>();

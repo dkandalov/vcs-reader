@@ -4,11 +4,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.vcsreader.VcsRoot;
 import org.vcsreader.vcs.commandlistener.VcsCommand;
+import org.vcsreader.vcs.commandlistener.VcsCommand.ResultAdapter;
 
 import java.util.Date;
 
 import static org.vcsreader.VcsProject.*;
-import static org.vcsreader.vcs.commandlistener.VcsCommand.Listener.executeWith;
 
 public class GitVcsRoot implements VcsRoot, VcsCommand.Owner {
 	public final String localPath;
@@ -47,22 +47,27 @@ public class GitVcsRoot implements VcsRoot, VcsCommand.Owner {
 	}
 
 	@Override public CloneResult cloneToLocal() {
-		if (repositoryUrl == null) {
+		if (repositoryUrl == null && settings.failFast) {
 			throw new IllegalStateException("Cannot clone repository because remote url is not specified for root: " + this);
 		}
-		return executeWith(listener, new GitClone(settings.gitPath, repositoryUrl, localPath));
+		return execute(new GitClone(settings.gitPath, repositoryUrl, localPath), CloneResult.adapter);
 	}
 
 	@Override public UpdateResult update() {
-		return executeWith(listener, new GitUpdate(settings.gitPath, localPath));
+		return execute(new GitUpdate(settings.gitPath, localPath), UpdateResult.adapter);
 	}
 
 	@Override public LogResult log(Date fromDate, Date toDate) {
-		return executeWith(listener, new GitLog(settings.gitPath, localPath, fromDate, toDate));
+		return execute(new GitLog(settings.gitPath, localPath, fromDate, toDate), LogResult.adapter);
 	}
 
 	@Override public LogFileContentResult logFileContent(String filePath, String revision) {
-		return executeWith(listener, new GitLogFileContent(settings.gitPath, localPath, filePath, revision, settings.defaultFileCharset));
+		GitLogFileContent logFileContent = new GitLogFileContent(settings.gitPath, localPath, filePath, revision, settings.defaultFileCharset);
+		return execute(logFileContent, LogFileContentResult.adapter);
+	}
+
+	private <T> T execute(VcsCommand<T> vcsCommand, ResultAdapter<T> resultAdapter) {
+		return VcsCommand.execute(vcsCommand, resultAdapter, listener, settings.failFast);
 	}
 
 	@SuppressWarnings("RedundantIfStatement")

@@ -9,6 +9,11 @@ public class SvnSettings {
 	@NotNull public final String svnPath;
 	@NotNull public final Charset defaultFileCharset;
 	public final boolean useMergeHistory;
+	public final boolean failFast;
+
+	public SvnSettings(@NotNull String svnPath, @NotNull Charset defaultFileCharset, boolean useMergeHistory) {
+		this(svnPath, defaultFileCharset, useMergeHistory, false);
+	}
 
 	/**
 	 * @param svnPath            path to svn executable
@@ -16,11 +21,14 @@ public class SvnSettings {
 	 *                           (it will be used if charset could not be determined from file content)
 	 * @param useMergeHistory    allows to see merge commits by using "--use-merge-history" flag,
 	 *                           should be enabled for svn 1.7 and above
+	 * @param failFast           if true, will throw an exception command line execution failure;
+	 *                           otherwise will aggregate all exceptions/errors into result object
 	 */
-	public SvnSettings(@NotNull String svnPath, @NotNull Charset defaultFileCharset, boolean useMergeHistory) {
+	public SvnSettings(@NotNull String svnPath, @NotNull Charset defaultFileCharset, boolean useMergeHistory, boolean failFast) {
 		this.svnPath = svnPath;
 		this.defaultFileCharset = defaultFileCharset;
 		this.useMergeHistory = useMergeHistory;
+		this.failFast = failFast;
 	}
 
 	public static SvnSettings defaults() {
@@ -39,24 +47,23 @@ public class SvnSettings {
 		return new SvnSettings(svnPath, defaultFileCharset, value);
 	}
 
-	@SuppressWarnings("RedundantIfStatement")
 	@Override public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
 		SvnSettings that = (SvnSettings) o;
 
-		if (useMergeHistory != that.useMergeHistory) return false;
-		if (!defaultFileCharset.equals(that.defaultFileCharset)) return false;
-		if (!svnPath.equals(that.svnPath)) return false;
-
-		return true;
+		return useMergeHistory == that.useMergeHistory &&
+				failFast == that.failFast &&
+				svnPath.equals(that.svnPath) &&
+				defaultFileCharset.equals(that.defaultFileCharset);
 	}
 
 	@Override public int hashCode() {
 		int result = svnPath.hashCode();
-		result = 31 * result + (defaultFileCharset.hashCode());
+		result = 31 * result + defaultFileCharset.hashCode();
 		result = 31 * result + (useMergeHistory ? 1 : 0);
+		result = 31 * result + (failFast ? 1 : 0);
 		return result;
 	}
 
@@ -65,6 +72,7 @@ public class SvnSettings {
 				"svnPath='" + svnPath + '\'' +
 				", defaultFileCharset=" + defaultFileCharset +
 				", useMergeHistory=" + useMergeHistory +
+				", failFast=" + failFast +
 				'}';
 	}
 }

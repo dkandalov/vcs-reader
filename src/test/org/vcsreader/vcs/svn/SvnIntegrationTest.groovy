@@ -379,7 +379,7 @@ class SvnIntegrationTest {
 		def result = svnInfo.execute()
 
 		assert result.repositoryRoot == 'file://' + repository.repoPath
-		assert result.errors().isEmpty()
+		assert result.isSuccessful()
 	}
 
 	private static VcsProject newProject(SvnRepository repository) {

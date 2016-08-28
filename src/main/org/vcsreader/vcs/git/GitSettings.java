@@ -8,19 +8,28 @@ import java.nio.charset.Charset;
 public class GitSettings {
 	@NotNull public final String gitPath;
 	@NotNull public final Charset defaultFileCharset;
+	public final boolean failFast;
+
+	// TODO inline
+	public GitSettings(@NotNull String gitPath, @NotNull Charset defaultFileCharset) {
+		this(gitPath, defaultFileCharset, false);
+	}
 
 	/**
 	 * @param gitPath            path to git executable
 	 * @param defaultFileCharset default charset of files in repository
 	 *                           (it will be used if charset could not be determined from file content)
+	 * @param failFast           if true, will throw an exception command line execution failure;
+	 *                           otherwise will aggregate all exceptions/errors into result object
 	 */
-	public GitSettings(@NotNull String gitPath, @NotNull Charset defaultFileCharset) {
+	public GitSettings(@NotNull String gitPath, @NotNull Charset defaultFileCharset, boolean failFast) {
 		this.gitPath = gitPath;
 		this.defaultFileCharset = defaultFileCharset;
+		this.failFast = failFast;
 	}
 
 	public static GitSettings defaults() {
-		return new GitSettings("git", CharsetUtil.UTF8);
+		return new GitSettings("git", CharsetUtil.UTF8, false);
 	}
 
 	public GitSettings withGitPath(String value) {
@@ -31,22 +40,21 @@ public class GitSettings {
 		return new GitSettings(gitPath, value);
 	}
 
-	@SuppressWarnings("RedundantIfStatement")
 	@Override public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
 		GitSettings that = (GitSettings) o;
 
-		if (!defaultFileCharset.equals(that.defaultFileCharset)) return false;
-		if (!gitPath.equals(that.gitPath)) return false;
-
-		return true;
+		return failFast == that.failFast &&
+				gitPath.equals(that.gitPath) &&
+				defaultFileCharset.equals(that.defaultFileCharset);
 	}
 
 	@Override public int hashCode() {
 		int result = gitPath.hashCode();
-		result = 31 * result + (defaultFileCharset.hashCode());
+		result = 31 * result + defaultFileCharset.hashCode();
+		result = 31 * result + (failFast ? 1 : 0);
 		return result;
 	}
 
@@ -54,6 +62,7 @@ public class GitSettings {
 		return "GitSettings{" +
 				"gitPath='" + gitPath + '\'' +
 				", defaultFileCharset=" + defaultFileCharset +
+				", failFast=" + failFast +
 				'}';
 	}
 }

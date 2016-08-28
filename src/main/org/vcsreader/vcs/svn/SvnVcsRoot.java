@@ -2,11 +2,11 @@ package org.vcsreader.vcs.svn;
 
 import org.vcsreader.VcsRoot;
 import org.vcsreader.vcs.commandlistener.VcsCommand;
+import org.vcsreader.vcs.commandlistener.VcsCommand.ResultAdapter;
 
 import java.util.Date;
 
 import static org.vcsreader.VcsProject.*;
-import static org.vcsreader.vcs.commandlistener.VcsCommand.Listener.executeWith;
 
 public class SvnVcsRoot implements VcsRoot, VcsCommand.Owner {
 	public final String repositoryUrl;
@@ -44,15 +44,26 @@ public class SvnVcsRoot implements VcsRoot, VcsCommand.Owner {
 
 	@Override public LogResult log(Date fromDate, Date toDate) {
 		if (repositoryRoot == null) {
-			SvnInfo.Result result = executeWith(listener, new SvnInfo(settings.svnPath, repositoryUrl));
+			SvnInfo.Result result = execute(new SvnInfo(settings.svnPath, repositoryUrl), SvnInfo.adapter);
 			repositoryRoot = result.repositoryRoot;
 		}
-		LogResult logResult = executeWith(listener, svnLog(fromDate, toDate));
+		LogResult logResult = execute(svnLog(fromDate, toDate), LogResult.adapter);
 		if (hasRevisionArgumentError(logResult)) {
 			quoteDateRange = !quoteDateRange;
-			logResult = executeWith(listener, svnLog(fromDate, toDate));
+			logResult = execute(svnLog(fromDate, toDate), LogResult.adapter);
 		}
 		return logResult;
+	}
+
+	@Override public LogFileContentResult logFileContent(String filePath, String revision) {
+		SvnLogFileContent logFileContent = new SvnLogFileContent(
+				settings.svnPath,
+				repositoryUrl,
+				filePath,
+				revision,
+				settings.defaultFileCharset
+		);
+		return execute(logFileContent, LogFileContentResult.adapter);
 	}
 
 	private SvnLog svnLog(Date fromDate, Date toDate) {
@@ -81,14 +92,24 @@ public class SvnVcsRoot implements VcsRoot, VcsCommand.Owner {
 		return false;
 	}
 
-	@Override public LogFileContentResult logFileContent(String filePath, String revision) {
-		return executeWith(listener, new SvnLogFileContent(
-				settings.svnPath,
-				repositoryUrl,
-				filePath,
-				revision,
-				settings.defaultFileCharset
-		));
+	private <T> T execute(VcsCommand<T> vcsCommand, ResultAdapter<T> resultAdapter) {
+		return VcsCommand.execute(vcsCommand, resultAdapter, listener, settings.failFast);
+	}
+
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		SvnVcsRoot that = (SvnVcsRoot) o;
+
+		return repositoryUrl != null ? repositoryUrl.equals(that.repositoryUrl) : that.repositoryUrl == null &&
+				(settings != null ? settings.equals(that.settings) : that.settings == null);
+	}
+
+	@Override public int hashCode() {
+		int result = repositoryUrl != null ? repositoryUrl.hashCode() : 0;
+		result = 31 * result + (settings != null ? settings.hashCode() : 0);
+		return result;
 	}
 
 	@Override public String toString() {
