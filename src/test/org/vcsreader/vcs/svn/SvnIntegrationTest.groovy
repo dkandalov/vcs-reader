@@ -48,7 +48,7 @@ class SvnIntegrationTest {
 		assert logResult.isSuccessful()
 	}
 
-	@Test void "log single commit from project history (start date is inclusive)"() {
+	@Test void "log single commit from project history (time range start is inclusive, end is exclusive)"() {
 		def repository = 'repo with two commits with three added files'()
 		def revisions = repository.revisions
 
