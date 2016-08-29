@@ -2,12 +2,32 @@ package org.vcsreader.lang;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.util.Date;
 
 public class TimeRange {
+	public static final TimeRange all = new TimeRange(Instant.MIN, Instant.MAX);
+
 	private final Instant from;
 	private final Instant to;
+
+
+	public static TimeRange beforeNow() {
+		return before(Clock.systemUTC().instant());
+	}
+
+	public static TimeRange before(@NotNull Instant instant) {
+		return new TimeRange(Instant.MIN, instant);
+	}
+
+	public static TimeRange after(@NotNull Instant instant) {
+		return new TimeRange(instant, Instant.MAX);
+	}
+
+	public static TimeRange between(@NotNull Instant from, @NotNull Instant to) {
+		return new TimeRange(from, to);
+	}
 
 	public TimeRange(@NotNull Date fromDate, @NotNull Date toDate) {
 		this(Instant.ofEpochMilli(fromDate.getTime()), Instant.ofEpochMilli(toDate.getTime()));

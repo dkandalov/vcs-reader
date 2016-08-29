@@ -3,11 +3,15 @@ package org.vcsreader.vcs.git
 import org.junit.Test
 import org.vcsreader.VcsChange
 import org.vcsreader.VcsProject
+import org.vcsreader.lang.TimeRange
 import org.vcsreader.vcs.Change
 import org.vcsreader.vcs.Commit
 
+import static org.hamcrest.CoreMatchers.equalTo
+import static org.junit.Assert.assertThat
 import static org.vcsreader.VcsChange.Type.*
 import static org.vcsreader.VcsChange.noRevision
+import static org.vcsreader.lang.DateTimeUtil.date
 import static org.vcsreader.lang.DateTimeUtil.dateTime
 import static org.vcsreader.lang.DateTimeUtil.timeRange
 import static org.vcsreader.vcs.TestUtil.assertCommitsIn
@@ -124,6 +128,28 @@ class GitIntegrationTest {
 				]
 			)
 		])
+	}
+
+	@Test void "log commits before/after/for all dates"() {
+		def repository = 'repo with two commits with three added files'()
+
+		def project = newProject(repository)
+
+		project.log(TimeRange.before(date("11/08/2014"))).commits().with {
+			assertThat(it[0].message, equalTo("initial commit"))
+			assertThat(it.size(), equalTo(1))
+		}
+
+		project.log(TimeRange.after(date("11/08/2014"))).commits().with {
+			assertThat(it[0].message, equalTo("added file2, file3"))
+			assertThat(it.size(), equalTo(1))
+		}
+
+		project.log(TimeRange.all).commits().with {
+			assertThat(it[0].message, equalTo("initial commit"))
+			assertThat(it[1].message, equalTo("added file2, file3"))
+			assertThat(it.size(), equalTo(2))
+		}
 	}
 
 	@Test void "log commit with modified files"() {

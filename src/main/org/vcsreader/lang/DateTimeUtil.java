@@ -3,6 +3,9 @@ package org.vcsreader.lang;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -12,12 +15,9 @@ import static java.util.Arrays.asList;
 public class DateTimeUtil {
 	public static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
-	public static Date date(String s) {
-		try {
-			return dateTimeFormat("dd/MM/yyyy", UTC).parse(s);
-		} catch (ParseException e) {
-			throw new RuntimeException(e);
-		}
+	public static Instant date(String s) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("kk:mm:ss dd/MM/yyyy").withZone(ZoneOffset.UTC);
+		return formatter.parse("00:00:00 " + s, Instant::from);
 	}
 
 	public static TimeRange timeRange(Date from, Date to) {

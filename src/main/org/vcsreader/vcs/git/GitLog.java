@@ -8,6 +8,7 @@ import org.vcsreader.vcs.Change;
 import org.vcsreader.vcs.Commit;
 import org.vcsreader.vcs.VcsCommand;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,12 +56,18 @@ class GitLog implements VcsCommand<LogResult> {
 	}
 
 	static CommandLine gitLog(String gitPath, String folder, TimeRange timeRange) {
-		String from = "--after=" + Long.toString(timeRange.from().getEpochSecond());
-		String to = "--before=" + Long.toString(timeRange.to().getEpochSecond() - 1);
 		String showFileStatus = "--name-status"; // see --diff-filter at https://www.kernel.org/pub/software/scm/git/docs/git-log.html
 		String forceUTF8ForCommitMessages = "--encoding=" + UTF8.name();
-		CommandLine commandLine = new CommandLine(gitPath, "log", logFormat(), from, to, showFileStatus, forceUTF8ForCommitMessages);
-		return commandLine.workingDir(folder).outputCharset(UTF8);
+
+		List<String> arguments = new ArrayList<>(asList(gitPath, "log", logFormat(), showFileStatus, forceUTF8ForCommitMessages));
+
+		// MIN timestamp is not handled correctly by git and must be excluded from command line.
+		if (timeRange.from() != Instant.MIN) {
+			arguments.add("--after=" + Long.toString(timeRange.from().getEpochSecond()));
+		}
+		arguments.add("--before=" + Long.toString(timeRange.to().getEpochSecond() - 1));
+
+		return new CommandLine(arguments).workingDir(folder).outputCharset(UTF8);
 	}
 
 	static CommandLine gitLogRenames(String gitPath, String folder, String revision) {
