@@ -9,12 +9,12 @@ public class TimeRange {
 	private final Instant from;
 	private final Instant to;
 
-	public TimeRange(Date fromDate, Date toDate) {
+	public TimeRange(@NotNull Date fromDate, @NotNull Date toDate) {
 		this(Instant.ofEpochMilli(fromDate.getTime()), Instant.ofEpochMilli(toDate.getTime()));
 	}
 
 	public TimeRange(@NotNull Instant from, @NotNull Instant to) {
-		if (from.isAfter(to)) {
+		if (!from.isBefore(to)) {
 			throw new IllegalArgumentException("Invalid time range: " + from + " must be before or equal " + to);
 		}
 		this.from = from;

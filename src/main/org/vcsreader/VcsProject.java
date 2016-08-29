@@ -5,17 +5,13 @@ import org.vcsreader.lang.TimeRange;
 import org.vcsreader.vcs.VcsCommand;
 import org.vcsreader.vcs.VcsCommand.ResultAdapter;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.sort;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
-import static org.vcsreader.lang.DateTimeUtil.UTC;
-import static org.vcsreader.lang.DateTimeUtil.dateTimeFormat;
 import static org.vcsreader.lang.StringUtil.shortened;
 
 /**
@@ -76,20 +72,13 @@ public class VcsProject {
 	 * Merge commits are not logged, the commit which was merged into branch is logged instead.
 	 * Therefore, it's possible to see commit with time outside of requested time range.
 	 *
-	 * @param from the date and time from which to request commits (inclusive, one second resolution)
-	 * @param to   the date and time until which to request commits (exclusive, one second resolution)
+	 * @param timeRange range of timestamps used to request commits;
+	 *                  start is inclusive with one second resolution, end is exclusive with one second resolution
 	 */
-	// TODO use TimeRange
-	public LogResult log(Date from, Date to) {
-		if (to.getTime() < from.getTime()) {
-			DateFormat dateFormat = dateTimeFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", UTC);
-			throw new IllegalArgumentException("Invalid date range. " +
-					"From: " + dateFormat.format(from) + ", to: " + dateFormat.format(to) + ".");
-		}
-
+	public LogResult log(TimeRange timeRange) {
 		Aggregator<LogResult> aggregator = new Aggregator<>(new LogResult());
 		for (VcsRoot vcsRoot : vcsRoots) {
-			LogResult logResult = vcsRoot.log(new TimeRange(from, to));
+			LogResult logResult = vcsRoot.log(timeRange);
 			logResult = (logResult != null ? logResult.setVcsRoot(vcsRoot) : null);
 			aggregator.aggregate(logResult);
 		}

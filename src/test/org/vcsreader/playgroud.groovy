@@ -4,9 +4,8 @@ import org.vcsreader.vcs.git.GitSettings
 import org.vcsreader.vcs.git.GitVcsRoot
 
 import static org.vcsreader.VcsChange.Type.MODIFIED
-import static org.vcsreader.lang.DateTimeUtil.date
 import static org.vcsreader.lang.DateTimeUtil.dateTime
-
+import static org.vcsreader.lang.DateTimeUtil.timeRange
 
 // setup project
 def gitSettings = GitSettings.defaults()
@@ -18,7 +17,7 @@ def cloneResult = vcsProject.cloneToLocal()
 assert cloneResult.isSuccessful()
 
 // log commits within date range
-def logResult = vcsProject.log(date("01/01/2013"), date("01/01/2014"))
+def logResult = vcsProject.log(timeRange("01/01/2013", "01/01/2014"))
 assert logResult.commits().size() == 242
 
 // read commits data

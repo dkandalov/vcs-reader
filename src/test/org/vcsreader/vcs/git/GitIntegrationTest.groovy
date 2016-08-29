@@ -8,8 +8,8 @@ import org.vcsreader.vcs.Commit
 
 import static org.vcsreader.VcsChange.Type.*
 import static org.vcsreader.VcsChange.noRevision
-import static org.vcsreader.lang.DateTimeUtil.date
 import static org.vcsreader.lang.DateTimeUtil.dateTime
+import static org.vcsreader.lang.DateTimeUtil.timeRange
 import static org.vcsreader.vcs.TestUtil.assertCommitsIn
 import static org.vcsreader.vcs.TestUtil.printingListener
 import static org.vcsreader.vcs.git.GitIntegrationTestConfig.*
@@ -66,7 +66,7 @@ class GitIntegrationTest {
 		def repository = someNonEmptyRepository()
 
 		def project = newProject(repository)
-		def logResult = project.log(date("01/08/2014"), date("02/08/2014"))
+		def logResult = project.log(timeRange("01/08/2014", "02/08/2014"))
 
 		assert logResult.commits().empty
 		assert logResult.vcsErrors().empty
@@ -78,7 +78,7 @@ class GitIntegrationTest {
 		def revisions = repository.revisions
 
 		def project = newProject(repository)
-		def logResult = project.log(date("10/08/2014"), date("11/08/2014"))
+		def logResult = project.log(timeRange("10/08/2014", "11/08/2014"))
 
 		assertCommitsIn(logResult, [
 			new Commit(
@@ -96,7 +96,7 @@ class GitIntegrationTest {
 		def revisions = repository.revisions
 
 		def project = newProject(repository)
-		def logResult = project.log(date("10/08/2014"), date("12/08/2014"))
+		def logResult = project.log(timeRange("10/08/2014", "12/08/2014"))
 
 		assertCommitsIn(logResult, [
 			new Commit(
@@ -124,7 +124,7 @@ class GitIntegrationTest {
 		def revisions = repository.revisions
 
 		VcsProject project = newProject(repository)
-		def logResult = project.log(date("12/08/2014"), date("13/08/2014"))
+		def logResult = project.log(timeRange("12/08/2014", "13/08/2014"))
 
 		assertCommitsIn(logResult, [
 			new Commit(
@@ -145,7 +145,7 @@ class GitIntegrationTest {
 		def revisions = repository.revisions
 
 		def project = newProject(repository)
-		def logResult = project.log(date("13/08/2014"), date("14/08/2014"))
+		def logResult = project.log(timeRange("13/08/2014", "14/08/2014"))
 
 		assertCommitsIn(logResult, [
 			new Commit(
@@ -163,7 +163,7 @@ class GitIntegrationTest {
 		def revisions = repository.revisions
 
 		def project = newProject(repository)
-		def logResult = project.log(date("14/08/2014"), date("15/08/2014"))
+		def logResult = project.log(timeRange("14/08/2014", "15/08/2014"))
 
 		assertCommitsIn(logResult, [
 			new Commit(
@@ -181,7 +181,7 @@ class GitIntegrationTest {
 		def revisions = repository.revisions
 
 		def project = newProject(repository)
-		def logResult = project.log(date("15/08/2014"), date("16/08/2014"))
+		def logResult = project.log(timeRange("15/08/2014", "16/08/2014"))
 
 		assertCommitsIn(logResult, [
 			new Commit(
@@ -199,7 +199,7 @@ class GitIntegrationTest {
 		def revisions = repository.revisions
 
 		def project = newProject(repository)
-		def logResult = project.log(date("16/08/2014"), date("17/08/2014"))
+		def logResult = project.log(timeRange("16/08/2014", "17/08/2014"))
 
 		assertCommitsIn(logResult, [
 			new Commit(
@@ -217,7 +217,7 @@ class GitIntegrationTest {
 		def revisions = repository.revisions
 
 		def project = newProject(repository)
-		def logResult = project.log(date("17/08/2014"), date("18/08/2014"))
+		def logResult = project.log(timeRange("17/08/2014", "18/08/2014"))
 
 		assertCommitsIn(logResult, [
 			new Commit(
@@ -241,7 +241,7 @@ class GitIntegrationTest {
 		def revisions = repository.revisions
 
 		def project = newProject(repository)
-		def logResult = project.log(date("18/08/2014"), date("19/08/2014"))
+		def logResult = project.log(timeRange("18/08/2014", "19/08/2014"))
 
 		assertCommitsIn(logResult, [
 			new Commit(
@@ -262,7 +262,7 @@ class GitIntegrationTest {
 		def revisions = repository.revisions
 
 		def project = newProject(repository)
-		def logResult = project.log(date("19/08/2014"), date("20/08/2014"))
+		def logResult = project.log(timeRange("19/08/2014", "20/08/2014"))
 
 		assertCommitsIn(logResult, [
 			new Commit(
@@ -291,7 +291,7 @@ class GitIntegrationTest {
 		def revisions = repository.revisions
 
 		def project = newProject(repository)
-		def logResult = project.log(date("20/08/2014"), date("21/08/2014"))
+		def logResult = project.log(timeRange("20/08/2014", "21/08/2014"))
 
 		assertCommitsIn(logResult, [
 			new Commit(
@@ -330,7 +330,7 @@ class GitIntegrationTest {
 		def revisions = repository.revisions
 
 		def project = newProject(repository)
-		def logResult = project.log(date("21/08/2014"), date("22/08/2014"))
+		def logResult = project.log(timeRange("21/08/2014", "22/08/2014"))
 
 		assertCommitsIn(logResult, [
 			new Commit(
@@ -354,7 +354,7 @@ class GitIntegrationTest {
 		def repository = 'repo with two added and modified files'()
 
 		def project = newProject(repository)
-		def logResult = project.log(date("12/08/2014"), date("13/08/2014"))
+		def logResult = project.log(timeRange("12/08/2014", "13/08/2014"))
 
 		def change = logResult.commits().first().changes.first()
 		assert change.type == MODIFIED
@@ -366,7 +366,7 @@ class GitIntegrationTest {
 		def repository = 'repo with two added and modified files'()
 
 		def project = newProject(repository)
-		def logResult = project.log(date("11/08/2014"), date("12/08/2014"))
+		def logResult = project.log(timeRange("11/08/2014", "12/08/2014"))
 
 		def change = logResult.commits().first().changes.first()
 		assert change.type == ADDED
@@ -378,7 +378,7 @@ class GitIntegrationTest {
 		def repository = 'repo with deleted file'()
 
 		def project = newProject(repository)
-		def logResult = project.log(date("15/08/2014"), date("16/08/2014"))
+		def logResult = project.log(timeRange("15/08/2014", "16/08/2014"))
 
 		def change = logResult.commits().first().changes.first()
 		assert change.type == DELETED

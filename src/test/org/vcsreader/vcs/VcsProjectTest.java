@@ -19,7 +19,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.vcsreader.VcsProject.LogResult;
-import static org.vcsreader.lang.DateTimeUtil.date;
+import static org.vcsreader.lang.DateTimeUtil.timeRange;
 
 public class VcsProjectTest {
 	private final GitVcsRoot root1 = mock(GitVcsRoot.class);
@@ -65,7 +65,7 @@ public class VcsProjectTest {
 		VcsProject project = new VcsProject(asList(root1, root2));
 
 		// when
-		LogResult logResult = project.log(date("01/07/2014"), date("08/07/2014"));
+		LogResult logResult = project.log(timeRange("01/07/2014", "08/07/2014"));
 
 		// then
 		assertThat(logResult.commits(), equalTo(asList(commit1, commit2)));
@@ -81,7 +81,7 @@ public class VcsProjectTest {
 		VcsProject project = new VcsProject(asList(root1, root2));
 
 		// when / then
-		project.log(date("01/07/2014"), date("08/07/2014"));
+		project.log(timeRange("01/07/2014", "08/07/2014"));
 	}
 
 	private static TimeRange anyTimeRange() {

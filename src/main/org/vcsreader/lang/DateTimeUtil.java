@@ -20,6 +20,10 @@ public class DateTimeUtil {
 		}
 	}
 
+	public static TimeRange timeRange(Date from, Date to) {
+		return new TimeRange(from, to);
+	}
+
 	public static TimeRange timeRange(String from, String to) {
 		return new TimeRange(date(from), date(to));
 	}
