@@ -66,6 +66,13 @@ class SvnIntegrationTest {
 		])
 	}
 
+	@Test(expected = IllegalStateException)
+	void "commits before 1970 are currently not supported"() {
+		def svnRepository = new SvnRepository().init()
+		svnRepository.create("file.txt")
+		svnRepository.commit("initial commit", dateTime("00:00:00 10/08/1969"))
+	}
+
 	@Test void "log several commits from project history"() {
 		def repository = 'repo with two commits with three added files'()
 		def revisions = repository.revisions

@@ -91,6 +91,13 @@ class GitIntegrationTest {
 		])
 	}
 
+	@Test(expected = IllegalStateException)
+	void "commits before 1970 are currently not supported"() {
+		def gitRepository = new GitRepository().init()
+		gitRepository.create("file.txt")
+		gitRepository.commit("initial commit", "Aug 10 00:00:00 1969 +0000")
+	}
+
 	@Test void "log several commits from project history"() {
 		def repository = 'repo with two commits with three added files'()
 		def revisions = repository.revisions

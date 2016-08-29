@@ -12,6 +12,7 @@ import static org.vcsreader.lang.DateTimeUtil.dateTime
 import static org.vcsreader.lang.DateTimeUtil.timeRange
 import static org.vcsreader.vcs.TestUtil.assertCommitsIn
 import static org.vcsreader.vcs.TestUtil.printingListener
+import static org.vcsreader.vcs.git.GitIntegrationTestConfig.author
 import static org.vcsreader.vcs.hg.HgIntegrationTestConfig.*
 import static org.vcsreader.vcs.hg.HgRepository.Scripts.*
 
@@ -89,6 +90,14 @@ class HgIntegrationTest {
 				[new Change(ADDED, "file1.txt", revisions[0])]
 			)
 		])
+	}
+
+	@Test(expected = IllegalStateException)
+	void "commits before 1970 are currently not supported"() {
+		// see https://www.mercurial-scm.org/pipermail/mercurial-devel/2016-March/082248.html
+		def hgRepository = new HgRepository().init()
+		hgRepository.create("file.txt")
+		hgRepository.commit("initial commit", "Aug 10 00:00:00 1969 +0000")
 	}
 
 	@Test void "log several commits from project history"() {

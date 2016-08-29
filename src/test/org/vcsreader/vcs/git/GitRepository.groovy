@@ -1,7 +1,12 @@
 package org.vcsreader.vcs.git
 
 import org.vcsreader.lang.CommandLine
+import org.vcsreader.lang.DateTimeUtil
 
+import java.time.Instant
+import java.time.format.DateTimeFormatter
+
+import static java.time.ZoneOffset.UTC
 import static org.vcsreader.vcs.git.GitIntegrationTestConfig.authorWithEmail
 import static org.vcsreader.vcs.git.GitIntegrationTestConfig.newReferenceRepoPath
 
@@ -77,13 +82,15 @@ class GitRepository {
 	}
 
 	def commit(String message, String date) {
+		def timestamp = DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(UTC).format(Instant.ofEpochMilli(DateTimeUtil.dateTime(date).time))
+
 		git("add", "--all",  ".")
 		// allow empty messages and empty commits (without changes) to test it
 		git("commit", "--allow-empty-message", "--allow-empty", "-m", message)
 
 		// committer date has to be specified because when requesting git log it checks committer date not author date
-		def env = ["GIT_COMMITTER_DATE": date]
-		git(env, "commit", "--allow-empty-message", "--allow-empty", "--amend", "--author", authorWithEmail, "--date", date, "-m", message)
+		def env = ["GIT_COMMITTER_DATE": timestamp]
+		git(env, "commit", "--allow-empty-message", "--allow-empty", "--amend", "--author=" + authorWithEmail, "--date=" + timestamp, "-m", message)
 	}
 
 	private def git(Map environment = [:], String... args) {
