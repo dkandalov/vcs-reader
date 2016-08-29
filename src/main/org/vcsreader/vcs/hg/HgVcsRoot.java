@@ -7,10 +7,9 @@ import org.vcsreader.VcsProject.LogFileContentResult;
 import org.vcsreader.VcsProject.LogResult;
 import org.vcsreader.VcsProject.UpdateResult;
 import org.vcsreader.VcsRoot;
+import org.vcsreader.lang.TimeRange;
 import org.vcsreader.vcs.VcsCommand;
 import org.vcsreader.vcs.VcsCommand.ResultAdapter;
-
-import java.util.Date;
 
 public class HgVcsRoot implements VcsRoot, VcsCommand.Owner {
 	public final String localPath;
@@ -57,8 +56,8 @@ public class HgVcsRoot implements VcsRoot, VcsCommand.Owner {
 		return execute(new HgUpdate(settings.hgPath, localPath), UpdateResult.adapter);
 	}
 
-	@Override public LogResult log(Date fromDate, Date toDate) {
-		return execute(new HgLog(settings.hgPath, localPath, fromDate, toDate), LogResult.adapter);
+	@Override public LogResult log(TimeRange timeRange) {
+		return execute(new HgLog(settings.hgPath, localPath, timeRange), LogResult.adapter);
 	}
 
 	@Override public LogFileContentResult logFileContent(String filePath, String revision) {

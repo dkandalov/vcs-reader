@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.vcsreader.VcsCommit;
 import org.vcsreader.VcsProject;
 import org.vcsreader.VcsProject.CloneResult;
+import org.vcsreader.lang.TimeRange;
 import org.vcsreader.vcs.git.GitVcsRoot;
 
 import java.util.ArrayList;
@@ -59,8 +60,8 @@ public class VcsProjectTest {
 		// given
 		VcsCommit commit1 = new Commit("1", "", new Date(0), "", "", new ArrayList<>());
 		VcsCommit commit2 = new Commit("2", "", new Date(0), "", "", new ArrayList<>());
-		when(root1.log(anyDate(), anyDate())).thenReturn(new LogResult(asList(commit1), asList("some error")));
-		when(root2.log(anyDate(), anyDate())).thenReturn(new LogResult(asList(commit2), new ArrayList<>()));
+		when(root1.log(anyTimeRange())).thenReturn(new LogResult(asList(commit1), asList("some error")));
+		when(root2.log(anyTimeRange())).thenReturn(new LogResult(asList(commit2), new ArrayList<>()));
 		VcsProject project = new VcsProject(asList(root1, root2));
 
 		// when
@@ -75,15 +76,15 @@ public class VcsProjectTest {
 	@Test(expected = IllegalStateException.class)
 	public void failedLogProjectHistory() {
 		// given
-		when(root1.log(anyDate(), anyDate())).thenThrow(new IllegalStateException());
-		when(root2.log(anyDate(), anyDate())).thenThrow(new IllegalStateException());
+		when(root1.log(anyTimeRange())).thenThrow(new IllegalStateException());
+		when(root2.log(anyTimeRange())).thenThrow(new IllegalStateException());
 		VcsProject project = new VcsProject(asList(root1, root2));
 
 		// when / then
 		project.log(date("01/07/2014"), date("08/07/2014"));
 	}
 
-	private static Date anyDate() {
-		return any(Date.class);
+	private static TimeRange anyTimeRange() {
+		return any(TimeRange.class);
 	}
 }

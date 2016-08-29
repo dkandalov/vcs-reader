@@ -4,17 +4,21 @@ import org.vcsreader.VcsChange;
 import org.vcsreader.VcsCommit;
 import org.vcsreader.lang.CharsetUtil;
 import org.vcsreader.lang.CommandLine;
+import org.vcsreader.lang.TimeRange;
 import org.vcsreader.vcs.Change;
 import org.vcsreader.vcs.VcsCommand;
 
 import java.nio.charset.Charset;
-import java.text.DateFormat;
-import java.util.*;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.vcsreader.VcsProject.LogResult;
 import static org.vcsreader.lang.DateTimeUtil.UTC;
-import static org.vcsreader.lang.DateTimeUtil.dateTimeFormat;
 import static org.vcsreader.vcs.svn.SvnCommandLine.isSuccessful;
 import static org.vcsreader.vcs.svn.SvnCommandLine.newExternalCommand;
 
@@ -25,22 +29,20 @@ class SvnLog implements VcsCommand<LogResult> {
 	private final String pathToSvn;
 	private final String repositoryUrl;
 	private final String repositoryRoot;
-	private final Date fromDate;
-	private final Date toDate;
+	private final TimeRange timeRange;
 	private final boolean useMergeHistory;
 	private final boolean quoteDateRange;
 	private final CommandLine commandLine;
 
-	public SvnLog(String pathToSvn, String repositoryUrl, String repositoryRoot, Date fromDate, Date toDate,
+	public SvnLog(String pathToSvn, String repositoryUrl, String repositoryRoot, TimeRange timeRange,
 	              boolean useMergeHistory, boolean quoteDateRange) {
 		this.pathToSvn = pathToSvn;
 		this.repositoryUrl = repositoryUrl;
 		this.repositoryRoot = repositoryRoot;
-		this.fromDate = fromDate;
-		this.toDate = toDate;
+		this.timeRange = timeRange;
 		this.useMergeHistory = useMergeHistory;
 		this.quoteDateRange = quoteDateRange;
-		this.commandLine = svnLog(pathToSvn, repositoryUrl, fromDate, toDate, useMergeHistory, quoteDateRange);
+		this.commandLine = svnLog(pathToSvn, repositoryUrl, timeRange, useMergeHistory, quoteDateRange);
 	}
 
 	@Override public LogResult execute() {
@@ -48,14 +50,14 @@ class SvnLog implements VcsCommand<LogResult> {
 
 		if (isSuccessful(commandLine)) {
 			List<VcsCommit> allCommits = SvnCommitParser.parseCommits(commandLine.stdout());
-			List<VcsCommit> commits = transformToSubPathCommits(deleteCommitsBefore(fromDate, allCommits));
+			List<VcsCommit> commits = transformToSubPathCommits(deleteCommitsBefore(timeRange.from(), allCommits));
 			return new LogResult(commits, new ArrayList<>());
 		} else {
 			return new LogResult(Collections.emptyList(), asList(commandLine.stderr()));
 		}
 	}
 
-	static CommandLine svnLog(String pathToSvn, String repositoryUrl, Date fromDate, Date toDate,
+	static CommandLine svnLog(String pathToSvn, String repositoryUrl, TimeRange timeRange,
 	                          boolean useMergeHistory, boolean quoteDateRange) {
 		// see http://svnbook.red-bean.com/en/1.8/svn.branchmerge.advanced.html
 		// see http://stackoverflow.com/questions/987337/preserving-history-when-merging-subversion-branches
@@ -68,20 +70,20 @@ class SvnLog implements VcsCommand<LogResult> {
 		return newExternalCommand(
 				pathToSvn, "log",
 				repositoryUrl,
-				"-r", svnDateRange(fromDate, toDate, quoteDateRange),
+				"-r", svnDateRange(timeRange, quoteDateRange),
 				mergeHistory,
 				"--verbose",
 				"--xml"
 		).outputCharset(svnXmlCharset);
 	}
 
-	private static String svnDateRange(Date fromDate, Date toDate, boolean quoteDateRange) {
-		toDate = new Date(toDate.getTime() - 1000); // make toDate exclusive
+	private static String svnDateRange(TimeRange timeRange, boolean quoteDateRange) {
+		timeRange = new TimeRange(timeRange.from(), timeRange.to().minusMillis(1000)); // This is to make toDate exclusive.
 
-		// svn supports any ISO 8601 date format (https://en.wikipedia.org/wiki/ISO_8601)
-		DateFormat dateFormat = dateTimeFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", UTC);
+		// Svn supports any ISO 8601 date format (https://en.wikipedia.org/wiki/ISO_8601).
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(UTC.toZoneId());
 
-		String result = "{" + dateFormat.format(fromDate) + "}:{" + dateFormat.format(toDate) + "}";
+		String result = "{" + formatter.format(timeRange.from()) + "}:{" + formatter.format(timeRange.to()) + "}";
 		if (quoteDateRange) {
 			result = "'" + result + "'";
 		}
@@ -92,11 +94,11 @@ class SvnLog implements VcsCommand<LogResult> {
 	 * Delete commits because "Subversion will find the most recent revision of the repository as of the date you give".
 	 * See http://svnbook.red-bean.com/en/1.8/svn.tour.revs.specifiers.html#svn.tour.revs.keywords
 	 */
-	private static List<VcsCommit> deleteCommitsBefore(Date date, List<VcsCommit> commits) {
+	private static List<VcsCommit> deleteCommitsBefore(Instant instant, List<VcsCommit> commits) {
 		Iterator<VcsCommit> iterator = commits.iterator();
 		while (iterator.hasNext()) {
 			VcsCommit commit = iterator.next();
-			if (commit.getTime().before(date)) iterator.remove();
+			if (commit.getTime().getTime() < instant.toEpochMilli()) iterator.remove();
 		}
 		return commits;
 	}
@@ -165,7 +167,7 @@ class SvnLog implements VcsCommand<LogResult> {
 		return commandLine.describe();
 	}
 
-	@SuppressWarnings("RedundantIfStatement")
+	@SuppressWarnings("SimplifiableIfStatement")
 	@Override public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
@@ -174,35 +176,24 @@ class SvnLog implements VcsCommand<LogResult> {
 
 		if (useMergeHistory != svnLog.useMergeHistory) return false;
 		if (quoteDateRange != svnLog.quoteDateRange) return false;
-		if (!fromDate.equals(svnLog.fromDate)) return false;
-		if (!pathToSvn.equals(svnLog.pathToSvn)) return false;
-		if (!repositoryRoot.equals(svnLog.repositoryRoot)) return false;
-		if (!repositoryUrl.equals(svnLog.repositoryUrl)) return false;
-		if (!toDate.equals(svnLog.toDate)) return false;
+		if (pathToSvn != null ? !pathToSvn.equals(svnLog.pathToSvn) : svnLog.pathToSvn != null) return false;
+		if (repositoryUrl != null ? !repositoryUrl.equals(svnLog.repositoryUrl) : svnLog.repositoryUrl != null)
+			return false;
+		if (repositoryRoot != null ? !repositoryRoot.equals(svnLog.repositoryRoot) : svnLog.repositoryRoot != null)
+			return false;
+		if (timeRange != null ? !timeRange.equals(svnLog.timeRange) : svnLog.timeRange != null) return false;
+		return commandLine != null ? commandLine.equals(svnLog.commandLine) : svnLog.commandLine == null;
 
-		return true;
 	}
 
 	@Override public int hashCode() {
-		int result = pathToSvn.hashCode();
-		result = 31 * result + repositoryUrl.hashCode();
-		result = 31 * result + repositoryRoot.hashCode();
-		result = 31 * result + fromDate.hashCode();
-		result = 31 * result + toDate.hashCode();
+		int result = pathToSvn != null ? pathToSvn.hashCode() : 0;
+		result = 31 * result + (repositoryUrl != null ? repositoryUrl.hashCode() : 0);
+		result = 31 * result + (repositoryRoot != null ? repositoryRoot.hashCode() : 0);
+		result = 31 * result + (timeRange != null ? timeRange.hashCode() : 0);
 		result = 31 * result + (useMergeHistory ? 1 : 0);
 		result = 31 * result + (quoteDateRange ? 1 : 0);
+		result = 31 * result + (commandLine != null ? commandLine.hashCode() : 0);
 		return result;
-	}
-
-	@Override public String toString() {
-		return "SvnLog{" +
-				"pathToSvn='" + pathToSvn + '\'' +
-				", repositoryUrl='" + repositoryUrl + '\'' +
-				", repositoryRoot='" + repositoryRoot + '\'' +
-				", fromDate=" + fromDate +
-				", toDate=" + toDate +
-				", useMergeHistory=" + useMergeHistory +
-				", quoteDateRange=" + quoteDateRange +
-				'}';
 	}
 }

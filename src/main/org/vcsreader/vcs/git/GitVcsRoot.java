@@ -7,8 +7,6 @@ import org.vcsreader.lang.TimeRange;
 import org.vcsreader.vcs.VcsCommand;
 import org.vcsreader.vcs.VcsCommand.ResultAdapter;
 
-import java.util.Date;
-
 import static org.vcsreader.VcsProject.*;
 
 public class GitVcsRoot implements VcsRoot, VcsCommand.Owner {
@@ -58,8 +56,8 @@ public class GitVcsRoot implements VcsRoot, VcsCommand.Owner {
 		return execute(new GitUpdate(settings.gitPath, localPath), UpdateResult.adapter);
 	}
 
-	@Override public LogResult log(Date fromDate, Date toDate) {
-		return execute(new GitLog(settings.gitPath, localPath, new TimeRange(fromDate, toDate)), LogResult.adapter);
+	@Override public LogResult log(TimeRange timeRange) {
+		return execute(new GitLog(settings.gitPath, localPath, timeRange), LogResult.adapter);
 	}
 
 	@Override public LogFileContentResult logFileContent(String filePath, String revision) {

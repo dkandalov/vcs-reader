@@ -1,6 +1,7 @@
 package org.vcsreader;
 
 import org.jetbrains.annotations.NotNull;
+import org.vcsreader.lang.TimeRange;
 import org.vcsreader.vcs.VcsCommand;
 import org.vcsreader.vcs.VcsCommand.ResultAdapter;
 
@@ -78,6 +79,7 @@ public class VcsProject {
 	 * @param from the date and time from which to request commits (inclusive, one second resolution)
 	 * @param to   the date and time until which to request commits (exclusive, one second resolution)
 	 */
+	// TODO use TimeRange
 	public LogResult log(Date from, Date to) {
 		if (to.getTime() < from.getTime()) {
 			DateFormat dateFormat = dateTimeFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", UTC);
@@ -87,7 +89,7 @@ public class VcsProject {
 
 		Aggregator<LogResult> aggregator = new Aggregator<>(new LogResult());
 		for (VcsRoot vcsRoot : vcsRoots) {
-			LogResult logResult = vcsRoot.log(from, to);
+			LogResult logResult = vcsRoot.log(new TimeRange(from, to));
 			logResult = (logResult != null ? logResult.setVcsRoot(vcsRoot) : null);
 			aggregator.aggregate(logResult);
 		}

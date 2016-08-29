@@ -4,11 +4,9 @@ import org.junit.Test
 import org.vcsreader.lang.CommandLine
 
 import static org.vcsreader.lang.CharsetUtil.UTF8
-import static org.vcsreader.lang.DateTimeUtil.date
+import static org.vcsreader.lang.DateTimeUtil.timeRange
 import static org.vcsreader.vcs.hg.HgClone.hgClone
-import static org.vcsreader.vcs.hg.HgIntegrationTestConfig.newProjectPath
-import static org.vcsreader.vcs.hg.HgIntegrationTestConfig.nonExistentPath
-import static org.vcsreader.vcs.hg.HgIntegrationTestConfig.pathToHg
+import static org.vcsreader.vcs.hg.HgIntegrationTestConfig.*
 import static org.vcsreader.vcs.hg.HgLog.hgLog
 import static org.vcsreader.vcs.hg.HgLogFileContent.hgLogFileContent
 import static org.vcsreader.vcs.hg.HgRepository.Scripts.*
@@ -20,7 +18,7 @@ class CommandLine_HgIntegrationTest {
 	@Test void "basic log"() {
 		def repository = 'repo with two commits with three added files'()
 
-		def commandLine = hgLog(pathToHg, repository.path, date("01/01/2013"), date("01/01/2023")).execute()
+		def commandLine = hgLog(pathToHg, repository.path, timeRange("01/01/2013", "01/01/2023")).execute()
 
 		assert commandLine.stdout().contains("initial commit")
 		assert commandLine.stderr() == ""
@@ -29,7 +27,7 @@ class CommandLine_HgIntegrationTest {
 
 	@Test(expected = CommandLine.Failure)
 	void "failed log"() {
-		hgLog(pathToHg, nonExistentPath, date("01/01/2013"), date("01/01/2023")).execute()
+		hgLog(pathToHg, nonExistentPath, timeRange("01/01/2013", "01/01/2023")).execute()
 	}
 
 	@Test void "log file content"() {
@@ -101,7 +99,7 @@ class CommandLine_HgIntegrationTest {
 	@Test void "log with non-ascii characters"() {
 		def repository = 'repo with non-ascii file name and commit message'()
 
-		def commandLine = hgLog(pathToHg, repository.path, date("01/01/2013"), date("01/01/2023")).execute()
+		def commandLine = hgLog(pathToHg, repository.path, timeRange("01/01/2013", "01/01/2023")).execute()
 		assert commandLine.stderr() == ""
 		assert commandLine.stdout().contains("non-ascii комментарий")
 		assert commandLine.exitCode() == 0

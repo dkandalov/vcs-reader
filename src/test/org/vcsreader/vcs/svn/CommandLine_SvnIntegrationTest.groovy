@@ -3,10 +3,10 @@ package org.vcsreader.vcs.svn
 import org.junit.Test
 
 import static org.vcsreader.lang.CharsetUtil.UTF8
-import static org.vcsreader.lang.DateTimeUtil.date
+import static org.vcsreader.lang.DateTimeUtil.timeRange
 import static org.vcsreader.vcs.svn.SvnInfo.svnInfo
-import static org.vcsreader.vcs.svn.SvnIntegrationTestConfig.getNonExistentUrl
-import static org.vcsreader.vcs.svn.SvnIntegrationTestConfig.getPathToSvn
+import static org.vcsreader.vcs.svn.SvnIntegrationTestConfig.nonExistentUrl
+import static org.vcsreader.vcs.svn.SvnIntegrationTestConfig.pathToSvn
 import static org.vcsreader.vcs.svn.SvnLog.svnLog
 import static org.vcsreader.vcs.svn.SvnLogFileContent.svnLogFileContent
 import static org.vcsreader.vcs.svn.SvnRepository.Scripts.*
@@ -15,7 +15,7 @@ class CommandLine_SvnIntegrationTest {
 	@Test void "basic log"() {
 		def repository = 'repo with two commits with three added files'()
 
-		def commandLine = svnLog(pathToSvn, "file://" + repository.repoPath, date("01/01/2013"), date("01/01/2023"), useMergeHistory, quoteDateRange).execute()
+		def commandLine = svnLog(pathToSvn, "file://" + repository.repoPath, timeRange("01/01/2013", "01/01/2023"), useMergeHistory, quoteDateRange).execute()
 
 		assert commandLine.stderr() == ""
 		assert commandLine.stdout().contains("initial commit")
@@ -23,7 +23,7 @@ class CommandLine_SvnIntegrationTest {
 	}
 
 	@Test void "failed log"() {
-		def commandLine = svnLog(pathToSvn, nonExistentUrl, date("01/01/2013"), date("01/01/2023"), useMergeHistory, quoteDateRange).execute()
+		def commandLine = svnLog(pathToSvn, nonExistentUrl, timeRange("01/01/2013", "01/01/2023"), useMergeHistory, quoteDateRange).execute()
 
 		assert !commandLine.stdout().contains("logentry")
 		assert commandLine.stderr().contains("Unable to connect to a repository")
@@ -70,7 +70,7 @@ class CommandLine_SvnIntegrationTest {
 	@Test void "log with non-ascii characters"() {
 		def repository = 'repo with non-ascii file name and commit message'()
 
-		def commandLine = svnLog(pathToSvn, "file://" + repository.repoPath, date("01/01/2013"), date("01/01/2023"), useMergeHistory, quoteDateRange).execute()
+		def commandLine = svnLog(pathToSvn, "file://" + repository.repoPath, timeRange("01/01/2013", "01/01/2023"), useMergeHistory, quoteDateRange).execute()
 		assert commandLine.stderr() == ""
 		assert commandLine.stdout().contains("non-ascii комментарий")
 		assert commandLine.exitCode() == 0

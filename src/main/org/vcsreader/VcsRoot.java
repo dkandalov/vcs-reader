@@ -1,6 +1,6 @@
 package org.vcsreader;
 
-import java.util.Date;
+import org.vcsreader.lang.TimeRange;
 
 import static org.vcsreader.VcsProject.*;
 
@@ -14,7 +14,7 @@ public interface VcsRoot {
 
 	UpdateResult update();
 
-	LogResult log(Date fromDate, Date toDate);
+	LogResult log(TimeRange timeRange);
 
 	LogFileContentResult logFileContent(String filePath, String revision);
 }

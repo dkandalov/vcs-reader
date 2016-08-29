@@ -1,10 +1,9 @@
 package org.vcsreader.vcs.svn;
 
 import org.vcsreader.VcsRoot;
+import org.vcsreader.lang.TimeRange;
 import org.vcsreader.vcs.VcsCommand;
 import org.vcsreader.vcs.VcsCommand.ResultAdapter;
-
-import java.util.Date;
 
 import static org.vcsreader.VcsProject.*;
 
@@ -42,15 +41,15 @@ public class SvnVcsRoot implements VcsRoot, VcsCommand.Owner {
 		return new UpdateResult();
 	}
 
-	@Override public LogResult log(Date fromDate, Date toDate) {
+	@Override public LogResult log(TimeRange timeRange) {
 		if (repositoryRoot == null) {
 			SvnInfo.Result result = execute(new SvnInfo(settings.svnPath, repositoryUrl), SvnInfo.adapter);
 			repositoryRoot = result.repositoryRoot;
 		}
-		LogResult logResult = execute(svnLog(fromDate, toDate), LogResult.adapter);
+		LogResult logResult = execute(svnLog(timeRange), LogResult.adapter);
 		if (hasRevisionArgumentError(logResult)) {
 			quoteDateRange = !quoteDateRange;
-			logResult = execute(svnLog(fromDate, toDate), LogResult.adapter);
+			logResult = execute(svnLog(timeRange), LogResult.adapter);
 		}
 		return logResult;
 	}
@@ -66,12 +65,12 @@ public class SvnVcsRoot implements VcsRoot, VcsCommand.Owner {
 		return execute(logFileContent, LogFileContentResult.adapter);
 	}
 
-	private SvnLog svnLog(Date fromDate, Date toDate) {
+	private SvnLog svnLog(TimeRange timeRange) {
 		return new SvnLog(
 				settings.svnPath,
 				repositoryUrl,
 				repositoryRoot,
-				fromDate, toDate,
+				timeRange,
 				settings.useMergeHistory,
 				quoteDateRange
 		);
