@@ -16,9 +16,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import static java.time.ZoneOffset.UTC;
 import static java.util.Arrays.asList;
 import static org.vcsreader.VcsProject.LogResult;
-import static org.vcsreader.lang.DateTimeUtil.UTC;
 import static org.vcsreader.vcs.svn.SvnCommandLine.isSuccessful;
 import static org.vcsreader.vcs.svn.SvnCommandLine.newExternalCommand;
 
@@ -78,10 +78,10 @@ class SvnLog implements VcsCommand<LogResult> {
 	}
 
 	private static String svnDateRange(TimeRange timeRange, boolean quoteDateRange) {
-		timeRange = new TimeRange(timeRange.from(), timeRange.to().minusMillis(1000)); // This is to make toDate exclusive.
+		timeRange = new TimeRange(timeRange.from(), timeRange.to().minusSeconds(1)); // This is to make toDate exclusive.
 
 		// Svn supports any ISO 8601 date format (https://en.wikipedia.org/wiki/ISO_8601).
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(UTC.toZoneId());
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(UTC);
 
 		String result = "{" + formatter.format(timeRange.from()) + "}:{" + formatter.format(timeRange.to()) + "}";
 		if (quoteDateRange) {
