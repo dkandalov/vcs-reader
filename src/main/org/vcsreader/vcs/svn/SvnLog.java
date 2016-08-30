@@ -27,7 +27,7 @@ import static org.vcsreader.vcs.svn.SvnCommandLine.newExternalCommand;
  */
 class SvnLog implements VcsCommand<LogResult> {
 	private static final String minSvnDate = "1970-01-01";
-	private static final String maxSvnDate = "2998-01-01";
+	private static final String maxSvnDate = "2999-01-01";
 
 	private final String pathToSvn;
 	private final String repositoryUrl;

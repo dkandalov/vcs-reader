@@ -75,8 +75,7 @@ class SvnIntegrationTest {
 		svnRepository.commit("initial commit", dateTime("23:59:59 31/12/1969"))
 	}
 
-	@Test(expected = IllegalStateException)
-	void "commits after 2998 are not supported"() {
+	@Test void "commit time is supported to at least 2999"() {
 		def svnRepository = new SvnRepository().init()
 		svnRepository.create("file.txt")
 		svnRepository.commit("initial commit", dateTime("00:00:00 01/01/2999"))
