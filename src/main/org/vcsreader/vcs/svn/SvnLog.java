@@ -26,6 +26,9 @@ import static org.vcsreader.vcs.svn.SvnCommandLine.newExternalCommand;
  * See http://svnbook.red-bean.com/en/1.8/svn.ref.svn.c.log.html
  */
 class SvnLog implements VcsCommand<LogResult> {
+	private static final String minSvnDate = "1970-01-01";
+	private static final String maxSvnDate = "2998-01-01";
+
 	private final String pathToSvn;
 	private final String repositoryUrl;
 	private final String repositoryRoot;
@@ -33,6 +36,7 @@ class SvnLog implements VcsCommand<LogResult> {
 	private final boolean useMergeHistory;
 	private final boolean quoteDateRange;
 	private final CommandLine commandLine;
+
 
 	public SvnLog(String pathToSvn, String repositoryUrl, String repositoryRoot, TimeRange timeRange,
 	              boolean useMergeHistory, boolean quoteDateRange) {
@@ -78,12 +82,12 @@ class SvnLog implements VcsCommand<LogResult> {
 	}
 
 	private static String svnDateRange(TimeRange timeRange, boolean quoteDateRange) {
-		timeRange = new TimeRange(timeRange.from(), timeRange.to().minusSeconds(1)); // This is to make toDate exclusive.
-
 		// Svn supports any ISO 8601 date format (https://en.wikipedia.org/wiki/ISO_8601).
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(UTC);
+		String from = timeRange.from() == Instant.MIN ? minSvnDate : formatter.format(timeRange.from());
+		String to = timeRange.to() == Instant.MAX ? maxSvnDate : formatter.format(timeRange.to().minusSeconds(1)); // Minus one to make to-date exclusive.
 
-		String result = "{" + formatter.format(timeRange.from()) + "}:{" + formatter.format(timeRange.to()) + "}";
+		String result = "{" + from + "}:{" + to + "}";
 		if (quoteDateRange) {
 			result = "'" + result + "'";
 		}
@@ -98,7 +102,7 @@ class SvnLog implements VcsCommand<LogResult> {
 		Iterator<VcsCommit> iterator = commits.iterator();
 		while (iterator.hasNext()) {
 			VcsCommit commit = iterator.next();
-			if (commit.getTime().getTime() < instant.toEpochMilli()) iterator.remove();
+			if (instant != Instant.MIN && commit.getTime().getTime() < instant.toEpochMilli()) iterator.remove();
 		}
 		return commits;
 	}

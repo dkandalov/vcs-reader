@@ -3,13 +3,15 @@ package org.vcsreader.vcs.svn
 import org.junit.Test
 import org.vcsreader.VcsChange
 import org.vcsreader.VcsProject
+import org.vcsreader.lang.TimeRange
 import org.vcsreader.vcs.Change
 import org.vcsreader.vcs.Commit
 
+import static org.hamcrest.CoreMatchers.equalTo
+import static org.junit.Assert.assertThat
 import static org.vcsreader.VcsChange.Type.*
 import static org.vcsreader.VcsChange.noRevision
-import static org.vcsreader.lang.DateTimeUtil.dateTime
-import static org.vcsreader.lang.DateTimeUtil.timeRange
+import static org.vcsreader.lang.DateTimeUtil.*
 import static org.vcsreader.vcs.TestUtil.*
 import static org.vcsreader.vcs.svn.SvnIntegrationTestConfig.*
 import static org.vcsreader.vcs.svn.SvnRepository.Scripts.*
@@ -67,10 +69,22 @@ class SvnIntegrationTest {
 	}
 
 	@Test(expected = IllegalStateException)
-	void "commits before 1970 are currently not supported"() {
+	void "commit time before 1970 is not supported"() {
 		def svnRepository = new SvnRepository().init()
 		svnRepository.create("file.txt")
-		svnRepository.commit("initial commit", dateTime("00:00:00 10/08/1969"))
+		svnRepository.commit("initial commit", dateTime("23:59:59 31/12/1969"))
+	}
+
+	@Test(expected = IllegalStateException)
+	void "commits after 2998 are not supported"() {
+		def svnRepository = new SvnRepository().init()
+		svnRepository.create("file.txt")
+		svnRepository.commit("initial commit", dateTime("00:00:00 01/01/2999"))
+
+		def project = newProject(svnRepository)
+		def logResult = project.log(TimeRange.all)
+
+		assert logResult.commits().size() == 1
 	}
 
 	@Test void "log several commits from project history"() {
@@ -99,6 +113,28 @@ class SvnIntegrationTest {
 				]
 			)
 		])
+	}
+
+	@Test void "log commits before/after/for all dates"() {
+		def repository = 'repo with two commits with three added files'()
+
+		def project = newProject(repository)
+
+		project.log(TimeRange.before(date("11/08/2014"))).commits().with {
+			assertThat(it[0].message, equalTo("initial commit"))
+			assertThat(it.size(), equalTo(1))
+		}
+
+		project.log(TimeRange.after(date("11/08/2014"))).commits().with {
+			assertThat(it[0].message, equalTo("added file2, file3"))
+			assertThat(it.size(), equalTo(1))
+		}
+
+		project.log(TimeRange.all).commits().with {
+			assertThat(it[0].message, equalTo("initial commit"))
+			assertThat(it[1].message, equalTo("added file2, file3"))
+			assertThat(it.size(), equalTo(2))
+		}
 	}
 
 	@Test void "log commit with modified files"() {

@@ -10,6 +10,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.util.Arrays.asList;
 import static org.vcsreader.lang.CharsetUtil.UTF8;
 import static org.vcsreader.vcs.hg.HgCommandLine.isSuccessful;
@@ -57,9 +59,11 @@ class HgLog implements VcsCommand<VcsProject.LogResult> {
 
 	private static String asHgInstant(Instant instant) {
 		// see 'hg help dates'
-		String secondsSinceEpoch = Long.toString(instant.getEpochSecond() - 1);
-		String utc = "0";
-		return secondsSinceEpoch + " " + utc;
+		long epochSeconds = instant.getEpochSecond() - 1;
+		long clampedEpochSeconds = min(Integer.MAX_VALUE, max(0, epochSeconds));
+		String secondsSinceEpoch = Long.toString(clampedEpochSeconds);
+		String utcOffset = "0";
+		return secondsSinceEpoch + " " + utcOffset;
 	}
 
 	@SuppressWarnings("SimplifiableIfStatement")

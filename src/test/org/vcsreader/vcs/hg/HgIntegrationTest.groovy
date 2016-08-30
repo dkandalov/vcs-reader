@@ -3,13 +3,15 @@ package org.vcsreader.vcs.hg
 import org.junit.Test
 import org.vcsreader.VcsChange
 import org.vcsreader.VcsProject
+import org.vcsreader.lang.TimeRange
 import org.vcsreader.vcs.Change
 import org.vcsreader.vcs.Commit
 
+import static org.hamcrest.CoreMatchers.equalTo
+import static org.junit.Assert.assertThat
 import static org.vcsreader.VcsChange.Type.*
 import static org.vcsreader.VcsChange.noRevision
-import static org.vcsreader.lang.DateTimeUtil.dateTime
-import static org.vcsreader.lang.DateTimeUtil.timeRange
+import static org.vcsreader.lang.DateTimeUtil.*
 import static org.vcsreader.vcs.TestUtil.assertCommitsIn
 import static org.vcsreader.vcs.TestUtil.printingListener
 import static org.vcsreader.vcs.git.GitIntegrationTestConfig.author
@@ -93,11 +95,18 @@ class HgIntegrationTest {
 	}
 
 	@Test(expected = IllegalStateException)
-	void "commits before 1970 are currently not supported"() {
+	void "commit time before 1970 is not supported"() {
 		// see https://www.mercurial-scm.org/pipermail/mercurial-devel/2016-March/082248.html
 		def hgRepository = new HgRepository().init()
 		hgRepository.create("file.txt")
-		hgRepository.commit("initial commit", "Aug 10 00:00:00 1969 +0000")
+		hgRepository.commit("initial commit", "Dec 31 23:59:59 1969 +0000")
+	}
+
+	@Test(expected = IllegalStateException)
+	void "commit time after ~2038 (larger than 32 bit) is not supported"() {
+		def hgRepository = new HgRepository().init()
+		hgRepository.create("file.txt")
+		hgRepository.commit("initial commit", "Jun 01 00:00:00 2038 +0000")
 	}
 
 	@Test void "log several commits from project history"() {
@@ -126,6 +135,28 @@ class HgIntegrationTest {
 				]
 			)
 		])
+	}
+
+	@Test void "log commits before/after/for all dates"() {
+		def repository = 'repo with two commits with three added files'()
+
+		def project = newProject(repository)
+
+		project.log(TimeRange.before(date("11/08/2014"))).commits().with {
+			assertThat(it[0].message, equalTo("initial commit"))
+			assertThat(it.size(), equalTo(1))
+		}
+
+		project.log(TimeRange.after(date("11/08/2014"))).commits().with {
+			assertThat(it[0].message, equalTo("added file2, file3"))
+			assertThat(it.size(), equalTo(1))
+		}
+
+		project.log(TimeRange.all).commits().with {
+			assertThat(it[0].message, equalTo("initial commit"))
+			assertThat(it[1].message, equalTo("added file2, file3"))
+			assertThat(it.size(), equalTo(2))
+		}
 	}
 
 	@Test void "log modification commit"() {

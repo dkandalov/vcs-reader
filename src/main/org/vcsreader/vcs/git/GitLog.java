@@ -23,8 +23,7 @@ import static org.vcsreader.vcs.git.GitCommitParser.*;
 /**
  * See https://git-scm.com/docs/git-log
  */
-// suppress because it's similar to HgLog
-@SuppressWarnings("Duplicates")
+@SuppressWarnings("Duplicates") // because it's similar to HgLog
 class GitLog implements VcsCommand<LogResult> {
 	private final String gitPath;
 	private final String folder;
@@ -59,14 +58,19 @@ class GitLog implements VcsCommand<LogResult> {
 		String showFileStatus = "--name-status"; // see --diff-filter at https://www.kernel.org/pub/software/scm/git/docs/git-log.html
 		String forceUTF8ForCommitMessages = "--encoding=" + UTF8.name();
 
-		List<String> arguments = new ArrayList<>(asList(gitPath, "log", logFormat(), showFileStatus, forceUTF8ForCommitMessages));
-
+		List<String> arguments = new ArrayList<>(asList(gitPath, "log"));
 		// MIN timestamp is not handled correctly by git and must be excluded from command line.
 		if (timeRange.from() != Instant.MIN) {
 			arguments.add("--after=" + Long.toString(timeRange.from().getEpochSecond()));
 		}
-		arguments.add("--before=" + Long.toString(timeRange.to().getEpochSecond() - 1));
-
+		if (timeRange.to() != Instant.MAX) {
+			arguments.add("--before=" + Long.toString(timeRange.to().getEpochSecond() - 1));
+		}
+		arguments.addAll(asList(
+				showFileStatus,
+				forceUTF8ForCommitMessages,
+				logFormat()
+		));
 		return new CommandLine(arguments).workingDir(folder).outputCharset(UTF8);
 	}
 
