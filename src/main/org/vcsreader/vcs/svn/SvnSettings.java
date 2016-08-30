@@ -6,10 +6,10 @@ import org.vcsreader.lang.CharsetUtil;
 import java.nio.charset.Charset;
 
 public class SvnSettings {
-	@NotNull public final String svnPath;
-	@NotNull public final Charset defaultFileCharset;
-	public final boolean useMergeHistory;
-	public final boolean failFast;
+	@NotNull private final String svnPath;
+	@NotNull private final Charset defaultFileCharset;
+	private final boolean useMergeHistory;
+	private final boolean failFast;
 
 	/**
 	 * @param svnPath            path to svn executable
@@ -45,6 +45,22 @@ public class SvnSettings {
 
 	public SvnSettings withFailFast(boolean value) {
 		return new SvnSettings(svnPath, defaultFileCharset, useMergeHistory, value);
+	}
+
+	@NotNull public String svnPath() {
+		return svnPath;
+	}
+
+	@NotNull public Charset defaultFileCharset() {
+		return defaultFileCharset;
+	}
+
+	public boolean useMergeHistory() {
+		return useMergeHistory;
+	}
+
+	public boolean failFast() {
+		return failFast;
 	}
 
 	@Override public boolean equals(Object o) {

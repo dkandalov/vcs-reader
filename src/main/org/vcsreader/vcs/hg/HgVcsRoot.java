@@ -12,9 +12,9 @@ import org.vcsreader.vcs.VcsCommand;
 import org.vcsreader.vcs.VcsCommand.ResultAdapter;
 
 public class HgVcsRoot implements VcsRoot, VcsCommand.Owner {
-	public final String localPath;
-	public final String repositoryUrl;
-	public final HgSettings settings;
+	@NotNull private final String localPath;
+	@Nullable private final String repositoryUrl;
+	@NotNull private final HgSettings settings;
 	private final VcsCommand.Listener listener;
 
 
@@ -32,12 +32,12 @@ public class HgVcsRoot implements VcsRoot, VcsCommand.Owner {
 	 * @param repositoryUrl url to remote repository (only required for {@link #cloneToLocal()})
 	 *
 	 */
-	public HgVcsRoot(@NotNull String localPath, @Nullable String repositoryUrl, HgSettings settings) {
+	public HgVcsRoot(@NotNull String localPath, @Nullable String repositoryUrl, @NotNull HgSettings settings) {
 		this(localPath, repositoryUrl, settings, VcsCommand.Listener.none);
 	}
 
 	private HgVcsRoot(@NotNull String localPath, @Nullable String repositoryUrl,
-	                 HgSettings settings, VcsCommand.Listener listener) {
+	                  @NotNull HgSettings settings, VcsCommand.Listener listener) {
 		this.localPath = localPath;
 		this.repositoryUrl = repositoryUrl;
 		this.settings = settings;
@@ -49,24 +49,32 @@ public class HgVcsRoot implements VcsRoot, VcsCommand.Owner {
 	}
 
 	@Override public CloneResult cloneToLocal() {
-		return execute(new HgClone(settings.hgPath, repositoryUrl, localPath), CloneResult.adapter);
+		return execute(new HgClone(settings.hgPath(), repositoryUrl, localPath), CloneResult.adapter);
 	}
 
 	@Override public UpdateResult update() {
-		return execute(new HgUpdate(settings.hgPath, localPath), UpdateResult.adapter);
+		return execute(new HgUpdate(settings.hgPath(), localPath), UpdateResult.adapter);
 	}
 
 	@Override public LogResult log(TimeRange timeRange) {
-		return execute(new HgLog(settings.hgPath, localPath, timeRange), LogResult.adapter);
+		return execute(new HgLog(settings.hgPath(), localPath, timeRange), LogResult.adapter);
 	}
 
 	@Override public LogFileContentResult logFileContent(String filePath, String revision) {
-		HgLogFileContent logFileContent = new HgLogFileContent(settings.hgPath, localPath, filePath, revision, settings.defaultFileCharset);
+		HgLogFileContent logFileContent = new HgLogFileContent(settings.hgPath(), localPath, filePath, revision, settings.defaultFileCharset());
 		return execute(logFileContent, LogFileContentResult.adapter);
 	}
 
 	private <T> T execute(VcsCommand<T> vcsCommand, ResultAdapter<T> resultAdapter) {
-		return VcsCommand.execute(vcsCommand, resultAdapter, listener, settings.failFast);
+		return VcsCommand.execute(vcsCommand, resultAdapter, listener, settings.failFast());
+	}
+
+	@NotNull public String localPath() {
+		return localPath;
+	}
+
+	@Nullable public String repositoryUrl() {
+		return repositoryUrl;
 	}
 
 	@SuppressWarnings("SimplifiableIfStatement")
@@ -76,16 +84,16 @@ public class HgVcsRoot implements VcsRoot, VcsCommand.Owner {
 
 		HgVcsRoot hgVcsRoot = (HgVcsRoot) o;
 
-		if (localPath != null ? !localPath.equals(hgVcsRoot.localPath) : hgVcsRoot.localPath != null) return false;
+		if (!localPath.equals(hgVcsRoot.localPath)) return false;
 		if (repositoryUrl != null ? !repositoryUrl.equals(hgVcsRoot.repositoryUrl) : hgVcsRoot.repositoryUrl != null)
 			return false;
-		return settings != null ? settings.equals(hgVcsRoot.settings) : hgVcsRoot.settings == null;
+		return settings.equals(hgVcsRoot.settings);
 	}
 
 	@Override public int hashCode() {
-		int result = localPath != null ? localPath.hashCode() : 0;
+		int result = localPath.hashCode();
 		result = 31 * result + (repositoryUrl != null ? repositoryUrl.hashCode() : 0);
-		result = 31 * result + (settings != null ? settings.hashCode() : 0);
+		result = 31 * result + settings.hashCode();
 		return result;
 	}
 

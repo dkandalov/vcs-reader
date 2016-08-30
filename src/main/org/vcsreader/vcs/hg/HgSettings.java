@@ -6,9 +6,9 @@ import org.vcsreader.lang.CharsetUtil;
 import java.nio.charset.Charset;
 
 public class HgSettings {
-	@NotNull public final String hgPath;
-	@NotNull public final Charset defaultFileCharset;
-	public final boolean failFast;
+	private final String hgPath;
+	private final Charset defaultFileCharset;
+	private final boolean failFast;
 
 
 	/**
@@ -38,6 +38,18 @@ public class HgSettings {
 
 	public HgSettings withFailFast(boolean value) {
 		return new HgSettings(hgPath, defaultFileCharset, value);
+	}
+
+	@NotNull public String hgPath() {
+		return hgPath;
+	}
+
+	@NotNull public Charset defaultFileCharset() {
+		return defaultFileCharset;
+	}
+
+	public boolean failFast() {
+		return failFast;
 	}
 
 	@Override public boolean equals(Object o) {

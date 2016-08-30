@@ -6,9 +6,9 @@ import org.vcsreader.lang.CharsetUtil;
 import java.nio.charset.Charset;
 
 public class GitSettings {
-	@NotNull public final String gitPath;
-	@NotNull public final Charset defaultFileCharset;
-	public final boolean failFast;
+	private final String gitPath;
+	private final Charset defaultFileCharset;
+	private final boolean failFast;
 
 	/**
 	 * @param gitPath            path to git executable
@@ -37,6 +37,18 @@ public class GitSettings {
 
 	public GitSettings withFailFast(boolean value) {
 		return new GitSettings(gitPath, defaultFileCharset, value);
+	}
+
+	@NotNull public String gitPath() {
+		return gitPath;
+	}
+
+	@NotNull public Charset defaultFileCharset() {
+		return defaultFileCharset;
+	}
+
+	public boolean failFast() {
+		return failFast;
 	}
 
 	@Override public boolean equals(Object o) {

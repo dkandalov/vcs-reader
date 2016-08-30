@@ -1,5 +1,6 @@
 package org.vcsreader.vcs.svn;
 
+import org.jetbrains.annotations.NotNull;
 import org.vcsreader.VcsRoot;
 import org.vcsreader.lang.TimeRange;
 import org.vcsreader.vcs.VcsCommand;
@@ -8,22 +9,22 @@ import org.vcsreader.vcs.VcsCommand.ResultAdapter;
 import static org.vcsreader.VcsProject.*;
 
 public class SvnVcsRoot implements VcsRoot, VcsCommand.Owner {
-	public final String repositoryUrl;
-	public final SvnSettings settings;
+	@NotNull private final String repositoryUrl;
+	@NotNull private final SvnSettings settings;
 	private final VcsCommand.Listener listener;
 	private String repositoryRoot;
 	private boolean quoteDateRange = false;
 
 
-	public SvnVcsRoot(String repositoryUrl) {
+	public SvnVcsRoot(@NotNull String repositoryUrl) {
 		this(repositoryUrl, SvnSettings.defaults());
 	}
 
-	public SvnVcsRoot(String repositoryUrl, SvnSettings settings) {
+	public SvnVcsRoot(@NotNull String repositoryUrl, @NotNull SvnSettings settings) {
 		this(repositoryUrl, settings, VcsCommand.Listener.none);
 	}
 
-	private SvnVcsRoot(String repositoryUrl, SvnSettings settings, VcsCommand.Listener listener) {
+	private SvnVcsRoot(@NotNull String repositoryUrl, @NotNull SvnSettings settings, VcsCommand.Listener listener) {
 		this.repositoryUrl = repositoryUrl;
 		this.settings = settings;
 		this.listener = listener;
@@ -43,7 +44,7 @@ public class SvnVcsRoot implements VcsRoot, VcsCommand.Owner {
 
 	@Override public LogResult log(TimeRange timeRange) {
 		if (repositoryRoot == null) {
-			SvnInfo.Result result = execute(new SvnInfo(settings.svnPath, repositoryUrl), SvnInfo.adapter);
+			SvnInfo.Result result = execute(new SvnInfo(settings.svnPath(), repositoryUrl), SvnInfo.adapter);
 			repositoryRoot = result.repositoryRoot;
 		}
 		LogResult logResult = execute(svnLog(timeRange), LogResult.adapter);
@@ -56,22 +57,22 @@ public class SvnVcsRoot implements VcsRoot, VcsCommand.Owner {
 
 	@Override public LogFileContentResult logFileContent(String filePath, String revision) {
 		SvnLogFileContent logFileContent = new SvnLogFileContent(
-				settings.svnPath,
+				settings.svnPath(),
 				repositoryUrl,
 				filePath,
 				revision,
-				settings.defaultFileCharset
+				settings.defaultFileCharset()
 		);
 		return execute(logFileContent, LogFileContentResult.adapter);
 	}
 
 	private SvnLog svnLog(TimeRange timeRange) {
 		return new SvnLog(
-				settings.svnPath,
+				settings.svnPath(),
 				repositoryUrl,
 				repositoryRoot,
 				timeRange,
-				settings.useMergeHistory,
+				settings.useMergeHistory(),
 				quoteDateRange
 		);
 	}
@@ -92,7 +93,11 @@ public class SvnVcsRoot implements VcsRoot, VcsCommand.Owner {
 	}
 
 	private <T> T execute(VcsCommand<T> vcsCommand, ResultAdapter<T> resultAdapter) {
-		return VcsCommand.execute(vcsCommand, resultAdapter, listener, settings.failFast);
+		return VcsCommand.execute(vcsCommand, resultAdapter, listener, settings.failFast());
+	}
+
+	@NotNull public String repositoryUrl() {
+		return repositoryUrl;
 	}
 
 	@Override public boolean equals(Object o) {
@@ -101,13 +106,12 @@ public class SvnVcsRoot implements VcsRoot, VcsCommand.Owner {
 
 		SvnVcsRoot that = (SvnVcsRoot) o;
 
-		return repositoryUrl != null ? repositoryUrl.equals(that.repositoryUrl) : that.repositoryUrl == null &&
-				(settings != null ? settings.equals(that.settings) : that.settings == null);
+		return repositoryUrl.equals(that.repositoryUrl) && settings.equals(that.settings);
 	}
 
 	@Override public int hashCode() {
-		int result = repositoryUrl != null ? repositoryUrl.hashCode() : 0;
-		result = 31 * result + (settings != null ? settings.hashCode() : 0);
+		int result = repositoryUrl.hashCode();
+		result = 31 * result + settings.hashCode();
 		return result;
 	}
 

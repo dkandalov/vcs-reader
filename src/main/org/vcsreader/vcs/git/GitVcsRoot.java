@@ -10,9 +10,9 @@ import org.vcsreader.vcs.VcsCommand.ResultAdapter;
 import static org.vcsreader.VcsProject.*;
 
 public class GitVcsRoot implements VcsRoot, VcsCommand.Owner {
-	public final String localPath;
-	public final String repositoryUrl;
-	public final GitSettings settings;
+	@NotNull private final String localPath;
+	@Nullable private final String repositoryUrl;
+	@NotNull private final GitSettings settings;
 	private final VcsCommand.Listener listener;
 
 
@@ -34,7 +34,7 @@ public class GitVcsRoot implements VcsRoot, VcsCommand.Owner {
 	}
 
 	private GitVcsRoot(@NotNull String localPath, @Nullable String repositoryUrl,
-	                  GitSettings settings, VcsCommand.Listener listener) {
+	                   @NotNull GitSettings settings, VcsCommand.Listener listener) {
 		this.localPath = localPath;
 		this.repositoryUrl = repositoryUrl;
 		this.settings = settings;
@@ -46,27 +46,35 @@ public class GitVcsRoot implements VcsRoot, VcsCommand.Owner {
 	}
 
 	@Override public CloneResult cloneToLocal() {
-		if (repositoryUrl == null && settings.failFast) {
+		if (repositoryUrl == null && settings.failFast()) {
 			throw new IllegalStateException("Cannot clone repository because remote url is not specified for root: " + this);
 		}
-		return execute(new GitClone(settings.gitPath, repositoryUrl, localPath), CloneResult.adapter);
+		return execute(new GitClone(settings.gitPath(), repositoryUrl, localPath), CloneResult.adapter);
 	}
 
 	@Override public UpdateResult update() {
-		return execute(new GitUpdate(settings.gitPath, localPath), UpdateResult.adapter);
+		return execute(new GitUpdate(settings.gitPath(), localPath), UpdateResult.adapter);
 	}
 
 	@Override public LogResult log(TimeRange timeRange) {
-		return execute(new GitLog(settings.gitPath, localPath, timeRange), LogResult.adapter);
+		return execute(new GitLog(settings.gitPath(), localPath, timeRange), LogResult.adapter);
 	}
 
 	@Override public LogFileContentResult logFileContent(String filePath, String revision) {
-		GitLogFileContent logFileContent = new GitLogFileContent(settings.gitPath, localPath, filePath, revision, settings.defaultFileCharset);
+		GitLogFileContent logFileContent = new GitLogFileContent(settings.gitPath(), localPath, filePath, revision, settings.defaultFileCharset());
 		return execute(logFileContent, LogFileContentResult.adapter);
 	}
 
 	private <T> T execute(VcsCommand<T> vcsCommand, ResultAdapter<T> resultAdapter) {
-		return VcsCommand.execute(vcsCommand, resultAdapter, listener, settings.failFast);
+		return VcsCommand.execute(vcsCommand, resultAdapter, listener, settings.failFast());
+	}
+
+	@NotNull public String localPath() {
+		return localPath;
+	}
+
+	@Nullable public String repositoryUrl() {
+		return repositoryUrl;
 	}
 
 	@SuppressWarnings("RedundantIfStatement")
@@ -76,19 +84,19 @@ public class GitVcsRoot implements VcsRoot, VcsCommand.Owner {
 
 		GitVcsRoot that = (GitVcsRoot) o;
 
-		if (localPath != null ? !localPath.equals(that.localPath) : that.localPath != null)
+		if (!localPath.equals(that.localPath))
 			return false;
 		if (repositoryUrl != null ? !repositoryUrl.equals(that.repositoryUrl) : that.repositoryUrl != null)
 			return false;
-		if (settings != null ? !settings.equals(that.settings) : that.settings != null) return false;
+		if (!settings.equals(that.settings)) return false;
 
 		return true;
 	}
 
 	@Override public int hashCode() {
-		int result = localPath != null ? localPath.hashCode() : 0;
+		int result = localPath.hashCode();
 		result = 31 * result + (repositoryUrl != null ? repositoryUrl.hashCode() : 0);
-		result = 31 * result + (settings != null ? settings.hashCode() : 0);
+		result = 31 * result + settings.hashCode();
 		return result;
 	}
 
