@@ -26,8 +26,6 @@ class CommandLine_GitIntegrationTest {
 		assert commandLine.exitCode() == 0
 	}
 
-	// TODO test log before 1970
-
 	@Test(expected = CommandLine.Failure)
 	void "failed log"() {
 		gitLog(pathToGit, nonExistentPath, timeRange("01/01/2013", "01/01/2023")).execute()

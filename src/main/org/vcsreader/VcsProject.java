@@ -63,8 +63,6 @@ public class VcsProject {
 		return aggregator.result;
 	}
 
-	// TODO add logAll() method?
-
 	/**
 	 * Request commits from VCS for all {@link VcsRoot}s within specified time range.
 	 * For distributed VCS commits are read from currently checked out branch.
