@@ -4,16 +4,15 @@ import org.vcsreader.VcsCommit;
 import org.vcsreader.vcs.Change;
 import org.vcsreader.vcs.Commit;
 
-import java.text.DateFormat;
-import java.text.ParseException;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 import static org.vcsreader.VcsChange.Type.*;
-import static org.vcsreader.lang.DateTimeUtil.UTC;
-import static org.vcsreader.lang.DateTimeUtil.dateTimeFormat;
+import static org.vcsreader.lang.DateTimeUtil.dateTimeFormatter;
 import static org.vcsreader.lang.StringUtil.split;
 import static org.vcsreader.vcs.Change.noFilePath;
 import static org.vcsreader.vcs.Change.noRevision;
@@ -26,7 +25,7 @@ class HgCommitParser {
 	private static final String commitFieldsSeparator = "\u0019\u0018\u0017\u0016\u0015";
 	private static final String fileSeparator = "\u0017\u0016\u0015\u0019\u0018";
 	private static final String hgNoRevision = "0000000000000000000000000000000000000000";
-	private static final DateFormat dateFormat = dateTimeFormat("yyyy-MM-dd HH:mm:ss Z", UTC);
+	private static final DateTimeFormatter dateTimeFormatter = dateTimeFormatter("yyyy-MM-dd HH:mm:ss Z", ZoneOffset.UTC);
 
 	public static List<VcsCommit> parseListOfCommits(String stdout) {
 		ArrayList<VcsCommit> commits = new ArrayList<>();
@@ -46,7 +45,7 @@ class HgCommitParser {
 		if (revisionBefore.equals(hgNoRevision)) {
 			revisionBefore = noRevision;
 		}
-		Date commitDate = parseDate(values.get(2));
+		Instant dateTime = dateTimeFormatter.parse(values.get(2), Instant::from);
 		String author = values.get(3);
 		String comment = values.get(4);
 
@@ -104,15 +103,7 @@ class HgCommitParser {
 		changes.addAll(filesMoved);
 		changes.addAll(filesModified);
 
-		return new Commit(revision, revisionBefore, commitDate, author, comment, changes);
-	}
-
-	private static Date parseDate(String s) {
-		try {
-			return dateFormat.parse(s);
-		} catch (ParseException e) {
-			throw new RuntimeException(e);
-		}
+		return new Commit(revision, revisionBefore, dateTime, author, comment, changes);
 	}
 
 	public static String logTemplate() {

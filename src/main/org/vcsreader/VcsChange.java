@@ -56,6 +56,7 @@ public interface VcsChange {
 	}
 
 
+	// TODO add javadoc, don't capitalize
 	enum Type {
 		ADDED,
 		MODIFIED,

@@ -14,16 +14,14 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
 import java.io.StringReader;
-import java.text.DateFormat;
-import java.text.ParseException;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static java.lang.Boolean.parseBoolean;
 import static org.vcsreader.VcsChange.Type.*;
 import static org.vcsreader.VcsChange.noFilePath;
 import static org.vcsreader.VcsChange.noRevision;
-import static org.vcsreader.lang.DateTimeUtil.UTC;
-import static org.vcsreader.lang.DateTimeUtil.dateTimeFormat;
 
 class SvnCommitParser {
 	static List<VcsCommit> parseCommits(String xml) {
@@ -49,7 +47,7 @@ class SvnCommitParser {
 		private String revision;
 		private String revisionBefore;
 		private String author;
-		private Date commitDate;
+		private Instant dateTime;
 		private String commitDateString;
 		private String comment;
 		private List<Change> changes = new ArrayList<>();
@@ -68,10 +66,10 @@ class SvnCommitParser {
 		private String copyFromRevision;
 		private final Set<String> movedPaths = new HashSet<>();
 
-		private final DateFormat dateFormat;
+		private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+
 
 		private CommitReadingHandler() {
-			dateFormat = dateTimeFormat("yyyy-MM-dd'T'HH:mm:ss", UTC);
 		}
 
 		@Override public void startElement(@NotNull String uri, @NotNull String localName,
@@ -133,7 +131,7 @@ class SvnCommitParser {
 					}
 				}
 
-				commits.add(new Commit(revision, revisionBefore, commitDate, author, comment, new ArrayList<>(changes)));
+				commits.add(new Commit(revision, revisionBefore, dateTime, author, comment, new ArrayList<>(changes)));
 				changes.clear();
 				movedPaths.clear();
 
@@ -144,13 +142,13 @@ class SvnCommitParser {
 						changes.add(new Change(MOVED, filePath, copyFromFilePath, revision, copyFromRevision));
 						movedPaths.add(copyFromFilePath);
 
-					} else if (changeType == SvnChangeType.ADDED) {
+					} else if (changeType == SvnChangeType.Added) {
 						changes.add(new Change(ADDED, filePath, revision));
 
-					} else if (changeType == SvnChangeType.DELETED) {
+					} else if (changeType == SvnChangeType.Delete) {
 						changes.add(new Change(DELETED, noFilePath, filePath, revision, revisionBefore));
 
-					} else if (changeType == SvnChangeType.REPLACED) {
+					} else if (changeType == SvnChangeType.Replaced) {
 						changes.add(new Change(DELETED, noFilePath, filePath, revision, revisionBefore));
 						changes.add(new Change(ADDED, filePath, revision));
 
@@ -169,19 +167,15 @@ class SvnCommitParser {
 				expectComment = false;
 			} else if (name.equals("date")) {
 				expectDate = false;
-				try {
-					commitDate = dateFormat.parse(commitDateString);
-				} catch (ParseException e) {
-					throw new RuntimeException(e);
-				}
+				dateTime = dateTimeFormatter.parse(commitDateString, Instant::from);
 			}
 		}
 
 		private static SvnChangeType asChangeType(String action) {
-			if (action.equals("A")) return SvnChangeType.ADDED;
-			else if (action.equals("D")) return SvnChangeType.DELETED;
-			else if (action.equals("M")) return SvnChangeType.MODIFIED;
-			else if (action.equals("R")) return SvnChangeType.REPLACED;
+			if (action.equals("A")) return SvnChangeType.Added;
+			else if (action.equals("D")) return SvnChangeType.Delete;
+			else if (action.equals("M")) return SvnChangeType.Modified;
+			else if (action.equals("R")) return SvnChangeType.Replaced;
 			else throw new IllegalStateException("Unknown svn action: " + action);
 		}
 
@@ -195,10 +189,10 @@ class SvnCommitParser {
 		}
 
 		private enum SvnChangeType {
-			ADDED,
-			DELETED,
-			REPLACED,
-			MODIFIED
+			Added,
+			Delete,
+			Replaced,
+			Modified
 		}
 	}
 

@@ -5,7 +5,7 @@ import org.vcsreader.VcsChange;
 import org.vcsreader.VcsCommit;
 import org.vcsreader.VcsRoot;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 
 import static java.util.Collections.unmodifiableList;
@@ -16,13 +16,13 @@ import static java.util.Collections.unmodifiableList;
 public class Commit implements VcsCommit, VcsCommit.WithRootReference {
 	@NotNull private final String revision;
 	@NotNull private final String revisionBefore;
-	@NotNull private final Date time;
+	@NotNull private final Instant time;
 	@NotNull private final String author;
 	@NotNull private final String message;
 	@NotNull private final List<? extends VcsChange> changes;
 
 
-	public Commit(@NotNull String revision, @NotNull String revisionBefore, @NotNull Date time,
+	public Commit(@NotNull String revision, @NotNull String revisionBefore, @NotNull Instant time,
 	              @NotNull String author, @NotNull String message, @NotNull List<? extends VcsChange> changes) {
 		this.revision = revision;
 		this.revisionBefore = revisionBefore;
@@ -52,7 +52,7 @@ public class Commit implements VcsCommit, VcsCommit.WithRootReference {
 		return revisionBefore;
 	}
 
-	@Override @NotNull public Date getTime() {
+	@Override @NotNull public Instant getTime() {
 		return time;
 	}
 

@@ -7,6 +7,7 @@ import static org.vcsreader.VcsChange.Type.MODIFIED
 import static org.vcsreader.lang.DateTimeUtil.dateTime
 import static org.vcsreader.lang.DateTimeUtil.timeRange
 
+
 // setup project
 def gitSettings = GitSettings.defaults()
 def vcsRoot = new GitVcsRoot("/tmp/junit", "https://github.com/junit-team/junit", gitSettings)

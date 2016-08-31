@@ -245,7 +245,7 @@ public class VcsProject {
 			newErrors.addAll(result.vcsErrors);
 			newExceptions.addAll(result.exceptions);
 			sort(newCommits, (commit1, commit2) ->
-					new Long(commit1.getTime().getTime()).compareTo(commit2.getTime().getTime())
+					commit1.getTime().compareTo(commit2.getTime())
 			);
 
 			return new LogResult(newCommits, newErrors, newExceptions);

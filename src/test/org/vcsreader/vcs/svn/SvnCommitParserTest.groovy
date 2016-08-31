@@ -57,7 +57,7 @@ class SvnCommitParserTest {
 		assertEqualCommits(SvnCommitParser.parseCommits(xml), [
 				new Commit(
 						"1", noRevision,
-						dateTime("19:35:02 21/12/2013"),
+						dateTime("19:35:02.544940 21/12/2013"),
 						"Some Author",
 						"commit message",
 						[new Change(ADDED, "file.txt", "1")]

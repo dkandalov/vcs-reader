@@ -1,13 +1,13 @@
 package org.vcsreader.vcs.git;
 
-import org.vcsreader.vcs.Change;
-import org.vcsreader.vcs.Commit;
 import org.vcsreader.VcsChange;
 import org.vcsreader.VcsCommit;
+import org.vcsreader.vcs.Change;
+import org.vcsreader.vcs.Commit;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import static org.vcsreader.VcsChange.Type.*;
@@ -43,7 +43,7 @@ class GitCommitParser {
 
 		String revision = values.get(0);
 		String revisionBefore = (isFirstCommit ? VcsChange.noRevision : previousRevision.get(0));
-		Date commitDate = parseDate(values.get(2));
+		Instant dateTime = parseDateTime(values.get(2));
 		String author = values.get(3);
 		String message = trim(values.get(4), " \r\n\t");
 
@@ -52,7 +52,7 @@ class GitCommitParser {
 				Collections.emptyList() :
 				parseListOfChanges(values.get(5), revision, revisionBefore);
 
-		return new Commit(revision, revisionBefore, commitDate, author, message, changes);
+		return new Commit(revision, revisionBefore, dateTime, author, message, changes);
 	}
 
 	static List<Change> parseListOfChanges(String changesAsString, String revision, String revisionBefore) {
@@ -123,8 +123,8 @@ class GitCommitParser {
 		}
 	}
 
-	private static Date parseDate(String s) {
-		return new Date(Long.parseLong(s) * 1000);
+	private static Instant parseDateTime(String s) {
+		return Instant.ofEpochMilli(Long.parseLong(s) * 1000);
 	}
 
 	public static String logFormat() {

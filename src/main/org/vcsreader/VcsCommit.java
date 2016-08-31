@@ -2,7 +2,7 @@ package org.vcsreader;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -24,7 +24,7 @@ public interface VcsCommit {
 	/**
 	 * @return date and time of commit
 	 */
-	@NotNull Date getTime(); // TODO use Instant
+	@NotNull Instant getTime(); // TODO rename to getDateTime()
 
 	/**
 	 * @return author of the commit.

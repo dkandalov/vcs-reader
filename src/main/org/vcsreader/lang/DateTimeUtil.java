@@ -1,14 +1,10 @@
 package org.vcsreader.lang;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -31,47 +27,25 @@ public class DateTimeUtil {
 		return new TimeRange(date(from), date(to));
 	}
 
-	public static TemporalAccessor dateTimeInstant(String s) {
+	public static Instant dateTime(String s) {
 		List<DateTimeFormatter> formatters = asList(
 				dateTimeFormatter("kk:mm dd/MM/yyyy", ZoneOffset.UTC),
 				dateTimeFormatter("kk:mm:ss dd/MM/yyyy", ZoneOffset.UTC),
 				dateTimeFormatter("kk:mm:ss.SSS dd/MM/yyyy", ZoneOffset.UTC),
+				dateTimeFormatter("kk:mm:ss.SSSSSS dd/MM/yyyy", ZoneOffset.UTC),
 				dateTimeFormatter("MMM dd kk:mm:ss yyyy Z", ZoneOffset.UTC),
 				dateTimeFormatter("E MMM dd kk:mm:ss Z yyyy", ZoneOffset.UTC)
 		);
 		for (DateTimeFormatter formatter : formatters) {
 			try {
-				return formatter.parse(s, ZonedDateTime::from);
+				return formatter.parse(s, Instant::from);
 			} catch (Exception ignored) {
 			}
 		}
 		throw new RuntimeException("Failed to parse string as dateTime: " + s);
 	}
 
-	public static Date dateTime(String s) {
-		List<DateFormat> formats = asList(
-				dateTimeFormat("kk:mm dd/MM/yyyy", UTC),
-				dateTimeFormat("kk:mm:ss dd/MM/yyyy", UTC),
-				dateTimeFormat("kk:mm:ss.SSS dd/MM/yyyy", UTC),
-				dateTimeFormat("MMM dd kk:mm:ss yyyy Z", UTC),
-				dateTimeFormat("E MMM dd kk:mm:ss Z yyyy", UTC)
-		);
-		for (DateFormat format : formats) {
-			try {
-				return format.parse(s);
-			} catch (ParseException ignored) {
-			}
-		}
-		throw new RuntimeException("Failed to parse string as dateTime: " + s);
-	}
-
 	public static DateTimeFormatter dateTimeFormatter(String pattern, ZoneId zoneId) {
-		return DateTimeFormatter.ofPattern(pattern).withZone(zoneId);
-	}
-
-	public static DateFormat dateTimeFormat(String pattern, TimeZone timeZone) {
-		SimpleDateFormat format = new SimpleDateFormat(pattern);
-		format.setTimeZone(timeZone);
-		return format;
+		return new DateTimeFormatterBuilder().appendPattern(pattern).parseLenient().toFormatter().withZone(zoneId);
 	}
 }

@@ -8,9 +8,9 @@ import org.vcsreader.VcsProject.CloneResult;
 import org.vcsreader.lang.TimeRange;
 import org.vcsreader.vcs.git.GitVcsRoot;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -58,8 +58,8 @@ public class VcsProjectTest {
 
 	@Test public void successfulLogProjectHistory() {
 		// given
-		VcsCommit commit1 = new Commit("1", "", new Date(0), "", "", new ArrayList<>());
-		VcsCommit commit2 = new Commit("2", "", new Date(0), "", "", new ArrayList<>());
+		VcsCommit commit1 = new Commit("1", "", Instant.ofEpochMilli(0), "", "", new ArrayList<>());
+		VcsCommit commit2 = new Commit("2", "", Instant.ofEpochMilli(0), "", "", new ArrayList<>());
 		when(root1.log(anyTimeRange())).thenReturn(new LogResult(asList(commit1), asList("some error")));
 		when(root2.log(anyTimeRange())).thenReturn(new LogResult(asList(commit2), new ArrayList<>()));
 		VcsProject project = new VcsProject(asList(root1, root2));
