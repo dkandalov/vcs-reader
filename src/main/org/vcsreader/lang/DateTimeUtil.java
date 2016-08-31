@@ -4,8 +4,11 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -16,7 +19,7 @@ public class DateTimeUtil {
 	public static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
 	public static Instant date(String s) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("kk:mm:ss dd/MM/yyyy").withZone(ZoneOffset.UTC);
+		DateTimeFormatter formatter = dateTimeFormatter("kk:mm:ss dd/MM/yyyy", ZoneOffset.UTC);
 		return formatter.parse("00:00:00 " + s, Instant::from);
 	}
 
@@ -26,6 +29,23 @@ public class DateTimeUtil {
 
 	public static TimeRange timeRange(String from, String to) {
 		return new TimeRange(date(from), date(to));
+	}
+
+	public static TemporalAccessor dateTimeInstant(String s) {
+		List<DateTimeFormatter> formatters = asList(
+				dateTimeFormatter("kk:mm dd/MM/yyyy", ZoneOffset.UTC),
+				dateTimeFormatter("kk:mm:ss dd/MM/yyyy", ZoneOffset.UTC),
+				dateTimeFormatter("kk:mm:ss.SSS dd/MM/yyyy", ZoneOffset.UTC),
+				dateTimeFormatter("MMM dd kk:mm:ss yyyy Z", ZoneOffset.UTC),
+				dateTimeFormatter("E MMM dd kk:mm:ss Z yyyy", ZoneOffset.UTC)
+		);
+		for (DateTimeFormatter formatter : formatters) {
+			try {
+				return formatter.parse(s, ZonedDateTime::from);
+			} catch (Exception ignored) {
+			}
+		}
+		throw new RuntimeException("Failed to parse string as dateTime: " + s);
 	}
 
 	public static Date dateTime(String s) {
@@ -43,6 +63,10 @@ public class DateTimeUtil {
 			}
 		}
 		throw new RuntimeException("Failed to parse string as dateTime: " + s);
+	}
+
+	public static DateTimeFormatter dateTimeFormatter(String pattern, ZoneId zoneId) {
+		return DateTimeFormatter.ofPattern(pattern).withZone(zoneId);
 	}
 
 	public static DateFormat dateTimeFormat(String pattern, TimeZone timeZone) {
