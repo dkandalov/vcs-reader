@@ -1,6 +1,7 @@
 package org.vcsreader.vcs.hg;
 
 import org.vcsreader.VcsCommit;
+import org.vcsreader.lang.DateTimeUtil;
 import org.vcsreader.vcs.Change;
 import org.vcsreader.vcs.Commit;
 
@@ -45,7 +46,7 @@ class HgCommitParser {
 		if (revisionBefore.equals(hgNoRevision)) {
 			revisionBefore = noRevision;
 		}
-		Instant dateTime = dateTimeFormatter.parse(values.get(2), Instant::from);
+		Instant dateTime = dateTimeFormatter.parse(values.get(2), DateTimeUtil::asInstant);
 		String author = values.get(3);
 		String comment = values.get(4);
 

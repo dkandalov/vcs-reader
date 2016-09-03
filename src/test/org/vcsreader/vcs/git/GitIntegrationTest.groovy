@@ -87,7 +87,7 @@ class GitIntegrationTest {
 		assertCommitsIn(logResult, [
 			new Commit(
 				revisions[0], noRevision,
-				dateTime("00:00:00 10/08/2014"),
+				dateTime("12:54:56 10/08/2014"),
 				author,
 				"initial commit",
 				[new Change(ADDED, "file1.txt", revisions[0])]
@@ -119,14 +119,14 @@ class GitIntegrationTest {
 		assertCommitsIn(logResult, [
 			new Commit(
 				revisions[0], noRevision,
-				dateTime("00:00:00 10/08/2014"),
+				dateTime("12:54:56 10/08/2014"),
 				author,
 				"initial commit",
 				[new Change(ADDED, "file1.txt", revisions[0])]
 			),
 			new Commit(
 				revisions[1], revisions[0],
-				dateTime("00:00:00 11/08/2014"),
+				dateTime("19:55:57 11/08/2014"),
 				author,
 				"added file2, file3",
 				[
