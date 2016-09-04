@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.util.Calendar;
 import java.util.Date;
 
 public class TimeRange {
@@ -30,7 +31,11 @@ public class TimeRange {
 	}
 
 	public TimeRange(@NotNull Date fromDate, @NotNull Date toDate) {
-		this(Instant.ofEpochMilli(fromDate.getTime()), Instant.ofEpochMilli(toDate.getTime()));
+		this(fromDate.toInstant(), toDate.toInstant());
+	}
+
+	public TimeRange(@NotNull Calendar fromDate, @NotNull Calendar toDate) {
+		this(fromDate.toInstant(), toDate.toInstant());
 	}
 
 	public TimeRange(@NotNull Instant from, @NotNull Instant to) {
