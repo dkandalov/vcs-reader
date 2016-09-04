@@ -106,11 +106,11 @@ class SvnRepository {
 		static 'repo with two commits with three added files'() {
 			new SvnRepository().init().with {
 				create("file1.txt")
-				commit("initial commit", "Aug 10 00:00:00 2014 +0000")
+				commit("initial commit", "Aug 10 13:54:56 2014 +0100")
 
 				create("file2.txt")
 				create("file3.txt")
-				commit("added file2, file3", "Aug 11 00:00:00 2014 +0000")
+				commit("added file2, file3", "Aug 11 18:55:57 2014 -0100")
 				it
 			}
 		}

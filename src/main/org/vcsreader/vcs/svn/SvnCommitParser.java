@@ -2,6 +2,7 @@ package org.vcsreader.vcs.svn;
 
 import org.jetbrains.annotations.NotNull;
 import org.vcsreader.VcsCommit;
+import org.vcsreader.lang.DateTimeUtil;
 import org.vcsreader.vcs.Change;
 import org.vcsreader.vcs.Commit;
 import org.xml.sax.Attributes;
@@ -167,7 +168,7 @@ class SvnCommitParser {
 				expectComment = false;
 			} else if (name.equals("date")) {
 				expectDate = false;
-				dateTime = dateTimeFormatter.parse(commitDateString, Instant::from);
+				dateTime = dateTimeFormatter.parse(commitDateString, DateTimeUtil::asInstant);
 			}
 		}
 
