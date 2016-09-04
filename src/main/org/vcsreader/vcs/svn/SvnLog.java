@@ -102,7 +102,7 @@ class SvnLog implements VcsCommand<LogResult> {
 		Iterator<VcsCommit> iterator = commits.iterator();
 		while (iterator.hasNext()) {
 			VcsCommit commit = iterator.next();
-			if (instant != Instant.MIN && commit.getTime().isBefore(instant)) {
+			if (instant != Instant.MIN && commit.getDateTime().isBefore(instant)) {
 				iterator.remove();
 			}
 		}

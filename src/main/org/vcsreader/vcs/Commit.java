@@ -52,7 +52,7 @@ public class Commit implements VcsCommit, VcsCommit.WithRootReference {
 		return revisionBefore;
 	}
 
-	@Override @NotNull public Instant getTime() {
+	@Override @NotNull public Instant getDateTime() {
 		return time;
 	}
 

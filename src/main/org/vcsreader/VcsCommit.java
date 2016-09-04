@@ -24,7 +24,7 @@ public interface VcsCommit {
 	/**
 	 * @return date and time of commit
 	 */
-	@NotNull Instant getTime(); // TODO rename to getDateTime()
+	@NotNull Instant getDateTime();
 
 	/**
 	 * @return author of the commit.
