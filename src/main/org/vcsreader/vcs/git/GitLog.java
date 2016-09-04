@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.vcsreader.VcsChange.Type.ADDED;
-import static org.vcsreader.VcsChange.Type.DELETED;
+import static org.vcsreader.VcsChange.Type.Added;
+import static org.vcsreader.VcsChange.Type.Deleted;
 import static org.vcsreader.VcsProject.LogResult;
 import static org.vcsreader.lang.CharsetUtil.UTF8;
 import static org.vcsreader.vcs.git.GitCommandLine.isSuccessful;
@@ -101,8 +101,8 @@ class GitLog implements VcsCommand<LogResult> {
 		boolean hasDeletions = false;
 		boolean hasAdditions = false;
 		for (VcsChange change : commit.getChanges()) {
-			if (change.getType() == DELETED) hasDeletions = true;
-			else if (change.getType() == ADDED) hasAdditions = true;
+			if (change.getType() == Deleted) hasDeletions = true;
+			else if (change.getType() == Added) hasAdditions = true;
 		}
 		return hasDeletions && hasAdditions;
 	}

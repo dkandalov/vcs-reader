@@ -6,12 +6,12 @@ import org.vcsreader.vcs.Change;
 import org.vcsreader.vcs.Commit;
 
 import java.time.Instant;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static java.time.ZoneOffset.UTC;
 import static org.vcsreader.VcsChange.Type.*;
 import static org.vcsreader.lang.DateTimeUtil.dateTimeFormatter;
 import static org.vcsreader.lang.StringUtil.split;
@@ -26,7 +26,7 @@ class HgCommitParser {
 	private static final String commitFieldsSeparator = "\u0019\u0018\u0017\u0016\u0015";
 	private static final String fileSeparator = "\u0017\u0016\u0015\u0019\u0018";
 	private static final String hgNoRevision = "0000000000000000000000000000000000000000";
-	private static final DateTimeFormatter dateTimeFormatter = dateTimeFormatter("yyyy-MM-dd HH:mm:ss Z", ZoneOffset.UTC);
+	private static final DateTimeFormatter dateTimeFormatter = dateTimeFormatter("yyyy-MM-dd HH:mm:ss Z", UTC);
 
 	public static List<VcsCommit> parseListOfCommits(String stdout) {
 		ArrayList<VcsCommit> commits = new ArrayList<>();
@@ -53,12 +53,12 @@ class HgCommitParser {
 		List<Change> filesAdded = new ArrayList<>();
 		for (String filePath : values.get(5).split(fileSeparator)) {
 			if (filePath.isEmpty()) continue;
-			filesAdded.add(new Change(ADDED, filePath, revision));
+			filesAdded.add(new Change(Added, filePath, revision));
 		}
 		List<Change> filesDeleted = new ArrayList<>();
 		for (String filePath : values.get(6).split(fileSeparator)) {
 			if (filePath.isEmpty()) continue;
-			filesDeleted.add(new Change(DELETED, noFilePath, filePath, revision, revisionBefore));
+			filesDeleted.add(new Change(Deleted, noFilePath, filePath, revision, revisionBefore));
 		}
 		List<Change> filesMoved = new ArrayList<>();
 		for (String newAndOldFilePath : values.get(7).split(fileSeparator)) {
@@ -73,7 +73,7 @@ class HgCommitParser {
 				filePath = newAndOldFilePath;
 				filePathBefore = noFilePath;
 			}
-			filesMoved.add(new Change(MOVED, filePath, filePathBefore, revision, revisionBefore));
+			filesMoved.add(new Change(Moved, filePath, filePathBefore, revision, revisionBefore));
 
 			Iterator<Change> addedIterator = filesAdded.iterator();
 			while (addedIterator.hasNext()) {
@@ -95,7 +95,7 @@ class HgCommitParser {
 		List<Change> filesModified = new ArrayList<>();
 		for (String filePath : values.get(8).split(fileSeparator)) {
 			if (filePath.isEmpty()) continue;
-			filesModified.add(new Change(MODIFIED, filePath, filePath, revision, revisionBefore));
+			filesModified.add(new Change(Modified, filePath, filePath, revision, revisionBefore));
 		}
 
 		List<Change> changes = new ArrayList<>();

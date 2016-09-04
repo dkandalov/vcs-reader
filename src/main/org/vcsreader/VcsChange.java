@@ -56,15 +56,25 @@ public interface VcsChange {
 	}
 
 
-	// TODO add javadoc, don't capitalize
 	enum Type {
-		ADDED,
-		MODIFIED,
-		DELETED,
 		/**
-		 * Note that MOVED does not imply there were no changes in file content.
+		 * File was added in the last commit.
+		 * Note that in general VCS are not perfect at detecting if file was moved and or created with similar content.
 		 */
-		MOVED
+		Added,
+		/**
+		 * File was modified in the last commit (but has not moved).
+		 */
+		Modified,
+		/**
+		 * File was moved in the last commit (and possibly modified).
+		 */
+		Moved,
+		/**
+		 * File was deleted in the last commit.
+		 * Note that in general VCS are not perfect at detecting if file was deleted or moved.
+		 */
+		Deleted
 	}
 
 

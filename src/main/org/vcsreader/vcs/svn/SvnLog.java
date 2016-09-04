@@ -157,9 +157,9 @@ class SvnLog implements VcsCommand<LogResult> {
 	}
 
 	private static VcsChange.Type changeTypeConsideringSubPath(String subPath, VcsChange change) {
-		if (change.getType() != VcsChange.Type.MOVED) return change.getType();
-		else if (!change.getFilePath().startsWith(subPath)) return VcsChange.Type.DELETED;
-		else if (!change.getFilePathBefore().startsWith(subPath)) return VcsChange.Type.ADDED;
+		if (change.getType() != VcsChange.Type.Moved) return change.getType();
+		else if (!change.getFilePath().startsWith(subPath)) return VcsChange.Type.Deleted;
+		else if (!change.getFilePathBefore().startsWith(subPath)) return VcsChange.Type.Added;
 		else return change.getType();
 	}
 

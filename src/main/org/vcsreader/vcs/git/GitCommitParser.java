@@ -78,10 +78,10 @@ class GitCommitParser {
 		String filePath = unescapeQuotes(hasRenames ? values.get(2) : values.get(1));
 		String filePathBefore = unescapeQuotes(hasRenames ? values.get(1) : filePath);
 
-		if (changeType == ADDED) {
+		if (changeType == Added) {
 			filePathBefore = VcsChange.noFilePath;
 			revisionBefore = VcsChange.noRevision;
-		} else if (changeType == DELETED) {
+		} else if (changeType == Deleted) {
 			filePathBefore = filePath;
 			filePath = VcsChange.noFilePath;
 		}
@@ -111,13 +111,13 @@ class GitCommitParser {
 
 		char c = s.charAt(0);
 		if (c == added || c == copied) {
-			return ADDED;
+			return Added;
 		} else if (c == modified || c == typeChanged || c == unmerged || c == unknown) {
-			return MODIFIED;
+			return Modified;
 		} else if (c == deleted) {
-			return DELETED;
+			return Deleted;
 		} else if (c == renamed) {
-			return MOVED;
+			return Moved;
 		} else {
 			throw new IllegalStateException("Unknown git change type: " + s);
 		}

@@ -3,7 +3,7 @@ package org.vcsreader
 import org.vcsreader.vcs.git.GitSettings
 import org.vcsreader.vcs.git.GitVcsRoot
 
-import static org.vcsreader.VcsChange.Type.MODIFIED
+import static org.vcsreader.VcsChange.Type.Modified
 import static org.vcsreader.lang.DateTimeUtil.dateTime
 import static org.vcsreader.lang.DateTimeUtil.timeRange
 
@@ -30,7 +30,7 @@ logResult.commits().last().with {
 	assert message == "Override toString() with meaningful implementation.\n\nThe new implementation provides more useful information."
 
 	changes.first().with {
-		assert type == MODIFIED
+		assert type == Modified
 		assert filePath == "src/main/java/org/junit/runners/model/FrameworkField.java"
 		assert fileContent().value.contains("public class FrameworkField")
 	}

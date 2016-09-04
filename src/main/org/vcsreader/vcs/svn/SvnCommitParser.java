@@ -127,7 +127,7 @@ class SvnCommitParser {
 				Iterator<Change> i = changes.iterator();
 				while (i.hasNext()) {
 					Change change = i.next();
-					if (change.getType() == DELETED && movedPaths.contains(change.getFilePathBefore())) {
+					if (change.getType() == Deleted && movedPaths.contains(change.getFilePathBefore())) {
 						i.remove();
 					}
 				}
@@ -140,23 +140,23 @@ class SvnCommitParser {
 				expectFileName = false;
 				if (isFileChange) {
 					if (isCopy) {
-						changes.add(new Change(MOVED, filePath, copyFromFilePath, revision, copyFromRevision));
+						changes.add(new Change(Moved, filePath, copyFromFilePath, revision, copyFromRevision));
 						movedPaths.add(copyFromFilePath);
 
 					} else if (changeType == SvnChangeType.Added) {
-						changes.add(new Change(ADDED, filePath, revision));
+						changes.add(new Change(Added, filePath, revision));
 
 					} else if (changeType == SvnChangeType.Delete) {
-						changes.add(new Change(DELETED, noFilePath, filePath, revision, revisionBefore));
+						changes.add(new Change(Deleted, noFilePath, filePath, revision, revisionBefore));
 
 					} else if (changeType == SvnChangeType.Replaced) {
-						changes.add(new Change(DELETED, noFilePath, filePath, revision, revisionBefore));
-						changes.add(new Change(ADDED, filePath, revision));
+						changes.add(new Change(Deleted, noFilePath, filePath, revision, revisionBefore));
+						changes.add(new Change(Added, filePath, revision));
 
 					} else {
 						// check for text modification because there can also be svn properties modifications
 						if (isTextModification) {
-							changes.add(new Change(MODIFIED, filePath, filePath, revision, revisionBefore));
+							changes.add(new Change(Modified, filePath, filePath, revision, revisionBefore));
 						}
 					}
 				}

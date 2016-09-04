@@ -90,7 +90,7 @@ class GitIntegrationTest {
 				dateTime("12:54:56 10/08/2014"),
 				author,
 				"initial commit",
-				[new Change(ADDED, "file1.txt", revisions[0])]
+				[new Change(Added, "file1.txt", revisions[0])]
 			)
 		])
 	}
@@ -122,7 +122,7 @@ class GitIntegrationTest {
 				dateTime("12:54:56 10/08/2014"),
 				author,
 				"initial commit",
-				[new Change(ADDED, "file1.txt", revisions[0])]
+				[new Change(Added, "file1.txt", revisions[0])]
 			),
 			new Commit(
 				revisions[1], revisions[0],
@@ -130,8 +130,8 @@ class GitIntegrationTest {
 				author,
 				"added file2, file3",
 				[
-					new Change(ADDED, "file2.txt", "", revisions[1], noRevision),
-					new Change(ADDED, "file3.txt", "", revisions[1], noRevision)
+						new Change(Added, "file2.txt", "", revisions[1], noRevision),
+						new Change(Added, "file3.txt", "", revisions[1], noRevision)
 				]
 			)
 		])
@@ -173,8 +173,8 @@ class GitIntegrationTest {
 				author,
 				"modified file1, file2",
 				[
-					new Change(MODIFIED, "file1.txt", "file1.txt", revisions[1], revisions[0]),
-					new Change(MODIFIED, "file2.txt", "file2.txt", revisions[1], revisions[0])
+						new Change(Modified, "file1.txt", "file1.txt", revisions[1], revisions[0]),
+						new Change(Modified, "file2.txt", "file2.txt", revisions[1], revisions[0])
 				]
 			)
 		])
@@ -193,7 +193,7 @@ class GitIntegrationTest {
 				dateTime("14:00:00 13/08/2014"),
 				author,
 				"moved file",
-				[new Change(MOVED, "folder/file.txt", "file.txt", revisions[1], revisions[0])]
+				[new Change(Moved, "folder/file.txt", "file.txt", revisions[1], revisions[0])]
 			)
 		])
 	}
@@ -211,7 +211,7 @@ class GitIntegrationTest {
 				dateTime("14:00:00 14/08/2014"),
 				author,
 				"moved and renamed file",
-				[new Change(MOVED, "folder/renamed_file.txt", "file.txt", revisions[1], revisions[0])]
+				[new Change(Moved, "folder/renamed_file.txt", "file.txt", revisions[1], revisions[0])]
 			)
 		])
 	}
@@ -229,7 +229,7 @@ class GitIntegrationTest {
 				dateTime("14:00:00 15/08/2014"),
 				author,
 				"deleted file",
-				[new Change(DELETED, "", "file.txt", revisions[1], revisions[0])]
+				[new Change(Deleted, "", "file.txt", revisions[1], revisions[0])]
 			)
 		])
 	}
@@ -247,7 +247,7 @@ class GitIntegrationTest {
 				dateTime("14:00:00 16/08/2014"),
 				author,
 				"added file with spaces and quotes",
-				[new Change(ADDED, '"file with spaces.txt"', "", revisions[0], noRevision)]
+				[new Change(Added, '"file with spaces.txt"', "", revisions[0], noRevision)]
 			)
 		])
 	}
@@ -265,7 +265,7 @@ class GitIntegrationTest {
 				dateTime("15:00:00 17/08/2014"),
 				author,
 				"non-ascii комментарий",
-				[new Change(ADDED, "non-ascii.txt", "", revisions[0], noRevision)]
+				[new Change(Added, "non-ascii.txt", "", revisions[0], noRevision)]
 			)
 		])
 		def nonAsciiContent = logResult.commits().first().changes.first().fileContent().value
@@ -289,7 +289,7 @@ class GitIntegrationTest {
 				dateTime("16:00:00 18/08/2014"),
 				author,
 				"",
-				[new Change(ADDED, "file.txt", "", revisions[0], noRevision)]
+				[new Change(Added, "file.txt", "", revisions[0], noRevision)]
 			)
 		])
 	}
@@ -339,14 +339,14 @@ class GitIntegrationTest {
 				dateTime("18:00:00 20/08/2014"),
 				author,
 				"added file-branch.txt",
-				[new Change(ADDED, "file-branch.txt", "", revisions[1], noRevision)]
+				[new Change(Added, "file-branch.txt", "", revisions[1], noRevision)]
 			),
 			new Commit(
 				revisions[0], noRevision,
 				dateTime("18:10:00 20/08/2014"),
 				author,
 				"added file-master.txt",
-				[new Change(ADDED, "file-master.txt", "", revisions[0], noRevision)]
+				[new Change(Added, "file-master.txt", "", revisions[0], noRevision)]
 			)
 		])
 	}
@@ -378,14 +378,14 @@ class GitIntegrationTest {
 				dateTime("19:00:00 21/08/2014"),
 				author,
 				"added file-branch.txt",
-				[new Change(ADDED, "file-branch.txt", "", revisions[1], noRevision)]
+				[new Change(Added, "file-branch.txt", "", revisions[1], noRevision)]
 			),
 			new Commit(
 				revisions[2], revisions[0], // note the revision "jump"
 				dateTime("19:10:00 21/08/2014"),
 				author,
 				"added file-master.txt",
-				[new Change(ADDED, "file-master.txt", "", revisions[2], noRevision)]
+				[new Change(Added, "file-master.txt", "", revisions[2], noRevision)]
 			)
 		])
 	}
@@ -397,7 +397,7 @@ class GitIntegrationTest {
 		def logResult = project.log(timeRange("12/08/2014", "13/08/2014"))
 
 		def change = logResult.commits().first().changes.first()
-		assert change.type == MODIFIED
+		assert change.type == Modified
 		assert change.fileContent().value == "file1 new content"
 		assert change.fileContentBefore().value == "file1 content"
 	}
@@ -409,7 +409,7 @@ class GitIntegrationTest {
 		def logResult = project.log(timeRange("11/08/2014", "12/08/2014"))
 
 		def change = logResult.commits().first().changes.first()
-		assert change.type == ADDED
+		assert change.type == Added
 		assert change.fileContent().value == "file1 content"
 		assert change.fileContentBefore() == VcsChange.FileContent.none
 	}
@@ -421,7 +421,7 @@ class GitIntegrationTest {
 		def logResult = project.log(timeRange("15/08/2014", "16/08/2014"))
 
 		def change = logResult.commits().first().changes.first()
-		assert change.type == DELETED
+		assert change.type == Deleted
 		assert change.fileContent() == VcsChange.FileContent.none
 		assert change.fileContentBefore().value == "file content"
 	}

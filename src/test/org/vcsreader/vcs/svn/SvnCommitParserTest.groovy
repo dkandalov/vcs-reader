@@ -33,7 +33,7 @@ class SvnCommitParserTest {
 						dateTime("15:00:00 10/08/2014"),
 						"Some Author",
 						"initial commit",
-						[new Change(ADDED, "file1.txt", "1")]
+						[new Change(Added, "file1.txt", "1")]
 				)
 		])
 	}
@@ -60,7 +60,7 @@ class SvnCommitParserTest {
 						dateTime("19:35:02.544940 21/12/2013"),
 						"Some Author",
 						"commit message",
-						[new Change(ADDED, "file.txt", "1")]
+						[new Change(Added, "file.txt", "1")]
 				)
 		])
 	}
@@ -120,7 +120,7 @@ class SvnCommitParserTest {
 						dateTime("15:00:00 13/08/2014"),
 						"Some Author",
 						"moved file1",
-						[new Change(MOVED, "folder1/file1.txt", "file1.txt", "4", "1")]
+						[new Change(Moved, "folder1/file1.txt", "file1.txt", "4", "1")]
 				)
 		))
 	}
@@ -144,7 +144,7 @@ class SvnCommitParserTest {
 						dateTime("15:00:00 10/08/2014"),
 						"Some Author",
 						"commit message",
-						[new Change(MODIFIED, "some/file", "some/file", "1", noRevision)]
+						[new Change(Modified, "some/file", "some/file", "1", noRevision)]
 				)
 		])
 	}

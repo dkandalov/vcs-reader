@@ -3,24 +3,20 @@ package org.vcsreader.lang;
 import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.TemporalAccessor;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
-import static java.time.temporal.ChronoField.INSTANT_SECONDS;
-import static java.time.temporal.ChronoField.NANO_OF_SECOND;
-import static java.time.temporal.ChronoField.OFFSET_SECONDS;
+import static java.time.ZoneOffset.UTC;
+import static java.time.temporal.ChronoField.*;
 import static java.util.Arrays.asList;
 
 public class DateTimeUtil {
-	public static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
 	public static Instant date(String s) {
-		DateTimeFormatter formatter = dateTimeFormatter("kk:mm:ss dd/MM/yyyy", ZoneOffset.UTC);
+		DateTimeFormatter formatter = dateTimeFormatter("kk:mm:ss dd/MM/yyyy", UTC);
 		return formatter.parse("00:00:00 " + s, DateTimeUtil::asInstant);
 	}
 
@@ -34,13 +30,13 @@ public class DateTimeUtil {
 
 	public static Instant dateTime(String s) {
 		List<DateTimeFormatter> formatters = asList(
-				dateTimeFormatter("kk:mm dd/MM/yyyy", ZoneOffset.UTC),
-				dateTimeFormatter("kk:mm:ss dd/MM/yyyy", ZoneOffset.UTC),
-				dateTimeFormatter("kk:mm:ss dd/MM/yyyy Z", ZoneOffset.UTC),
-				dateTimeFormatter("kk:mm:ss.SSS dd/MM/yyyy", ZoneOffset.UTC),
-				dateTimeFormatter("kk:mm:ss.SSSSSS dd/MM/yyyy", ZoneOffset.UTC),
-				dateTimeFormatter("MMM dd kk:mm:ss yyyy Z", ZoneOffset.UTC),
-				dateTimeFormatter("E MMM dd kk:mm:ss Z yyyy", ZoneOffset.UTC)
+				dateTimeFormatter("kk:mm dd/MM/yyyy", UTC),
+				dateTimeFormatter("kk:mm:ss dd/MM/yyyy", UTC),
+				dateTimeFormatter("kk:mm:ss dd/MM/yyyy Z", UTC),
+				dateTimeFormatter("kk:mm:ss.SSS dd/MM/yyyy", UTC),
+				dateTimeFormatter("kk:mm:ss.SSSSSS dd/MM/yyyy", UTC),
+				dateTimeFormatter("MMM dd kk:mm:ss yyyy Z", UTC),
+				dateTimeFormatter("E MMM dd kk:mm:ss Z yyyy", UTC)
 		);
 		for (DateTimeFormatter formatter : formatters) {
 			try {
