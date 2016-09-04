@@ -2,11 +2,9 @@ package org.vcsreader.vcs.svn
 
 import org.vcsreader.lang.CommandLine
 
-import java.time.Instant
-import java.time.ZoneOffset
-
-import static org.vcsreader.lang.DateTimeUtil.dateTimeFormatter
+import static java.time.ZoneOffset.UTC
 import static org.vcsreader.lang.DateTimeUtil.dateTime
+import static org.vcsreader.lang.DateTimeUtil.dateTimeFormatter
 import static org.vcsreader.vcs.svn.SvnIntegrationTestConfig.*
 
 class SvnRepository {
@@ -58,16 +56,17 @@ class SvnRepository {
 		svn("propset", property, value, fileName)
 	}
 
-	def commit(String message, Instant commitTime) {
+	def commit(String message, String commitTime) {
 		svn("commit", "-m", message)
-		svn("propset", "svn:date", "--revprop", "-r", "HEAD", dateTimeFormatter("yyyy-MM-dd'T'HH:mm:ss.000000'Z'", ZoneOffset.UTC).format(commitTime))
+		def time = dateTimeFormatter("yyyy-MM-dd'T'HH:mm:ss.000000'Z'", UTC).format(dateTime(commitTime))
+		svn("propset", "svn:date", "--revprop", "-r", "HEAD", time)
 		svn("propset", "svn:author", "--revprop", "-r", "HEAD", author)
 
 		if (revisions.empty) revisions.add("1")
 		else revisions.add((revisions.last().toInteger() + 1).toString())
 	}
 
-	def dummyCommit(Instant commitTime) {
+	def dummyCommit(String commitTime) {
 		create("dummy")
 		commit("dummy commit otherwise svn log doesn't show commits", commitTime)
 	}
@@ -107,11 +106,11 @@ class SvnRepository {
 		static 'repo with two commits with three added files'() {
 			new SvnRepository().init().with {
 				create("file1.txt")
-				commit("initial commit", dateTime("00:00:00 10/08/2014"))
+				commit("initial commit", "Aug 10 00:00:00 2014 +0000")
 
 				create("file2.txt")
 				create("file3.txt")
-				commit("added file2, file3", dateTime("00:00:00 11/08/2014"))
+				commit("added file2, file3", "Aug 11 00:00:00 2014 +0000")
 				it
 			}
 		}
@@ -120,11 +119,11 @@ class SvnRepository {
 			new SvnRepository().init().with {
 				create("file1.txt", "file1 content")
 				create("file2.txt", "file2 content")
-				commit("added file1, file2", dateTime("00:00:00 11/08/2014"))
+				commit("added file1, file2", "Aug 11 00:00:00 2014 +0000")
 
 				create("file1.txt", "file1 new content")
 				create("file2.txt", "file2 new content")
-				commit("modified file1, file2", dateTime("15:00:00 12/08/2014"))
+				commit("modified file1, file2", "Aug 12 14:00:00 2014 +0000")
 				it
 			}
 		}
@@ -132,11 +131,11 @@ class SvnRepository {
 		static 'repo with moved file'() {
 			new SvnRepository().init().with {
 				create("file.txt")
-				commit("initial commit", dateTime("00:00:00 10/08/2014"))
+				commit("initial commit", "Aug 10 00:00:00 2014 +0000")
 
 				mkdir("folder")
 				move("file.txt", "folder/file.txt")
-				commit("moved file", dateTime("15:00:00 13/08/2014"))
+				commit("moved file", "Aug 13 14:00:00 2014 +0000")
 				it
 			}
 		}
@@ -144,11 +143,11 @@ class SvnRepository {
 		static 'repo with moved and renamed file'() {
 			new SvnRepository().init().with {
 				create("file.txt", "file content")
-				commit("initial commit", dateTime("00:00:00 10/08/2014"))
+				commit("initial commit", "Aug 10 00:00:00 2014 +0000")
 
 				mkdir("folder")
 				move("file.txt", "folder/renamed_file.txt")
-				commit("moved and renamed file", dateTime("15:00:00 14/08/2014"))
+				commit("moved and renamed file", "Aug 14 14:00:00 2014 +0000")
 				it
 			}
 		}
@@ -156,10 +155,10 @@ class SvnRepository {
 		static 'repo with deleted file'() {
 			new SvnRepository().init().with {
 				create("file.txt", "file content")
-				commit("initial commit", dateTime("00:00:00 10/08/2014"))
+				commit("initial commit", "Aug 10 00:00:00 2014 +0000")
 
 				delete("file.txt")
-				commit("deleted file", dateTime("15:00:00 15/08/2014"))
+				commit("deleted file", "Aug 15 14:00:00 2014 +0000")
 				it
 			}
 		}
@@ -167,27 +166,27 @@ class SvnRepository {
 		static 'repo with file with spaces and quotes'() {
 			new SvnRepository().init().with {
 				create('dummy')
-				commit("dummy commit otherwise svn log doesn't show commits", dateTime("00:00:00 10/08/2014"))
+				commit("dummy commit otherwise svn log doesn't show commits", "00:00:00 10/08/2014")
 
 				create('"file with spaces.txt"')
-				commit("added file with spaces and quotes", dateTime("15:00:00 16/08/2014"))
+				commit("added file with spaces and quotes", "Aug 16 14:00:00 2014 +0000")
 				it
 			}
 		}
 
 		static 'repo with non-ascii file name and commit message'() {
 			new SvnRepository().init().with {
-				dummyCommit(dateTime("00:00:00 10/08/2014"))
+				dummyCommit("00:00:00 10/08/2014")
 
 				create("non-ascii.txt", "non-ascii содержимое")
-				commit("non-ascii комментарий", dateTime("15:00:00 17/08/2014"))
+				commit("non-ascii комментарий", "Aug 17 15:00:00 2014 +0000")
 				it
 			}
 		}
 
 		static someNonEmptyRepository() {
 			new SvnRepository().init().with {
-				dummyCommit(dateTime("00:00:00 10/08/2014"))
+				dummyCommit("Aug 10 00:00:00 2014 +0000")
 				it
 			}
 		}

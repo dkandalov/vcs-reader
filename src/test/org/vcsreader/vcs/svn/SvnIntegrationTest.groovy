@@ -72,13 +72,13 @@ class SvnIntegrationTest {
 	void "commit time before 1970 is not supported"() {
 		def svnRepository = new SvnRepository().init()
 		svnRepository.create("file.txt")
-		svnRepository.commit("initial commit", dateTime("23:59:59 31/12/1969"))
+		svnRepository.commit("initial commit", "23:59:59 31/12/1969")
 	}
 
 	@Test void "commit time is supported to at least 2999"() {
 		def svnRepository = new SvnRepository().init()
 		svnRepository.create("file.txt")
-		svnRepository.commit("initial commit", dateTime("00:00:00 01/01/2999"))
+		svnRepository.commit("initial commit", "00:00:00 01/01/2999")
 
 		def project = newProject(svnRepository)
 		def logResult = project.log(TimeRange.all)
@@ -146,7 +146,7 @@ class SvnIntegrationTest {
 		assertCommitsIn(logResult, [
 			new Commit(
 				revisions[1], revisions[0],
-				dateTime("15:00:00 12/08/2014"),
+				dateTime("14:00:00 12/08/2014"),
 				author,
 				"modified file1, file2",
 				[
@@ -167,7 +167,7 @@ class SvnIntegrationTest {
 		assertCommitsIn(logResult, [
 			new Commit(
 				revisions[1], revisions[0],
-				dateTime("15:00:00 13/08/2014"),
+				dateTime("14:00:00 13/08/2014"),
 				author,
 				"moved file",
 				[new Change(MOVED, "folder/file.txt", "file.txt", revisions[1], revisions[0])]
@@ -185,7 +185,7 @@ class SvnIntegrationTest {
 		assertCommitsIn(logResult, [
 			new Commit(
 				revisions[1], revisions[0],
-				dateTime("15:00:00 14/08/2014"),
+				dateTime("14:00:00 14/08/2014"),
 				author,
 				"moved and renamed file",
 				[new Change(MOVED, "folder/renamed_file.txt", "file.txt", revisions[1], revisions[0])]
@@ -203,7 +203,7 @@ class SvnIntegrationTest {
 		assertCommitsIn(logResult, [
 			new Commit(
 				revisions[1], revisions[0],
-				dateTime("15:00:00 15/08/2014"),
+				dateTime("14:00:00 15/08/2014"),
 				author,
 				"deleted file",
 				[new Change(DELETED, "", "file.txt", revisions[1], revisions[0])]
@@ -221,7 +221,7 @@ class SvnIntegrationTest {
 		assertCommitsIn(logResult, [
 			new Commit(
 				revisions[1], revisions[0],
-				dateTime("15:00:00 16/08/2014"),
+				dateTime("14:00:00 16/08/2014"),
 				author,
 				"added file with spaces and quotes",
 				[new Change(ADDED, '"file with spaces.txt"', "", revisions[1], noRevision)]
@@ -249,9 +249,9 @@ class SvnIntegrationTest {
 
 	@Test void "log commit with empty message"() {
 		def repository = new SvnRepository().init().with {
-			dummyCommit(dateTime("00:00:00 10/08/2014"))
+			dummyCommit("00:00:00 10/08/2014")
 			create("file.txt")
-			commit("", dateTime("16:00:00 18/08/2014"))
+			commit("", "16:00:00 18/08/2014")
 			it
 		}
 		def revisions = repository.revisions
@@ -273,11 +273,11 @@ class SvnIntegrationTest {
 	@Test void "log commit with no file changes"() {
 		def repository = new SvnRepository().init().with {
 			create("file.txt")
-			commit("initial commit", dateTime("00:00:00 10/08/2014"))
+			commit("initial commit", "00:00:00 10/08/2014")
 
 			// change property, otherwise svn won't commit
 			propset("dummyproperty", "1", "file.txt")
-			commit("commit with no changes", dateTime("17:00:00 19/08/2014"))
+			commit("commit with no changes", "17:00:00 19/08/2014")
 			it
 		}
 		def revisions = repository.revisions
@@ -299,11 +299,11 @@ class SvnIntegrationTest {
 	@Test void "log replaced file"() {
 		def repository = new SvnRepository().init().with {
 			create("replaced-file.txt", "text")
-			commit("added file to be replaced", dateTime("15:00:00 20/08/2014"))
+			commit("added file to be replaced", "15:00:00 20/08/2014")
 
 			delete("replaced-file.txt")
 			create("replaced-file.txt", "replaced text")
-			commit("replaced file", dateTime("15:00:00 21/08/2014"))
+			commit("replaced file", "15:00:00 21/08/2014")
 			it
 		}
 		def revisions = repository.revisions
@@ -332,9 +332,9 @@ class SvnIntegrationTest {
 
 	@Test void "log added empty dir"() {
 		def repository = new SvnRepository().init().with {
-			dummyCommit(dateTime("00:00:00 10/08/2014"))
+			dummyCommit("00:00:00 10/08/2014")
 			mkdir("empty-dir")
-			commit("added empty dir", dateTime("15:00:00 22/08/2014"))
+			commit("added empty dir", "15:00:00 22/08/2014")
 			it
 		}
 		def revisions = repository.revisions
@@ -401,7 +401,7 @@ class SvnIntegrationTest {
 		assertCommitsIn(logResult, [
 			new Commit(
 				revisions[1], revisions[0],
-				dateTime("15:00:00 14/08/2014"),
+				dateTime("14:00:00 14/08/2014"),
 				author,
 				"moved and renamed file", [
 				// note that change has ADDED type because it was moved from outside sub path

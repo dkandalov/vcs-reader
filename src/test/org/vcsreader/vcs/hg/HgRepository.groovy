@@ -48,9 +48,9 @@ class HgRepository {
 		new File(path + File.separator + fileName).write(text)
 	}
 
-	def commit(String message, String date) {
+	def commit(String message, String commitTime) {
 		hg("add")
-		hg("commit", "-u", authorWithEmail, "-d", date, "-m", message)
+		hg("commit", "-u", authorWithEmail, "-d", commitTime, "-m", message)
 	}
 
 	private def logCommitHashes() {

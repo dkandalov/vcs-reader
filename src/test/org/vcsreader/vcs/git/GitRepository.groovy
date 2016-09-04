@@ -77,8 +77,8 @@ class GitRepository {
 		git(env, "commit", "--amend", "-m", message)
 	}
 
-	def commit(String message, String date) {
-		def epochSeconds = String.valueOf(DateTimeUtil.dateTime(date).epochSecond)
+	def commit(String message, String commitTime) {
+		def epochSeconds = String.valueOf(DateTimeUtil.dateTime(commitTime).epochSecond)
 
 		git("add", "--all",  ".")
 		// allow empty messages and empty commits (without changes) to test it
