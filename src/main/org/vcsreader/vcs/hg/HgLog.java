@@ -12,8 +12,8 @@ import java.util.List;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
-import static org.vcsreader.lang.CharsetUtil.UTF8;
 import static org.vcsreader.vcs.hg.HgCommandLine.isSuccessful;
 
 // suppress because it's similar to GitLog
@@ -50,11 +50,11 @@ class HgLog implements VcsCommand<VcsProject.LogResult> {
 	static CommandLine hgLog(String hgPath, String folder, TimeRange timeRange) {
 		CommandLine commandLine = new CommandLine(
 				hgPath, "log",
-				"--encoding", UTF8.name(),
+				"--encoding", UTF_8.name(),
 				"-r", "date(\"" + asHgInstant(timeRange.from()) + " to " + asHgInstant(timeRange.to()) + "\")",
 				"--template", HgCommitParser.logTemplate()
 		);
-		return commandLine.workingDir(folder).outputCharset(UTF8);
+		return commandLine.workingDir(folder).outputCharset(UTF_8);
 	}
 
 	private static String asHgInstant(Instant instant) {

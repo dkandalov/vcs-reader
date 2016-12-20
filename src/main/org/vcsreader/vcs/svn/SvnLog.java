@@ -2,7 +2,6 @@ package org.vcsreader.vcs.svn;
 
 import org.vcsreader.VcsChange;
 import org.vcsreader.VcsCommit;
-import org.vcsreader.lang.CharsetUtil;
 import org.vcsreader.lang.CommandLine;
 import org.vcsreader.lang.TimeRange;
 import org.vcsreader.vcs.Change;
@@ -16,6 +15,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.ZoneOffset.UTC;
 import static java.util.Arrays.asList;
 import static org.vcsreader.VcsProject.LogResult;
@@ -69,7 +69,7 @@ class SvnLog implements VcsCommand<LogResult> {
 
 		// see http://subversion.tigris.org/issues/show_bug.cgi?id=2938
 		@SuppressWarnings("UnnecessaryLocalVariable")
-		Charset svnXmlCharset = CharsetUtil.UTF8;
+		Charset svnXmlCharset = UTF_8;
 
 		return newExternalCommand(
 				pathToSvn, "log",

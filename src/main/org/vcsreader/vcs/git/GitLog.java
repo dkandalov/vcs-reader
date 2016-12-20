@@ -12,11 +12,11 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static org.vcsreader.VcsChange.Type.Added;
 import static org.vcsreader.VcsChange.Type.Deleted;
 import static org.vcsreader.VcsProject.LogResult;
-import static org.vcsreader.lang.CharsetUtil.UTF8;
 import static org.vcsreader.vcs.git.GitCommandLine.isSuccessful;
 import static org.vcsreader.vcs.git.GitCommitParser.*;
 
@@ -56,7 +56,7 @@ class GitLog implements VcsCommand<LogResult> {
 
 	static CommandLine gitLog(String gitPath, String folder, TimeRange timeRange) {
 		String showFileStatus = "--name-status"; // see --diff-filter at https://www.kernel.org/pub/software/scm/git/docs/git-log.html
-		String forceUTF8ForCommitMessages = "--encoding=" + UTF8.name();
+		String forceUTF8ForCommitMessages = "--encoding=" + UTF_8.name();
 
 		List<String> arguments = new ArrayList<>(asList(gitPath, "log"));
 		// MIN timestamp is not handled correctly by git and must be excluded from command line.
@@ -71,7 +71,7 @@ class GitLog implements VcsCommand<LogResult> {
 				forceUTF8ForCommitMessages,
 				logFormat()
 		));
-		return new CommandLine(arguments).workingDir(folder).outputCharset(UTF8);
+		return new CommandLine(arguments).workingDir(folder).outputCharset(UTF_8);
 	}
 
 	static CommandLine gitLogRenames(String gitPath, String folder, String revision) {

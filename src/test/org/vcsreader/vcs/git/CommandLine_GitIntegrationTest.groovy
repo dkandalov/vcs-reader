@@ -3,7 +3,7 @@ package org.vcsreader.vcs.git
 import org.junit.Test
 import org.vcsreader.lang.CommandLine
 
-import static org.vcsreader.lang.CharsetUtil.UTF8
+import static java.nio.charset.StandardCharsets.UTF_8
 import static org.vcsreader.lang.DateTimeUtil.timeRange
 import static org.vcsreader.vcs.git.GitClone.gitClone
 import static org.vcsreader.vcs.git.GitIntegrationTestConfig.*
@@ -34,7 +34,7 @@ class CommandLine_GitIntegrationTest {
 	@Test void "log file content"() {
 		def repository = 'repo with two added and modified files'()
 
-		def commandLine = gitLogFileContent(pathToGit, repository.path, "file1.txt", repository.revisions[0], UTF8).execute()
+		def commandLine = gitLogFileContent(pathToGit, repository.path, "file1.txt", repository.revisions[0], UTF_8).execute()
 
 		assert commandLine.stderr() == ""
 		assert commandLine.stdout().trim() == "file1 content"
@@ -44,7 +44,7 @@ class CommandLine_GitIntegrationTest {
 	@Test void "failed log file content"() {
 		def repository = someNonEmptyRepository()
 
-		def commandLine = gitLogFileContent(pathToGit, repository.path, "non-existent file", repository.revisions[0], UTF8).execute()
+		def commandLine = gitLogFileContent(pathToGit, repository.path, "non-existent file", repository.revisions[0], UTF_8).execute()
 
 		assert commandLine.stdout() == ""
 		assert commandLine.stderr().startsWith("fatal: Path 'non-existent file' does not exist")
@@ -118,7 +118,7 @@ class CommandLine_GitIntegrationTest {
 		assert commandLine.stdout().contains("non-ascii комментарий")
 		assert commandLine.exitCode() == 0
 
-		commandLine = gitLogFileContent(pathToGit, repository.path, "non-ascii.txt", repository.revisions[0], UTF8).execute()
+		commandLine = gitLogFileContent(pathToGit, repository.path, "non-ascii.txt", repository.revisions[0], UTF_8).execute()
 		assert commandLine.stderr() == ""
 		assert commandLine.stdout().trim() == "non-ascii содержимое"
 		assert commandLine.exitCode() == 0

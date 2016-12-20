@@ -3,7 +3,7 @@ package org.vcsreader.vcs.hg
 import org.junit.Test
 import org.vcsreader.lang.CommandLine
 
-import static org.vcsreader.lang.CharsetUtil.UTF8
+import static java.nio.charset.StandardCharsets.UTF_8
 import static org.vcsreader.lang.DateTimeUtil.timeRange
 import static org.vcsreader.vcs.hg.HgClone.hgClone
 import static org.vcsreader.vcs.hg.HgIntegrationTestConfig.*
@@ -33,7 +33,7 @@ class CommandLine_HgIntegrationTest {
 	@Test void "log file content"() {
 		def repository = 'repo with two added and modified files'()
 
-		def commandLine = hgLogFileContent(pathToHg, repository.path, "file1.txt", repository.revisions[0], UTF8).execute()
+		def commandLine = hgLogFileContent(pathToHg, repository.path, "file1.txt", repository.revisions[0], UTF_8).execute()
 
 		assert commandLine.stderr() == ""
 		assert commandLine.stdout().trim() == "file1 content"
@@ -43,7 +43,7 @@ class CommandLine_HgIntegrationTest {
 	@Test void "failed log file content"() {
 		def repository = someNonEmptyRepository()
 
-		def commandLine = hgLogFileContent(pathToHg, repository.path, "non-existent file", repository.revisions[0], UTF8).execute()
+		def commandLine = hgLogFileContent(pathToHg, repository.path, "non-existent file", repository.revisions[0], UTF_8).execute()
 
 		assert commandLine.stdout() == ""
 		assert commandLine.stderr().startsWith("non-existent file: no such file in rev")
@@ -104,7 +104,7 @@ class CommandLine_HgIntegrationTest {
 		assert commandLine.stdout().contains("non-ascii комментарий")
 		assert commandLine.exitCode() == 0
 
-		commandLine = hgLogFileContent(pathToHg, repository.path, "non-ascii.txt", repository.revisions[0], UTF8).execute()
+		commandLine = hgLogFileContent(pathToHg, repository.path, "non-ascii.txt", repository.revisions[0], UTF_8).execute()
 		assert commandLine.stderr() == ""
 		assert commandLine.stdout().trim() == "non-ascii содержимое"
 		assert commandLine.exitCode() == 0

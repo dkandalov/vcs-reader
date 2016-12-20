@@ -1,9 +1,10 @@
 package org.vcsreader.vcs.svn;
 
 import org.jetbrains.annotations.NotNull;
-import org.vcsreader.lang.CharsetUtil;
 
 import java.nio.charset.Charset;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class SvnSettings {
 	@NotNull private final String svnPath;
@@ -28,7 +29,7 @@ public class SvnSettings {
 	}
 
 	public static SvnSettings defaults() {
-		return new SvnSettings("svn", CharsetUtil.UTF8, true, true);
+		return new SvnSettings("svn", UTF_8, true, true);
 	}
 
 	public SvnSettings withSvnPath(String value) {

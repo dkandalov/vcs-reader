@@ -1,9 +1,10 @@
 package org.vcsreader.vcs.hg;
 
 import org.jetbrains.annotations.NotNull;
-import org.vcsreader.lang.CharsetUtil;
 
 import java.nio.charset.Charset;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class HgSettings {
 	private final String hgPath;
@@ -25,7 +26,7 @@ public class HgSettings {
 	}
 
 	public static HgSettings defaults() {
-		return new HgSettings("hg", CharsetUtil.UTF8, true);
+		return new HgSettings("hg", UTF_8, true);
 	}
 
 	public HgSettings withHgPath(String value) {

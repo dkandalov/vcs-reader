@@ -2,7 +2,7 @@ package org.vcsreader.vcs.svn
 
 import org.junit.Test
 
-import static org.vcsreader.lang.CharsetUtil.UTF8
+import static java.nio.charset.StandardCharsets.UTF_8
 import static org.vcsreader.lang.DateTimeUtil.timeRange
 import static org.vcsreader.vcs.svn.SvnInfo.svnInfo
 import static org.vcsreader.vcs.svn.SvnIntegrationTestConfig.nonExistentUrl
@@ -33,7 +33,7 @@ class CommandLine_SvnIntegrationTest {
 	@Test void "log file content"() {
 		def repository = 'repo with two added and modified files'()
 
-		def commandLine = svnLogFileContent(pathToSvn, "file://" + repository.repoPath, "file1.txt", repository.revisions[0], UTF8).execute()
+		def commandLine = svnLogFileContent(pathToSvn, "file://" + repository.repoPath, "file1.txt", repository.revisions[0], UTF_8).execute()
 
 		assert commandLine.stderr() == ""
 		assert commandLine.stdout().trim() == "file1 content"
@@ -43,7 +43,7 @@ class CommandLine_SvnIntegrationTest {
 	@Test void "failed log file content"() {
 		def repository = someNonEmptyRepository()
 
-		def commandLine = svnLogFileContent(pathToSvn, "file://" + repository.repoPath, "non-existent-file", repository.revisions[0], UTF8).execute()
+		def commandLine = svnLogFileContent(pathToSvn, "file://" + repository.repoPath, "non-existent-file", repository.revisions[0], UTF_8).execute()
 
 		assert commandLine.stdout() == ""
 		assert commandLine.stderr().contains("path not found")
@@ -75,7 +75,7 @@ class CommandLine_SvnIntegrationTest {
 		assert commandLine.stdout().contains("non-ascii комментарий")
 		assert commandLine.exitCode() == 0
 
-		commandLine = svnLogFileContent(pathToSvn, "file://" + repository.repoPath, "non-ascii.txt", repository.revisions[1], UTF8).execute()
+		commandLine = svnLogFileContent(pathToSvn, "file://" + repository.repoPath, "non-ascii.txt", repository.revisions[1], UTF_8).execute()
 		assert commandLine.stderr() == ""
 		assert commandLine.stdout().trim() == "non-ascii содержимое"
 		assert commandLine.exitCode() == 0
