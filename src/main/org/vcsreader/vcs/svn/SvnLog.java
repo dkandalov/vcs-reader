@@ -12,7 +12,6 @@ import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -99,13 +98,7 @@ class SvnLog implements VcsCommand<LogResult> {
 	 * See http://svnbook.red-bean.com/en/1.8/svn.tour.revs.specifiers.html#svn.tour.revs.keywords
 	 */
 	private static List<VcsCommit> deleteCommitsBefore(Instant instant, List<VcsCommit> commits) {
-		Iterator<VcsCommit> iterator = commits.iterator();
-		while (iterator.hasNext()) {
-			VcsCommit commit = iterator.next();
-			if (instant != Instant.MIN && commit.getDateTime().isBefore(instant)) {
-				iterator.remove();
-			}
-		}
+		commits.removeIf(it -> instant != Instant.MIN && it.getDateTime().isBefore(instant));
 		return commits;
 	}
 

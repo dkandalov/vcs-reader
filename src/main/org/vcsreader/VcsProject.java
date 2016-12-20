@@ -6,10 +6,10 @@ import org.vcsreader.vcs.VcsCommand;
 import org.vcsreader.vcs.VcsCommand.ResultAdapter;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.sort;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 import static org.vcsreader.lang.StringUtil.shortened;
@@ -241,12 +241,11 @@ public class VcsProject {
 			List<VcsCommit> newCommits = new ArrayList<>(commits);
 			List<String> newErrors = new ArrayList<>(vcsErrors);
 			List<Exception> newExceptions = new ArrayList<>(exceptions);
+
 			newCommits.addAll(result.commits);
+			newCommits.sort(Comparator.comparing(VcsCommit::getDateTime));
 			newErrors.addAll(result.vcsErrors);
 			newExceptions.addAll(result.exceptions);
-			sort(newCommits, (commit1, commit2) ->
-					commit1.getDateTime().compareTo(commit2.getDateTime())
-			);
 
 			return new LogResult(newCommits, newErrors, newExceptions);
 		}

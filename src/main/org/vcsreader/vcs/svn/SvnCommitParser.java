@@ -124,13 +124,7 @@ class SvnCommitParser {
 		@Override
 		public void endElement(String uri, @NotNull String localName, @NotNull String name) throws SAXException {
 			if (name.equals("logentry")) {
-				Iterator<Change> i = changes.iterator();
-				while (i.hasNext()) {
-					Change change = i.next();
-					if (change.getType() == Deleted && movedPaths.contains(change.getFilePathBefore())) {
-						i.remove();
-					}
-				}
+				changes.removeIf(it -> it.getType() == Deleted && movedPaths.contains(it.getFilePathBefore()));
 
 				commits.add(new Commit(revision, revisionBefore, dateTime, author, comment, new ArrayList<>(changes)));
 				changes.clear();
