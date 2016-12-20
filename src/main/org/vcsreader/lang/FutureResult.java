@@ -93,13 +93,13 @@ public class FutureResult<T> implements Future<T> {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Nullable
 	private T doGet() throws ExecutionException {
 		Pair<Object, Boolean> pair = this.pair;
 		if (pair == null) return null;
 
 		if (!pair.second) throw new ExecutionException(((Throwable) pair.first).getMessage(), (Throwable) pair.first);
-		//noinspection unchecked
 		return (T) pair.first;
 	}
 }
