@@ -18,6 +18,10 @@ public class SvnVcsRoot implements VcsRoot, VcsCommand.Owner {
 		this(repositoryUrl, SvnSettings.defaults());
 	}
 
+	/**
+	 * @param repositoryUrl svn repository url. This can be any form of URL supported by svn command line.
+	 * @param settings settings which will be used by VCS commands executed on this root
+	 */
 	public SvnVcsRoot(@NotNull String repositoryUrl, @NotNull SvnSettings settings) {
 		this(repositoryUrl, settings, VcsCommand.Listener.none);
 	}

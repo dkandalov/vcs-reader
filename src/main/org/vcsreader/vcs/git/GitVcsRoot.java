@@ -23,9 +23,10 @@ public class GitVcsRoot implements VcsRoot, VcsCommand.Owner {
 	}
 
 	/**
-	 * @param repoLocalPath local path to folder with repository from which history will be read.
+	 * @param repoLocalPath path to folder with repository from which history will be read.
 	 *                      If there is no local clone of repository, you can call {@link #cloneToLocal()} to clone it.
-	 * @param repositoryUrl url to remote repository (only required for {@link #cloneToLocal()})
+	 * @param repositoryUrl url to remote repository. This can be any form of URL supported by git command line.
+	 * @param settings settings which will be used by VCS commands executed on this root
 	 */
 	public GitVcsRoot(@NotNull String repoLocalPath, @Nullable String repositoryUrl, GitSettings settings) {
 		this(repoLocalPath, repositoryUrl, settings, VcsCommand.Listener.none);
