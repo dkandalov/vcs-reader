@@ -1,37 +1,37 @@
 package org.vcsreader.vcs.svn;
 
 import org.jetbrains.annotations.NotNull;
+import org.vcsreader.LogFileContentResult;
 import org.vcsreader.lang.CommandLine;
 import org.vcsreader.vcs.VcsCommand;
 
 import java.nio.charset.Charset;
 
-import org.vcsreader.LogFileContentResult;
-import static org.vcsreader.vcs.svn.SvnUtil.newExternalCommand;
 import static org.vcsreader.vcs.svn.SvnUtil.isSuccessful;
+import static org.vcsreader.vcs.svn.SvnUtil.newExternalCommand;
 
 /**
  * See http://svnbook.red-bean.com/en/1.8/svn.ref.svn.c.cat.html
  */
 class SvnLogFileContent implements VcsCommand<LogFileContentResult> {
 	private final String svnPath;
-	private final String repositoryRoot;
+	private final String repoRoot;
 	private final String filePath;
 	private final String revision;
 	private final Charset charset;
 	private final CommandLine commandLine;
 
-	SvnLogFileContent(String svnPath, String repositoryRoot, String filePath, String revision, Charset charset) {
+	SvnLogFileContent(String svnPath, String repoRoot, String filePath, String revision, Charset charset) {
 		this.svnPath = svnPath;
-		this.repositoryRoot = repositoryRoot;
+		this.repoRoot = repoRoot;
 		this.filePath = filePath;
 		this.revision = revision;
 		this.charset = charset;
-		this.commandLine = svnLogFileContent(svnPath, repositoryRoot, filePath, revision, charset);
+		this.commandLine = svnLogFileContent(svnPath, repoRoot, filePath, revision, charset);
 	}
 
-	static CommandLine svnLogFileContent(String pathToSvn, String repositoryRoot, String filePath, String revision, Charset charset) {
-		String fileRevisionUrl = repositoryRoot + "/" + filePath + "@" + revision;
+	static CommandLine svnLogFileContent(String pathToSvn, String repoRoot, String filePath, String revision, Charset charset) {
+		String fileRevisionUrl = repoRoot + "/" + filePath + "@" + revision;
 		return newExternalCommand(pathToSvn, "cat", fileRevisionUrl).outputCharset(charset).charsetAutoDetect(true);
 	}
 
@@ -63,7 +63,7 @@ class SvnLogFileContent implements VcsCommand<LogFileContentResult> {
 		if (!charset.equals(that.charset)) return false;
 		if (!filePath.equals(that.filePath)) return false;
 		if (!svnPath.equals(that.svnPath)) return false;
-		if (!repositoryRoot.equals(that.repositoryRoot)) return false;
+		if (!repoRoot.equals(that.repoRoot)) return false;
 		if (!revision.equals(that.revision)) return false;
 
 		return true;
@@ -71,7 +71,7 @@ class SvnLogFileContent implements VcsCommand<LogFileContentResult> {
 
 	@Override public int hashCode() {
 		int result = svnPath.hashCode();
-		result = 31 * result + repositoryRoot.hashCode();
+		result = 31 * result + repoRoot.hashCode();
 		result = 31 * result + filePath.hashCode();
 		result = 31 * result + revision.hashCode();
 		result = 31 * result + charset.hashCode();
@@ -81,7 +81,7 @@ class SvnLogFileContent implements VcsCommand<LogFileContentResult> {
 	@Override public String toString() {
 		return "SvnLogFileContent{" +
 				"svnPath='" + svnPath + '\'' +
-				", repositoryRoot='" + repositoryRoot + '\'' +
+				", repoRoot='" + repoRoot + '\'' +
 				", filePath='" + filePath + '\'' +
 				", revision='" + revision + '\'' +
 				", charset=" + charset +

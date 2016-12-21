@@ -13,23 +13,22 @@ import static org.vcsreader.vcs.hg.HgUtil.isSuccessful;
 /**
  * See https://selenic.com/hg/help/cat
  */
-@SuppressWarnings("Duplicates")
-		// because it's similar to GitLogFileContent
+@SuppressWarnings("Duplicates") // Because it's similar to GitLogFileContent.
 class HgLogFileContent implements VcsCommand<LogFileContentResult> {
 	private final String pathToHg;
-	private final String folder;
+	private final String repoFolder;
 	private final String filePath;
 	private final String revision;
 	private final Charset charset;
 	private final CommandLine commandLine;
 
-	public HgLogFileContent(String pathToHg, String folder, String filePath, String revision, Charset charset) {
+	public HgLogFileContent(String pathToHg, String repoFolder, String filePath, String revision, Charset charset) {
 		this.pathToHg = pathToHg;
-		this.folder = folder;
+		this.repoFolder = repoFolder;
 		this.filePath = filePath;
 		this.revision = revision;
 		this.charset = charset;
-		this.commandLine = hgLogFileContent(pathToHg, folder, filePath, revision, charset);
+		this.commandLine = hgLogFileContent(pathToHg, repoFolder, filePath, revision, charset);
 	}
 
 	@Override public LogFileContentResult execute() {
@@ -45,9 +44,9 @@ class HgLogFileContent implements VcsCommand<LogFileContentResult> {
 		return commandLine.describe();
 	}
 
-	static CommandLine hgLogFileContent(String pathToHg, String folder, String filePath, String revision, Charset charset) {
+	static CommandLine hgLogFileContent(String pathToHg, String repoFolder, String filePath, String revision, Charset charset) {
 		CommandLine commandLine = new CommandLine(pathToHg, "cat", "-r " + revision, filePath);
-		return commandLine.workingDir(folder).outputCharset(charset).charsetAutoDetect(true);
+		return commandLine.workingDir(repoFolder).outputCharset(charset).charsetAutoDetect(true);
 	}
 
 	@SuppressWarnings("SimplifiableIfStatement")
@@ -58,7 +57,7 @@ class HgLogFileContent implements VcsCommand<LogFileContentResult> {
 		HgLogFileContent that = (HgLogFileContent) o;
 
 		if (pathToHg != null ? !pathToHg.equals(that.pathToHg) : that.pathToHg != null) return false;
-		if (folder != null ? !folder.equals(that.folder) : that.folder != null) return false;
+		if (repoFolder != null ? !repoFolder.equals(that.repoFolder) : that.repoFolder != null) return false;
 		if (filePath != null ? !filePath.equals(that.filePath) : that.filePath != null) return false;
 		if (revision != null ? !revision.equals(that.revision) : that.revision != null) return false;
 		return !(charset != null ? !charset.equals(that.charset) : that.charset != null);
@@ -67,7 +66,7 @@ class HgLogFileContent implements VcsCommand<LogFileContentResult> {
 
 	@Override public int hashCode() {
 		int result = pathToHg != null ? pathToHg.hashCode() : 0;
-		result = 31 * result + (folder != null ? folder.hashCode() : 0);
+		result = 31 * result + (repoFolder != null ? repoFolder.hashCode() : 0);
 		result = 31 * result + (filePath != null ? filePath.hashCode() : 0);
 		result = 31 * result + (revision != null ? revision.hashCode() : 0);
 		result = 31 * result + (charset != null ? charset.hashCode() : 0);
@@ -77,7 +76,7 @@ class HgLogFileContent implements VcsCommand<LogFileContentResult> {
 	@Override public String toString() {
 		return "HgLogFileContent{" +
 				"pathToHg='" + pathToHg + '\'' +
-				", folder='" + folder + '\'' +
+				", repoFolder='" + repoFolder + '\'' +
 				", filePath='" + filePath + '\'' +
 				", revision='" + revision + '\'' +
 				", charset=" + charset +

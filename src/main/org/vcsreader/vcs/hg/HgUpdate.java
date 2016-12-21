@@ -8,13 +8,13 @@ import static org.vcsreader.vcs.hg.HgUtil.isSuccessful;
 
 class HgUpdate implements VcsCommand<UpdateResult> {
 	private final String hgPath;
-	private final String folder;
+	private final String repoFolder;
 	private final CommandLine commandLine;
 
-	public HgUpdate(String hgPath, String folder) {
+	public HgUpdate(String hgPath, String repoFolder) {
 		this.hgPath = hgPath;
-		this.folder = folder;
-		this.commandLine = hgUpdate(hgPath, folder);
+		this.repoFolder = repoFolder;
+		this.commandLine = hgUpdate(hgPath, repoFolder);
 	}
 
 	@Override public UpdateResult execute() {
@@ -40,19 +40,20 @@ class HgUpdate implements VcsCommand<UpdateResult> {
 
 		HgUpdate hgUpdate = (HgUpdate) o;
 
-		return !(hgPath != null ? !hgPath.equals(hgUpdate.hgPath) : hgUpdate.hgPath != null) && !(folder != null ? !folder.equals(hgUpdate.folder) : hgUpdate.folder != null);
+		return !(hgPath != null ? !hgPath.equals(hgUpdate.hgPath) : hgUpdate.hgPath != null) &&
+				!(repoFolder != null ? !repoFolder.equals(hgUpdate.repoFolder) : hgUpdate.repoFolder != null);
 	}
 
 	@Override public int hashCode() {
 		int result = hgPath != null ? hgPath.hashCode() : 0;
-		result = 31 * result + (folder != null ? folder.hashCode() : 0);
+		result = 31 * result + (repoFolder != null ? repoFolder.hashCode() : 0);
 		return result;
 	}
 
 	@Override public String toString() {
 		return "HgUpdate{" +
 				"hgPath='" + hgPath + '\'' +
-				", folder='" + folder + '\'' +
+				", repoFolder='" + repoFolder + '\'' +
 				'}';
 	}
 }

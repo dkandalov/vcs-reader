@@ -420,7 +420,7 @@ class SvnIntegrationTest {
 		def svnInfo = new SvnInfo(pathToSvn, "file://$repository.repoPath/folder")
 		def result = svnInfo.execute()
 
-		assert result.repositoryRoot == 'file://' + repository.repoPath
+		assert result.repoRoot == 'file://' + repository.repoPath
 		assert result.isSuccessful()
 	}
 

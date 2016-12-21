@@ -28,32 +28,32 @@ class SvnInfo implements VcsCommand<SvnInfo.Result> {
 		}
 	};
 	private final String svnPath;
-	private final String repositoryUrl;
+	private final String repoUrl;
 	private final CommandLine commandLine;
 
-	public SvnInfo(String svnPath, String repositoryUrl) {
+	public SvnInfo(String svnPath, String repoUrl) {
 		this.svnPath = svnPath;
-		this.repositoryUrl = repositoryUrl;
-		this.commandLine = svnInfo(svnPath, repositoryUrl);
+		this.repoUrl = repoUrl;
+		this.commandLine = svnInfo(svnPath, repoUrl);
 	}
 
 	@Override public SvnInfo.Result execute() {
 		commandLine.execute();
 
 		if (isSuccessful(commandLine)) {
-			String repositoryRoot = parse(commandLine.stdout());
-			if (repositoryRoot == null) {
-				return new Result(asList("Didn't find svn root in output for " + repositoryUrl));
+			String repoRoot = parse(commandLine.stdout());
+			if (repoRoot == null) {
+				return new Result(asList("Didn't find svn root in output for " + repoUrl));
 			} else {
-				return new Result(repositoryRoot);
+				return new Result(repoRoot);
 			}
 		} else {
 			return new Result(asList(commandLine.stdout()));
 		}
 	}
 
-	static CommandLine svnInfo(String svnPath, String repositoryUrl) {
-		return newExternalCommand(svnPath, "info", repositoryUrl);
+	static CommandLine svnInfo(String svnPath, String repoUrl) {
+		return newExternalCommand(svnPath, "info", repoUrl);
 	}
 
 	@Nullable private static String parse(String stdout) {
@@ -77,8 +77,7 @@ class SvnInfo implements VcsCommand<SvnInfo.Result> {
 
 		SvnInfo svnInfo = (SvnInfo) o;
 
-		if (repositoryUrl != null ? !repositoryUrl.equals(svnInfo.repositoryUrl) : svnInfo.repositoryUrl != null)
-			return false;
+		if (repoUrl != null ? !repoUrl.equals(svnInfo.repoUrl) : svnInfo.repoUrl != null) return false;
 		if (svnPath != null ? !svnPath.equals(svnInfo.svnPath) : svnInfo.svnPath != null) return false;
 
 		return true;
@@ -86,14 +85,14 @@ class SvnInfo implements VcsCommand<SvnInfo.Result> {
 
 	@Override public int hashCode() {
 		int result = svnPath != null ? svnPath.hashCode() : 0;
-		result = 31 * result + (repositoryUrl != null ? repositoryUrl.hashCode() : 0);
+		result = 31 * result + (repoUrl != null ? repoUrl.hashCode() : 0);
 		return result;
 	}
 
 	@Override public String toString() {
 		return "SvnInfo{" +
 				"svnPath='" + svnPath + '\'' +
-				", repositoryUrl='" + repositoryUrl + '\'' +
+				", repoUrl='" + repoUrl + '\'' +
 				'}';
 	}
 
@@ -101,12 +100,12 @@ class SvnInfo implements VcsCommand<SvnInfo.Result> {
 	public static class Result {
 		public static final String unknownRoot = "";
 
-		public final String repositoryRoot;
+		public final String repoRoot;
 		private final List<String> errors;
 		private final Exception exception;
 
-		public Result(String repositoryRoot) {
-			this(repositoryRoot, new ArrayList<>(), null);
+		public Result(String repoRoot) {
+			this(repoRoot, new ArrayList<>(), null);
 		}
 
 		public Result(List<String> errors) {
@@ -117,8 +116,8 @@ class SvnInfo implements VcsCommand<SvnInfo.Result> {
 			this(unknownRoot, emptyList(), exception);
 		}
 
-		private Result(String repositoryRoot, List<String> errors, Exception exception) {
-			this.repositoryRoot = repositoryRoot;
+		private Result(String repoRoot, List<String> errors, Exception exception) {
+			this.repoRoot = repoRoot;
 			this.errors = errors;
 			this.exception = exception;
 		}

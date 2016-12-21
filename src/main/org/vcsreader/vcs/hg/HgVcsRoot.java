@@ -12,56 +12,56 @@ import org.vcsreader.vcs.VcsCommand;
 import org.vcsreader.vcs.VcsCommand.ResultAdapter;
 
 public class HgVcsRoot implements VcsRoot, VcsCommand.Owner {
-	@NotNull private final String repoLocalPath;
-	@Nullable private final String repositoryUrl;
+	@NotNull private final String repoFolder;
+	@Nullable private final String repoUrl;
 	@NotNull private final HgSettings settings;
 	private final VcsCommand.Listener listener;
 
 
-	public HgVcsRoot(@NotNull String repoLocalPath) {
-		this(repoLocalPath, null);
+	public HgVcsRoot(@NotNull String repoFolder) {
+		this(repoFolder, null);
 	}
 
-	public HgVcsRoot(@NotNull String repoLocalPath, @Nullable String repositoryUrl) {
-		this(repoLocalPath, repositoryUrl, HgSettings.defaults(), VcsCommand.Listener.none);
+	public HgVcsRoot(@NotNull String repoFolder, @Nullable String repoUrl) {
+		this(repoFolder, repoUrl, HgSettings.defaults(), VcsCommand.Listener.none);
 	}
 
 	/**
-	 * @param repoLocalPath path to folder with repository from which history will be read.
-	 *                      If there is no local clone of repository, you can call {@link #cloneToLocal()} to clone it.
-	 * @param repositoryUrl url to remote repository. This can be any form of URL supported by hg command line.
-	 * @param settings settings which will be used by VCS commands executed on this root
+	 * @param repoFolder path to folder with repository from which history will be read.
+	 *                   If there is no local clone of repository, you can call {@link #cloneToLocal()} to clone it.
+	 * @param repoUrl    URL to remote repository. This can be any form of URL supported by hg command line.
+	 * @param settings   settings which will be used by VCS commands executed on this root
 	 */
-	public HgVcsRoot(@NotNull String repoLocalPath, @Nullable String repositoryUrl, @NotNull HgSettings settings) {
-		this(repoLocalPath, repositoryUrl, settings, VcsCommand.Listener.none);
+	public HgVcsRoot(@NotNull String repoFolder, @Nullable String repoUrl, @NotNull HgSettings settings) {
+		this(repoFolder, repoUrl, settings, VcsCommand.Listener.none);
 	}
 
-	private HgVcsRoot(@NotNull String repoLocalPath, @Nullable String repositoryUrl,
+	private HgVcsRoot(@NotNull String repoFolder, @Nullable String repoUrl,
 	                  @NotNull HgSettings settings, VcsCommand.Listener listener) {
-		this.repoLocalPath = repoLocalPath;
-		this.repositoryUrl = repositoryUrl;
+		this.repoFolder = repoFolder;
+		this.repoUrl = repoUrl;
 		this.settings = settings;
 		this.listener = listener;
 	}
 
 	@Override public HgVcsRoot withListener(VcsCommand.Listener listener) {
-		return new HgVcsRoot(repoLocalPath, repositoryUrl, settings, listener);
+		return new HgVcsRoot(repoFolder, repoUrl, settings, listener);
 	}
 
 	@Override public CloneResult cloneToLocal() {
-		return execute(new HgClone(settings.hgPath(), repositoryUrl, repoLocalPath), CloneResult.adapter);
+		return execute(new HgClone(settings.hgPath(), repoUrl, repoFolder), CloneResult.adapter);
 	}
 
 	@Override public UpdateResult update() {
-		return execute(new HgUpdate(settings.hgPath(), repoLocalPath), UpdateResult.adapter);
+		return execute(new HgUpdate(settings.hgPath(), repoFolder), UpdateResult.adapter);
 	}
 
 	@Override public LogResult log(TimeRange timeRange) {
-		return execute(new HgLog(settings.hgPath(), repoLocalPath, timeRange), LogResult.adapter);
+		return execute(new HgLog(settings.hgPath(), repoFolder, timeRange), LogResult.adapter);
 	}
 
 	@Override public LogFileContentResult logFileContent(String filePath, String revision) {
-		HgLogFileContent logFileContent = new HgLogFileContent(settings.hgPath(), repoLocalPath, filePath, revision, settings.defaultFileCharset());
+		HgLogFileContent logFileContent = new HgLogFileContent(settings.hgPath(), repoFolder, filePath, revision, settings.defaultFileCharset());
 		return execute(logFileContent, LogFileContentResult.adapter);
 	}
 
@@ -69,12 +69,12 @@ public class HgVcsRoot implements VcsRoot, VcsCommand.Owner {
 		return VcsCommand.execute(vcsCommand, resultAdapter, listener, settings.failFast());
 	}
 
-	@NotNull public String localPath() {
-		return repoLocalPath;
+	@NotNull public String repoFolder() {
+		return repoFolder;
 	}
 
-	@Nullable public String repositoryUrl() {
-		return repositoryUrl;
+	@Nullable public String repoUrl() {
+		return repoUrl;
 	}
 
 	@SuppressWarnings("SimplifiableIfStatement")
@@ -84,23 +84,23 @@ public class HgVcsRoot implements VcsRoot, VcsCommand.Owner {
 
 		HgVcsRoot hgVcsRoot = (HgVcsRoot) o;
 
-		if (!repoLocalPath.equals(hgVcsRoot.repoLocalPath)) return false;
-		if (repositoryUrl != null ? !repositoryUrl.equals(hgVcsRoot.repositoryUrl) : hgVcsRoot.repositoryUrl != null)
+		if (!repoFolder.equals(hgVcsRoot.repoFolder)) return false;
+		if (repoUrl != null ? !repoUrl.equals(hgVcsRoot.repoUrl) : hgVcsRoot.repoUrl != null)
 			return false;
 		return settings.equals(hgVcsRoot.settings);
 	}
 
 	@Override public int hashCode() {
-		int result = repoLocalPath.hashCode();
-		result = 31 * result + (repositoryUrl != null ? repositoryUrl.hashCode() : 0);
+		int result = repoFolder.hashCode();
+		result = 31 * result + (repoUrl != null ? repoUrl.hashCode() : 0);
 		result = 31 * result + settings.hashCode();
 		return result;
 	}
 
 	@Override public String toString() {
 		return "HgVcsRoot{" +
-				"repoLocalPath='" + repoLocalPath + '\'' +
-				", repositoryUrl='" + repositoryUrl + '\'' +
+				"repoFolder='" + repoFolder + '\'' +
+				", repoUrl='" + repoUrl + '\'' +
 				", settings=" + settings +
 				'}';
 	}

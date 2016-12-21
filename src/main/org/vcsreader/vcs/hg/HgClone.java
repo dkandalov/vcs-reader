@@ -9,15 +9,15 @@ import static org.vcsreader.vcs.hg.HgUtil.isSuccessful;
 
 class HgClone implements VcsCommand<CloneResult> {
 	private final String pathToHg;
-	private final String repositoryUrl;
-	private final String localPath;
+	private final String repoUrl;
+	private final String repoFolder;
 	private final CommandLine commandLine;
 
-	public HgClone(String pathToHg, String repositoryUrl, String localPath) {
+	public HgClone(String pathToHg, String repoUrl, String repoFolder) {
 		this.pathToHg = pathToHg;
-		this.repositoryUrl = repositoryUrl;
-		this.localPath = localPath;
-		this.commandLine = hgClone(pathToHg, repositoryUrl, localPath);
+		this.repoUrl = repoUrl;
+		this.repoFolder = repoFolder;
+		this.commandLine = hgClone(pathToHg, repoUrl, repoFolder);
 	}
 
 	@Override public CloneResult execute() {
@@ -30,8 +30,8 @@ class HgClone implements VcsCommand<CloneResult> {
 		}
 	}
 
-	static CommandLine hgClone(String pathToHg, String repositoryUrl, String targetPath) {
-		return new CommandLine(pathToHg, "clone", "-v", repositoryUrl, targetPath);
+	static CommandLine hgClone(String pathToHg, String repoUrl, String targetPath) {
+		return new CommandLine(pathToHg, "clone", "-v", repoUrl, targetPath);
 	}
 
 	@Override public String describe() {
@@ -46,23 +46,23 @@ class HgClone implements VcsCommand<CloneResult> {
 		HgClone hgClone = (HgClone) o;
 
 		if (pathToHg != null ? !pathToHg.equals(hgClone.pathToHg) : hgClone.pathToHg != null) return false;
-		if (repositoryUrl != null ? !repositoryUrl.equals(hgClone.repositoryUrl) : hgClone.repositoryUrl != null)
+		if (repoUrl != null ? !repoUrl.equals(hgClone.repoUrl) : hgClone.repoUrl != null)
 			return false;
-		return !(localPath != null ? !localPath.equals(hgClone.localPath) : hgClone.localPath != null);
+		return !(repoFolder != null ? !repoFolder.equals(hgClone.repoFolder) : hgClone.repoFolder != null);
 	}
 
 	@Override public int hashCode() {
 		int result = pathToHg != null ? pathToHg.hashCode() : 0;
-		result = 31 * result + (repositoryUrl != null ? repositoryUrl.hashCode() : 0);
-		result = 31 * result + (localPath != null ? localPath.hashCode() : 0);
+		result = 31 * result + (repoUrl != null ? repoUrl.hashCode() : 0);
+		result = 31 * result + (repoFolder != null ? repoFolder.hashCode() : 0);
 		return result;
 	}
 
 	@Override public String toString() {
 		return "HgClone{" +
 				"pathToHg='" + pathToHg + '\'' +
-				", repositoryUrl='" + repositoryUrl + '\'' +
-				", localPath='" + localPath + '\'' +
+				", repoUrl='" + repoUrl + '\'' +
+				", repoFolder='" + repoFolder + '\'' +
 				'}';
 	}
 }

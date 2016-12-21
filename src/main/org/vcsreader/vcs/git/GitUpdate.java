@@ -8,13 +8,13 @@ import static org.vcsreader.vcs.git.GitUtil.isSuccessful;
 
 class GitUpdate implements VcsCommand<UpdateResult> {
 	private final String gitPath;
-	private final String folder;
+	private final String repoFolder;
 	private final CommandLine commandLine;
 
-	public GitUpdate(String gitPath, String folder) {
+	public GitUpdate(String gitPath, String repoFolder) {
 		this.gitPath = gitPath;
-		this.folder = folder;
-		this.commandLine = gitUpdate(gitPath, folder);
+		this.repoFolder = repoFolder;
+		this.commandLine = gitUpdate(gitPath, repoFolder);
 	}
 
 	@Override public UpdateResult execute() {
@@ -26,8 +26,8 @@ class GitUpdate implements VcsCommand<UpdateResult> {
 		}
 	}
 
-	static CommandLine gitUpdate(String pathToGit, String folder) {
-		return new CommandLine(pathToGit, "pull", "origin").workingDir(folder);
+	static CommandLine gitUpdate(String pathToGit, String repoFolder) {
+		return new CommandLine(pathToGit, "pull", "origin").workingDir(repoFolder);
 	}
 
 	@Override public String describe() {
@@ -41,7 +41,7 @@ class GitUpdate implements VcsCommand<UpdateResult> {
 
 		GitUpdate gitUpdate = (GitUpdate) o;
 
-		if (folder != null ? !folder.equals(gitUpdate.folder) : gitUpdate.folder != null) return false;
+		if (repoFolder != null ? !repoFolder.equals(gitUpdate.repoFolder) : gitUpdate.repoFolder != null) return false;
 		if (gitPath != null ? !gitPath.equals(gitUpdate.gitPath) : gitUpdate.gitPath != null) return false;
 
 		return true;
@@ -49,14 +49,14 @@ class GitUpdate implements VcsCommand<UpdateResult> {
 
 	@Override public int hashCode() {
 		int result = gitPath != null ? gitPath.hashCode() : 0;
-		result = 31 * result + (folder != null ? folder.hashCode() : 0);
+		result = 31 * result + (repoFolder != null ? repoFolder.hashCode() : 0);
 		return result;
 	}
 
 	@Override public String toString() {
 		return "GitUpdate{" +
 				"gitPath='" + gitPath + '\'' +
-				", folder='" + folder + '\'' +
+				", repoFolder='" + repoFolder + '\'' +
 				'}';
 	}
 }

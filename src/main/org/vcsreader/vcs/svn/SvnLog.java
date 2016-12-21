@@ -1,5 +1,6 @@
 package org.vcsreader.vcs.svn;
 
+import org.vcsreader.LogResult;
 import org.vcsreader.VcsChange;
 import org.vcsreader.VcsCommit;
 import org.vcsreader.lang.CommandLine;
@@ -17,8 +18,6 @@ import java.util.List;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.ZoneOffset.UTC;
 import static java.util.Arrays.asList;
-
-import org.vcsreader.LogResult;
 import static org.vcsreader.vcs.svn.SvnUtil.isSuccessful;
 import static org.vcsreader.vcs.svn.SvnUtil.newExternalCommand;
 
@@ -30,23 +29,23 @@ class SvnLog implements VcsCommand<LogResult> {
 	private static final String maxSvnDate = "2999-01-01";
 
 	private final String pathToSvn;
-	private final String repositoryUrl;
-	private final String repositoryRoot;
+	private final String repoUrl;
+	private final String repoRoot;
 	private final TimeRange timeRange;
 	private final boolean useMergeHistory;
 	private final boolean quoteDateRange;
 	private final CommandLine commandLine;
 
 
-	public SvnLog(String pathToSvn, String repositoryUrl, String repositoryRoot, TimeRange timeRange,
+	public SvnLog(String pathToSvn, String repoUrl, String repoRoot, TimeRange timeRange,
 	              boolean useMergeHistory, boolean quoteDateRange) {
 		this.pathToSvn = pathToSvn;
-		this.repositoryUrl = repositoryUrl;
-		this.repositoryRoot = repositoryRoot;
+		this.repoUrl = repoUrl;
+		this.repoRoot = repoRoot;
 		this.timeRange = timeRange;
 		this.useMergeHistory = useMergeHistory;
 		this.quoteDateRange = quoteDateRange;
-		this.commandLine = svnLog(pathToSvn, repositoryUrl, timeRange, useMergeHistory, quoteDateRange);
+		this.commandLine = svnLog(pathToSvn, repoUrl, timeRange, useMergeHistory, quoteDateRange);
 	}
 
 	@Override public LogResult execute() {
@@ -61,7 +60,7 @@ class SvnLog implements VcsCommand<LogResult> {
 		}
 	}
 
-	static CommandLine svnLog(String pathToSvn, String repositoryUrl, TimeRange timeRange,
+	static CommandLine svnLog(String pathToSvn, String repoUrl, TimeRange timeRange,
 	                          boolean useMergeHistory, boolean quoteDateRange) {
 		// see http://svnbook.red-bean.com/en/1.8/svn.branchmerge.advanced.html
 		// see http://stackoverflow.com/questions/987337/preserving-history-when-merging-subversion-branches
@@ -73,7 +72,7 @@ class SvnLog implements VcsCommand<LogResult> {
 
 		return newExternalCommand(
 				pathToSvn, "log",
-				repositoryUrl,
+				repoUrl,
 				"-r", svnDateRange(timeRange, quoteDateRange),
 				mergeHistory,
 				"--verbose",
@@ -104,7 +103,7 @@ class SvnLog implements VcsCommand<LogResult> {
 	}
 
 	private List<VcsCommit> transformToSubPathCommits(List<VcsCommit> commits) {
-		String subPath = subPathOf(repositoryUrl, repositoryRoot);
+		String subPath = subPathOf(repoUrl, repoRoot);
 		commits = removeChangesNotIn(subPath, commits);
 		commits = modifyChanges(subPath, commits);
 		return commits;
@@ -143,8 +142,8 @@ class SvnLog implements VcsCommand<LogResult> {
 		return result;
 	}
 
-	private static String subPathOf(String repositoryUrl, String repositoryRoot) {
-		String subPath = repositoryUrl.replace(repositoryRoot, "");
+	private static String subPathOf(String repoUrl, String repoRoot) {
+		String subPath = repoUrl.replace(repoRoot, "");
 		if (subPath.startsWith("/")) subPath = subPath.substring(1);
 		if (!subPath.isEmpty() && !subPath.endsWith("/")) subPath += "/";
 		return subPath;
@@ -177,9 +176,9 @@ class SvnLog implements VcsCommand<LogResult> {
 		if (useMergeHistory != svnLog.useMergeHistory) return false;
 		if (quoteDateRange != svnLog.quoteDateRange) return false;
 		if (pathToSvn != null ? !pathToSvn.equals(svnLog.pathToSvn) : svnLog.pathToSvn != null) return false;
-		if (repositoryUrl != null ? !repositoryUrl.equals(svnLog.repositoryUrl) : svnLog.repositoryUrl != null)
+		if (repoUrl != null ? !repoUrl.equals(svnLog.repoUrl) : svnLog.repoUrl != null)
 			return false;
-		if (repositoryRoot != null ? !repositoryRoot.equals(svnLog.repositoryRoot) : svnLog.repositoryRoot != null)
+		if (repoRoot != null ? !repoRoot.equals(svnLog.repoRoot) : svnLog.repoRoot != null)
 			return false;
 		if (timeRange != null ? !timeRange.equals(svnLog.timeRange) : svnLog.timeRange != null) return false;
 		return commandLine != null ? commandLine.equals(svnLog.commandLine) : svnLog.commandLine == null;
@@ -188,8 +187,8 @@ class SvnLog implements VcsCommand<LogResult> {
 
 	@Override public int hashCode() {
 		int result = pathToSvn != null ? pathToSvn.hashCode() : 0;
-		result = 31 * result + (repositoryUrl != null ? repositoryUrl.hashCode() : 0);
-		result = 31 * result + (repositoryRoot != null ? repositoryRoot.hashCode() : 0);
+		result = 31 * result + (repoUrl != null ? repoUrl.hashCode() : 0);
+		result = 31 * result + (repoRoot != null ? repoRoot.hashCode() : 0);
 		result = 31 * result + (timeRange != null ? timeRange.hashCode() : 0);
 		result = 31 * result + (useMergeHistory ? 1 : 0);
 		result = 31 * result + (quoteDateRange ? 1 : 0);

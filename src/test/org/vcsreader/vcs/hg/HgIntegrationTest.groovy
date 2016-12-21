@@ -56,7 +56,7 @@ class HgIntegrationTest {
 		def repository = new HgRepository().init()
 		def project = newProject(repository)
 		// delete project directory so that update fails
-		assert new File((project.vcsRoots().first() as HgVcsRoot).localPath()).deleteDir()
+		assert new File((project.vcsRoots().first() as HgVcsRoot).repoFolder()).deleteDir()
 
 		def updateResult = project.update()
 

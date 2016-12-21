@@ -21,21 +21,21 @@ import static org.vcsreader.vcs.hg.HgUtil.isSuccessful;
 @SuppressWarnings("Duplicates")
 class HgLog implements VcsCommand<LogResult> {
 	private final String hgPath;
-	private final String folder;
+	private final String repoFolder;
 	private final TimeRange timeRange;
 	private final CommandLine commandLine;
 
 
-	public HgLog(String hgPath, String folder, TimeRange timeRange) {
+	public HgLog(String hgPath, String repoFolder, TimeRange timeRange) {
 		this.hgPath = hgPath;
-		this.folder = folder;
+		this.repoFolder = repoFolder;
 		this.timeRange = timeRange;
-		this.commandLine = hgLog(hgPath, folder, timeRange);
+		this.commandLine = hgLog(hgPath, repoFolder, timeRange);
 	}
 
 	@Override public LogResult execute() {
-		if (!containsHgRepo(folder)) {
-			throw new VcsCommand.Failure("Folder doesn't contain git repository: '" + folder + "'.");
+		if (!containsHgRepo(repoFolder)) {
+			throw new VcsCommand.Failure("Folder doesn't contain git repository: '" + repoFolder + "'.");
 		}
 
 		commandLine.execute();
@@ -53,14 +53,14 @@ class HgLog implements VcsCommand<LogResult> {
 		return commandLine.describe();
 	}
 
-	static CommandLine hgLog(String hgPath, String folder, TimeRange timeRange) {
+	static CommandLine hgLog(String hgPath, String repoFolder, TimeRange timeRange) {
 		CommandLine commandLine = new CommandLine(
 				hgPath, "log",
 				"--encoding", UTF_8.name(),
 				"-r", "date(\"" + asHgInstant(timeRange.from()) + " to " + asHgInstant(timeRange.to()) + "\")",
 				"--template", HgCommitParser.logTemplate()
 		);
-		return commandLine.workingDir(folder).outputCharset(UTF_8);
+		return commandLine.workingDir(repoFolder).outputCharset(UTF_8);
 	}
 
 	private static String asHgInstant(Instant instant) {
@@ -80,14 +80,14 @@ class HgLog implements VcsCommand<LogResult> {
 		HgLog hgLog = (HgLog) o;
 
 		if (hgPath != null ? !hgPath.equals(hgLog.hgPath) : hgLog.hgPath != null) return false;
-		if (folder != null ? !folder.equals(hgLog.folder) : hgLog.folder != null) return false;
+		if (repoFolder != null ? !repoFolder.equals(hgLog.repoFolder) : hgLog.repoFolder != null) return false;
 		if (timeRange != null ? !timeRange.equals(hgLog.timeRange) : hgLog.timeRange != null) return false;
 		return commandLine != null ? commandLine.equals(hgLog.commandLine) : hgLog.commandLine == null;
 	}
 
 	@Override public int hashCode() {
 		int result = hgPath != null ? hgPath.hashCode() : 0;
-		result = 31 * result + (folder != null ? folder.hashCode() : 0);
+		result = 31 * result + (repoFolder != null ? repoFolder.hashCode() : 0);
 		result = 31 * result + (timeRange != null ? timeRange.hashCode() : 0);
 		result = 31 * result + (commandLine != null ? commandLine.hashCode() : 0);
 		return result;
@@ -96,7 +96,7 @@ class HgLog implements VcsCommand<LogResult> {
 	@Override public String toString() {
 		return "HgLog{" +
 				"hgPath='" + hgPath + '\'' +
-				", folder='" + folder + '\'' +
+				", repoFolder='" + repoFolder + '\'' +
 				", timeRange=" + timeRange +
 				", commandLine=" + commandLine +
 				'}';

@@ -9,15 +9,15 @@ import static org.vcsreader.vcs.git.GitUtil.isSuccessful;
 
 class GitClone implements VcsCommand<CloneResult> {
 	private final String pathToGit;
-	private final String repositoryUrl;
-	private final String localPath;
+	private final String repoUrl;
+	private final String repoFolder;
 	private final CommandLine commandLine;
 
-	public GitClone(String pathToGit, String repositoryUrl, String localPath) {
+	public GitClone(String pathToGit, String repoUrl, String repoFolder) {
 		this.pathToGit = pathToGit;
-		this.repositoryUrl = repositoryUrl;
-		this.localPath = localPath;
-		this.commandLine = gitClone(pathToGit, repositoryUrl, localPath);
+		this.repoUrl = repoUrl;
+		this.repoFolder = repoFolder;
+		this.commandLine = gitClone(pathToGit, repoUrl, repoFolder);
 	}
 
 	@Override public CloneResult execute() {
@@ -30,8 +30,8 @@ class GitClone implements VcsCommand<CloneResult> {
 		}
 	}
 
-	static CommandLine gitClone(String pathToGit, String repositoryUrl, String targetPath) {
-		return new CommandLine(pathToGit, "clone", "-v", repositoryUrl, targetPath);
+	static CommandLine gitClone(String pathToGit, String repoUrl, String targetPath) {
+		return new CommandLine(pathToGit, "clone", "-v", repoUrl, targetPath);
 	}
 
 	@Override public String describe() {
@@ -45,9 +45,9 @@ class GitClone implements VcsCommand<CloneResult> {
 
 		GitClone gitClone = (GitClone) o;
 
-		if (localPath != null ? !localPath.equals(gitClone.localPath) : gitClone.localPath != null) return false;
+		if (repoFolder != null ? !repoFolder.equals(gitClone.repoFolder) : gitClone.repoFolder != null) return false;
 		if (pathToGit != null ? !pathToGit.equals(gitClone.pathToGit) : gitClone.pathToGit != null) return false;
-		if (repositoryUrl != null ? !repositoryUrl.equals(gitClone.repositoryUrl) : gitClone.repositoryUrl != null)
+		if (repoUrl != null ? !repoUrl.equals(gitClone.repoUrl) : gitClone.repoUrl != null)
 			return false;
 
 		return true;
@@ -55,16 +55,16 @@ class GitClone implements VcsCommand<CloneResult> {
 
 	@Override public int hashCode() {
 		int result = pathToGit != null ? pathToGit.hashCode() : 0;
-		result = 31 * result + (repositoryUrl != null ? repositoryUrl.hashCode() : 0);
-		result = 31 * result + (localPath != null ? localPath.hashCode() : 0);
+		result = 31 * result + (repoUrl != null ? repoUrl.hashCode() : 0);
+		result = 31 * result + (repoFolder != null ? repoFolder.hashCode() : 0);
 		return result;
 	}
 
 	@Override public String toString() {
 		return "GitClone{" +
 				"pathToGit='" + pathToGit + '\'' +
-				", repositoryUrl='" + repositoryUrl + '\'' +
-				", localPath='" + localPath + '\'' +
+				", repoUrl='" + repoUrl + '\'' +
+				", repoFolder='" + repoFolder + '\'' +
 				'}';
 	}
 }

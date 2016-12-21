@@ -7,33 +7,33 @@ import org.vcsreader.vcs.VcsCommand;
 import org.vcsreader.vcs.VcsCommand.ResultAdapter;
 
 public class SvnVcsRoot implements VcsRoot, VcsCommand.Owner {
-	@NotNull private final String repositoryUrl;
+	@NotNull private final String repoUrl;
 	@NotNull private final SvnSettings settings;
 	private final VcsCommand.Listener listener;
-	private String repositoryRoot;
+	private String repoRoot;
 	private boolean quoteDateRange = false;
 
 
-	public SvnVcsRoot(@NotNull String repositoryUrl) {
-		this(repositoryUrl, SvnSettings.defaults());
+	public SvnVcsRoot(@NotNull String repoUrl) {
+		this(repoUrl, SvnSettings.defaults());
 	}
 
 	/**
-	 * @param repositoryUrl svn repository url. This can be any form of URL supported by svn command line.
+	 * @param repoUrl  svn repository URL. This can be any form of URL supported by svn command line.
 	 * @param settings settings which will be used by VCS commands executed on this root
 	 */
-	public SvnVcsRoot(@NotNull String repositoryUrl, @NotNull SvnSettings settings) {
-		this(repositoryUrl, settings, VcsCommand.Listener.none);
+	public SvnVcsRoot(@NotNull String repoUrl, @NotNull SvnSettings settings) {
+		this(repoUrl, settings, VcsCommand.Listener.none);
 	}
 
-	private SvnVcsRoot(@NotNull String repositoryUrl, @NotNull SvnSettings settings, VcsCommand.Listener listener) {
-		this.repositoryUrl = repositoryUrl;
+	private SvnVcsRoot(@NotNull String repoUrl, @NotNull SvnSettings settings, VcsCommand.Listener listener) {
+		this.repoUrl = repoUrl;
 		this.settings = settings;
 		this.listener = listener;
 	}
 
 	@Override public SvnVcsRoot withListener(VcsCommand.Listener listener) {
-		return new SvnVcsRoot(repositoryUrl, settings, listener);
+		return new SvnVcsRoot(repoUrl, settings, listener);
 	}
 
 	@Override public CloneResult cloneToLocal() {
@@ -45,9 +45,9 @@ public class SvnVcsRoot implements VcsRoot, VcsCommand.Owner {
 	}
 
 	@Override public LogResult log(TimeRange timeRange) {
-		if (repositoryRoot == null) {
-			SvnInfo.Result result = execute(new SvnInfo(settings.svnPath(), repositoryUrl), SvnInfo.adapter);
-			repositoryRoot = result.repositoryRoot;
+		if (repoRoot == null) {
+			SvnInfo.Result result = execute(new SvnInfo(settings.svnPath(), repoUrl), SvnInfo.adapter);
+			repoRoot = result.repoRoot;
 		}
 		LogResult logResult = execute(svnLog(timeRange), LogResult.adapter);
 		if (hasRevisionArgumentError(logResult)) {
@@ -60,7 +60,7 @@ public class SvnVcsRoot implements VcsRoot, VcsCommand.Owner {
 	@Override public LogFileContentResult logFileContent(String filePath, String revision) {
 		SvnLogFileContent logFileContent = new SvnLogFileContent(
 				settings.svnPath(),
-				repositoryUrl,
+				repoUrl,
 				filePath,
 				revision,
 				settings.defaultFileCharset()
@@ -71,8 +71,8 @@ public class SvnVcsRoot implements VcsRoot, VcsCommand.Owner {
 	private SvnLog svnLog(TimeRange timeRange) {
 		return new SvnLog(
 				settings.svnPath(),
-				repositoryUrl,
-				repositoryRoot,
+				repoUrl,
+				repoRoot,
 				timeRange,
 				settings.useMergeHistory(),
 				quoteDateRange
@@ -98,8 +98,8 @@ public class SvnVcsRoot implements VcsRoot, VcsCommand.Owner {
 		return VcsCommand.execute(vcsCommand, resultAdapter, listener, settings.failFast());
 	}
 
-	@NotNull public String repositoryUrl() {
-		return repositoryUrl;
+	@NotNull public String repoUrl() {
+		return repoUrl;
 	}
 
 	@Override public boolean equals(Object o) {
@@ -108,11 +108,11 @@ public class SvnVcsRoot implements VcsRoot, VcsCommand.Owner {
 
 		SvnVcsRoot that = (SvnVcsRoot) o;
 
-		return repositoryUrl.equals(that.repositoryUrl) && settings.equals(that.settings);
+		return repoUrl.equals(that.repoUrl) && settings.equals(that.settings);
 	}
 
 	@Override public int hashCode() {
-		int result = repositoryUrl.hashCode();
+		int result = repoUrl.hashCode();
 		result = 31 * result + settings.hashCode();
 		return result;
 	}
@@ -120,7 +120,7 @@ public class SvnVcsRoot implements VcsRoot, VcsCommand.Owner {
 	@Override public String toString() {
 		return "SvnVcsRoot{" +
 				"settings=" + settings +
-				", repositoryUrl='" + repositoryUrl + '\'' +
+				", repoUrl='" + repoUrl + '\'' +
 				'}';
 	}
 }

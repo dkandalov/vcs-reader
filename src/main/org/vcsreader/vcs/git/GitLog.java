@@ -27,23 +27,23 @@ import static org.vcsreader.vcs.git.GitCommitParser.*;
 @SuppressWarnings("Duplicates") // because it's similar to HgLog
 class GitLog implements VcsCommand<LogResult> {
 	private final String gitPath;
-	private final String folder;
+	private final String repoFolder;
 	private final TimeRange timeRange;
 
 	private final CommandLine commandLine;
 	private final List<CommandLine> externalSubCommands = new ArrayList<>();
 
 
-	public GitLog(String gitPath, String folder, TimeRange timeRange) {
+	public GitLog(String gitPath, String repoFolder, TimeRange timeRange) {
 		this.gitPath = gitPath;
-		this.folder = folder;
+		this.repoFolder = repoFolder;
 		this.timeRange = timeRange;
-		this.commandLine = gitLog(gitPath, folder, timeRange);
+		this.commandLine = gitLog(gitPath, repoFolder, timeRange);
 	}
 
 	@Override public LogResult execute() {
-		if (!containsGitRepo(folder)) {
-			throw new VcsCommand.Failure("Folder doesn't contain git repository: '" + folder + "'.");
+		if (!containsGitRepo(repoFolder)) {
+			throw new VcsCommand.Failure("Folder doesn't contain git repository: '" + repoFolder + "'.");
 		}
 
 		commandLine.execute();
@@ -59,7 +59,7 @@ class GitLog implements VcsCommand<LogResult> {
 		}
 	}
 
-	static CommandLine gitLog(String gitPath, String folder, TimeRange timeRange) {
+	static CommandLine gitLog(String gitPath, String repoFolder, TimeRange timeRange) {
 		String showFileStatus = "--name-status"; // see --diff-filter at https://www.kernel.org/pub/software/scm/git/docs/git-log.html
 		String forceUTF8ForCommitMessages = "--encoding=" + UTF_8.name();
 
@@ -76,7 +76,7 @@ class GitLog implements VcsCommand<LogResult> {
 				forceUTF8ForCommitMessages,
 				logFormat()
 		));
-		return new CommandLine(arguments).workingDir(folder).outputCharset(UTF_8);
+		return new CommandLine(arguments).workingDir(repoFolder).outputCharset(UTF_8);
 	}
 
 	static CommandLine gitLogRenames(String gitPath, String folder, String revision) {
@@ -88,7 +88,7 @@ class GitLog implements VcsCommand<LogResult> {
 		List<VcsCommit> result = new ArrayList<>();
 		for (VcsCommit commit : commits) {
 			if (hasPotentialRenames(commit)) {
-				CommandLine commandLine = gitLogRenames(gitPath, folder, commit.getRevision());
+				CommandLine commandLine = gitLogRenames(gitPath, repoFolder, commit.getRevision());
 				externalSubCommands.add(commandLine);
 				commandLine.execute();
 
@@ -128,7 +128,7 @@ class GitLog implements VcsCommand<LogResult> {
 		GitLog gitLog = (GitLog) o;
 
 		if (gitPath != null ? !gitPath.equals(gitLog.gitPath) : gitLog.gitPath != null) return false;
-		if (folder != null ? !folder.equals(gitLog.folder) : gitLog.folder != null) return false;
+		if (repoFolder != null ? !repoFolder.equals(gitLog.repoFolder) : gitLog.repoFolder != null) return false;
 		if (timeRange != null ? !timeRange.equals(gitLog.timeRange) : gitLog.timeRange != null) return false;
 		if (commandLine != null ? !commandLine.equals(gitLog.commandLine) : gitLog.commandLine != null) return false;
 		return externalSubCommands != null ? externalSubCommands.equals(gitLog.externalSubCommands) : gitLog.externalSubCommands == null;
@@ -136,7 +136,7 @@ class GitLog implements VcsCommand<LogResult> {
 
 	@Override public int hashCode() {
 		int result = gitPath != null ? gitPath.hashCode() : 0;
-		result = 31 * result + (folder != null ? folder.hashCode() : 0);
+		result = 31 * result + (repoFolder != null ? repoFolder.hashCode() : 0);
 		result = 31 * result + (timeRange != null ? timeRange.hashCode() : 0);
 		result = 31 * result + (commandLine != null ? commandLine.hashCode() : 0);
 		result = 31 * result + (externalSubCommands != null ? externalSubCommands.hashCode() : 0);
@@ -146,7 +146,7 @@ class GitLog implements VcsCommand<LogResult> {
 	@Override public String toString() {
 		return "GitLog{" +
 				"gitPath='" + gitPath + '\'' +
-				", folder='" + folder + '\'' +
+				", repoFolder='" + repoFolder + '\'' +
 				", timeRange=" + timeRange +
 				", commandLine=" + commandLine +
 				", externalSubCommands=" + externalSubCommands +

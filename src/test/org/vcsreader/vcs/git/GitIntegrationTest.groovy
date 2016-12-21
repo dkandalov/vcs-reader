@@ -57,7 +57,7 @@ class GitIntegrationTest {
 		def repository = new GitRepository().init()
 		def project = newProject(repository)
 		// delete project directory so that update fails
-		assert new File((project.vcsRoots().first() as GitVcsRoot).localPath()).deleteDir()
+		assert new File((project.vcsRoots().first() as GitVcsRoot).repoFolder()).deleteDir()
 
 		def updateResult = project.update()
 
