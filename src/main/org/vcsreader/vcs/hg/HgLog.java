@@ -14,6 +14,7 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
+import static org.vcsreader.vcs.hg.HgCommandLine.containsHgRepo;
 import static org.vcsreader.vcs.hg.HgCommandLine.isSuccessful;
 
 // suppress because it's similar to GitLog
@@ -24,6 +25,7 @@ class HgLog implements VcsCommand<LogResult> {
 	private final TimeRange timeRange;
 	private final CommandLine commandLine;
 
+
 	public HgLog(String hgPath, String folder, TimeRange timeRange) {
 		this.hgPath = hgPath;
 		this.folder = folder;
@@ -32,6 +34,10 @@ class HgLog implements VcsCommand<LogResult> {
 	}
 
 	@Override public LogResult execute() {
+		if (!containsHgRepo(folder)) {
+			throw new VcsCommand.Failure("Folder doesn't contain git repository: '" + folder + "'.");
+		}
+
 		commandLine.execute();
 
 		if (isSuccessful(commandLine)) {

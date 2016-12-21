@@ -1,5 +1,6 @@
 package org.vcsreader.vcs.git;
 
+import org.vcsreader.LogResult;
 import org.vcsreader.VcsChange;
 import org.vcsreader.VcsCommit;
 import org.vcsreader.lang.CommandLine;
@@ -16,8 +17,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static org.vcsreader.VcsChange.Type.Added;
 import static org.vcsreader.VcsChange.Type.Deleted;
-
-import org.vcsreader.LogResult;
+import static org.vcsreader.vcs.git.GitCommandLine.containsGitRepo;
 import static org.vcsreader.vcs.git.GitCommandLine.isSuccessful;
 import static org.vcsreader.vcs.git.GitCommitParser.*;
 
@@ -42,6 +42,10 @@ class GitLog implements VcsCommand<LogResult> {
 	}
 
 	@Override public LogResult execute() {
+		if (!containsGitRepo(folder)) {
+			throw new VcsCommand.Failure("Folder doesn't contain git repository: '" + folder + "'.");
+		}
+
 		commandLine.execute();
 
 		if (isSuccessful(commandLine)) {

@@ -2,6 +2,7 @@ package org.vcsreader.vcs;
 
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static org.vcsreader.vcs.VcsCommand.Listener.executeWith;
 
 public interface VcsCommand<R> {
@@ -41,6 +42,10 @@ public interface VcsCommand<R> {
 
 	class Failure extends RuntimeException {
 		private final List<String> vcsErrors;
+
+		public Failure(String vcsError) {
+			this(asList(vcsError));
+		}
 
 		public Failure(List<String> vcsErrors) {
 			this.vcsErrors = vcsErrors;
