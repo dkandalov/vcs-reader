@@ -98,7 +98,11 @@ public class SvnVcsRoot implements VcsRoot, VcsCommand.Owner {
 		return VcsCommand.execute(vcsCommand, resultAdapter, listener, settings.failFast());
 	}
 
-	@NotNull public String repoUrl() {
+	@NotNull @Override public String repoFolder() {
+		return "";
+	}
+
+	@Override @NotNull public String repoUrl() {
 		return repoUrl;
 	}
 

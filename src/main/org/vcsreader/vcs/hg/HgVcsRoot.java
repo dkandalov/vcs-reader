@@ -69,11 +69,11 @@ public class HgVcsRoot implements VcsRoot, VcsCommand.Owner {
 		return VcsCommand.execute(vcsCommand, resultAdapter, listener, settings.failFast());
 	}
 
-	@NotNull public String repoFolder() {
+	@Override @NotNull public String repoFolder() {
 		return repoFolder;
 	}
 
-	@Nullable public String repoUrl() {
+	@Override @Nullable public String repoUrl() {
 		return repoUrl;
 	}
 

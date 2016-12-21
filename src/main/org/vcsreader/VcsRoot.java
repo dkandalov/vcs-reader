@@ -1,13 +1,20 @@
 package org.vcsreader;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.vcsreader.lang.TimeRange;
 
 /**
- * Represents repository url (and local cloned folder for distributed VCS).
+ * Represents VCS repository.
  * <p>
- * For reading VCS history please use {@link VcsProject} API.
+ * For clone/log/update use {@link VcsProject} API.
  */
 public interface VcsRoot {
+
+	@NotNull String repoFolder();
+
+	@Nullable String repoUrl();
+
 	CloneResult cloneToLocal();
 
 	UpdateResult update();

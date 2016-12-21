@@ -1,12 +1,11 @@
 package org.vcsreader.vcs;
 
 import org.jetbrains.annotations.NotNull;
+import org.vcsreader.LogFileContentResult;
 import org.vcsreader.VcsChange;
 import org.vcsreader.VcsRoot;
 
 import java.util.concurrent.atomic.AtomicReference;
-
-import org.vcsreader.LogFileContentResult;
 
 /**
  * This class is effectively immutable (even though some fields are modifiable).
