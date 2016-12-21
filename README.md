@@ -1,5 +1,5 @@
-## VCS Reader
-This is a Java (and JVM lanugages) library with minimal API to read commits from version control systems (VCS).
+## Vcs Reader
+This is a library for Java (and JVM languages) with minimal API to read information about commits from version control systems (VCS).
 It uses native commands to clone/update/log commits and currently supports 
 [Git](https://git-scm.com/), 
 [Mercurial](https://www.mercurial-scm.org/), 
@@ -13,7 +13,6 @@ Vcs Reader was designed to support read-only access to multiple VCS with single 
 
 
 ### API Example
-You can find more examples [here](https://github.com/dkandalov/vcs-reader-examples).
 ```java
 public class ReadCommits {
 	public static void main(String[] args) {
@@ -33,15 +32,17 @@ public class ReadCommits {
 	}
 }
 ```
+You can find more examples [here](https://github.com/dkandalov/vcs-reader-examples).
 
 
 ### Features
- - Log information about commits and changed files (including their content) within date range.
+ - Log commits and changed files (including their content) within date range.
  - Automatic detection of file content charset and its conversion to Java string.
  - Clone and update repository (for git and hg).
- - To access private repos VCS command line has to be setup to automatically authenticate with the server (e.g. using its config or SSH keys).
- - Merge commits are ignored, original author and time are reported.
- - Svn commits are filtered to include changes under source root (and ignore changes under other locations).
+ - Access to private repos which require authentication by VCS command line 
+   which has to be setup to automatically authenticate (e.g. using its config or SSH keys).
+ - Ignored merge commits with only changes by original author reported.
+ - Filtering for SVN to include changes only under source root (and exclude changes under other locations).
 
 
 ### How to install
