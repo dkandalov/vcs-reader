@@ -2,7 +2,7 @@ package org.vcsreader.vcs.svn;
 
 import org.vcsreader.lang.CommandLine;
 
-class SvnCommandLine {
+class SvnUtil {
 
 	public static CommandLine newExternalCommand(String svnPath, String... args) {
 		String[] commandAndArgs = concat(new String[]{svnPath, "--non-interactive", "--trust-server-cert"}, args);

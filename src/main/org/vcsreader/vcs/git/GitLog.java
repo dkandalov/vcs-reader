@@ -17,8 +17,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static org.vcsreader.VcsChange.Type.Added;
 import static org.vcsreader.VcsChange.Type.Deleted;
-import static org.vcsreader.vcs.git.GitCommandLine.containsGitRepo;
-import static org.vcsreader.vcs.git.GitCommandLine.isSuccessful;
+import static org.vcsreader.vcs.git.GitUtil.containsGitRepo;
+import static org.vcsreader.vcs.git.GitUtil.isSuccessful;
 import static org.vcsreader.vcs.git.GitCommitParser.*;
 
 /**

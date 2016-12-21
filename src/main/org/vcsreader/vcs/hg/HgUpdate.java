@@ -4,7 +4,7 @@ import org.vcsreader.UpdateResult;
 import org.vcsreader.lang.CommandLine;
 import org.vcsreader.vcs.VcsCommand;
 
-import static org.vcsreader.vcs.hg.HgCommandLine.isSuccessful;
+import static org.vcsreader.vcs.hg.HgUtil.isSuccessful;
 
 class HgUpdate implements VcsCommand<UpdateResult> {
 	private final String hgPath;

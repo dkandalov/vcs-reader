@@ -7,7 +7,7 @@ import org.vcsreader.vcs.VcsCommand;
 import java.nio.charset.Charset;
 
 import static org.vcsreader.lang.StringUtil.trimLastNewLine;
-import static org.vcsreader.vcs.hg.HgCommandLine.isSuccessful;
+import static org.vcsreader.vcs.hg.HgUtil.isSuccessful;
 
 
 /**

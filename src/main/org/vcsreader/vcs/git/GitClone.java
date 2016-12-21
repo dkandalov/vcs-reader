@@ -5,7 +5,7 @@ import org.vcsreader.lang.CommandLine;
 import org.vcsreader.vcs.VcsCommand;
 
 import static java.util.Arrays.asList;
-import static org.vcsreader.vcs.git.GitCommandLine.isSuccessful;
+import static org.vcsreader.vcs.git.GitUtil.isSuccessful;
 
 class GitClone implements VcsCommand<CloneResult> {
 	private final String pathToGit;

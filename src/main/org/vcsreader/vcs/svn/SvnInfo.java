@@ -9,8 +9,8 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static org.vcsreader.vcs.svn.SvnCommandLine.isSuccessful;
-import static org.vcsreader.vcs.svn.SvnCommandLine.newExternalCommand;
+import static org.vcsreader.vcs.svn.SvnUtil.isSuccessful;
+import static org.vcsreader.vcs.svn.SvnUtil.newExternalCommand;
 
 
 class SvnInfo implements VcsCommand<SvnInfo.Result> {

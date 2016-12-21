@@ -4,7 +4,7 @@ import org.vcsreader.lang.CommandLine;
 import org.vcsreader.vcs.VcsCommand;
 
 import org.vcsreader.UpdateResult;
-import static org.vcsreader.vcs.git.GitCommandLine.isSuccessful;
+import static org.vcsreader.vcs.git.GitUtil.isSuccessful;
 
 class GitUpdate implements VcsCommand<UpdateResult> {
 	private final String gitPath;

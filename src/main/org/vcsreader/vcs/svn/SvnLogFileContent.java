@@ -7,8 +7,8 @@ import org.vcsreader.vcs.VcsCommand;
 import java.nio.charset.Charset;
 
 import org.vcsreader.LogFileContentResult;
-import static org.vcsreader.vcs.svn.SvnCommandLine.newExternalCommand;
-import static org.vcsreader.vcs.svn.SvnCommandLine.isSuccessful;
+import static org.vcsreader.vcs.svn.SvnUtil.newExternalCommand;
+import static org.vcsreader.vcs.svn.SvnUtil.isSuccessful;
 
 /**
  * See http://svnbook.red-bean.com/en/1.8/svn.ref.svn.c.cat.html

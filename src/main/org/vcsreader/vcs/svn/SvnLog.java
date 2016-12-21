@@ -19,8 +19,8 @@ import static java.time.ZoneOffset.UTC;
 import static java.util.Arrays.asList;
 
 import org.vcsreader.LogResult;
-import static org.vcsreader.vcs.svn.SvnCommandLine.isSuccessful;
-import static org.vcsreader.vcs.svn.SvnCommandLine.newExternalCommand;
+import static org.vcsreader.vcs.svn.SvnUtil.isSuccessful;
+import static org.vcsreader.vcs.svn.SvnUtil.newExternalCommand;
 
 /**
  * See http://svnbook.red-bean.com/en/1.8/svn.ref.svn.c.log.html

@@ -5,7 +5,7 @@ import org.vcsreader.lang.CommandLine;
 import org.vcsreader.vcs.VcsCommand;
 
 import static java.util.Arrays.asList;
-import static org.vcsreader.vcs.hg.HgCommandLine.isSuccessful;
+import static org.vcsreader.vcs.hg.HgUtil.isSuccessful;
 
 class HgClone implements VcsCommand<CloneResult> {
 	private final String pathToHg;

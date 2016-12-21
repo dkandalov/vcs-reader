@@ -7,7 +7,7 @@ import java.nio.charset.Charset;
 
 import org.vcsreader.LogFileContentResult;
 import static org.vcsreader.lang.StringUtil.trimLastNewLine;
-import static org.vcsreader.vcs.git.GitCommandLine.isSuccessful;
+import static org.vcsreader.vcs.git.GitUtil.isSuccessful;
 
 /**
  * See https://git-scm.com/docs/git-show

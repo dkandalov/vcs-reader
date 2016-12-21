@@ -14,8 +14,8 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
-import static org.vcsreader.vcs.hg.HgCommandLine.containsHgRepo;
-import static org.vcsreader.vcs.hg.HgCommandLine.isSuccessful;
+import static org.vcsreader.vcs.hg.HgUtil.containsHgRepo;
+import static org.vcsreader.vcs.hg.HgUtil.isSuccessful;
 
 // suppress because it's similar to GitLog
 @SuppressWarnings("Duplicates")
