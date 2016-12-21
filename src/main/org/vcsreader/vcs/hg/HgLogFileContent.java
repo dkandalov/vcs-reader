@@ -1,6 +1,6 @@
 package org.vcsreader.vcs.hg;
 
-import org.vcsreader.VcsProject;
+import org.vcsreader.LogFileContentResult;
 import org.vcsreader.lang.CommandLine;
 import org.vcsreader.vcs.VcsCommand;
 
@@ -15,7 +15,7 @@ import static org.vcsreader.vcs.hg.HgCommandLine.isSuccessful;
  */
 @SuppressWarnings("Duplicates")
 		// because it's similar to GitLogFileContent
-class HgLogFileContent implements VcsCommand<VcsProject.LogFileContentResult> {
+class HgLogFileContent implements VcsCommand<LogFileContentResult> {
 	private final String pathToHg;
 	private final String folder;
 	private final String filePath;
@@ -32,12 +32,12 @@ class HgLogFileContent implements VcsCommand<VcsProject.LogFileContentResult> {
 		this.commandLine = hgLogFileContent(pathToHg, folder, filePath, revision, charset);
 	}
 
-	@Override public VcsProject.LogFileContentResult execute() {
+	@Override public LogFileContentResult execute() {
 		commandLine.execute();
 		if (isSuccessful(commandLine)) {
-			return new VcsProject.LogFileContentResult(trimLastNewLine(commandLine.stdout()));
+			return new LogFileContentResult(trimLastNewLine(commandLine.stdout()));
 		} else {
-			return new VcsProject.LogFileContentResult(commandLine.stderr(), commandLine.exitCode());
+			return new LogFileContentResult(commandLine.stderr(), commandLine.exitCode());
 		}
 	}
 

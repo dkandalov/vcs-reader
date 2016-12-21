@@ -1,12 +1,12 @@
 package org.vcsreader.vcs.hg;
 
-import org.vcsreader.VcsProject;
+import org.vcsreader.UpdateResult;
 import org.vcsreader.lang.CommandLine;
 import org.vcsreader.vcs.VcsCommand;
 
 import static org.vcsreader.vcs.hg.HgCommandLine.isSuccessful;
 
-class HgUpdate implements VcsCommand<VcsProject.UpdateResult> {
+class HgUpdate implements VcsCommand<UpdateResult> {
 	private final String hgPath;
 	private final String folder;
 	private final CommandLine commandLine;
@@ -17,12 +17,12 @@ class HgUpdate implements VcsCommand<VcsProject.UpdateResult> {
 		this.commandLine = hgUpdate(hgPath, folder);
 	}
 
-	@Override public VcsProject.UpdateResult execute() {
+	@Override public UpdateResult execute() {
 		commandLine.execute();
 		if (isSuccessful(commandLine)) {
-			return new VcsProject.UpdateResult();
+			return new UpdateResult();
 		} else {
-			return new VcsProject.UpdateResult(commandLine.stderr());
+			return new UpdateResult(commandLine.stderr());
 		}
 	}
 

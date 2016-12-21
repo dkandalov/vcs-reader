@@ -2,9 +2,10 @@ package org.vcsreader.vcs;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.vcsreader.CloneResult;
+import org.vcsreader.LogResult;
 import org.vcsreader.VcsCommit;
 import org.vcsreader.VcsProject;
-import org.vcsreader.VcsProject.CloneResult;
 import org.vcsreader.lang.TimeRange;
 import org.vcsreader.vcs.git.GitVcsRoot;
 
@@ -18,7 +19,6 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.vcsreader.VcsProject.LogResult;
 import static org.vcsreader.lang.DateTimeUtil.timeRange;
 
 public class VcsProjectTest {

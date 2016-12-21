@@ -6,7 +6,7 @@ import org.vcsreader.VcsRoot;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.vcsreader.VcsProject.LogFileContentResult;
+import org.vcsreader.LogFileContentResult;
 
 /**
  * This class is effectively immutable (even though some fields are modifiable).

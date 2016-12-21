@@ -1,12 +1,10 @@
 package org.vcsreader.vcs.svn;
 
 import org.jetbrains.annotations.NotNull;
-import org.vcsreader.VcsRoot;
+import org.vcsreader.*;
 import org.vcsreader.lang.TimeRange;
 import org.vcsreader.vcs.VcsCommand;
 import org.vcsreader.vcs.VcsCommand.ResultAdapter;
-
-import static org.vcsreader.VcsProject.*;
 
 public class SvnVcsRoot implements VcsRoot, VcsCommand.Owner {
 	@NotNull private final String repositoryUrl;

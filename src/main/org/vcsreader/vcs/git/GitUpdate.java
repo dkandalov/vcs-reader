@@ -3,7 +3,7 @@ package org.vcsreader.vcs.git;
 import org.vcsreader.lang.CommandLine;
 import org.vcsreader.vcs.VcsCommand;
 
-import static org.vcsreader.VcsProject.UpdateResult;
+import org.vcsreader.UpdateResult;
 import static org.vcsreader.vcs.git.GitCommandLine.isSuccessful;
 
 class GitUpdate implements VcsCommand<UpdateResult> {

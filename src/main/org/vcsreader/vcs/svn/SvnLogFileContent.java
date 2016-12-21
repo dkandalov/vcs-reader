@@ -6,7 +6,7 @@ import org.vcsreader.vcs.VcsCommand;
 
 import java.nio.charset.Charset;
 
-import static org.vcsreader.VcsProject.LogFileContentResult;
+import org.vcsreader.LogFileContentResult;
 import static org.vcsreader.vcs.svn.SvnCommandLine.newExternalCommand;
 import static org.vcsreader.vcs.svn.SvnCommandLine.isSuccessful;
 

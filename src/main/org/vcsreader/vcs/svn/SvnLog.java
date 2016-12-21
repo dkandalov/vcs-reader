@@ -17,7 +17,8 @@ import java.util.List;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.ZoneOffset.UTC;
 import static java.util.Arrays.asList;
-import static org.vcsreader.VcsProject.LogResult;
+
+import org.vcsreader.LogResult;
 import static org.vcsreader.vcs.svn.SvnCommandLine.isSuccessful;
 import static org.vcsreader.vcs.svn.SvnCommandLine.newExternalCommand;
 

@@ -2,8 +2,6 @@ package org.vcsreader;
 
 import org.vcsreader.lang.TimeRange;
 
-import static org.vcsreader.VcsProject.*;
-
 /**
  * Represents repository url (and local cloned folder for distributed VCS).
  * <p>

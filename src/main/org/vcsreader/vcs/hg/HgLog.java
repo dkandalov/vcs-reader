@@ -1,7 +1,7 @@
 package org.vcsreader.vcs.hg;
 
+import org.vcsreader.LogResult;
 import org.vcsreader.VcsCommit;
-import org.vcsreader.VcsProject;
 import org.vcsreader.lang.CommandLine;
 import org.vcsreader.lang.TimeRange;
 import org.vcsreader.vcs.VcsCommand;
@@ -18,7 +18,7 @@ import static org.vcsreader.vcs.hg.HgCommandLine.isSuccessful;
 
 // suppress because it's similar to GitLog
 @SuppressWarnings("Duplicates")
-class HgLog implements VcsCommand<VcsProject.LogResult> {
+class HgLog implements VcsCommand<LogResult> {
 	private final String hgPath;
 	private final String folder;
 	private final TimeRange timeRange;
@@ -31,15 +31,15 @@ class HgLog implements VcsCommand<VcsProject.LogResult> {
 		this.commandLine = hgLog(hgPath, folder, timeRange);
 	}
 
-	@Override public VcsProject.LogResult execute() {
+	@Override public LogResult execute() {
 		commandLine.execute();
 
 		if (isSuccessful(commandLine)) {
 			List<VcsCommit> commits = HgCommitParser.parseListOfCommits(commandLine.stdout());
 			List<String> errors = (commandLine.stderr().trim().isEmpty() ? new ArrayList<>() : asList(commandLine.stderr()));
-			return new VcsProject.LogResult(commits, errors);
+			return new LogResult(commits, errors);
 		} else {
-			return new VcsProject.LogResult(new ArrayList<>(), asList(commandLine.stderr()));
+			return new LogResult(new ArrayList<>(), asList(commandLine.stderr()));
 		}
 	}
 

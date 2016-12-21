@@ -2,10 +2,10 @@ package org.vcsreader.vcs.hg;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.vcsreader.VcsProject.CloneResult;
-import org.vcsreader.VcsProject.LogFileContentResult;
-import org.vcsreader.VcsProject.LogResult;
-import org.vcsreader.VcsProject.UpdateResult;
+import org.vcsreader.CloneResult;
+import org.vcsreader.LogFileContentResult;
+import org.vcsreader.LogResult;
+import org.vcsreader.UpdateResult;
 import org.vcsreader.VcsRoot;
 import org.vcsreader.lang.TimeRange;
 import org.vcsreader.vcs.VcsCommand;

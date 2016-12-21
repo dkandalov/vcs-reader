@@ -2,12 +2,10 @@ package org.vcsreader.vcs.git;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.vcsreader.VcsRoot;
+import org.vcsreader.*;
 import org.vcsreader.lang.TimeRange;
 import org.vcsreader.vcs.VcsCommand;
 import org.vcsreader.vcs.VcsCommand.ResultAdapter;
-
-import static org.vcsreader.VcsProject.*;
 
 public class GitVcsRoot implements VcsRoot, VcsCommand.Owner {
 	@NotNull private final String repoLocalPath;

@@ -1,13 +1,13 @@
 package org.vcsreader.vcs.hg;
 
-import org.vcsreader.VcsProject;
+import org.vcsreader.CloneResult;
 import org.vcsreader.lang.CommandLine;
 import org.vcsreader.vcs.VcsCommand;
 
 import static java.util.Arrays.asList;
 import static org.vcsreader.vcs.hg.HgCommandLine.isSuccessful;
 
-class HgClone implements VcsCommand<VcsProject.CloneResult> {
+class HgClone implements VcsCommand<CloneResult> {
 	private final String pathToHg;
 	private final String repositoryUrl;
 	private final String localPath;
@@ -20,13 +20,13 @@ class HgClone implements VcsCommand<VcsProject.CloneResult> {
 		this.commandLine = hgClone(pathToHg, repositoryUrl, localPath);
 	}
 
-	@Override public VcsProject.CloneResult execute() {
+	@Override public CloneResult execute() {
 		commandLine.execute();
 
 		if (isSuccessful(commandLine)) {
-			return new VcsProject.CloneResult();
+			return new CloneResult();
 		} else {
-			return new VcsProject.CloneResult(asList(commandLine.stderr()));
+			return new CloneResult(asList(commandLine.stderr()));
 		}
 	}
 
