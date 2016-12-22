@@ -2,6 +2,7 @@ package org.vcsreader;
 
 import org.jetbrains.annotations.NotNull;
 import org.vcsreader.vcs.VcsCommand;
+import org.vcsreader.vcs.VcsError;
 
 import java.util.List;
 
@@ -19,29 +20,28 @@ public class LogFileContentResult {
 		}
 
 		@Override public List<String> vcsErrorsIn(LogFileContentResult result) {
-			return asList(result.stderr);
+			return asList(result.exception.getMessage());
 		}
 	};
 	private final String text;
-	private final String stderr;
 	private final int exitCode;
 	private final Exception exception;
 
+
 	public LogFileContentResult(Exception exception) {
-		this("", "", 0, exception);
+		this("", 0, exception);
 	}
 
 	public LogFileContentResult(@NotNull String text) {
-		this(text, "", 0, null);
+		this(text, 0, null);
 	}
 
 	public LogFileContentResult(@NotNull String stderr, int exitCode) {
-		this("", stderr, exitCode, null);
+		this("", exitCode, new VcsError(stderr));
 	}
 
-	private LogFileContentResult(@NotNull String text, @NotNull String stderr, int exitCode, Exception exception) {
+	private LogFileContentResult(@NotNull String text, int exitCode, Exception exception) {
 		this.text = text;
-		this.stderr = stderr;
 		this.exitCode = exitCode;
 		this.exception = exception;
 	}
@@ -51,33 +51,31 @@ public class LogFileContentResult {
 	}
 
 	public boolean isSuccessful() {
-		return stderr.isEmpty() && exception == null && exitCode == 0;
+		return exception == null && exitCode == 0;
 	}
 
 	@Override public String toString() {
 		return "LogFileContentResult{" +
 				"text='" + shortened(text, 100) + '\'' +
-				", stderr='" + shortened(stderr, 100) + '\'' +
 				", exitCode=" + exitCode + '\'' +
 				", exception=" + exception.toString() +
 				'}';
 	}
 
+	@SuppressWarnings("SimplifiableIfStatement")
 	@Override public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
 		LogFileContentResult that = (LogFileContentResult) o;
 
-		return exitCode == that.exitCode &&
-				text.equals(that.text) &&
-				stderr.equals(that.stderr) &&
-				(exception != null ? exception.equals(that.exception) : that.exception == null);
+		if (exitCode != that.exitCode) return false;
+		if (text != null ? !text.equals(that.text) : that.text != null) return false;
+		return exception != null ? exception.equals(that.exception) : that.exception == null;
 	}
 
 	@Override public int hashCode() {
-		int result = text.hashCode();
-		result = 31 * result + stderr.hashCode();
+		int result = text != null ? text.hashCode() : 0;
 		result = 31 * result + exitCode;
 		result = 31 * result + (exception != null ? exception.hashCode() : 0);
 		return result;

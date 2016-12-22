@@ -33,6 +33,7 @@ public class LogResult implements Aggregatable<LogResult> {
 	private final List<VcsCommit> commits;
 	private final List<Exception> exceptions;
 
+
 	public LogResult() {
 		this(new ArrayList<>(), new ArrayList<>());
 	}
