@@ -41,8 +41,8 @@ public class VcsProjectTest {
 
 		// then
 		assertThat(cloneResult.exceptions(), equalTo(asList(
-				new VcsCommand.Failure("error1"),
-				new VcsCommand.Failure("error2")
+				new VcsError("error1"),
+				new VcsError("error2")
 		)));
 	}
 

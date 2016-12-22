@@ -5,6 +5,7 @@ import org.vcsreader.VcsCommit;
 import org.vcsreader.lang.CommandLine;
 import org.vcsreader.lang.TimeRange;
 import org.vcsreader.vcs.VcsCommand;
+import org.vcsreader.vcs.VcsError;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ class HgLog implements VcsCommand<LogResult> {
 
 	@Override public LogResult execute() {
 		if (!containsHgRepo(repoFolder)) {
-			throw new VcsCommand.Failure("Folder doesn't contain git repository: '" + repoFolder + "'.");
+			throw new VcsError("Folder doesn't contain git repository: '" + repoFolder + "'.");
 		}
 
 		commandLine.execute();

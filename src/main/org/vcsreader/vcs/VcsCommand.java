@@ -2,7 +2,6 @@ package org.vcsreader.vcs;
 
 import java.util.List;
 
-import static java.util.Arrays.asList;
 import static org.vcsreader.vcs.VcsCommand.Listener.executeWith;
 
 public interface VcsCommand<R> {
@@ -40,26 +39,6 @@ public interface VcsCommand<R> {
 	}
 
 
-	/**
-	 * Exception which means VCS command executed but reported an error.
-	 * This class wraps failure message from VCS command.
-	 */
-	class Failure extends RuntimeException {
-		private final List<String> vcsErrors;
-
-		public Failure(String vcsError) {
-			this(asList(vcsError));
-		}
-
-		public Failure(List<String> vcsErrors) {
-			this.vcsErrors = vcsErrors;
-		}
-
-		@Override public String getMessage() {
-			return String.join("\n", vcsErrors);
-		}
-	}
-
 	static <T> T execute(VcsCommand<T> vcsCommand, ResultAdapter<T> resultAdapter, VcsCommand.Listener listener, boolean isFailFast) {
 		T result;
 		try {
@@ -72,7 +51,7 @@ public interface VcsCommand<R> {
 			}
 		}
 		if (isFailFast && !resultAdapter.isSuccessful(result)) {
-			throw new VcsCommand.Failure(resultAdapter.vcsErrorsIn(result));
+			throw new VcsError(resultAdapter.vcsErrorsIn(result));
 		}
 		return result;
 	}

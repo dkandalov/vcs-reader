@@ -2,6 +2,7 @@ package org.vcsreader;
 
 import org.vcsreader.lang.Aggregatable;
 import org.vcsreader.vcs.VcsCommand;
+import org.vcsreader.vcs.VcsError;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,7 @@ public class CloneResult implements Aggregatable<CloneResult> {
 		@Override public List<String> vcsErrorsIn(CloneResult result) {
 			List<String> vcsErrors = new ArrayList<>();
 			for (Exception e : result.exceptions) {
-				if (e instanceof VcsCommand.Failure) {
+				if (e instanceof VcsError) {
 					vcsErrors.add(e.getMessage());
 				}
 			}
@@ -39,7 +40,7 @@ public class CloneResult implements Aggregatable<CloneResult> {
 	}
 
 	public CloneResult(String vcsError) {
-		this(asList(new VcsCommand.Failure(vcsError)));
+		this(asList(new VcsError(vcsError)));
 	}
 
 	private CloneResult(List<Exception> exceptions) {

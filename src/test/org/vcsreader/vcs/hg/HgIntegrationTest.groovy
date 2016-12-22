@@ -6,7 +6,7 @@ import org.vcsreader.VcsProject
 import org.vcsreader.lang.TimeRange
 import org.vcsreader.vcs.Change
 import org.vcsreader.vcs.Commit
-import org.vcsreader.vcs.VcsCommand
+import org.vcsreader.vcs.VcsError
 
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
@@ -39,7 +39,7 @@ class HgIntegrationTest {
 
 		assert !cloneResult.isSuccessful()
 		assert cloneResult.exceptions().size() == 1
-		assert cloneResult.exceptions().first() instanceof VcsCommand.Failure
+		assert cloneResult.exceptions().first() instanceof VcsError
 	}
 
 	@Test void "update project"() {
