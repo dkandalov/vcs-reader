@@ -21,7 +21,13 @@ public class LogResult implements Aggregatable<LogResult> {
 		}
 
 		@Override public List<String> vcsErrorsIn(LogResult result) {
-			return result.vcsErrors();
+			List<String> vcsErrors = new ArrayList<>();
+			for (Exception e : result.exceptions) {
+				if (e instanceof VcsError) {
+					vcsErrors.add(e.getMessage());
+				}
+			}
+			return vcsErrors;
 		}
 	};
 	private final List<VcsCommit> commits;
@@ -57,16 +63,6 @@ public class LogResult implements Aggregatable<LogResult> {
 
 	public boolean isSuccessful() {
 		return exceptions.isEmpty();
-	}
-
-	public List<String> vcsErrors() {
-		List<String> vcsErrors = new ArrayList<>();
-		for (Exception e : exceptions) {
-			if (e instanceof VcsError) {
-				vcsErrors.add(e.getMessage());
-			}
-		}
-		return vcsErrors;
 	}
 
 	public List<Exception> exceptions() {
