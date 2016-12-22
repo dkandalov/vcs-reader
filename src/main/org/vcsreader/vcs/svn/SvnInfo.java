@@ -15,7 +15,7 @@ import static org.vcsreader.vcs.svn.SvnUtil.newExternalCommand;
 
 class SvnInfo implements VcsCommand<SvnInfo.Result> {
 	public static ResultAdapter<Result> adapter = new ResultAdapter<Result>() {
-		@Override public Result wrapException(Exception e) {
+		@Override public Result wrapAsResult(Exception e) {
 			return new Result(e);
 		}
 

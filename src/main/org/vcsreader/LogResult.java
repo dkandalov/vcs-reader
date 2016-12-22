@@ -11,7 +11,7 @@ import static java.util.Arrays.asList;
 
 public class LogResult implements Aggregatable<LogResult> {
 	public static final VcsCommand.ResultAdapter<LogResult> adapter = new VcsCommand.ResultAdapter<LogResult>() {
-		@Override public LogResult wrapException(Exception e) {
+		@Override public LogResult wrapAsResult(Exception e) {
 			return new LogResult(e);
 		}
 

@@ -10,7 +10,7 @@ import static java.util.Arrays.asList;
 
 public class UpdateResult implements Aggregatable<UpdateResult> {
 	public static final VcsCommand.ResultAdapter<UpdateResult> adapter = new VcsCommand.ResultAdapter<UpdateResult>() {
-		@Override public UpdateResult wrapException(Exception e) {
+		@Override public UpdateResult wrapAsResult(Exception e) {
 			return new UpdateResult(e);
 		}
 

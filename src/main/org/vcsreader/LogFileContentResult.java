@@ -10,7 +10,7 @@ import static org.vcsreader.lang.StringUtil.shortened;
 
 public class LogFileContentResult {
 	public static final VcsCommand.ResultAdapter<LogFileContentResult> adapter = new VcsCommand.ResultAdapter<LogFileContentResult>() {
-		@Override public LogFileContentResult wrapException(Exception e) {
+		@Override public LogFileContentResult wrapAsResult(Exception e) {
 			return new LogFileContentResult(e);
 		}
 

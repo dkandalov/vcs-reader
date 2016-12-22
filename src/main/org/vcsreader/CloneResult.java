@@ -10,7 +10,7 @@ import static java.util.Arrays.asList;
 
 public class CloneResult implements Aggregatable<CloneResult> {
 	public static final VcsCommand.ResultAdapter<CloneResult> adapter = new VcsCommand.ResultAdapter<CloneResult>() {
-		@Override public CloneResult wrapException(Exception e) {
+		@Override public CloneResult wrapAsResult(Exception e) {
 			return new CloneResult(e);
 		}
 

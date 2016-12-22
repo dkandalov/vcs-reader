@@ -64,7 +64,7 @@ public interface VcsCommand<R> {
 			if (isFailFast) {
 				throw e;
 			} else {
-				return resultAdapter.wrapException(e);
+				return resultAdapter.wrapAsResult(e);
 			}
 		}
 		if (isFailFast && !resultAdapter.isSuccessful(result)) {
@@ -74,7 +74,7 @@ public interface VcsCommand<R> {
 	}
 
 	interface ResultAdapter<T> {
-		T wrapException(Exception e);
+		T wrapAsResult(Exception e);
 
 		boolean isSuccessful(T result);
 
