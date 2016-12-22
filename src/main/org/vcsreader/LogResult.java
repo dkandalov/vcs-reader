@@ -45,7 +45,7 @@ public class LogResult implements Aggregatable<LogResult> {
 		this.exceptions = exceptions;
 	}
 
-	public LogResult aggregateWith(LogResult value) {
+	@Override public LogResult aggregateWith(LogResult value) {
 		List<VcsCommit> newCommits = new ArrayList<>(commits);
 		List<String> newErrors = new ArrayList<>(vcsErrors);
 		List<Exception> newExceptions = new ArrayList<>(exceptions);
@@ -74,7 +74,7 @@ public class LogResult implements Aggregatable<LogResult> {
 		return commits;
 	}
 
-	public LogResult setVcsRoot(VcsRoot vcsRoot) {
+	LogResult setVcsRoot(VcsRoot vcsRoot) {
 		for (VcsCommit commit : commits) {
 			if (commit instanceof VcsCommit.WithRootReference) {
 				((VcsCommit.WithRootReference) commit).setVcsRoot(vcsRoot);
