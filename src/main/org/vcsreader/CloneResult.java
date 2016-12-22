@@ -31,6 +31,7 @@ public class CloneResult implements Aggregatable<CloneResult> {
 	};
 	private final List<Exception> exceptions;
 
+
 	public CloneResult() {
 		this(new ArrayList<>());
 	}

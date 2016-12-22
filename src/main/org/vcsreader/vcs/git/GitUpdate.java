@@ -1,9 +1,10 @@
 package org.vcsreader.vcs.git;
 
+import org.vcsreader.UpdateResult;
 import org.vcsreader.lang.CommandLine;
 import org.vcsreader.vcs.VcsCommand;
+import org.vcsreader.vcs.VcsError;
 
-import org.vcsreader.UpdateResult;
 import static org.vcsreader.vcs.git.GitUtil.isSuccessful;
 
 class GitUpdate implements VcsCommand<UpdateResult> {
@@ -22,7 +23,7 @@ class GitUpdate implements VcsCommand<UpdateResult> {
 		if (isSuccessful(commandLine)) {
 			return new UpdateResult();
 		} else {
-			return new UpdateResult(commandLine.stderr());
+			return new UpdateResult(new VcsError(commandLine.stderr()));
 		}
 	}
 

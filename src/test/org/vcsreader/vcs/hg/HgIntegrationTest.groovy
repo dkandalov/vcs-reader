@@ -49,7 +49,6 @@ class HgIntegrationTest {
 		project.cloneToLocal()
 
 		def updateResult = project.update()
-		assert updateResult.vcsErrors().empty
 		assert updateResult.isSuccessful()
 	}
 
@@ -62,7 +61,6 @@ class HgIntegrationTest {
 		def updateResult = project.update()
 
 		assert !updateResult.isSuccessful()
-		assert updateResult.vcsErrors() == []
 		assert updateResult.exceptions() != []
 	}
 

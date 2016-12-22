@@ -3,6 +3,7 @@ package org.vcsreader.vcs.hg;
 import org.vcsreader.UpdateResult;
 import org.vcsreader.lang.CommandLine;
 import org.vcsreader.vcs.VcsCommand;
+import org.vcsreader.vcs.VcsError;
 
 import static org.vcsreader.vcs.hg.HgUtil.isSuccessful;
 
@@ -22,7 +23,7 @@ class HgUpdate implements VcsCommand<UpdateResult> {
 		if (isSuccessful(commandLine)) {
 			return new UpdateResult();
 		} else {
-			return new UpdateResult(commandLine.stderr());
+			return new UpdateResult(new VcsError(commandLine.stderr()));
 		}
 	}
 

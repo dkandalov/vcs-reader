@@ -34,7 +34,6 @@ class SvnIntegrationTest {
 
 		def updateResult = project.update()
 
-		assert updateResult.vcsErrors().empty
 		assert updateResult.isSuccessful()
 	}
 

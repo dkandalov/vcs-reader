@@ -50,7 +50,6 @@ class GitIntegrationTest {
 		def project = newProject(repository)
 		def updateResult = project.update()
 
-		assert updateResult.vcsErrors().empty
 		assert updateResult.isSuccessful()
 	}
 
@@ -64,7 +63,6 @@ class GitIntegrationTest {
 
 		assert !updateResult.isSuccessful()
 		assert updateResult.exceptions() != []
-		assert updateResult.vcsErrors() == []
 	}
 
 	@Test void "log no commits for empty project history interval"() {
