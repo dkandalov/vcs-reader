@@ -6,6 +6,7 @@ import org.vcsreader.VcsProject
 import org.vcsreader.lang.TimeRange
 import org.vcsreader.vcs.Change
 import org.vcsreader.vcs.Commit
+import org.vcsreader.vcs.VcsCommand
 
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
@@ -27,7 +28,6 @@ class HgIntegrationTest {
 
 		def cloneResult = project.cloneToLocal()
 
-		assert cloneResult.vcsErrors().empty
 		assert cloneResult.isSuccessful()
 	}
 
@@ -38,7 +38,8 @@ class HgIntegrationTest {
 		def cloneResult = project.cloneToLocal()
 
 		assert !cloneResult.isSuccessful()
-		assert cloneResult.vcsErrors().size() == 1
+		assert cloneResult.exceptions().size() == 1
+		assert cloneResult.exceptions().first() instanceof VcsCommand.Failure
 	}
 
 	@Test void "update project"() {

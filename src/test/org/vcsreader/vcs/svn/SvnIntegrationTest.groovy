@@ -25,7 +25,6 @@ class SvnIntegrationTest {
 
 		def cloneResult = project.cloneToLocal()
 
-		assert cloneResult.vcsErrors().empty
 		assert cloneResult.isSuccessful()
 	}
 

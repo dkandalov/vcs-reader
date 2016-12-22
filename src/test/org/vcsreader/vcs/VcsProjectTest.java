@@ -40,8 +40,10 @@ public class VcsProjectTest {
 		CloneResult cloneResult = project.cloneToLocal();
 
 		// then
-		assertThat(cloneResult.vcsErrors(), equalTo(asList("error1", "error2")));
-		assertThat(cloneResult.exceptions().size(), equalTo(2));
+		assertThat(cloneResult.exceptions(), equalTo(asList(
+				new VcsCommand.Failure("error1"),
+				new VcsCommand.Failure("error2")
+		)));
 	}
 
 	@Test public void successfulProjectCloneWithNoVcsRoots() {
@@ -52,7 +54,6 @@ public class VcsProjectTest {
 		CloneResult cloneResult = project.cloneToLocal();
 
 		// then
-		assertThat(cloneResult.vcsErrors().size(), equalTo(0));
 		assertThat(cloneResult.exceptions().size(), equalTo(0));
 	}
 

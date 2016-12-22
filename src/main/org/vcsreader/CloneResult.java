@@ -19,7 +19,13 @@ public class CloneResult implements Aggregatable<CloneResult> {
 		}
 
 		@Override public List<String> vcsErrorsIn(CloneResult result) {
-			return result.vcsErrors();
+			List<String> vcsErrors = new ArrayList<>();
+			for (Exception e : result.exceptions) {
+				if (e instanceof VcsCommand.Failure) {
+					vcsErrors.add(e.getMessage());
+				}
+			}
+			return vcsErrors;
 		}
 	};
 	private final List<Exception> exceptions;
@@ -44,16 +50,6 @@ public class CloneResult implements Aggregatable<CloneResult> {
 		List<Exception> newExceptions = new ArrayList<>(exceptions);
 		newExceptions.addAll(value.exceptions);
 		return new CloneResult(newExceptions);
-	}
-
-	public List<String> vcsErrors() {
-		List<String> vcsErrors = new ArrayList<>();
-		for (Exception e : exceptions) {
-			if (e instanceof VcsCommand.Failure) {
-				vcsErrors.add(e.getMessage());
-			}
-		}
-		return vcsErrors;
 	}
 
 	public List<Exception> exceptions() {
