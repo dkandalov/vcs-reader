@@ -44,7 +44,6 @@ class SvnIntegrationTest {
 		def logResult = project.log(timeRange("01/08/2014", "02/08/2014"))
 
 		assert logResult.commits().empty
-		assert logResult.vcsErrors().empty
 		assert logResult.isSuccessful()
 	}
 
@@ -385,7 +384,6 @@ class SvnIntegrationTest {
 		assert change.type == Deleted
 		assert change.fileContent() == VcsChange.FileContent.none
 		assert change.fileContentBefore().value == "file content"
-		assert logResult.vcsErrors().empty
 		assert logResult.isSuccessful()
 	}
 

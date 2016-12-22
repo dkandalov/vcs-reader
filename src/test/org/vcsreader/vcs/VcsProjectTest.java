@@ -61,8 +61,8 @@ public class VcsProjectTest {
 		// given
 		VcsCommit commit1 = new Commit("1", "", Instant.ofEpochMilli(0), "", "", new ArrayList<>());
 		VcsCommit commit2 = new Commit("2", "", Instant.ofEpochMilli(0), "", "", new ArrayList<>());
-		when(root1.log(anyTimeRange())).thenReturn(new LogResult(asList(commit1), asList("some error")));
-		when(root2.log(anyTimeRange())).thenReturn(new LogResult(asList(commit2), new ArrayList<>()));
+		when(root1.log(anyTimeRange())).thenReturn(new LogResult(asList(commit1), asList(new VcsError("some error"))));
+		when(root2.log(anyTimeRange())).thenReturn(new LogResult(asList(commit2)));
 		VcsProject project = new VcsProject(asList(root1, root2));
 
 		// when
@@ -70,8 +70,9 @@ public class VcsProjectTest {
 
 		// then
 		assertThat(logResult.commits(), equalTo(asList(commit1, commit2)));
-		assertThat(logResult.vcsErrors(), equalTo(asList("some error")));
-		assertThat(logResult.exceptions().size(), equalTo(0));
+		assertThat(logResult.exceptions(), equalTo(asList(
+				new VcsError("some error")
+		)));
 	}
 
 	@Test(expected = IllegalStateException.class)

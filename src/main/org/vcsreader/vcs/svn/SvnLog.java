@@ -7,17 +7,16 @@ import org.vcsreader.lang.CommandLine;
 import org.vcsreader.lang.TimeRange;
 import org.vcsreader.vcs.Change;
 import org.vcsreader.vcs.VcsCommand;
+import org.vcsreader.vcs.VcsError;
 
 import java.nio.charset.Charset;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.ZoneOffset.UTC;
-import static java.util.Arrays.asList;
 import static org.vcsreader.vcs.svn.SvnUtil.isSuccessful;
 import static org.vcsreader.vcs.svn.SvnUtil.newExternalCommand;
 
@@ -54,9 +53,9 @@ class SvnLog implements VcsCommand<LogResult> {
 		if (isSuccessful(commandLine)) {
 			List<VcsCommit> allCommits = SvnCommitParser.parseCommits(commandLine.stdout());
 			List<VcsCommit> commits = transformToSubPathCommits(deleteCommitsBefore(timeRange.from(), allCommits));
-			return new LogResult(commits, new ArrayList<>());
+			return new LogResult(commits);
 		} else {
-			return new LogResult(Collections.emptyList(), asList(commandLine.stderr()));
+			return new LogResult(new VcsError(commandLine.stderr()));
 		}
 	}
 

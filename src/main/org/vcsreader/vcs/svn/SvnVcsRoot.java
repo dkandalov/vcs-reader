@@ -86,8 +86,8 @@ public class SvnVcsRoot implements VcsRoot, VcsCommand.Owner {
 	 */
 	private static boolean hasRevisionArgumentError(LogResult logResult) {
 		if (logResult.isSuccessful()) return false;
-		for (String error : logResult.vcsErrors()) {
-			if (error.contains("E205000: Syntax error in revision argument")) {
+		for (Exception e : logResult.exceptions()) {
+			if (e.getMessage().contains("E205000: Syntax error in revision argument")) {
 				return true;
 			}
 		}

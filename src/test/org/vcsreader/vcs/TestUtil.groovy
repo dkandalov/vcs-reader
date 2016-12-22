@@ -16,7 +16,6 @@ class TestUtil {
 	}
 
 	static assertCommitsIn(LogResult logResult, List<VcsCommit> expected) {
-		assert logResult.vcsErrors() == []
 		assert logResult.exceptions() == []
 		assert logResult.successful
 		assertEqualCommits(withSortedChanges(logResult.commits()), withSortedChanges(expected))

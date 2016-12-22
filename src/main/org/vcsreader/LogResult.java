@@ -2,6 +2,7 @@ package org.vcsreader;
 
 import org.vcsreader.lang.Aggregatable;
 import org.vcsreader.vcs.VcsCommand;
+import org.vcsreader.vcs.VcsError;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -24,45 +25,47 @@ public class LogResult implements Aggregatable<LogResult> {
 		}
 	};
 	private final List<VcsCommit> commits;
-	private final List<String> vcsErrors;
 	private final List<Exception> exceptions;
 
 	public LogResult() {
-		this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+		this(new ArrayList<>(), new ArrayList<>());
+	}
+
+	public LogResult(List<VcsCommit> commits) {
+		this(commits, new ArrayList<>());
 	}
 
 	public LogResult(Exception e) {
-		this(new ArrayList<>(), new ArrayList<>(), asList(e));
+		this(new ArrayList<>(), asList(e));
 	}
 
-	public LogResult(List<VcsCommit> commits, List<String> vcsErrors) {
-		this(commits, vcsErrors, new ArrayList<>());
-	}
-
-	public LogResult(List<VcsCommit> commits, List<String> vcsErrors, List<Exception> exceptions) {
+	public LogResult(List<VcsCommit> commits, List<Exception> exceptions) {
 		this.commits = commits;
-		this.vcsErrors = vcsErrors;
 		this.exceptions = exceptions;
 	}
 
 	@Override public LogResult aggregateWith(LogResult value) {
 		List<VcsCommit> newCommits = new ArrayList<>(commits);
-		List<String> newErrors = new ArrayList<>(vcsErrors);
 		List<Exception> newExceptions = new ArrayList<>(exceptions);
 
 		newCommits.addAll(value.commits);
 		newCommits.sort(Comparator.comparing(VcsCommit::getDateTime));
-		newErrors.addAll(value.vcsErrors);
 		newExceptions.addAll(value.exceptions);
 
-		return new LogResult(newCommits, newErrors, newExceptions);
+		return new LogResult(newCommits, newExceptions);
 	}
 
 	public boolean isSuccessful() {
-		return vcsErrors.isEmpty() && exceptions.isEmpty();
+		return exceptions.isEmpty();
 	}
 
 	public List<String> vcsErrors() {
+		List<String> vcsErrors = new ArrayList<>();
+		for (Exception e : exceptions) {
+			if (e instanceof VcsError) {
+				vcsErrors.add(e.getMessage());
+			}
+		}
 		return vcsErrors;
 	}
 
@@ -84,28 +87,23 @@ public class LogResult implements Aggregatable<LogResult> {
 	}
 
 	@Override public String toString() {
-		return "LogResult{" +
-				"commits=" + commits.size() +
-				", vcsErrors=" + vcsErrors.size() +
-				", exceptions=" + exceptions.size() +
-				'}';
+		return "LogResult{commits=" + commits.size() + ", exceptions=" + exceptions.size() + '}';
 	}
 
+	@SuppressWarnings("SimplifiableIfStatement")
 	@Override public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
 		LogResult logResult = (LogResult) o;
 
-		return commits.equals(logResult.commits)
-			&& vcsErrors.equals(logResult.vcsErrors)
-			&& exceptions.equals(logResult.exceptions);
+		if (commits != null ? !commits.equals(logResult.commits) : logResult.commits != null) return false;
+		return exceptions != null ? exceptions.equals(logResult.exceptions) : logResult.exceptions == null;
 	}
 
 	@Override public int hashCode() {
-		int result = commits.hashCode();
-		result = 31 * result + vcsErrors.hashCode();
-		result = 31 * result + exceptions.hashCode();
+		int result = commits != null ? commits.hashCode() : 0;
+		result = 31 * result + (exceptions != null ? exceptions.hashCode() : 0);
 		return result;
 	}
 }
