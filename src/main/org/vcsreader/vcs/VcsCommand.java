@@ -40,6 +40,10 @@ public interface VcsCommand<R> {
 	}
 
 
+	/**
+	 * Exception which means VCS command executed but reported an error.
+	 * This class wraps failure message from VCS command.
+	 */
 	class Failure extends RuntimeException {
 		private final List<String> vcsErrors;
 

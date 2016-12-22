@@ -22,35 +22,37 @@ public class CloneResult implements Aggregatable<CloneResult> {
 			return result.vcsErrors();
 		}
 	};
-	private final List<String> vcsErrors;
 	private final List<Exception> exceptions;
 
 	public CloneResult() {
-		this(new ArrayList<>(), new ArrayList<>());
+		this(new ArrayList<>());
 	}
 
 	public CloneResult(Exception e) {
-		this(new ArrayList<>(), asList(e));
+		this(asList(e));
 	}
 
-	public CloneResult(List<String> vcsErrors, List<Exception> exceptions) {
-		this.vcsErrors = vcsErrors;
+	public CloneResult(String vcsError) {
+		this(asList(new VcsCommand.Failure(vcsError)));
+	}
+
+	private CloneResult(List<Exception> exceptions) {
 		this.exceptions = exceptions;
 	}
 
-	public CloneResult(List<String> vcsErrors) {
-		this(vcsErrors, new ArrayList<>());
-	}
-
 	@Override public CloneResult aggregateWith(CloneResult value) {
-		List<String> newErrors = new ArrayList<>(vcsErrors);
 		List<Exception> newExceptions = new ArrayList<>(exceptions);
-		newErrors.addAll(value.vcsErrors);
 		newExceptions.addAll(value.exceptions);
-		return new CloneResult(newErrors, newExceptions);
+		return new CloneResult(newExceptions);
 	}
 
 	public List<String> vcsErrors() {
+		List<String> vcsErrors = new ArrayList<>();
+		for (Exception e : exceptions) {
+			if (e instanceof VcsCommand.Failure) {
+				vcsErrors.add(e.getMessage());
+			}
+		}
 		return vcsErrors;
 	}
 
@@ -59,14 +61,11 @@ public class CloneResult implements Aggregatable<CloneResult> {
 	}
 
 	public boolean isSuccessful() {
-		return vcsErrors.isEmpty() && exceptions.isEmpty();
+		return exceptions.isEmpty();
 	}
 
 	@Override public String toString() {
-		return "CloneResult{" +
-				"vcsErrors=" + vcsErrors.size() +
-				", exceptions=" + exceptions.size() +
-				'}';
+		return "CloneResult{exceptions=" + exceptions.size() + '}';
 	}
 
 	@Override public boolean equals(Object o) {
@@ -75,12 +74,10 @@ public class CloneResult implements Aggregatable<CloneResult> {
 
 		CloneResult that = (CloneResult) o;
 
-		return vcsErrors.equals(that.vcsErrors) && exceptions.equals(that.exceptions);
+		return exceptions != null ? exceptions.equals(that.exceptions) : that.exceptions == null;
 	}
 
 	@Override public int hashCode() {
-		int result = vcsErrors.hashCode();
-		result = 31 * result + exceptions.hashCode();
-		return result;
+		return exceptions != null ? exceptions.hashCode() : 0;
 	}
 }

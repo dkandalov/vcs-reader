@@ -4,7 +4,6 @@ import org.vcsreader.CloneResult;
 import org.vcsreader.lang.CommandLine;
 import org.vcsreader.vcs.VcsCommand;
 
-import static java.util.Arrays.asList;
 import static org.vcsreader.vcs.git.GitUtil.isSuccessful;
 
 class GitClone implements VcsCommand<CloneResult> {
@@ -26,7 +25,7 @@ class GitClone implements VcsCommand<CloneResult> {
 		if (isSuccessful(commandLine)) {
 			return new CloneResult();
 		} else {
-			return new CloneResult(asList(commandLine.stderr()));
+			return new CloneResult(commandLine.stderr());
 		}
 	}
 
