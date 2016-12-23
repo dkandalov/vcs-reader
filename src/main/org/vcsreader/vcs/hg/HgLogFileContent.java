@@ -44,6 +44,10 @@ class HgLogFileContent implements VcsCommand<LogFileContentResult> {
 		return commandLine.describe();
 	}
 
+	@Override public boolean cancel() {
+		return commandLine.kill();
+	}
+
 	static CommandLine hgLogFileContent(String pathToHg, String repoFolder, String filePath, String revision, Charset charset) {
 		CommandLine commandLine = new CommandLine(pathToHg, "cat", "-r " + revision, filePath);
 		return commandLine.workingDir(repoFolder).outputCharset(charset).charsetAutoDetect(true);

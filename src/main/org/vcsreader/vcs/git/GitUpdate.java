@@ -35,6 +35,10 @@ class GitUpdate implements VcsCommand<UpdateResult> {
 		return commandLine.describe();
 	}
 
+	@Override public boolean cancel() {
+		return commandLine.kill();
+	}
+
 	@SuppressWarnings("RedundantIfStatement")
 	@Override public boolean equals(Object o) {
 		if (this == o) return true;

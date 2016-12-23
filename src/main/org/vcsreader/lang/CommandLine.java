@@ -64,7 +64,7 @@ public class CommandLine {
 	public CommandLine execute() throws Failure {
 		InputStream stdoutInputStream = null;
 		InputStream stderrInputStream = null;
-		Process process = null;
+		Process process;
 		try {
 
 			ProcessBuilder builder = new ProcessBuilder(commandAndArgs).directory(config.workingDir);

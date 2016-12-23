@@ -35,6 +35,10 @@ class HgUpdate implements VcsCommand<UpdateResult> {
 		return commandLine.describe();
 	}
 
+	@Override public boolean cancel() {
+		return commandLine.kill();
+	}
+
 	@Override public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;

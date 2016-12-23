@@ -54,6 +54,10 @@ class HgLog implements VcsCommand<LogResult> {
 		return commandLine.describe();
 	}
 
+	@Override public boolean cancel() {
+		return commandLine.kill();
+	}
+
 	static CommandLine hgLog(String hgPath, String repoFolder, TimeRange timeRange) {
 		CommandLine commandLine = new CommandLine(
 				hgPath, "log",

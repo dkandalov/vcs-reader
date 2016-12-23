@@ -12,6 +12,7 @@ public class SvnVcsRoot implements VcsRoot, VcsCommand.Observer {
 	private final VcsCommand.Listener listener;
 	private String repoRoot;
 	private boolean quoteDateRange = false;
+	private volatile VcsCommand lastCommand;
 
 
 	public SvnVcsRoot(@NotNull String repoUrl) {
@@ -95,7 +96,12 @@ public class SvnVcsRoot implements VcsRoot, VcsCommand.Observer {
 	}
 
 	private <T> T execute(VcsCommand<T> vcsCommand, ExceptionWrapper<T> exceptionWrapper) {
-		return VcsCommand.execute(vcsCommand, exceptionWrapper, listener, settings.failFast());
+		try {
+			lastCommand = vcsCommand;
+			return VcsCommand.execute(vcsCommand, exceptionWrapper, listener, settings.failFast());
+		} finally {
+			lastCommand = null;
+		}
 	}
 
 	@NotNull @Override public String repoFolder() {
@@ -104,6 +110,11 @@ public class SvnVcsRoot implements VcsRoot, VcsCommand.Observer {
 
 	@Override @NotNull public String repoUrl() {
 		return repoUrl;
+	}
+
+	@Override public boolean cancelLastCommand() {
+		VcsCommand command = lastCommand;
+		return command == null || command.cancel();
 	}
 
 	@Override public boolean equals(Object o) {

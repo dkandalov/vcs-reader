@@ -22,4 +22,6 @@ public interface VcsRoot {
 	LogResult log(TimeRange timeRange);
 
 	LogFileContentResult logFileContent(String filePath, String revision);
+
+	boolean cancelLastCommand();
 }

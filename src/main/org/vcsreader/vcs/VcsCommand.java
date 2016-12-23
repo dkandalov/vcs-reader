@@ -6,7 +6,7 @@ public interface VcsCommand<R> {
 
 	String describe();
 	R execute();
-
+	boolean cancel();
 
 	interface Observer {
 		Observer withListener(Listener listener);

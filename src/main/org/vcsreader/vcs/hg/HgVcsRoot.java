@@ -16,6 +16,7 @@ public class HgVcsRoot implements VcsRoot, VcsCommand.Observer {
 	@Nullable private final String repoUrl;
 	@NotNull private final HgSettings settings;
 	private final VcsCommand.Listener listener;
+	private volatile VcsCommand lastCommand;
 
 
 	public HgVcsRoot(@NotNull String repoFolder) {
@@ -66,7 +67,12 @@ public class HgVcsRoot implements VcsRoot, VcsCommand.Observer {
 	}
 
 	private <T> T execute(VcsCommand<T> vcsCommand, ExceptionWrapper<T> exceptionWrapper) {
-		return VcsCommand.execute(vcsCommand, exceptionWrapper, listener, settings.failFast());
+		try {
+			lastCommand = vcsCommand;
+			return VcsCommand.execute(vcsCommand, exceptionWrapper, listener, settings.failFast());
+		} finally {
+			lastCommand = null;
+		}
 	}
 
 	@Override @NotNull public String repoFolder() {
@@ -75,6 +81,11 @@ public class HgVcsRoot implements VcsRoot, VcsCommand.Observer {
 
 	@Override @Nullable public String repoUrl() {
 		return repoUrl;
+	}
+
+	@Override public boolean cancelLastCommand() {
+		VcsCommand command = lastCommand;
+		return command == null || command.cancel();
 	}
 
 	@SuppressWarnings("SimplifiableIfStatement")

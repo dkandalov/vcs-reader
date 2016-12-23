@@ -52,6 +52,10 @@ class SvnInfo implements VcsCommand<SvnInfo.Result> {
 		return commandLine.describe();
 	}
 
+	@Override public boolean cancel() {
+		return commandLine.kill();
+	}
+
 	@SuppressWarnings("RedundantIfStatement")
 	@Override public boolean equals(Object o) {
 		if (this == o) return true;
@@ -83,7 +87,7 @@ class SvnInfo implements VcsCommand<SvnInfo.Result> {
 		public static final String unknownRoot = "";
 
 		public final String repoRoot;
-		private final Exception exception;
+		public final Exception exception;
 
 
 		public Result(String repoRoot) {

@@ -121,6 +121,14 @@ class GitLog implements VcsCommand<LogResult> {
 		return result;
 	}
 
+	@Override public boolean cancel() {
+		boolean notRunning = commandLine.kill();
+		for (CommandLine command : externalSubCommands) {
+			notRunning &= command.kill();
+		}
+		return notRunning;
+	}
+
 	@SuppressWarnings("SimplifiableIfStatement")
 	@Override public boolean equals(Object o) {
 		if (this == o) return true;

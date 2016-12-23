@@ -93,6 +93,14 @@ public class VcsProject {
 		return vcsRoots;
 	}
 
+	public boolean cancelLastCommand() {
+		boolean result = true;
+		for (VcsRoot vcsRoot : vcsRoots) {
+			result &= vcsRoot.cancelLastCommand();
+		}
+		return result;
+	}
+
 	@Override public String toString() {
 		return "VcsProject{" + vcsRoots + '}';
 	}
