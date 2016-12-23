@@ -48,6 +48,9 @@ public class SvnVcsRoot implements VcsRoot, VcsCommand.Observer {
 	@Override public LogResult log(TimeRange timeRange) {
 		if (repoRoot == null) {
 			SvnInfo.Result result = execute(new SvnInfo(settings.svnPath(), repoUrl), SvnInfo.adapter);
+			if (!result.isSuccessful()) {
+				return new LogResult(result.exception);
+			}
 			repoRoot = result.repoRoot;
 		}
 		LogResult logResult = execute(svnLog(timeRange), LogResult.adapter);
