@@ -1,21 +1,13 @@
 package org.vcsreader;
 
 import org.jetbrains.annotations.NotNull;
-import org.vcsreader.vcs.VcsCommand;
+import org.vcsreader.vcs.VcsCommand.ExceptionWrapper;
 import org.vcsreader.vcs.VcsError;
 
 import static org.vcsreader.lang.StringUtil.shortened;
 
 public class LogFileContentResult {
-	public static final VcsCommand.ResultAdapter<LogFileContentResult> adapter = new VcsCommand.ResultAdapter<LogFileContentResult>() {
-		@Override public LogFileContentResult wrapAsResult(Exception e) {
-			return new LogFileContentResult(e);
-		}
-
-		@Override public boolean isSuccessful(LogFileContentResult result) {
-			return result.isSuccessful();
-		}
-	};
+	public static final ExceptionWrapper<LogFileContentResult> adapter = LogFileContentResult::new;
 	private final String text;
 	private final int exitCode;
 	private final Exception exception;

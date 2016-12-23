@@ -10,15 +10,7 @@ import static org.vcsreader.vcs.svn.SvnUtil.newExternalCommand;
 
 
 class SvnInfo implements VcsCommand<SvnInfo.Result> {
-	public static ResultAdapter<Result> adapter = new ResultAdapter<Result>() {
-		@Override public Result wrapAsResult(Exception e) {
-			return new Result(e);
-		}
-
-		@Override public boolean isSuccessful(Result result) {
-			return result.isSuccessful();
-		}
-	};
+	public static ExceptionWrapper<Result> adapter = Result::new;
 	private final String svnPath;
 	private final String repoUrl;
 	private final CommandLine commandLine;

@@ -1,7 +1,7 @@
 package org.vcsreader;
 
 import org.vcsreader.lang.Aggregatable;
-import org.vcsreader.vcs.VcsCommand;
+import org.vcsreader.vcs.VcsCommand.ExceptionWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,15 +9,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 
 public class UpdateResult implements Aggregatable<UpdateResult> {
-	public static final VcsCommand.ResultAdapter<UpdateResult> adapter = new VcsCommand.ResultAdapter<UpdateResult>() {
-		@Override public UpdateResult wrapAsResult(Exception e) {
-			return new UpdateResult(e);
-		}
-
-		@Override public boolean isSuccessful(UpdateResult result) {
-			return result.isSuccessful();
-		}
-	};
+	public static final ExceptionWrapper<UpdateResult> adapter = UpdateResult::new;
 	private final List<Exception> exceptions;
 
 

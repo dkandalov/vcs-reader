@@ -1,7 +1,7 @@
 package org.vcsreader;
 
 import org.vcsreader.lang.Aggregatable;
-import org.vcsreader.vcs.VcsCommand;
+import org.vcsreader.vcs.VcsCommand.ExceptionWrapper;
 import org.vcsreader.vcs.VcsError;
 
 import java.util.ArrayList;
@@ -10,15 +10,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 
 public class CloneResult implements Aggregatable<CloneResult> {
-	public static final VcsCommand.ResultAdapter<CloneResult> adapter = new VcsCommand.ResultAdapter<CloneResult>() {
-		@Override public CloneResult wrapAsResult(Exception e) {
-			return new CloneResult(e);
-		}
-
-		@Override public boolean isSuccessful(CloneResult result) {
-			return result.isSuccessful();
-		}
-	};
+	public static final ExceptionWrapper<CloneResult> adapter = CloneResult::new;
 	private final List<Exception> exceptions;
 
 

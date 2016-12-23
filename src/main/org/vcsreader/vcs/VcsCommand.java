@@ -5,11 +5,13 @@ import static org.vcsreader.vcs.VcsCommand.Listener.executeWith;
 public interface VcsCommand<R> {
 
 	String describe();
-
 	R execute();
 
 
 	interface Listener {
+		void beforeCommand(VcsCommand<?> command);
+		void afterCommand(VcsCommand<?> command);
+
 		Listener none = new Listener() {
 			@Override public void beforeCommand(VcsCommand<?> command) {}
 			@Override public void afterCommand(VcsCommand<?> command) {}
@@ -26,9 +28,6 @@ public interface VcsCommand<R> {
 				listener.afterCommand(command);
 			}
 		}
-
-		void beforeCommand(VcsCommand<?> command);
-		void afterCommand(VcsCommand<?> command);
 	}
 
 
@@ -37,23 +36,19 @@ public interface VcsCommand<R> {
 	}
 
 
-	static <T> T execute(VcsCommand<T> vcsCommand, ResultAdapter<T> resultAdapter, VcsCommand.Listener listener, boolean isFailFast) {
-		T result;
+	static <T> T execute(VcsCommand<T> vcsCommand, ExceptionWrapper<T> exceptionWrapper, VcsCommand.Listener listener, boolean isFailFast) {
 		try {
-			result = executeWith(listener, vcsCommand);
+			return executeWith(listener, vcsCommand);
 		} catch (Exception e) {
 			if (isFailFast) {
 				throw e;
 			} else {
-				return resultAdapter.wrapAsResult(e);
+				return exceptionWrapper.wrapAsResult(e);
 			}
 		}
-		return result;
 	}
 
-	interface ResultAdapter<T> {
+	interface ExceptionWrapper<T> {
 		T wrapAsResult(Exception e);
-
-		boolean isSuccessful(T result);
 	}
 }

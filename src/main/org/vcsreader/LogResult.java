@@ -1,7 +1,7 @@
 package org.vcsreader;
 
 import org.vcsreader.lang.Aggregatable;
-import org.vcsreader.vcs.VcsCommand;
+import org.vcsreader.vcs.VcsCommand.ExceptionWrapper;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -10,15 +10,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 
 public class LogResult implements Aggregatable<LogResult> {
-	public static final VcsCommand.ResultAdapter<LogResult> adapter = new VcsCommand.ResultAdapter<LogResult>() {
-		@Override public LogResult wrapAsResult(Exception e) {
-			return new LogResult(e);
-		}
-
-		@Override public boolean isSuccessful(LogResult result) {
-			return result.isSuccessful();
-		}
-	};
+	public static final ExceptionWrapper<LogResult> adapter = LogResult::new;
 	private final List<VcsCommit> commits;
 	private final List<Exception> exceptions;
 

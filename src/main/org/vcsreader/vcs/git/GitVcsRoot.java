@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import org.vcsreader.*;
 import org.vcsreader.lang.TimeRange;
 import org.vcsreader.vcs.VcsCommand;
-import org.vcsreader.vcs.VcsCommand.ResultAdapter;
+import org.vcsreader.vcs.VcsCommand.ExceptionWrapper;
 
 public class GitVcsRoot implements VcsRoot, VcsCommand.Owner {
 	@NotNull private final String repoFolder;
@@ -64,8 +64,8 @@ public class GitVcsRoot implements VcsRoot, VcsCommand.Owner {
 		return execute(logFileContent, LogFileContentResult.adapter);
 	}
 
-	private <T> T execute(VcsCommand<T> vcsCommand, ResultAdapter<T> resultAdapter) {
-		return VcsCommand.execute(vcsCommand, resultAdapter, listener, settings.failFast());
+	private <T> T execute(VcsCommand<T> vcsCommand, ExceptionWrapper<T> exceptionWrapper) {
+		return VcsCommand.execute(vcsCommand, exceptionWrapper, listener, settings.failFast());
 	}
 
 	@Override @NotNull public String repoFolder() {
