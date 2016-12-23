@@ -6,7 +6,7 @@ import org.vcsreader.lang.TimeRange;
 import org.vcsreader.vcs.VcsCommand;
 import org.vcsreader.vcs.VcsCommand.ExceptionWrapper;
 
-public class SvnVcsRoot implements VcsRoot, VcsCommand.Owner {
+public class SvnVcsRoot implements VcsRoot, VcsCommand.Observer {
 	@NotNull private final String repoUrl;
 	@NotNull private final SvnSettings settings;
 	private final VcsCommand.Listener listener;

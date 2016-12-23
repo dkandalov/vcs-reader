@@ -7,7 +7,7 @@ import org.vcsreader.lang.TimeRange;
 import org.vcsreader.vcs.VcsCommand;
 import org.vcsreader.vcs.VcsCommand.ExceptionWrapper;
 
-public class GitVcsRoot implements VcsRoot, VcsCommand.Owner {
+public class GitVcsRoot implements VcsRoot, VcsCommand.Observer {
 	@NotNull private final String repoFolder;
 	@Nullable private final String repoUrl;
 	@NotNull private final GitSettings settings;

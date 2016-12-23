@@ -25,8 +25,8 @@ public class VcsProject {
 	public VcsProject(List<VcsRoot> vcsRoots) {
 		this.compositeListener = new CompositeListener();
 		this.vcsRoots = unmodifiableList(vcsRoots.stream().map((vcsRoot) -> {
-			if (vcsRoot instanceof VcsCommand.Owner) {
-				return (VcsRoot)((VcsCommand.Owner) vcsRoot).withListener(compositeListener);
+			if (vcsRoot instanceof VcsCommand.Observer) {
+				return (VcsRoot)((VcsCommand.Observer) vcsRoot).withListener(compositeListener);
 			} else {
 				return vcsRoot;
 			}

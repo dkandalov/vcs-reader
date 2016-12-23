@@ -8,6 +8,15 @@ public interface VcsCommand<R> {
 	R execute();
 
 
+	interface Observer {
+		Observer withListener(Listener listener);
+	}
+
+	interface ExceptionWrapper<T> {
+		T wrapAsResult(Exception e);
+	}
+
+
 	interface Listener {
 		void beforeCommand(VcsCommand<?> command);
 		void afterCommand(VcsCommand<?> command);
@@ -31,11 +40,6 @@ public interface VcsCommand<R> {
 	}
 
 
-	interface Owner {
-		Owner withListener(Listener listener);
-	}
-
-
 	static <T> T execute(VcsCommand<T> vcsCommand, ExceptionWrapper<T> exceptionWrapper, VcsCommand.Listener listener, boolean isFailFast) {
 		try {
 			return executeWith(listener, vcsCommand);
@@ -46,9 +50,5 @@ public interface VcsCommand<R> {
 				return exceptionWrapper.wrapAsResult(e);
 			}
 		}
-	}
-
-	interface ExceptionWrapper<T> {
-		T wrapAsResult(Exception e);
 	}
 }
