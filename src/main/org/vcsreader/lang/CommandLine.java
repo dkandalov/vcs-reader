@@ -97,8 +97,8 @@ public class CommandLine {
 		} catch (Exception e) {
 			throw new Failure(e);
 		} finally {
-			// make sure process is stopped in case of exceptions in java code
-			if (process != null) process.destroy();
+			kill(); // Make sure process is stopped in case of exceptions in java code.
+			processRef.set(null);
 			close(stdoutInputStream);
 			close(stderrInputStream);
 		}
@@ -106,10 +106,21 @@ public class CommandLine {
 		return this;
 	}
 
-	public void kill() {
-		if (processRef.get() != null) {
-			processRef.get().destroy();
+	/**
+	 * @return true is underlying process is dead (or there is no process), false if process is still running.
+	 */
+	public boolean kill() {
+		Process process = processRef.get();
+		if (process != null) {
+			process.destroy();
+			try {
+				for (int i = 0; i < 20 && process.isAlive(); i++) {
+					Thread.sleep(10);
+				}
+			} catch (InterruptedException ignored) {}
+			return !process.isAlive();
 		}
+		return true;
 	}
 
 	@NotNull public String stdout() {

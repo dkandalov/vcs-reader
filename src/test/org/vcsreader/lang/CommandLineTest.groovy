@@ -3,9 +3,12 @@ package org.vcsreader.lang
 import org.junit.Test
 
 import java.util.concurrent.Callable
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.ExecutionException
+import java.util.concurrent.atomic.AtomicBoolean
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor
+import static java.util.concurrent.TimeUnit.SECONDS
 import static org.junit.Assert.fail
 import static org.vcsreader.lang.CommandLine.exitCodeBeforeFinished
 
@@ -55,14 +58,19 @@ class CommandLineTest {
 	@Test(timeout = 1000L)
 	void "kill hanging command"() {
 		def commandLine = new CommandLine("sleep", "10000")
+		def isDead = new AtomicBoolean(false)
+		def latch = new CountDownLatch(1)
 
 		newSingleThreadExecutor().execute {
 			Thread.sleep(200)
-			commandLine.kill()
+			isDead.set(commandLine.kill())
+			latch.countDown()
 		}
 		commandLine.execute()
 
+		latch.await(1, SECONDS)
 		assert commandLine.exitCode() == 143
+		assert isDead.get()
 	}
 
 	@Test void "command description"() {
