@@ -2,7 +2,6 @@ package org.vcsreader;
 
 import org.vcsreader.lang.Aggregatable;
 import org.vcsreader.vcs.VcsCommand;
-import org.vcsreader.vcs.VcsError;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,16 +16,6 @@ public class UpdateResult implements Aggregatable<UpdateResult> {
 
 		@Override public boolean isSuccessful(UpdateResult result) {
 			return result.isSuccessful();
-		}
-
-		@Override public List<String> vcsErrorsIn(UpdateResult result) {
-			List<String> vcsErrors = new ArrayList<>();
-			for (Exception e : result.exceptions) {
-				if (e instanceof VcsError) {
-					vcsErrors.add(e.getMessage());
-				}
-			}
-			return vcsErrors;
 		}
 	};
 	private final List<Exception> exceptions;

@@ -4,9 +4,6 @@ import org.jetbrains.annotations.NotNull;
 import org.vcsreader.vcs.VcsCommand;
 import org.vcsreader.vcs.VcsError;
 
-import java.util.List;
-
-import static java.util.Arrays.asList;
 import static org.vcsreader.lang.StringUtil.shortened;
 
 public class LogFileContentResult {
@@ -17,10 +14,6 @@ public class LogFileContentResult {
 
 		@Override public boolean isSuccessful(LogFileContentResult result) {
 			return result.isSuccessful();
-		}
-
-		@Override public List<String> vcsErrorsIn(LogFileContentResult result) {
-			return asList(result.exception.getMessage());
 		}
 	};
 	private final String text;

@@ -18,16 +18,6 @@ public class CloneResult implements Aggregatable<CloneResult> {
 		@Override public boolean isSuccessful(CloneResult result) {
 			return result.isSuccessful();
 		}
-
-		@Override public List<String> vcsErrorsIn(CloneResult result) {
-			List<String> vcsErrors = new ArrayList<>();
-			for (Exception e : result.exceptions) {
-				if (e instanceof VcsError) {
-					vcsErrors.add(e.getMessage());
-				}
-			}
-			return vcsErrors;
-		}
 	};
 	private final List<Exception> exceptions;
 

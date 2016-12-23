@@ -1,7 +1,5 @@
 package org.vcsreader.vcs;
 
-import java.util.List;
-
 import static org.vcsreader.vcs.VcsCommand.Listener.executeWith;
 
 public interface VcsCommand<R> {
@@ -50,9 +48,6 @@ public interface VcsCommand<R> {
 				return resultAdapter.wrapAsResult(e);
 			}
 		}
-		if (isFailFast && !resultAdapter.isSuccessful(result)) {
-			throw new VcsError(resultAdapter.vcsErrorsIn(result));
-		}
 		return result;
 	}
 
@@ -60,7 +55,5 @@ public interface VcsCommand<R> {
 		T wrapAsResult(Exception e);
 
 		boolean isSuccessful(T result);
-
-		List<String> vcsErrorsIn(T result);
 	}
 }

@@ -3,12 +3,8 @@ package org.vcsreader.vcs.svn;
 import org.jetbrains.annotations.Nullable;
 import org.vcsreader.lang.CommandLine;
 import org.vcsreader.vcs.VcsCommand;
+import org.vcsreader.vcs.VcsError;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.vcsreader.vcs.svn.SvnUtil.isSuccessful;
 import static org.vcsreader.vcs.svn.SvnUtil.newExternalCommand;
 
@@ -21,10 +17,6 @@ class SvnInfo implements VcsCommand<SvnInfo.Result> {
 
 		@Override public boolean isSuccessful(Result result) {
 			return result.isSuccessful();
-		}
-
-		@Override public List<String> vcsErrorsIn(Result result) {
-			return result.errors;
 		}
 	};
 	private final String svnPath;
@@ -40,15 +32,13 @@ class SvnInfo implements VcsCommand<SvnInfo.Result> {
 	@Override public SvnInfo.Result execute() {
 		commandLine.execute();
 
-		if (isSuccessful(commandLine)) {
-			String repoRoot = parse(commandLine.stdout());
-			if (repoRoot == null) {
-				return new Result(asList("Didn't find svn root in output for " + repoUrl));
-			} else {
-				return new Result(repoRoot);
-			}
+		if (!isSuccessful(commandLine)) return new Result(new VcsError(commandLine.stdout()));
+
+		String repoRoot = parse(commandLine.stdout());
+		if (repoRoot == null) {
+			return new Result(new VcsError("Didn't find svn root in output for " + repoUrl));
 		} else {
-			return new Result(asList(commandLine.stdout()));
+			return new Result(repoRoot);
 		}
 	}
 
@@ -101,29 +91,24 @@ class SvnInfo implements VcsCommand<SvnInfo.Result> {
 		public static final String unknownRoot = "";
 
 		public final String repoRoot;
-		private final List<String> errors;
 		private final Exception exception;
 
-		public Result(String repoRoot) {
-			this(repoRoot, new ArrayList<>(), null);
-		}
 
-		public Result(List<String> errors) {
-			this(unknownRoot, errors, null);
+		public Result(String repoRoot) {
+			this(repoRoot, null);
 		}
 
 		public Result(Exception exception) {
-			this(unknownRoot, emptyList(), exception);
+			this(unknownRoot, exception);
 		}
 
-		private Result(String repoRoot, List<String> errors, Exception exception) {
+		private Result(String repoRoot, Exception exception) {
 			this.repoRoot = repoRoot;
-			this.errors = errors;
 			this.exception = exception;
 		}
 
 		public boolean isSuccessful() {
-			return errors.isEmpty() && exception == null;
+			return exception == null;
 		}
 	}
 }
