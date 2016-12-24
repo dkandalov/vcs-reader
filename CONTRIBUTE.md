@@ -11,5 +11,4 @@ You can configure path to the command using system properties:
 
 ### Things to do
  - support for listing and requesting commits from particular branch
- - ability to cancel VCS commands by killing underlying process (e.g. if log takes very long time)
  - optional support to log merge commits (currently merge commits are not logged, only original commit from another branch is logged)

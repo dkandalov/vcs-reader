@@ -21,7 +21,7 @@ public class ReadCommits {
 
 		if (!new File(gitVcsRoot.repoFolder()).exists()) {
 			System.out.println("Cloning...");
-			vcsProject.cloneToLocal();
+			vcsProject.cloneIt();
 		}
 
 		LogResult logResult = vcsProject.log(TimeRange.beforeNow());
