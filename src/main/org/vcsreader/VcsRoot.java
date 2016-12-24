@@ -15,7 +15,7 @@ public interface VcsRoot {
 
 	@Nullable String repoUrl();
 
-	CloneResult cloneToLocal();
+	CloneResult cloneIt();
 
 	UpdateResult update();
 

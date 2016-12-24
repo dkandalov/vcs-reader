@@ -32,12 +32,12 @@ public class VcsProjectTest {
 
 	@Test public void mergeResultsOfProjectClone() {
 		// given
-		when(root1.cloneToLocal()).thenReturn(new CloneResult("error1"));
-		when(root2.cloneToLocal()).thenReturn(new CloneResult("error2"));
+		when(root1.cloneIt()).thenReturn(new CloneResult("error1"));
+		when(root2.cloneIt()).thenReturn(new CloneResult("error2"));
 		VcsProject project = new VcsProject(asList(root1, root2));
 
 		// when
-		CloneResult cloneResult = project.cloneToLocal();
+		CloneResult cloneResult = project.cloneIt();
 
 		// then
 		assertThat(cloneResult.exceptions(), equalTo(asList(
@@ -51,7 +51,7 @@ public class VcsProjectTest {
 		VcsProject project = new VcsProject(Collections.emptyList());
 
 		// when
-		CloneResult cloneResult = project.cloneToLocal();
+		CloneResult cloneResult = project.cloneIt();
 
 		// then
 		assertThat(cloneResult.exceptions().size(), equalTo(0));

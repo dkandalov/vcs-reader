@@ -14,7 +14,7 @@ def vcsRoot = new GitVcsRoot("/tmp/junit", "https://github.com/junit-team/junit"
 def vcsProject = new VcsProject(vcsRoot)
 
 // clone from GitHub (cloning is optional, already clone project can be used)
-def cloneResult = vcsProject.cloneToLocal()
+def cloneResult = vcsProject.cloneIt()
 assert cloneResult.isSuccessful()
 
 // log commits within date range

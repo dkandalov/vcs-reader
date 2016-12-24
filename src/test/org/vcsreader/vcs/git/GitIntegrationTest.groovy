@@ -28,7 +28,7 @@ class GitIntegrationTest {
 		def repository = new GitRepository().init()
 		def project = new VcsProject(new GitVcsRoot(newProjectPath(), repository.path, gitSettings))
 
-		def cloneResult = project.cloneToLocal()
+		def cloneResult = project.cloneIt()
 
 		assert cloneResult.isSuccessful()
 	}
@@ -37,7 +37,7 @@ class GitIntegrationTest {
 		def vcsRoot = new GitVcsRoot(newProjectPath(), nonExistentPath, gitSettings)
 		def project = new VcsProject(vcsRoot)
 
-		def cloneResult = project.cloneToLocal()
+		def cloneResult = project.cloneIt()
 
 		assert !cloneResult.isSuccessful()
 		assert cloneResult.exceptions().size() == 1
@@ -428,7 +428,7 @@ class GitIntegrationTest {
 	private static VcsProject newProject(GitRepository repository) {
 		def project = new VcsProject(new GitVcsRoot(newProjectPath(), repository.path, gitSettings))
 		project.addListener(printingListener)
-		project.cloneToLocal()
+		project.cloneIt()
 		project
 	}
 

@@ -13,6 +13,9 @@ import static java.util.stream.Collectors.toList;
 /**
  * Represents a project as a set of {@link VcsRoot}s.
  * This class is the main entry point for cloning/updating/reading version control history.
+ * <p>
+ * It is intended to be used from single thread
+ * except for {@link #cancelLastCommand()} method which can be called from any thread.
  */
 public class VcsProject {
 	private final List<VcsRoot> vcsRoots;
@@ -34,13 +37,13 @@ public class VcsProject {
 	}
 
 	/**
-	 * For distributed VCS clones {@link VcsRoot}s to local file system.
+	 * For distributed VCS clones {@link VcsRoot}s from remote repository to local file system.
 	 * Does nothing for centralized VCS because commit history can be queried from server.
 	 */
-	public CloneResult cloneToLocal() {
+	public CloneResult cloneIt() {
 		CloneResult result = new CloneResult();
 		for (VcsRoot vcsRoot : vcsRoots) {
-			CloneResult cloneResult = vcsRoot.cloneToLocal();
+			CloneResult cloneResult = vcsRoot.cloneIt();
 			result = result.aggregateWith(cloneResult);
 		}
 		return result;
@@ -93,6 +96,9 @@ public class VcsProject {
 		return vcsRoots;
 	}
 
+	/**
+	 * @return true if there are no running commands, false otherwise
+	 */
 	public boolean cancelLastCommand() {
 		boolean result = true;
 		for (VcsRoot vcsRoot : vcsRoots) {

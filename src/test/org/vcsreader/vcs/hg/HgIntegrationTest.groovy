@@ -26,7 +26,7 @@ class HgIntegrationTest {
 		def repository = new HgRepository().init()
 		def project = new VcsProject(new HgVcsRoot(newProjectPath(), repository.path, hgSettings))
 
-		def cloneResult = project.cloneToLocal()
+		def cloneResult = project.cloneIt()
 
 		assert cloneResult.isSuccessful()
 	}
@@ -35,7 +35,7 @@ class HgIntegrationTest {
 		def vcsRoot = new HgVcsRoot(newProjectPath(), nonExistentPath, hgSettings)
 		def project = new VcsProject(vcsRoot)
 
-		def cloneResult = project.cloneToLocal()
+		def cloneResult = project.cloneIt()
 
 		assert !cloneResult.isSuccessful()
 		assert cloneResult.exceptions().size() == 1
@@ -46,7 +46,7 @@ class HgIntegrationTest {
 		def repository = someNonEmptyRepository()
 
 		def project = newProject(repository)
-		project.cloneToLocal()
+		project.cloneIt()
 
 		def updateResult = project.update()
 		assert updateResult.isSuccessful()
@@ -307,7 +307,7 @@ class HgIntegrationTest {
 	private static VcsProject newProject(HgRepository repository) {
 		def project = new VcsProject(new HgVcsRoot(newProjectPath(), repository.path, hgSettings))
 		project.addListener(printingListener)
-		project.cloneToLocal()
+		project.cloneIt()
 		project
 	}
 }

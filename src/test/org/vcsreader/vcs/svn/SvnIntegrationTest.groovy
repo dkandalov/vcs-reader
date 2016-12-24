@@ -23,7 +23,7 @@ class SvnIntegrationTest {
 		def vcsRoots = [new SvnVcsRoot(nonExistentUrl, svnSettings)]
 		def project = new VcsProject(vcsRoots)
 
-		def cloneResult = project.cloneToLocal()
+		def cloneResult = project.cloneIt()
 
 		assert cloneResult.isSuccessful()
 	}

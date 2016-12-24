@@ -37,7 +37,7 @@ public class SvnVcsRoot implements VcsRoot, VcsCommand.Observer {
 		return new SvnVcsRoot(repoUrl, settings, listener);
 	}
 
-	@Override public CloneResult cloneToLocal() {
+	@Override public CloneResult cloneIt() {
 		return new CloneResult();
 	}
 

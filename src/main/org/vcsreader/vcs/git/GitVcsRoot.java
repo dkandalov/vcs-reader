@@ -25,7 +25,7 @@ public class GitVcsRoot implements VcsRoot, VcsCommand.Observer {
 
 	/**
 	 * @param repoFolder path to folder with repository from which history will be read.
-	 *                   If there is no local clone of repository, you can call {@link #cloneToLocal()} to clone it.
+	 *                   If there is no local clone of repository, you can call {@link #cloneIt()} to clone it.
 	 * @param repoUrl    remote repository URL. This can be any form of URL supported by git command line.
 	 * @param settings   settings which will be used by VCS commands executed on this root
 	 */
@@ -45,7 +45,7 @@ public class GitVcsRoot implements VcsRoot, VcsCommand.Observer {
 		return new GitVcsRoot(repoFolder, repoUrl, settings, listener);
 	}
 
-	@Override public CloneResult cloneToLocal() {
+	@Override public CloneResult cloneIt() {
 		if (repoUrl == null && settings.failFast()) {
 			throw new IllegalStateException("Cannot clone repository because remote URL is not specified for root: " + this);
 		}
