@@ -424,6 +424,15 @@ class GitIntegrationTest {
 		assert change.fileContentBefore().value == "file content"
 	}
 
+	@Test void "clone project can cancel"() {
+		def repository = new GitRepository().init()
+		def project = new VcsProject(new GitVcsRoot(newProjectPath(), repository.path, gitSettings))
+
+		def cloneResult = project.cloneIt()
+		project.cancelLastCommand()
+
+		assert cloneResult.isSuccessful()
+	}
 
 	private static VcsProject newProject(GitRepository repository) {
 		def project = new VcsProject(new GitVcsRoot(newProjectPath(), repository.path, gitSettings))
