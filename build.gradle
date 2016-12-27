@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-	// Use java5 annotations because groovy can't compile java8 @NotNull annotations.
+	// Use Java5 annotations because groovy can't compile Java8 @NotNull annotations.
 	compile "org.jetbrains:annotations-java5:15.0"
 	compile "com.googlecode.juniversalchardet:juniversalchardet:1.0.3"
 	testCompile "org.hamcrest:hamcrest-all:1.3"
@@ -57,55 +57,57 @@ task sourcesJar(type:Jar) {
 	from sourceSets.main.allSource
 }
 artifacts {
-	archives javadocJar, sourcesJar
+	archives javadocJar, sourcesJar, shadowJar
 }
 signing {
 	sign configurations.archives
 }
 uploadArchives {
-	repositories {
-		mavenDeployer {
-			beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+	repositories.mavenDeployer {
+		beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-			repository(url:"https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-				authentication(userName:ossrhUsername, password:ossrhPassword)
+		repository(url:"https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+			authentication(userName:ossrhUsername, password:ossrhPassword)
+		}
+		snapshotRepository(url:"https://oss.sonatype.org/content/repositories/snapshots/") {
+			authentication(userName:ossrhUsername, password:ossrhPassword)
+		}
+
+		pom.project {
+			name 'VCS Reader'
+			packaging 'jar'
+			description 'Minimal Java library for reading VCS commits (git, hg, svn)'
+			url 'http://vcsreader.org'
+
+			scm {
+				connection 'scm:git:https://github.com/dkandalov/vcs-reader.git'
+				developerConnection 'scm:git:https://github.com/dkandalov/vcs-reader.git'
+				url 'https://github.com/dkandalov/vcs-reader.git'
 			}
-			snapshotRepository(url:"https://oss.sonatype.org/content/repositories/snapshots/") {
-				authentication(userName:ossrhUsername, password:ossrhPassword)
+			licenses {
+				license {
+					name 'The Apache License, Version 2.0'
+					url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+				}
 			}
-
-			pom.project {
-				name 'VCS Reader'
-				packaging 'jar'
-				description 'Minimal Java library for reading VCS commits (git, hg, svn)'
-				url 'http://vcsreader.org'
-
-				scm {
-					connection 'scm:git:https://github.com/dkandalov/vcs-reader.git'
-					developerConnection 'scm:git:https://github.com/dkandalov/vcs-reader.git'
-					url 'https://github.com/dkandalov/vcs-reader.git'
-				}
-				licenses {
-					license {
-						name 'The Apache License, Version 2.0'
-						url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-					}
-				}
-				developers {
-					developer {
-						id 'dkandalov'
-						name 'Dmitry Kandalov'
-						email 'dmitry.kandalov@gmail.com'
-					}
+			developers {
+				developer {
+					id 'dkandalov'
+					name 'Dmitry Kandalov'
+					email 'dmitry.kandalov@gmail.com'
 				}
 			}
 		}
+		pom.dependencies = []
 	}
 }
+// Clear dependencies before uploading archives assuming that they are shadowed.
+[uploadArchives.repositories.mavenDeployer]*.pom*.whenConfigured {pom -> pom.dependencies.clear() }
 
 //
 // Configuration for creating single jar (with all dependant packages renamed to avoid potential conflicts).
-// Can be used with `install publish`.
+// Can be used with `gradle install publish`, where `install` required to create src and javadoc jars
+// and `publish` will create shadowed jar (see also https://github.com/johnrengelman/shadow/issues/120).
 //
 shadowJar {
 	baseName = 'vcsreader'
