@@ -97,7 +97,7 @@ public class VcsProject {
 	}
 
 	/**
-	 * @return true if there are no running commands, false otherwise
+	 * @return true if all commands were successfully cancelled (or there are no running commands), otherwise false
 	 */
 	public boolean cancelLastCommand() {
 		boolean result = true;
